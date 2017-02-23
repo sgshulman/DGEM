@@ -2,7 +2,6 @@ Parameters
 
 Method
   fMonteCarlo=0
-  fTauHash=1
   taumin=0.01
   nscat=1
   

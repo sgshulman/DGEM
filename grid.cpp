@@ -51,12 +51,6 @@ void GRID::Init(const MODEL &m, double R_i, double R_d, double rho_0, double h_0
 			}
 		}
 	}
-	if (m.fTauHash())
-	{
-		obstau_ = new double[Nx_*Ny_*Nz_];
-		for (size_t cnt=0; cnt != Nx_*Ny_*Nz_; ++cnt)
-			obstau_[cnt] = -1.0;
-	}
 }
 // calculate smax -- maximum distance photon can travel *******
 double GRID::PhotonSMax( PHOTON &ph ) const
@@ -163,8 +157,6 @@ double GRID::TauFind( PHOTON ph, double delta ) const
 	smax = PhotonSMax(ph);
 	
 	if(smax < delta) return 0.0;
-	bool fEdge = false;
-	uint32_t xe=0, ye=0, ze=0;
 	while (d < 0.999*smax)
 	{
 		dcell =	PhotonCWall(ph, delta);
@@ -176,10 +168,6 @@ double GRID::TauFind( PHOTON ph, double delta ) const
 		taurun+=taucell;
 		ph.Move( dcell );
 		d += dcell;
-	}
-	if (fEdge)
-	{
-		obstau_[xe+ye*Nx_+ze*Ny_*Nx_] = 0;
 	}
 	return taurun;  
 }

@@ -73,8 +73,6 @@ class MODEL
 		}
 		bool fMonteCarlo( void ) const
 		{	return fMonteCarlo_;	}
-		bool fTauHash( void ) const
-		{	return fTauHash_;	}
 		double taumin( void ) const
 		{	return taumin_;	}
 		uint32_t nscat( void ) const
@@ -124,7 +122,6 @@ class MODEL
 
 	private:
 		bool fMonteCarlo_;
-		bool fTauHash_;
 		double taumin_;
 		uint32_t nscat_;
 		unsigned long long num_photons_;

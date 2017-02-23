@@ -101,7 +101,7 @@ void PHOTON::Scatt( MODEL const &m, DIRECTIONS const &dirs, GRID const &grid, DI
 			// Scatter photon into new direction and update Stokes parameters
 			ph.Stokes( m, DIRECTION(), 0.0, false );
 			ph.nscat()+=1;
-			if (ph.nscat() > model.nscat()) break;
+			if (ph.nscat() > m.nscat()) break;
 			// Find next scattering location
 			tflag = grid.TauInt2( ph );	
 		}

@@ -17,7 +17,6 @@ MODEL::MODEL (GRID *grid, SOURCES *sources)
     double *x, *y, *z, *l;
     std::ifstream input("params.par");
 	input.ignore(1000000, '=');		input >> fMonteCarlo_;
-	input.ignore(1000000, '=');		input >> fTauHash_;
 	input.ignore(1000000, '=');		input >> taumin_;
 	input.ignore(1000000, '=');		input >> nscat_;
 	input.ignore(1000000, '=');		input >> num_photons_;
@@ -57,7 +56,7 @@ MODEL::MODEL (GRID *grid, SOURCES *sources)
 		input >> x[i] >> y[i] >> z[i] >> l[i];
 	}
 	input.close();
-	std::cout << "Parameters\n\nMethod\n fMonteCarlo=" << fMonteCarlo_ << "\n fTauHash=" << fTauHash_ << "\n taumin=" << taumin_ << "\n nscat=" << nscat_;
+	std::cout << "Parameters\n\nMethod\n fMonteCarlo=" << fMonteCarlo_ << "\n taumin=" << taumin_ << "\n nscat=" << nscat_;
 	std::cout << "\n\nMonte Carlo Parameters\n nphotons=" << num_photons_ << "\n iseed=" << iseed_ << "\n\n";
 	std::cout << "DGEM Parameters\n PrimaryDirectionsLevel=" << PrimaryDirectionsLevel_ << "\n SecondaryDirectionsLevel=" << SecondaryDirectionsLevel_;
 	std::cout << "\n NumOfPrimaryScatterings=" << NumOfPrimaryScatterings_ << "\n NumOfSecondaryScatterings=" << NumOfSecondaryScatterings_;

@@ -87,11 +87,10 @@ class DIRECTION
 class GRID
 {
 	public:
-		GRID() : Nx_(0), Ny_(0), Nz_(0), rhokappa_(nullptr), obstau_(nullptr) {};
+		GRID() : Nx_(0), Ny_(0), Nz_(0), rhokappa_(nullptr) {};
 		~GRID()
 		{
 			if (rhokappa_ != nullptr) delete[] rhokappa_;
-			if (obstau_ != nullptr) delete[] obstau_;
 		}
 		void Init(const MODEL &m, double R_i, double R_d, double rho_0, double h_0, double R_0, 
 									double alpha, double beta, uint32_t Nx, uint32_t Ny, uint32_t Nz );
@@ -104,8 +103,7 @@ class GRID
 		void Peeloff( PHOTON ph, MODEL const &m, PICTURES *pict, SCATHOLDER *holder ) const;
 	private:
 		uint32_t Nx_, Ny_, Nz_;
-		double *rhokappa_;
-		double *obstau_;	
+		double *rhokappa_;	
 		double xmax_, ymax_, zmax_;
 		double minrho_;
 		GRID ( GRID const &);
