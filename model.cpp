@@ -59,7 +59,7 @@ MODEL::MODEL (GRID *grid, SOURCES *sources)
 	input.close();
 	std::cout << "Parameters\n\nMethod\n fMonteCarlo=" << fMonteCarlo_ << "\n fTauHash=" << fTauHash_ << "\n taumin=" << taumin_ << "\n nscat=" << nscat_;
 	std::cout << "\n\nMonte Carlo Parameters\n nphotons=" << num_photons_ << "\n iseed=" << iseed_ << "\n\n";
-	std::cout << "Method Parameters\n PrimaryDirectionsLevel=" << PrimaryDirectionsLevel_ << "\n SecondaryDirectionsLevel=" << SecondaryDirectionsLevel_;
+	std::cout << "DGEM Parameters\n PrimaryDirectionsLevel=" << PrimaryDirectionsLevel_ << "\n SecondaryDirectionsLevel=" << SecondaryDirectionsLevel_;
 	std::cout << "\n NumOfPrimaryScatterings=" << NumOfPrimaryScatterings_ << "\n NumOfSecondaryScatterings=" << NumOfSecondaryScatterings_;
 	std::cout << "\n MonteCarloStart=" << MonteCarloStart_ << "\n\n";
 	std::cout << "Physics\n kappa=" << kappa_ << "\n albedo=" << albedo_ << "\n hgg=" << hgg_ << "\n pl=" << pl_ << "\n pc=" << pc_ << "\n sc=" << sc_ << "\n\n";
