@@ -15,28 +15,12 @@ set cbrange [ 0.00000 : 15e-07 ]
 set output './F.png'
 plot "fimage00.dat" matrix with image
 
-set output './F1.png'
-plot "fimage01.dat" matrix with image
+set palette defined ( 0 "green", 20 "blue", 25 "black",30 "red",50 "yellow"  )
 
-set output './F2.png'
-plot "fimage02.dat" matrix with image
-
-set cbrange [ 0.00000 :  ]
+set cbrange [ -2e-7 : 2e-7 ]
 set output './Q.png'
 plot "qimage00.dat" matrix with image
 
-set output './Q1.png'
-plot "qimage01.dat" matrix with image
-
-set output './Q2.png'
-plot "qimage02.dat" matrix with image
-
+set cbrange [ -2e-07 : 2e-07 ]
 set output './U.png'
 plot "uimage00.dat" matrix with image
-
-set output './U1.png'
-plot "uimage01.dat" matrix with image
-
-set output './U2.png'
-plot "uimage02.dat" matrix with image
-
