@@ -10,7 +10,7 @@ Monte Carlo Parameters
   nphotons=250000000
   iseed=-1556
 
-Method Parameters
+DGEM Parameters
   PrimaryDirectionsLevel=10
   SecondaryDirectionsLevel=1
   NumOfPrimaryScatterings=100
