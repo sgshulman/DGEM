@@ -249,9 +249,9 @@ void GRID::Peeloff( PHOTON ph, DIRECTION const & obs, MODEL const &m, PICTURES *
 	double tau2 = TauFind(ph);
 	
 	if(tau2 == 0.0) return;
-	double phot=ph.weight()*hgfac*m.albedo()*exp(-tau2)*ph.fi();
-	double photq=ph.weight()*hgfac*m.albedo()*exp(-tau2)*ph.fq();
-	double photu=ph.weight()*hgfac*m.albedo()*exp(-tau2)*ph.fu();
+	double phot=ph.weight()*hgfac*exp(-tau2)*ph.fi();
+	double photq=ph.weight()*hgfac*exp(-tau2)*ph.fq();
+	double photu=ph.weight()*hgfac*exp(-tau2)*ph.fu();
 	// Bin the photon into the image according to its position and 
 	//direction of travel. 
 	pict[0].Bin( ph, phot, photq, photu);
@@ -269,9 +269,9 @@ void GRID::Peeloff( PHOTON ph, MODEL const &m, PICTURES *pict,  SCATHOLDER *hold
 	double tau2 = TauFind(ph);
 
 	if(tau2 == 0.0) return;
-	double phot=ph.weight()*hgfac*m.albedo()*exp(-tau2)*ph.fi();
-	double photq=ph.weight()*hgfac*m.albedo()*exp(-tau2)*ph.fq();
-	double photu=ph.weight()*hgfac*m.albedo()*exp(-tau2)*ph.fu();
+	double phot=ph.weight()*hgfac*exp(-tau2)*ph.fi();
+	double photq=ph.weight()*hgfac*exp(-tau2)*ph.fq();
+	double photu=ph.weight()*hgfac*exp(-tau2)*ph.fu();
 	// Bin the photon into the image according to its position and 
 	//direction of travel. 
 	pict[0].Bin( ph, phot, photq, photu);
