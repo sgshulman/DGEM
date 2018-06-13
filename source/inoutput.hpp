@@ -124,7 +124,23 @@ class PICTURES
 		}		
 		std::cout << "F = " << fsum << "\nQ = " << qsum << "\nU = " << usum << "\n\n"; 
 	}
-	
+	void PolarizationDegree()
+	{
+		double fsum=0, qsum=0, usum=0;
+		for (size_t x=0; x!=Nx_; ++x)
+		{
+			for (size_t y=0; y!=Ny_; ++y)
+			{
+				if (f_[y+x*Ny_] < 0.01)
+				{
+					fsum += f_[y+x*Ny_];
+					qsum += q_[y+x*Ny_];
+					usum += u_[y+x*Ny_];
+				}
+			}
+		}		
+		std::cout << "p = " << (sqrt(qsum*qsum + usum*usum)/fsum) << "\n\n"; 
+	}
 	private:
 		double rimage_;
 		uint32_t Nx_, Ny_;

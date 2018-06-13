@@ -30,6 +30,22 @@ int main(void)
     uint64_t totscatt=0;
     uint64_t jcount=0;
 
+	// mean optical depth
+	{
+		double tau_mean = 0.0;
+		DIRECTIONS tauDir( 7 );
+		
+		for (size_t j=0; j != tauDir.NumOfDirections(); ++j)
+		{
+			double x, y, z;
+			tauDir.GetDirection( j, x, y, z );
+			PHOTON ph(sources[0].pos(), DIRECTION(x, y, z), 1.0, 1 );
+				
+			tau_mean += grid.TauFind( ph );
+		}
+		std::cout << tau_mean/tauDir.NumOfDirections() << std::endl;
+	}
+	
     if ( model.fMonteCarlo() )
     {
 		// Set up Random
@@ -170,6 +186,8 @@ int main(void)
 		pict[cnt].Write( cnt );
 	}
 	pict[0].Sum();
+	pict[0].PolarizationDegree();
+	
 	delete [] pict;
 
 	return 0;

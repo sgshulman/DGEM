@@ -187,7 +187,7 @@ DIRECTIONS::DIRECTIONS( uint32_t NumOfDirectionsLevels )
 
 	for (size_t cnt=0; cnt<NumOfDirections_; cnt++)
 	{	
-		Dots_[cnt]=DOT( DirTrigon[cnt].Median() );
+		Dots_[cnt]=DOT(DirTrigon[cnt].Median());
 		w_[cnt] = DirTrigon[cnt].Square()*NumOfDirections_/4/PI;
 	}
 	delete[] DirDots;		

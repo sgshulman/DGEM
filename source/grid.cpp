@@ -3,6 +3,7 @@
 #include "inoutput.hpp"
 #include "model.hpp"
 #include "photons.hpp"
+#include "directions.hpp"
 #include <iostream>
 
 double Density(double x, double y, double z, double R_i, double R_d, double rho_0, double h_0, double R_0, double alpha, double beta)
@@ -24,6 +25,138 @@ double Density(double x, double y, double z, double R_i, double R_d, double rho_
 }
 
 
+class FractalDensity
+{
+	public:
+		FractalDensity(uint32_t N, double max, double k)
+			: N_(N)
+			, max_(max)
+			, k_(k)
+		{
+			const double L = 2 * max;
+			const uint32_t DOT_NUMBER = 32;
+			
+			DOT* dots0 = new DOT[DOT_NUMBER];
+			for (size_t i = 0; i != DOT_NUMBER; ++i)
+			{
+				dots0[i] = DOT(ran.Get()*L - max_, ran.Get()*L - max_, ran.Get()*L - max_);
+			}
+			
+			const double delta = pow(1.0*DOT_NUMBER, 1.0/2.3);
+			
+			// Первое разбиение
+			const double d1 = L/(2*delta);
+    		const uint32_t DOT_NUMBER2 = DOT_NUMBER * DOT_NUMBER;
+			DOT* dots1 = new DOT[DOT_NUMBER2];
+			
+			for (size_t i = 0; i != DOT_NUMBER; ++i)
+			{
+				for (size_t j = 0; j != DOT_NUMBER; ++j)
+				{
+					dots1[i*DOT_NUMBER+j] = DOT(
+						dots0[i].x() + ran.Get()*2*d1 - d1, 
+						dots0[i].y() + ran.Get()*2*d1 - d1, 
+						dots0[i].z() + ran.Get()*2*d1 - d1);
+				}
+			}
+			
+			delete[] dots0;
+			
+			// второе разбиение
+			const double d2 = d1/(2*delta);
+    		const uint32_t DOT_NUMBER3 = DOT_NUMBER2 * DOT_NUMBER;
+			DOT* dots2 = new DOT[DOT_NUMBER3];
+			
+			for (size_t i = 0; i != DOT_NUMBER2; ++i)
+			{
+				for (size_t j = 0; j != DOT_NUMBER; ++j)
+				{
+					dots2[i*DOT_NUMBER+j] = DOT(
+						dots1[i].x() + ran.Get()*2*d2 - d2, 
+						dots1[i].y() + ran.Get()*2*d2 - d2, 
+						dots1[i].z() + ran.Get()*2*d2 - d2);
+				}
+			}
+			
+			delete[] dots1;
+			
+			// третье разбиение
+			const double d3 = d2/(2*delta);
+    		const uint32_t DOT_NUMBER4 = DOT_NUMBER3 * DOT_NUMBER;
+			DOT* dots3 = new DOT[DOT_NUMBER4];
+			
+			for (size_t i = 0; i != DOT_NUMBER3; ++i)
+			{
+				for (size_t j = 0; j != DOT_NUMBER; ++j)
+				{
+					dots3[i*DOT_NUMBER+j] = DOT(
+						dots2[i].x() + ran.Get()*2*d3 - d3, 
+						dots2[i].y() + ran.Get()*2*d3 - d3, 
+						dots2[i].z() + ran.Get()*2*d3 - d3);
+				}
+			}
+			
+			delete[] dots2;
+			
+			// вычисление плотности
+			rhokappa_ = new double[N_*N_*N_]();
+
+			for (size_t i = 0; i != DOT_NUMBER4; ++i)
+			{
+				double x = dots3[i].x();
+				while (x < -max_) x += L;
+				while (x >  max_) x -= L;
+				
+				double y = dots3[i].y();
+				while (y < -max_) y += L;
+				while (y >  max_) y -= L;
+				
+				double z = dots3[i].z();
+				while (z < -max_) z += L;
+				while (z >  max_) z -= L;
+				
+				uint32_t cntx = uint32_t((x + max_)/(2*max_)*N_);
+				uint32_t cnty = uint32_t((y + max_)/(2*max_)*N_);
+				uint32_t cntz = uint32_t((z + max_)/(2*max_)*N_);
+				
+				rhokappa_[cntx+cnty*N_+cntz*N_*N_] += 1.0e-17;
+			}
+			delete[] dots3;
+			
+			double control = 0.0;
+			for (size_t cntx=0; cntx!=N_; ++cntx)
+			{
+				for (size_t cnty=0; cnty!=N_; ++cnty)
+				{
+					for (size_t cntz=0; cntz!=N_; ++cntz)
+					{
+						control += rhokappa_[cntx+cnty*N_+cntz*N_*N_];
+					}
+				}
+			}
+			std::cout << "total dots = " << control / 1.0e-17 << std::endl;
+		}
+		
+		~FractalDensity()
+		{
+			delete[] rhokappa_;
+		}
+	
+		double operator()(double x, double y, double z)
+		{
+			uint32_t cntx = uint32_t((x + max_)/(2*max_)*N_);
+			uint32_t cnty = uint32_t((y + max_)/(2*max_)*N_);
+			uint32_t cntz = uint32_t((z + max_)/(2*max_)*N_);
+			return rhokappa_[cntx+cnty*N_+cntz*N_*N_]*k_;
+		}
+	private:
+		uint32_t N_;
+		double max_;
+		double k_;
+		double *rhokappa_;
+};
+
+
 void GRID::Init(const MODEL &m, double R_i, double R_d, double rho_0, double h_0, double R_0, 
 								double alpha, double beta, uint32_t Nx, uint32_t Ny, uint32_t Nz )
 {
@@ -36,6 +169,9 @@ void GRID::Init(const MODEL &m, double R_i, double R_d, double rho_0, double h_0
 	xmax_ = m.xmax();
 	ymax_ = m.ymax();
 	zmax_ = m.zmax();
+	
+	FractalDensity fractalDensity(Nx_, xmax_, 1.34);
+	
 	for (size_t cntx=0; cntx!=Nx_; ++cntx)
 	{
 		x=(cntx*2.0+1)*xmax_/Nx_-xmax_;
@@ -45,7 +181,9 @@ void GRID::Init(const MODEL &m, double R_i, double R_d, double rho_0, double h_0
 			for (size_t cntz=0; cntz!=Nz_; ++cntz)
 			{
 				z=(cntz*2.0+1)*zmax_/Nz_-zmax_;
-				rhokappa_[cntx+cnty*Nx+cntz*Ny*Nx]=Density(x,y,z, R_i, R_d, rho_0, h_0, R_0, alpha, beta)*m.kappa()*1.5e13; // rho*kappa*R,
+				//rhokappa_[cntx+cnty*Nx+cntz*Ny*Nx]=Density(x,y,z, R_i, R_d, rho_0, h_0, R_0, alpha, beta)*m.kappa()*1.5e13; // rho*kappa*R,
+				rhokappa_[cntx+cnty*Nx+cntz*Ny*Nx]=fractalDensity(x,y,z)*m.kappa()*2.042984392e13; 
+				
 				if (minrho_ > rhokappa_[cntx+cnty*Nx+cntz*Ny*Nx] && rhokappa_[cntx+cnty*Nx+cntz*Ny*Nx] > 0) 
 					minrho_ = rhokappa_[cntx+cnty*Nx+cntz*Ny*Nx];
 			}
@@ -164,6 +302,11 @@ double GRID::TauFind( PHOTON ph, double delta ) const
 		y = uint32_t( (ph.pos().y()+ymax_)*Ny_ / 2.0 / ymax_ );
 		z = uint32_t( (ph.pos().z()+zmax_)*Nz_ / 2.0 / zmax_ );		   
 		   
+		if (x >= Nx_ || y >= Ny_ || z >= Nz_)
+		{
+			return taurun;
+		}
+		   
 		taucell=dcell*rhokappa_[ x+y*Nx_+z*Ny_*Nx_ ]; 
 		taurun+=taucell;
 		ph.Move( dcell );
@@ -249,9 +392,9 @@ void GRID::Peeloff( PHOTON ph, DIRECTION const & obs, MODEL const &m, PICTURES *
 	double tau2 = TauFind(ph);
 	
 	if(tau2 == 0.0) return;
-	double phot=ph.weight()*hgfac*exp(-tau2)*ph.fi();
-	double photq=ph.weight()*hgfac*exp(-tau2)*ph.fq();
-	double photu=ph.weight()*hgfac*exp(-tau2)*ph.fu();
+	double phot=ph.weight()*hgfac*m.albedo()*exp(-tau2)*ph.fi();
+	double photq=ph.weight()*hgfac*m.albedo()*exp(-tau2)*ph.fq();
+	double photu=ph.weight()*hgfac*m.albedo()*exp(-tau2)*ph.fu();
 	// Bin the photon into the image according to its position and 
 	//direction of travel. 
 	pict[0].Bin( ph, phot, photq, photu);
@@ -269,9 +412,9 @@ void GRID::Peeloff( PHOTON ph, MODEL const &m, PICTURES *pict,  SCATHOLDER *hold
 	double tau2 = TauFind(ph);
 
 	if(tau2 == 0.0) return;
-	double phot=ph.weight()*hgfac*exp(-tau2)*ph.fi();
-	double photq=ph.weight()*hgfac*exp(-tau2)*ph.fq();
-	double photu=ph.weight()*hgfac*exp(-tau2)*ph.fu();
+	double phot=ph.weight()*hgfac*m.albedo()*exp(-tau2)*ph.fi();
+	double photq=ph.weight()*hgfac*m.albedo()*exp(-tau2)*ph.fq();
+	double photu=ph.weight()*hgfac*m.albedo()*exp(-tau2)*ph.fu();
 	// Bin the photon into the image according to its position and 
 	//direction of travel. 
 	pict[0].Bin( ph, phot, photq, photu);
