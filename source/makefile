@@ -1,2 +1,2 @@
 points: makefile *.cpp *.hpp
-		g++-6 -std=c++14 *.cpp -O3 -o ../points-v4 -Wall
+		g++ -std=c++14 *.cpp -O3 -o ../dgem -Wall -Wextra -Wpedantic
