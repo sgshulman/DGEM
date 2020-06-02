@@ -19,7 +19,7 @@ class Scatholder ;
 // L’Ecuyer, P. 1988, Communications of the ACM, vol. 31, pp. 742,774.
 class Random
 {
-	public:
+    public:
 		Random (int32_t iseed=-1556) : iseed_(iseed) { } ;
 		double Get()
 		{
