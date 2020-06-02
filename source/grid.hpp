@@ -1,13 +1,13 @@
-#ifndef _GRID_HPP_
-#define _GRID_HPP_
+#ifndef GRID_HPP_
+#define GRID_HPP_
 
 #include <math.h>
 #include "model.hpp"
 
-class POSITION
+class Position
 {
 	public:
-		POSITION(double x=0.0, double y=0.0, double z=0.0) : x_(x), y_(y), z_(z)	{ };
+        Position(double x=0.0, double y=0.0, double z=0.0) : x_(x), y_(y), z_(z)	{ };
 		// data 
 		double &x()
 		{	return x_;	};	
@@ -19,14 +19,14 @@ class POSITION
 		double x_, y_, z_;	
 };
 
-class DIRECTION
+class Direction
 {
 	public:
 		// default zero init
-		DIRECTION() : nx_(0.0), ny_(0.0), nz_(0.0), phi_(0.0), theta_(0.0), 
+        Direction() : nx_(0.0), ny_(0.0), nz_(0.0), phi_(0.0), theta_(0.0),
 						sint_(0.0), cost_(0.0), sinp_(0.0), cosp_(0.0)
-		{}; 
-		DIRECTION(double nx, double ny, double nz)
+		{};
+        Direction(double nx, double ny, double nz)
 		{
 			double r=sqrt(nx*nx+ny*ny+nz*nz);			
 			nx_ = nx/r; 
@@ -45,7 +45,7 @@ class DIRECTION
 			cost_ = cos(theta_);
 		}
 		//
-		DIRECTION(double phi, double theta)
+        Direction(double phi, double theta)
 		{
 			phi_ = phi;
 			if(phi_ > 2*3.1415926 ) phi_=phi_-2*3.1415926;
@@ -84,30 +84,30 @@ class DIRECTION
 };
 	
 // cartezian grid
-class GRID
+class Grid
 {
 	public:
-		GRID() : Nx_(0), Ny_(0), Nz_(0), rhokappa_(nullptr) {};
-		~GRID()
+        Grid() : Nx_(0), Ny_(0), Nz_(0), rhokappa_(nullptr) {};
+		~Grid()
 		{
 			if (rhokappa_ != nullptr) delete[] rhokappa_;
 		}
-		void Init(const MODEL &m, double R_i, double R_d, double rho_0, double h_0, double R_0, 
+		void Init(const Model &m, double R_i, double R_d, double rho_0, double h_0, double R_0,
 									double alpha, double beta, uint32_t Nx, uint32_t Ny, uint32_t Nz );
-		double PhotonSMax( PHOTON &ph ) const;
-      	double PhotonCWall( PHOTON &ph, double delta ) const;
-		double TauFind( PHOTON ph, double delta=-0.001 ) const;
-		int TauInt( PHOTON & ph, double tau, double tauold=0.0, double delta=-0.001 ) const;
-		int TauInt2( PHOTON & ph, double delta=-0.001 ) const;
-		void Peeloff( PHOTON ph, DIRECTION const &obs, MODEL const &m, PICTURES *pict, SCATHOLDER *holder ) const;
-		void Peeloff( PHOTON ph, MODEL const &m, PICTURES *pict, SCATHOLDER *holder ) const;
+		double PhotonSMax( Photon &ph ) const;
+      	double PhotonCWall( Photon &ph, double delta ) const;
+		double TauFind( Photon ph, double delta=-0.001 ) const;
+		int TauInt( Photon & ph, double tau, double tauold=0.0, double delta=-0.001 ) const;
+		int TauInt2( Photon & ph, double delta=-0.001 ) const;
+		void Peeloff( Photon ph, Direction const &obs, Model const &m, Pictures *pict, Scatholder *holder ) const;
+		void Peeloff( Photon ph, Model const &m, Pictures *pict, Scatholder *holder ) const;
 	private:
 		uint32_t Nx_, Ny_, Nz_;
 		double *rhokappa_;	
 		double xmax_, ymax_, zmax_;
 		double minrho_;
-		GRID ( GRID const &);
-		GRID & operator =( GRID const &);
+        Grid ( Grid const &);
+        Grid & operator =( Grid const &);
 };
 #endif
 

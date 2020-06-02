@@ -31,7 +31,7 @@ void Dustmat( double &p1, double &p2, double &p3, double &p4,
 	p4 = -pc*p1*(1-c)/(1+c);
 }
 
-PHOTON::PHOTON( POSITION const &pos, double weight, int nscat )
+Photon::Photon( Position const &pos, double weight, int nscat )
 {
 	// Set position
 	pos_=pos;
@@ -41,7 +41,7 @@ PHOTON::PHOTON( POSITION const &pos, double weight, int nscat )
      v = ran.Get();
      u = ran.Get();
 
-	dir_ = DIRECTION( 2.0*PI*u, acos( 2*v-1.0 ) );
+	dir_ = Direction( 2.0*PI*u, acos( 2*v-1.0 ) );
 	// Set number of sctterings and weight
 	nscat_ = nscat;
 	weight_= weight;
@@ -52,7 +52,7 @@ PHOTON::PHOTON( POSITION const &pos, double weight, int nscat )
 	fv_=0.0;
 }
 
-PHOTON::PHOTON( POSITION const &pos, DIRECTION const &dir, double weight, int nscat, double fi, double fq, double fu, double fv )
+Photon::Photon( Position const &pos, Direction const &dir, double weight, int nscat, double fi, double fq, double fu, double fv )
 {
 	pos_ = pos;
 	dir_ = dir;
@@ -65,7 +65,7 @@ PHOTON::PHOTON( POSITION const &pos, DIRECTION const &dir, double weight, int ns
 	fv_=fv;
 }
 
-double PHOTON::Scatt( MODEL const &m, DIRECTION const & dir )
+double Photon::Scatt( Model const &m, Direction const & dir )
 {
 	double calpha; // cos(alpha), where alpha is angle between incident
 					// and outgoing (i.e., observed) photon direction
@@ -82,13 +82,13 @@ double PHOTON::Scatt( MODEL const &m, DIRECTION const & dir )
 	 return hgfrac;
 }
 
-void PHOTON::Scatt( MODEL const &m, DIRECTIONS const &dirs, GRID const &grid, DIRECTION const &obs, PICTURES *pict )
+void Photon::Scatt( Model const &m, Directions const &dirs, Grid const &grid, Direction const &obs, Pictures *pict )
 {
 	if (nscat_ == m.MonteCarloStart() )
 	{
-		PHOTON ph(*this);
+		Photon ph(*this);
 		int tflag = 0; 
-		ph.Stokes( m, DIRECTION(), 0.0, false );
+		ph.Stokes( m, Direction(), 0.0, false );
 		tflag = grid.TauInt2( ph );
 		ph.nscat()+=1;
 		while ( !tflag && ( ph.nscat() <= m.nscat() ) )
@@ -99,7 +99,7 @@ void PHOTON::Scatt( MODEL const &m, DIRECTIONS const &dirs, GRID const &grid, DI
 			grid.Peeloff( ph, obs, m, pict, nullptr );    
 
 			// Scatter photon into new direction and update Stokes parameters
-			ph.Stokes( m, DIRECTION(), 0.0, false );
+			ph.Stokes( m, Direction(), 0.0, false );
 			ph.nscat()+=1;
 			if (ph.nscat() > m.nscat()) break;
 			// Find next scattering location
@@ -145,21 +145,21 @@ void PHOTON::Scatt( MODEL const &m, DIRECTIONS const &dirs, GRID const &grid, DI
 			
 			calpha = dir_.nx()*x+dir_.ny()*y+dir_.nz()*z;
 			hgfrac=(1.0-m.g2())/pow((1.0+m.g2()-2.*m.hgg()*calpha),1.5);
-			PHOTON ph0(pos_, dir_, weight_*dirs.W( j )*hgfrac/sum, nscat_+1, fi_, fq_, fu_, fv_ );
-			ph0.Stokes(m, DIRECTION(x, y, z), calpha, true);
+			Photon ph0(pos_, dir_, weight_*dirs.W( j )*hgfrac/sum, nscat_+1, fi_, fq_, fu_, fv_ );
+			ph0.Stokes(m, Direction(x, y, z), calpha, true);
 					
 			// Find optical depth, tau1, to edge of grid
 			//double tau1 = grid.TauFind( ph0 );
 			//if ( tau1 < m.taumin() ) continue;
 					
 			double w = 1.0 / m.NumOfSecondaryScatterings() ;
-			POSITION spos = pos_;
+			Position spos = pos_;
 			double tauold = 0.0, tau = 0.0;
-			SCATHOLDER holder;
+			Scatholder holder;
 			// Loop over scattering dots
 			for (size_t s=0; s!=m.NumOfSecondaryScatterings(); ++s)
 			{
-				PHOTON ph( spos, ph0.dir(), ph0.weight()*w, nscat_+1, ph0.fi(), ph0.fq(), ph0.fu(), ph0.fv() );
+				Photon ph( spos, ph0.dir(), ph0.weight()*w, nscat_+1, ph0.fi(), ph0.fq(), ph0.fu(), ph0.fv() );
 				// Force photon to scatter at optical depth tau before edge of grid
 				tauold = tau;
 				tau=-log( 1.0-0.5*w*(2*s+1) );
@@ -189,7 +189,7 @@ void PHOTON::Scatt( MODEL const &m, DIRECTIONS const &dirs, GRID const &grid, DI
 
 // Stokes vector changes
 // spherical trigonometry is used
-void PHOTON::Stokes( MODEL const &m, DIRECTION const &dir, double calpha, bool fDir )
+void Photon::Stokes( Model const &m, Direction const &dir, double calpha, bool fDir )
 {
 	double a11,a12,a13,a21,a22,a23,a24,a31,a32,a33,a34;
     	double a42,a43,a44;
@@ -382,7 +382,7 @@ void PHOTON::Stokes( MODEL const &m, DIRECTION const &dir, double calpha, bool f
 	} else {
 		double cosp=cos(phi);
 		double sinp=sin(phi);
-		dir_ = DIRECTION(sint*cosp, sint*sinp, cost);
+		dir_ = Direction(sint*cosp, sint*sinp, cost);
 	}
 }
 

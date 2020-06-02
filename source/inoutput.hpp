@@ -1,5 +1,5 @@
-#ifndef _INOUTPUT_HPP_
-#define _INOUTPUT_HPP_
+#ifndef INOUTPUT_HPP_
+#define INOUTPUT_HPP_
 
 #include <fstream>
 #include <iostream>
@@ -7,10 +7,10 @@
 #include "photons.hpp"
 
 // pictures 
-class PICTURES
+class Pictures
 {
 	public:
-		PICTURES(void) : rimage_(0), Nx_(0), Ny_(0)
+        Pictures(void) : rimage_(0), Nx_(0), Ny_(0)
 		{
 			f_ = nullptr;
 			q_ = nullptr;
@@ -32,16 +32,16 @@ class PICTURES
 				u_[cnt]=0.0;
 			}
 		}
-		~PICTURES()
+		~Pictures()
 		{
 			delete[] f_;
 			delete[] q_;
 			delete[] u_;
 		}
 		// place phton on the images
-		void Bin( PHOTON ph )
+		void Bin( Photon ph )
 		{
-			DIRECTION o=ph.dir();
+			Direction o=ph.dir();
         	double yimage=rimage_+ph.z()*o.sint()-ph.y()*o.cost()*o.sinp()-ph.x()*o.cost()*o.cosp();
 		    double ximage=rimage_+ph.y()*o.cosp()-ph.x()*o.sinp();
 		    int64_t xl=int(Nx_*ximage/(2.0*rimage_));
@@ -50,9 +50,9 @@ class PICTURES
         	if((xl>=0) && (yl >= 0) && ((uint32_t)xl < Nx_) && ((uint32_t)yl < Ny_) ) 
         		f_[xl+yl*Nx_] += ph.weight();     
         }
-        void Bin( PHOTON ph, double f, double q, double u )
+        void Bin( Photon ph, double f, double q, double u )
 		{
-			DIRECTION o=ph.dir();
+            Direction o=ph.dir();
         	double yimage=rimage_+ph.z()*o.sint()-ph.y()*o.cost()*o.sinp()-ph.x()*o.cost()*o.cosp();
 		    double ximage=rimage_+ph.y()*o.cosp()-ph.x()*o.sinp();
 		    int64_t xl=int(Nx_*ximage/(2.0*rimage_));
@@ -132,8 +132,8 @@ class PICTURES
 		double *q_;
 		double *u_;
 
-		PICTURES ( PICTURES const & pics );
-		PICTURES & operator =( PICTURES const & pics );
+		Pictures ( Pictures const & pics );
+        Pictures & operator =( Pictures const & pics );
 };
 
 #endif

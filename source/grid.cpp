@@ -24,7 +24,7 @@ double Density(double x, double y, double z, double R_i, double R_d, double rho_
 }
 
 
-void GRID::Init(const MODEL &m, double R_i, double R_d, double rho_0, double h_0, double R_0, 
+void Grid::Init(const Model &m, double R_i, double R_d, double rho_0, double h_0, double R_0,
 								double alpha, double beta, uint32_t Nx, uint32_t Ny, uint32_t Nz )
 {
 	double x, y, z;			
@@ -53,7 +53,7 @@ void GRID::Init(const MODEL &m, double R_i, double R_d, double rho_0, double h_0
 	}
 }
 // calculate smax -- maximum distance photon can travel *******
-double GRID::PhotonSMax( PHOTON &ph ) const
+double Grid::PhotonSMax( Photon &ph ) const
 {	
 	double dsx=0.0, dsy=0.0, dsz=0.0, smax =0.0;
 	if(ph.dir().nx() > 0.0) {
@@ -84,7 +84,7 @@ double GRID::PhotonSMax( PHOTON &ph ) const
 // find distance to next x, y, and z cell walls.  
 // note that dx is not the x-distance, but the actual distance along 
 // the direction of travel to the next x-face, and likewise for dy and dz.
-double GRID::PhotonCWall(PHOTON &ph, double delta) const
+double Grid::PhotonCWall(Photon &ph, double delta) const
 {
 	double dx=200.0*xmax_, dy=200.0*ymax_, dz=200.0*zmax_, dcell=0.0;
 	if (delta < 0.0 ) delta=0.0001*(2.*xmax_/Nx_);
@@ -148,7 +148,7 @@ double GRID::PhotonCWall(PHOTON &ph, double delta) const
 	return dcell;
 }
 
-double GRID::TauFind( PHOTON ph, double delta ) const
+double Grid::TauFind( Photon ph, double delta ) const
 {
 	double taurun=0.0, taucell=0.0, d=0.0, dcell=0.0;
 	double smax = 0.0;
@@ -172,7 +172,7 @@ double GRID::TauFind( PHOTON ph, double delta ) const
 	return taurun;  
 }
 
-int GRID::TauInt( PHOTON & ph, double tau, double tauold, double delta ) const
+int Grid::TauInt( Photon & ph, double tau, double tauold, double delta ) const
 {
 	double taurun=tauold, taucell=0.0, d=0.0;
 	double smax = 0.0, dcell = 0.0, d1=0.0;
@@ -204,7 +204,7 @@ int GRID::TauInt( PHOTON & ph, double tau, double tauold, double delta ) const
 	return 0;
 }
 
-int GRID::TauInt2( PHOTON &ph, double delta ) const
+int Grid::TauInt2( Photon &ph, double delta ) const
 {
 	double tau=-log(ran.Get());
 	double taurun=0.0, taucell=0.0, d=0.0, d1=0.0;
@@ -240,11 +240,11 @@ int GRID::TauInt2( PHOTON &ph, double delta ) const
 	return 0;
 }
 
-void GRID::Peeloff( PHOTON ph, DIRECTION const & obs, MODEL const &m, PICTURES *pict, SCATHOLDER *holder ) const
+void Grid::Peeloff( Photon ph, Direction const & obs, Model const &m, Pictures *pict, Scatholder *holder ) const
 {
 	double hgfac = ph.Scatt( m, obs ); 
 	
-	if (holder != nullptr ) *holder = SCATHOLDER( true, hgfac, ph.dir(), ph.fi(), ph.fq(), ph.fu(), ph.fv() );
+	if (holder != nullptr ) *holder = Scatholder( true, hgfac, ph.dir(), ph.fi(), ph.fq(), ph.fu(), ph.fv() );
 	
 	double tau2 = TauFind(ph);
 	
@@ -260,11 +260,11 @@ void GRID::Peeloff( PHOTON ph, DIRECTION const & obs, MODEL const &m, PICTURES *
 		pict[ ph.nscat() ].Bin( ph, phot, photq, photu);
 	}
 } 
-void GRID::Peeloff( PHOTON ph, MODEL const &m, PICTURES *pict,  SCATHOLDER *holder ) const
+void Grid::Peeloff( Photon ph, Model const &m, Pictures *pict, Scatholder *holder ) const
 {
 	double hgfac = holder->hgfac(); 
 	
-	ph = PHOTON( ph.pos(), holder->dir(), ph.weight(), ph.nscat(), holder->fi(), holder->fq(), holder->fu(), holder->fv() );
+	ph = Photon( ph.pos(), holder->dir(), ph.weight(), ph.nscat(), holder->fi(), holder->fq(), holder->fu(), holder->fv() );
 	
 	double tau2 = TauFind(ph);
 

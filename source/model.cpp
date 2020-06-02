@@ -4,7 +4,7 @@
 #include "grid.hpp"
 #include "photons.hpp"
 
-MODEL::MODEL (GRID *grid, SOURCES *sources) 
+Model::Model(Grid *grid, Sources *sources)
 {
 	// disk parameters
 	double R_i, R_d;

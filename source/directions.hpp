@@ -1,29 +1,29 @@
-#ifndef _DIRECTIONS_HPP_
-#define _DIRECTIONS_HPP_
+#ifndef DIRECTIONS_HPP_
+#define DIRECTIONS_HPP_
 
 // точка в пространстве
-class DOT_N ;
+class DotN ;
 
 // точка между двумя другими
-class MID_DOT
+class MiddleDot
 {
 	public:
-		MID_DOT( void ) : d2_(nullptr), md_(nullptr) {}
-		void Set( DOT_N* d2, DOT_N *md )
+		MiddleDot( void ) : d2_(nullptr), md_(nullptr) {}
+		void Set( DotN* d2, DotN *md )
 		{	d2_ = d2;	md_ = md;	} 
-		DOT_N* d2( void )
+		DotN* d2( void )
 		{	return d2_;	}
-		DOT_N* md( void )
+		DotN* md( void )
 		{	return md_;	}
 	private:
-		DOT_N *d2_;
-		DOT_N *md_;
+		DotN *d2_;
+		DotN *md_;
 };
 
-class DOT_N 
+class DotN 
 {
 	public:
-		DOT_N( double x=0.0, double y=0.0, double z=0.0 ) : x_(x), y_(y), z_(z), NumOfMids_(0) {}; 
+		DotN( double x=0.0, double y=0.0, double z=0.0 ) : x_(x), y_(y), z_(z), NumOfMids_(0) {}; 
 		void Get( double &x, double &y, double &z ) const
 		{ x=x_; y=y_; z=z_;}
 		void Set( double x, double y, double z ) 
@@ -34,7 +34,7 @@ class DOT_N
 		{	return y_;	}
 		double z( void ) const
 		{	return z_;	}
-		void Set(DOT_N *d1, DOT_N *d2)
+		void Set(DotN *d1, DotN *d2)
 		{
 			double r, r1, r2;
 			double m;
@@ -51,7 +51,7 @@ class DOT_N
 			x_*=m; y_*=m; z_*=m;
 			NumOfMids_ = 0;
 		}
-		void Set1(DOT_N *d1, DOT_N *d2)
+		void Set1(DotN *d1, DotN *d2)
 		{
 			double r, r1, r2;
 			double m;
@@ -68,7 +68,7 @@ class DOT_N
 			x_*=m; y_*=m; z_*=m;
 			NumOfMids_ = 0;
 		}
-		void Set2(DOT_N *d1, DOT_N *d2)
+		void Set2(DotN *d1, DotN *d2)
 		{
 			double r, r1, r2;
 			double m;
@@ -87,9 +87,9 @@ class DOT_N
 		}
 		uint32_t NumOfMids( void )
 		{	return NumOfMids_;	}
-		MID_DOT md( int i )
+		MiddleDot md( int i )
 		{	return md_[ i ];	}
-		void SetMid(DOT_N* d2, DOT_N *md)
+		void SetMid(DotN* d2, DotN *md)
 		{
 			md_[NumOfMids_].Set( d2, md );
 			++NumOfMids_;
@@ -99,14 +99,14 @@ class DOT_N
 	private:
 		double x_, y_, z_;
 		uint32_t NumOfMids_;
-		MID_DOT md_[6];	
+		MiddleDot md_[6];	
 };
 
-class DOT
+class Dot
 {
 	public:
-		DOT( double x=0.0, double y=0.0, double z=0.0 ) : x_(x), y_(y), z_(z) {}; 
-		DOT( DOT_N d ) : x_(d.x()), y_(d.y()), z_(d.z()) {};
+		Dot( double x=0.0, double y=0.0, double z=0.0 ) : x_(x), y_(y), z_(z) {}; 
+		Dot( DotN d ) : x_(d.x()), y_(d.y()), z_(d.z()) {};
 		void Get( double &x, double &y, double &z ) 
 		{ x=x_; y=y_; z=z_;}
 		double x( void ) const
@@ -119,10 +119,10 @@ class DOT
 		double x_, y_, z_;
 };	
 
-class DIRECTIONS {
+class Directions {
 	public:
-		DIRECTIONS( uint32_t NumOfDirectionsLevels );
-		~DIRECTIONS()
+		Directions( uint32_t NumOfDirectionsLevels );
+		~Directions()
 		{
 			if ( Dots_ != nullptr )
 			{
@@ -141,12 +141,12 @@ class DIRECTIONS {
 		double W( int index ) const
 		{	return w_[ index ];	}
 	private:
-		DOT	*Dots_;	
+		Dot	*Dots_;	
 		double *w_;
 		uint64_t NumOfDirections_;
 		
-		DIRECTIONS ( DIRECTIONS const &);
-		DIRECTIONS & operator =( DIRECTIONS const &);
+		Directions ( Directions const &);
+		Directions & operator =( Directions const &);
 };
 
 #endif

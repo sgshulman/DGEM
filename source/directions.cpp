@@ -4,22 +4,22 @@
 #include "directions.hpp"
 
 // triangle
-class MATTER 
+class Matter 
 {
 	public:
-		MATTER()
+        Matter()
 		{
 			for (size_t cnt = 0; cnt<3; cnt++)
 				dots_[ cnt ] = nullptr;
 		}
 		// init
-		void Set(DOT_N *dot1, DOT_N *dot2, DOT_N *dot3 )
+		void Set(DotN *dot1, DotN *dot2, DotN *dot3 )
 		{	
 			dots_[0] = dot1;
 			dots_[1] = dot2; 
 			dots_[2] = dot3;
 		}
-		DOT_N Median( void )
+		DotN Median( void )
 		{
 			double x, y, z, r;
 			x = ( dots_[0]->x() + dots_[1]->x() + dots_[2]->x() )/3.0;
@@ -29,7 +29,7 @@ class MATTER
 			x /= r;
 			y /= r;
 			z /= r;
-			return DOT_N(x, y, z);
+			return DotN(x, y, z);
 		}
 		double Square( void )
 		{
@@ -49,14 +49,14 @@ class MATTER
 			
 			return 2*atan( mix/(r1*r2*r3+r1r2*r3+r2r3*r1+r1r3*r2) );
 		}
-		DOT_N* & operator []( int i )
+		DotN* & operator []( int i )
 		{	return dots_[ i ];	}
 	private:
-		DOT_N*	dots_[3];
+		DotN*	dots_[3];
 };
 
 // directions
-DIRECTIONS::DIRECTIONS( uint32_t NumOfDirectionsLevels )
+Directions::Directions( uint32_t NumOfDirectionsLevels )
 {
 	NumOfDirections_ = 20;
 	unsigned int NumOfReadyDirDots;	
@@ -68,12 +68,12 @@ DIRECTIONS::DIRECTIONS( uint32_t NumOfDirectionsLevels )
 	}
 	NumOfDirections_ = 20;
 				
-	DOT_N *DirDots = new DOT_N[ NumOfDirDots ];
+	DotN *DirDots = new DotN[ NumOfDirDots ];
 	
-	MATTER *DirTrigon = new MATTER[ NumOfDirections_ ];
-	MATTER *DirTrigon2;
+	Matter *DirTrigon = new Matter[ NumOfDirections_ ];
+	Matter *DirTrigon2;
 			
-	DOT_N *d_rib01, *d_rib02, *d_rib12;
+	DotN *d_rib01, *d_rib02, *d_rib12;
 	// initial sphere conditions
 	(DirDots[0]).Set(  0.0, 0.0, sqrt(5.0)/2.0 );
 	for (size_t cnt =0; cnt<5; cnt++)
@@ -109,7 +109,7 @@ DIRECTIONS::DIRECTIONS( uint32_t NumOfDirectionsLevels )
 	{		
 		// new triangles
 		DirTrigon2 = DirTrigon;
-		DirTrigon = new MATTER[ NumOfDirections_*4 ];
+		DirTrigon = new Matter[ NumOfDirections_*4 ];
 		// splitting
 		for(size_t cnt2 = 0; cnt2 < NumOfDirections_; cnt2++)
 		{
@@ -182,12 +182,12 @@ DIRECTIONS::DIRECTIONS( uint32_t NumOfDirectionsLevels )
 		NumOfDirections_ *= 4;
 	}				
 		
-	Dots_ = new DOT[ NumOfDirections_ ];
+	Dots_ = new Dot[ NumOfDirections_ ];
 	w_	  = new double[ NumOfDirections_ ];
 
 	for (size_t cnt=0; cnt<NumOfDirections_; cnt++)
 	{	
-		Dots_[cnt]=DOT( DirTrigon[cnt].Median() );
+		Dots_[cnt]=Dot( DirTrigon[cnt].Median() );
 		w_[cnt] = DirTrigon[cnt].Square()*NumOfDirections_/4/PI;
 	}
 	delete[] DirDots;		

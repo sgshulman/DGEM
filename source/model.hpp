@@ -1,26 +1,26 @@
-#ifndef _MODEL_HPP_
-#define _MODEL_HPP_
+#ifndef MODEL_HPP_
+#define MODEL_HPP_
 
 #include <cstdint>
 
 double const PI	= 3.1415926;
 
-class POSITION ;
-class DIRECTION ;
-class GRID ;
-class PICTURES ;
-class PHOTON ;
-class SOURCE ;
-class SOURCES ;
-class DIRECTIONS ;  // directions grid
-class SCATHOLDER ;
+class Position ;
+class Direction ;
+class Grid ;
+class Pictures ;
+class Photon ;
+class Source ;
+class Sources ;
+class Directions ;  // directions grid
+class Scatholder ;
 
 // Random number generator 
 // L’Ecuyer, P. 1988, Communications of the ACM, vol. 31, pp. 742,774.
-class RANDOM
+class Random
 {
 	public:
-		RANDOM (int32_t iseed=-1556) : iseed_(iseed) { } ;
+		Random (int32_t iseed=-1556) : iseed_(iseed) { } ;
 		double Get()
 		{
 			  int32_t IM1,IM2,IMM1,IA1,IA2,IQ1,IQ2,IR1,IR2,NTAB,NDIV,j,k;
@@ -60,15 +60,15 @@ class RANDOM
 	private:
 		int iseed_;
 };
-extern RANDOM ran;
+extern Random ran;
 
 // model parameters
-class MODEL
+class Model
 {
 	public:
-		static MODEL & instance (GRID *grid, SOURCES *sources) 
+		static Model & instance (Grid *grid, Sources *sources)
 		{
-			static MODEL mod(grid, sources) ;
+			static Model mod(grid, sources) ;
 			return mod ;
 		}
 		bool fMonteCarlo( void ) const
@@ -139,10 +139,10 @@ class MODEL
 		double xmax_, ymax_, zmax_;
 		double rimage_;
 		double viewthet_, viewphi_;
-       
-		MODEL (GRID *grid, SOURCES *sources);
-		MODEL ( MODEL const &);
-		MODEL & operator =( MODEL const &);
+
+		Model (Grid *grid, Sources *sources);
+		Model (Model const &);
+		Model & operator =( Model const &);
 };
 
 #endif

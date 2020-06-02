@@ -6,25 +6,25 @@
 #include "photons.hpp"
 #include "directions.hpp"
 
-RANDOM ran;
+Random ran;
 
 int main(void)
 {
 	// density grid and sources
-	GRID grid;
-	SOURCES	sources;
+	Grid grid;
+	Sources	sources;
 	
 	// read the model parameters
-	MODEL & model = MODEL::instance(&grid, &sources);
+	Model & model = Model::instance(&grid, &sources);
 		
-	PICTURES* pict=new PICTURES[model.nscat()+1];
+	Pictures* pict=new Pictures[model.nscat()+1];
 	for(size_t cnt=0; cnt!=model.nscat()+1; ++cnt)
 	{
 		pict[cnt].Init( model.rimage(), 200, 200 );
 	}
 
 	// set an observation position
-	DIRECTION obs( model.viewphi()*PI/180, model.viewtheta()*PI/180 );
+	Direction obs( model.viewphi()*PI/180, model.viewtheta()*PI/180 );
 
 	// Scattered photon loop 
     uint64_t totscatt=0;
@@ -33,7 +33,7 @@ int main(void)
     if ( model.fMonteCarlo() )
     {
 		// Set up Random
-		RANDOM ran( model.iseed() );
+		Random ran( model.iseed() );
 				
 		// Loop over sources. nph=number of photons to release from each source
 		for (size_t is=0; is!=sources.num(); ++is)
@@ -48,7 +48,7 @@ int main(void)
 					std::cout << jcount << " scattered photons completed" << std::endl;
 				}
 				// Release photon from point source
-				PHOTON ph(sources[is].pos(), 1.0, 1 );
+				Photon ph(sources[is].pos(), 1.0, 1 );
 					
 				// Find optical depth, tau1, to edge of grid
 				double tau1 = grid.TauFind( ph );
@@ -71,7 +71,7 @@ int main(void)
 					grid.Peeloff( ph, obs, model, pict, nullptr );    
 
 					// Scatter photon into new direction and update Stokes parameters
-					ph.Stokes( model, DIRECTION(), 0.0, false );
+					ph.Stokes( model, Direction(), 0.0, false );
 					ph.nscat()+=1;
 					++totscatt;
                     if (ph.nscat() > model.nscat()) break;
@@ -82,8 +82,8 @@ int main(void)
 		} // end loop over nsource sources
 	} else {
 		// Set up directions grid
-		DIRECTIONS pdir( model.PrimaryDirectionsLevel() );
-		DIRECTIONS sdir( model.SecondaryDirectionsLevel() );
+		Directions pdir( model.PrimaryDirectionsLevel() );
+		Directions sdir( model.SecondaryDirectionsLevel() );
 		model.num_photons() = pdir.NumOfDirections();
 		std::cout << "Directions ready" << std::endl;
 
@@ -103,20 +103,20 @@ int main(void)
 				// Release photon from point source
 				double x, y, z;
 				pdir.GetDirection( j, x, y, z );
-				PHOTON ph0(sources[is].pos(), DIRECTION(x, y, z), 1.0, 1 );
+				Photon ph0(sources[is].pos(), Direction(x, y, z), 1.0, 1 );
 				
 				// Find optical depth, tau1, to edge of grid
 				double tau1 = grid.TauFind( ph0 );
 				if ( tau1 < model.taumin() ) continue;
 				
 				double w = (1.0-exp(-tau1)) / model.NumOfPrimaryScatterings() ;
-				POSITION spos = sources[is].pos();
+				Position spos = sources[is].pos();
 				double tauold = 0.0, tau = 0.0;
-				SCATHOLDER holder;
+				Scatholder holder;
 				// Loop over scattering dots
 				for (size_t s=0; s!=model.NumOfPrimaryScatterings(); ++s)
 				{
-					PHOTON ph( spos, DIRECTION(x, y, z), w*w0*pdir.W( j ), 1 );
+					Photon ph( spos, Direction(x, y, z), w*w0*pdir.W( j ), 1 );
 					// Force photon to scatter at optical depth tau before edge of grid
 					tauold = tau;
 					tau=-log( 1.0-0.5*w*(2*s+1) );
@@ -148,7 +148,7 @@ int main(void)
 	{
         uint64_t nph = uint64_t(model.num_photons() * sources[is].lum() / sources.totlum());
 		// Set photon location, grid cell, and direction of observation
-		PHOTON ph(sources[is].pos(), obs, 1.0, 0 );
+		Photon ph(sources[is].pos(), obs, 1.0, 0 );
 		// Find optical depth, tau1, to edge of grid along viewing direction
    		double tau1 = grid.TauFind( ph );
 		// direct photon weight is exp(-tau1)/4pi
