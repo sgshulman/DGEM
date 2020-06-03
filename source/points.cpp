@@ -1,8 +1,9 @@
 #include <cmath>
 #include <iostream>
+#include <vector>
 #include "model.hpp"
 #include "grid.hpp"
-#include "inoutput.hpp"
+#include "observers.hpp"
 #include "photons.hpp"
 #include "directions.hpp"
 
@@ -13,18 +14,10 @@ int main(void)
     // density grid and sources
     Grid grid;
     Sources	sources;
+    std::vector<Observer> observers;
 
     // read the model parameters
-    Model & model = Model::instance(&grid, &sources);
-
-    Pictures* pict=new Pictures[model.nscat()+1];
-    for(size_t cnt=0; cnt!=model.nscat()+1; ++cnt)
-    {
-        pict[cnt].Init( model.rimage(), 200, 200 );
-    }
-
-    // set an observation position
-    Direction obs( model.viewphi()*PI/180, model.viewtheta()*PI/180 );
+    Model & model = Model::instance(&grid, &sources, &observers);
 
     // Scattered photon loop
     uint64_t totscatt=0;
@@ -68,7 +61,10 @@ int main(void)
                     ph.weight() *= model.albedo();
                     // Do peeling off and project weighted photons into image
                     // учитыается нерассеяшийся свет от каждой точки рассеяния и последующие рассеяния, пока фотон не изыдет
-                    grid.Peeloff( ph, obs, model, pict, nullptr );
+                    for (Observer& observer : observers)
+                    {
+                        grid.Peeloff(ph, observer, model, nullptr);
+                    }
 
                     // Scatter photon into new direction and update Stokes parameters
                     ph.Stokes( model, Direction(), 0.0, false );
@@ -131,11 +127,17 @@ int main(void)
 
                     if( !holder.fHold() )
                     {
-                        grid.Peeloff( ph, obs, model, pict, &holder );
+                        for (Observer& observer : observers)
+                        {
+                            grid.Peeloff(ph, observer, model, &holder);
+                        }
                     } else {
-                        grid.Peeloff( ph, model, pict, &holder );
+                        for (Observer& observer : observers)
+                        {
+                            grid.Peeloff(ph, observer, model, &holder);
+                        }
                     }
-                    if (ph.nscat() < model.nscat() ) ph.Scatt( model, sdir, grid, obs, pict );
+                    if (ph.nscat() < model.nscat() ) ph.Scatt( model, sdir, grid, observers );
                 }
             }
 
@@ -147,30 +149,44 @@ int main(void)
     for (uint64_t is=0; is!=sources.num(); ++is)
     {
         uint64_t nph = uint64_t(model.num_photons() * sources[is].lum() / sources.totlum());
-        // Set photon location, grid cell, and direction of observation
-        Photon ph(sources[is].pos(), obs, 1.0, 0 );
-        // Find optical depth, tau1, to edge of grid along viewing direction
-        double tau1 = grid.TauFind( ph );
-        // direct photon weight is exp(-tau1)/4pi
-        ph.weight()=nph*exp(-tau1)/4.0/PI;
-        // bin the photon into the image according to its position and
-        // direction of travel.
-        pict[0].Bin( ph );
+
+        for (size_t io = 0; io != observers.size(); ++io)
+        {
+            // Set photon location, grid cell, and direction of observation
+            Position op = observers[io].pos();
+            Photon ph(sources[is].pos(), Direction(op.x(), op.y(), op.z()), 1.0, 0);
+            // Find optical depth, tau1, to edge of grid along viewing direction
+
+            double tau1 = grid.TauFind( ph );
+
+            // direct photon weight is exp(-tau1)/4pi
+            ph.weight() = nph * exp(-tau1) / 4.0 / PI;
+            // bin the photon into the image according to its position and
+            // direction of travel.
+            observers[io].Bin(ph);
+        }
     }
     std::cout << "Finishing..." << std::endl;
+
     // Normalize images by nphotons
-    for(size_t cnt=0; cnt!=model.nscat()+1; ++cnt)
+    for(size_t cnt=0; cnt!=observers.size(); ++cnt)
     {
-        pict[cnt].Norm( model.num_photons() );
+        observers[cnt].Normalize( model.num_photons() );
     }
 
     // put results into output files
-    for(size_t cnt=0; cnt!=model.nscat()+1; ++cnt)
+    for (size_t cnt = 0; cnt != observers.size(); ++cnt)
     {
-        pict[cnt].Write( cnt );
+        observers[cnt].WriteToMapFiles(true);
     }
-    pict[0].Sum();
-    delete [] pict;
+
+    // put general information into file
+    std::ofstream observersResultFile("observers.dat");
+    for (size_t cnt = 0; cnt != observers.size(); ++cnt)
+    {
+        observers[cnt].Write(observersResultFile);
+    }
+    observersResultFile.close();
 
     return 0;
 }

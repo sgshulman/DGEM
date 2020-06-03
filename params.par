@@ -28,11 +28,7 @@ Image
   xmax=800.0
   ymax=800.0
   zmax=800.0
-  rimage=800.0
-  
-Observer position
-  viewthet=45.0
-  viewphi=0.0
+
   
 Disk
   R_i=200
@@ -47,4 +43,8 @@ Stars
   nstars=1
   star=0.0 0.0 0.0 1.0
   
-
+Observers
+  rimage=800.0
+  type= MANUAL
+  numberOfObservers=1
+  position=0.0 45.0

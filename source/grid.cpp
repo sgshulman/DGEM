@@ -1,6 +1,6 @@
 #include <math.h>
 #include "grid.hpp"
-#include "inoutput.hpp"
+#include "observers.hpp"
 #include "model.hpp"
 #include "photons.hpp"
 #include <iostream>
@@ -240,43 +240,17 @@ int Grid::TauInt2( Photon &ph, double delta ) const
     return 0;
 }
 
-void Grid::Peeloff( Photon ph, Direction const & obs, Model const &m, Pictures *pict, Scatholder *holder ) const
+void Grid::Peeloff( Photon ph, Observer& observer, Model const &m, Scatholder *holder ) const
 {
-    double hgfac = ph.Scatt( m, obs );
+    Position op{observer.pos()};
+    double hgfac = ph.Scatt( m, Direction{op.x(), op.y(), op.z() } );
 
     if (holder != nullptr ) *holder = Scatholder( true, hgfac, ph.dir(), ph.fi(), ph.fq(), ph.fu(), ph.fv() );
 
     double tau2 = TauFind(ph);
 
     if(tau2 == 0.0) return;
-    double phot=ph.weight()*hgfac*exp(-tau2)*ph.fi();
-    double photq=ph.weight()*hgfac*exp(-tau2)*ph.fq();
-    double photu=ph.weight()*hgfac*exp(-tau2)*ph.fu();
-    // Bin the photon into the image according to its position and
-    //direction of travel.
-    pict[0].Bin( ph, phot, photq, photu);
-    if ( ph.nscat() <= m.nscat() )
-    {
-        pict[ ph.nscat() ].Bin( ph, phot, photq, photu);
-    }
+    ph.weight() *= hgfac * exp(-tau2);
+    // Bin the photon into the image according to its position and direction of travel.
+    observer.Bin(ph);
 } 
-void Grid::Peeloff( Photon ph, Model const &m, Pictures *pict, Scatholder *holder ) const
-{
-    double hgfac = holder->hgfac();
-
-    ph = Photon( ph.pos(), holder->dir(), ph.weight(), ph.nscat(), holder->fi(), holder->fq(), holder->fu(), holder->fv() );
-
-    double tau2 = TauFind(ph);
-
-    if(tau2 == 0.0) return;
-    double phot=ph.weight()*hgfac*exp(-tau2)*ph.fi();
-    double photq=ph.weight()*hgfac*exp(-tau2)*ph.fq();
-    double photu=ph.weight()*hgfac*exp(-tau2)*ph.fu();
-    // Bin the photon into the image according to its position and
-    //direction of travel.
-    pict[0].Bin( ph, phot, photq, photu);
-    if ( ph.nscat() <= m.nscat() )
-    {
-        pict[ ph.nscat() ].Bin( ph, phot, photq, photu);
-    }
-}

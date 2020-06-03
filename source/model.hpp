@@ -2,6 +2,7 @@
 #define MODEL_HPP_
 
 #include <cstdint>
+#include <vector>
 
 double const PI	= 3.1415926;
 
@@ -9,6 +10,7 @@ class Position ;
 class Direction ;
 class Grid ;
 class Pictures ;
+class Observer;
 class Photon ;
 class Source ;
 class Sources ;
@@ -66,9 +68,9 @@ extern Random ran;
 class Model
 {
 	public:
-		static Model & instance (Grid *grid, Sources *sources)
+		static Model & instance (Grid *grid, Sources *sources, std::vector<Observer> *observers)
 		{
-			static Model mod(grid, sources) ;
+			static Model mod(grid, sources, observers) ;
 			return mod ;
 		}
 		bool fMonteCarlo( void ) const
@@ -115,10 +117,6 @@ class Model
 		{	return zmax_;	}
 		double rimage( void ) const
 		{	return rimage_;	}
-		double viewtheta( void )  const
-		{	return viewthet_; }
-		double viewphi( void )  const
-		{	return viewphi_; }
 
 	private:
 		bool fMonteCarlo_;
@@ -138,9 +136,8 @@ class Model
 		double sc_;
 		double xmax_, ymax_, zmax_;
 		double rimage_;
-		double viewthet_, viewphi_;
 
-		Model (Grid *grid, Sources *sources);
+		Model (Grid *grid, Sources *sources, std::vector<Observer> *observers);
 		Model (Model const &);
 		Model & operator =( Model const &);
 };

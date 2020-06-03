@@ -1,6 +1,6 @@
 #include <math.h>
 #include "grid.hpp"
-#include "inoutput.hpp"
+#include "observers.hpp"
 #include "model.hpp"
 #include "photons.hpp"
 #include "directions.hpp"
@@ -82,7 +82,7 @@ double Photon::Scatt( Model const &m, Direction const & dir )
      return hgfrac;
 }
 
-void Photon::Scatt( Model const &m, Directions const &dirs, Grid const &grid, Direction const &obs, Pictures *pict )
+void Photon::Scatt( Model const &m, Directions const &dirs, Grid const &grid, std::vector<Observer>& observers)
 {
     if (nscat_ == m.MonteCarloStart() )
     {
@@ -96,7 +96,10 @@ void Photon::Scatt( Model const &m, Directions const &dirs, Grid const &grid, Di
             ph.weight() *= m.albedo();
             // Do peeling off and project weighted photons into image
             // учитыается нерассеяшийся свет от каждой точки рассеяния и последующие рассеяния, пока фотон не изыдет
-            grid.Peeloff( ph, obs, m, pict, nullptr );
+            for (Observer& observer : observers)
+            {
+                grid.Peeloff(ph, observer, m, nullptr);
+            }
 
             // Scatter photon into new direction and update Stokes parameters
             ph.Stokes( m, Direction(), 0.0, false );
@@ -175,12 +178,18 @@ void Photon::Scatt( Model const &m, Directions const &dirs, Grid const &grid, Di
 
                     if( !holder.fHold() )
                     {
-                        grid.Peeloff( ph, obs, m, pict, &holder );
+                        for (Observer& observer : observers)
+                        {
+                            grid.Peeloff(ph, observer, m, nullptr);
+                        }
                     } else {
-                        grid.Peeloff( ph, m, pict, &holder );
+                        for (Observer& observer : observers)
+                        {
+                            grid.Peeloff(ph, observer, m, nullptr);
+                        }
                     }
 
-                    if (ph.nscat() < m.nscat() ) ph.Scatt( m, dirs, grid, obs, pict );
+                    if (ph.nscat() < m.nscat() ) ph.Scatt( m, dirs, grid, observers );
                 }
             }
         }

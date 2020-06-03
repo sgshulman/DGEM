@@ -8,7 +8,7 @@ set(SOURCES
         directions.hpp
         grid.cpp
         grid.hpp
-        inoutput.hpp
+        observers.hpp
         model.cpp
         model.hpp
         photons.cpp

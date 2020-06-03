@@ -17,7 +17,7 @@ class Photon
         Photon(Position const &pos, Direction const &dir, double weight, int nscat, double fi=1.0, double fq=0.0, double fu=0.0, double fv=0.0);
         // photon scattering
         double Scatt( Model const &m, Direction const & dir );
-        void Scatt( Model const &m, Directions const &dirs, Grid const &grid, Direction const &obs, Pictures *pict );
+        void Scatt( Model const &m, Directions const &dirs, Grid const &grid, std::vector<Observer>& observers);
         void Stokes( Model const &m, Direction const &dir, double calpha, bool fDir );
         void Move(double t)
         {
