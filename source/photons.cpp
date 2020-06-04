@@ -98,7 +98,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, Grid const &grid, st
             // учитыается нерассеяшийся свет от каждой точки рассеяния и последующие рассеяния, пока фотон не изыдет
             for (Observer& observer : observers)
             {
-                grid.Peeloff(ph, observer, m, nullptr);
+                grid.Peeloff(ph, observer, m);
             }
 
             // Scatter photon into new direction and update Stokes parameters
@@ -158,7 +158,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, Grid const &grid, st
             double w = 1.0 / m.NumOfSecondaryScatterings() ;
             Position spos = pos_;
             double tauold = 0.0, tau = 0.0;
-            Scatholder holder;
+
             // Loop over scattering dots
             for (size_t s=0; s!=m.NumOfSecondaryScatterings(); ++s)
             {
@@ -176,17 +176,9 @@ void Photon::Scatt( Model const &m, Directions const &dirs, Grid const &grid, st
                     // Photon scattering
                     ph.weight() *= m.albedo();
 
-                    if( !holder.fHold() )
+                    for (Observer& observer : observers)
                     {
-                        for (Observer& observer : observers)
-                        {
-                            grid.Peeloff(ph, observer, m, nullptr);
-                        }
-                    } else {
-                        for (Observer& observer : observers)
-                        {
-                            grid.Peeloff(ph, observer, m, nullptr);
-                        }
+                        grid.Peeloff(ph, observer, m);
                     }
 
                     if (ph.nscat() < m.nscat() ) ph.Scatt( m, dirs, grid, observers );

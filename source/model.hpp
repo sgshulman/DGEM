@@ -15,7 +15,6 @@ class Photon ;
 class Source ;
 class Sources ;
 class Directions ;  // directions grid
-class Scatholder ;
 
 // Random number generator 
 // L’Ecuyer, P. 1988, Communications of the ACM, vol. 31, pp. 742,774.

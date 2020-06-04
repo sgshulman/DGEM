@@ -63,7 +63,7 @@ int main(void)
                     // учитыается нерассеяшийся свет от каждой точки рассеяния и последующие рассеяния, пока фотон не изыдет
                     for (Observer& observer : observers)
                     {
-                        grid.Peeloff(ph, observer, model, nullptr);
+                        grid.Peeloff(ph, observer, model);
                     }
 
                     // Scatter photon into new direction and update Stokes parameters
@@ -108,7 +108,7 @@ int main(void)
                 double w = (1.0-exp(-tau1)) / model.NumOfPrimaryScatterings() ;
                 Position spos = sources[is].pos();
                 double tauold = 0.0, tau = 0.0;
-                Scatholder holder;
+
                 // Loop over scattering dots
                 for (size_t s=0; s!=model.NumOfPrimaryScatterings(); ++s)
                 {
@@ -125,18 +125,11 @@ int main(void)
                     // Photons scattering
                     ph.weight() *= model.albedo();
 
-                    if( !holder.fHold() )
+                    for (Observer& observer : observers)
                     {
-                        for (Observer& observer : observers)
-                        {
-                            grid.Peeloff(ph, observer, model, &holder);
-                        }
-                    } else {
-                        for (Observer& observer : observers)
-                        {
-                            grid.Peeloff(ph, observer, model, &holder);
-                        }
+                        grid.Peeloff(ph, observer, model);
                     }
+
                     if (ph.nscat() < model.nscat() ) ph.Scatt( model, sdir, grid, observers );
                 }
             }

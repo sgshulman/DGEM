@@ -104,30 +104,4 @@ class Sources
         Sources & operator =( Sources const &);
 };
 
-// a structure for Stokes parameters in similar scatterings
-class Scatholder
-{
-    public:
-        Scatholder( bool fHold=0, double hgfac=0.0, Direction const &dir=Direction(0,0,0), double fi=0.0, double fq=0.0, double fu=0.0, double fv=0.0) :
-            fHold_(fHold), hgfac_(hgfac), dir_(dir), fi_(fi), fq_(fq), fu_(fu), fv_(fv) {};
-        bool fHold( void ) const
-        {	return fHold_;	}
-        double hgfac( void ) const
-        {	return hgfac_;	}
-        Direction & dir( void )
-        {	return dir_;	}
-        double fi( void ) const
-        {	return fi_;	}
-        double fq( void ) const
-        {	return fq_;	}
-        double fu( void ) const
-        {	return fu_;	}
-        double fv( void ) const
-        {	return fv_;	}
-    private:
-        bool fHold_;
-        double hgfac_;
-        Direction dir_;
-        double fi_, fq_, fu_, fv_;
-};
 #endif
