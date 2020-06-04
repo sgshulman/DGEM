@@ -4,21 +4,6 @@
 #include <math.h>
 #include "model.hpp"
 
-class Position
-{
-    public:
-        Position(double x=0.0, double y=0.0, double z=0.0) : x_(x), y_(y), z_(z)	{ };
-        // data
-        double &x()
-        {	return x_;	};
-        double &y()
-        {	return y_;	};
-        double &z()
-        {	return z_;	};
-    private:
-        double x_, y_, z_;
-};
-
 class Direction
 {
     public:

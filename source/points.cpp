@@ -106,7 +106,7 @@ int main(void)
                 if ( tau1 < model.taumin() ) continue;
 
                 double w = (1.0-exp(-tau1)) / model.NumOfPrimaryScatterings() ;
-                Position spos = sources[is].pos();
+                Vector3d spos = sources[is].pos();
                 double tauold = 0.0, tau = 0.0;
 
                 // Loop over scattering dots
@@ -146,7 +146,7 @@ int main(void)
         for (size_t io = 0; io != observers.size(); ++io)
         {
             // Set photon location, grid cell, and direction of observation
-            Position op = observers[io].pos();
+            Vector3d op = observers[io].pos();
             Photon ph(sources[is].pos(), Direction(op.x(), op.y(), op.z()), 1.0, 0);
             // Find optical depth, tau1, to edge of grid along viewing direction
 

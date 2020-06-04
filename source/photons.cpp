@@ -31,7 +31,7 @@ void Dustmat( double &p1, double &p2, double &p3, double &p4,
     p4 = -pc*p1*(1-c)/(1+c);
 }
 
-Photon::Photon( Position const &pos, double weight, int nscat )
+Photon::Photon( Vector3d const& pos, double weight, int nscat )
 {
     // Set position
     pos_=pos;
@@ -52,7 +52,7 @@ Photon::Photon( Position const &pos, double weight, int nscat )
     fv_=0.0;
 }
 
-Photon::Photon( Position const &pos, Direction const &dir, double weight, int nscat, double fi, double fq, double fu, double fv )
+Photon::Photon( Vector3d const& pos, Direction const &dir, double weight, int nscat, double fi, double fq, double fu, double fv )
 {
     pos_ = pos;
     dir_ = dir;
@@ -156,7 +156,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, Grid const &grid, st
             //if ( tau1 < m.taumin() ) continue;
 
             double w = 1.0 / m.NumOfSecondaryScatterings() ;
-            Position spos = pos_;
+            Vector3d spos = pos_;
             double tauold = 0.0, tau = 0.0;
 
             // Loop over scattering dots

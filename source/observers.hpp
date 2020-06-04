@@ -174,7 +174,7 @@ public:
     {	return phi_;	}
     double theta() const
     {	return theta_;	}
-    Position pos() const
+    Vector3d pos() const
     {	return {sin(theta_)*cos(phi_), sin(theta_)*sin(phi_), cos(theta_)};}
 
     Observer(Observer const& other) = delete;

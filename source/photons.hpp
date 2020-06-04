@@ -2,6 +2,7 @@
 #define PHOTONS_HPP_
 
 #include "model.hpp"
+#include "Vector3d.hpp"
 
 void Dustmat( double &p1, double &p2, double &p3, double &p4,
             double cost, double cost2, double pl, double pc,
@@ -12,18 +13,18 @@ class Photon
 {
     public:
         // random direction photon generation
-        Photon( Position const &pos, double weight, int nscat );
+        Photon(Vector3d const &position, double weight, int nscat );
         // known direction photon generation
-        Photon(Position const &pos, Direction const &dir, double weight, int nscat, double fi=1.0, double fq=0.0, double fu=0.0, double fv=0.0);
+        Photon(Vector3d const &position, Direction const &dir, double weight, int nscat, double fi=1.0, double fq=0.0, double fu=0.0, double fv=0.0);
         // photon scattering
         double Scatt( Model const &m, Direction const & dir );
         void Scatt( Model const &m, Directions const &dirs, Grid const &grid, std::vector<Observer>& observers);
         void Stokes( Model const &m, Direction const &dir, double calpha, bool fDir );
         void Move(double t)
         {
-            pos_ = Position(pos_.x()+t*dir_.nx(), pos_.y()+t*dir_.ny(), pos_.z()+t*dir_.nz());
+            pos_ = Vector3d(pos_.x()+t*dir_.nx(), pos_.y()+t*dir_.ny(), pos_.z()+t*dir_.nz());
         }
-        Position & pos()
+        Vector3d & pos()
         {	return pos_;	}
         Direction & dir()
         {	return dir_;	}
@@ -46,7 +47,7 @@ class Photon
         double & weight( void )
         {	return weight_;	}
     private:
-        Position	pos_;	// outpoint
+        Vector3d	pos_;	// outpoint
         Direction	dir_;	// vector of the direction
         uint32_t 	nscat_;				// число рассеяний
         double weight_;				// статистический вес фотона
@@ -56,15 +57,15 @@ class Photon
 class Source
 {
     public:
-        Source() : pos_(Position(0.0, 0.0, 0.0)), lum_(0.0) {};
-        Source( Position const &pos, double lum ) : pos_(pos), lum_(lum) {};
-        Source( double x, double y, double z, double lum ) : pos_(Position(x,y,z)), lum_(lum) {};
-        Position const & pos( void ) const
+        Source() : pos_(Vector3d()), lum_(0.0) {};
+        Source( Vector3d const& pos, double lum ) : pos_(pos), lum_(lum) {};
+        Source( double x, double y, double z, double lum ) : pos_(Vector3d(x,y,z)), lum_(lum) {};
+        Vector3d const & pos( void ) const
         {	return pos_; }
         double lum( void ) const
         {	return lum_; }
     private:
-        Position	pos_;
+        Vector3d	pos_;
         double		lum_;
 };
 // all sources of photons

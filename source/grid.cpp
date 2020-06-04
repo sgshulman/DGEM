@@ -242,7 +242,7 @@ int Grid::TauInt2( Photon &ph, double delta ) const
 
 void Grid::Peeloff( Photon ph, Observer& observer, Model const &m) const
 {
-    Position op{observer.pos()};
+    Vector3d op{observer.pos()};
     double hgfac = ph.Scatt( m, Direction{op.x(), op.y(), op.z() } );
 
     double tau2 = TauFind(ph);
