@@ -41,7 +41,7 @@ Photon::Photon( Vector3d const& pos, double weight, int nscat )
      v = ran.Get();
      u = ran.Get();
 
-    dir_ = Direction( 2.0*PI*u, acos( 2*v-1.0 ) );
+    dir_ = Direction3d( 2.0*PI*u, acos( 2*v-1.0 ) );
     // Set number of sctterings and weight
     nscat_ = nscat;
     weight_= weight;
@@ -52,7 +52,7 @@ Photon::Photon( Vector3d const& pos, double weight, int nscat )
     fv_=0.0;
 }
 
-Photon::Photon( Vector3d const& pos, Direction const &dir, double weight, int nscat, double fi, double fq, double fu, double fv )
+Photon::Photon( Vector3d const& pos, Direction3d const& dir, double weight, int nscat, double fi, double fq, double fu, double fv )
 {
     pos_ = pos;
     dir_ = dir;
@@ -65,12 +65,12 @@ Photon::Photon( Vector3d const& pos, Direction const &dir, double weight, int ns
     fv_=fv;
 }
 
-double Photon::Scatt( Model const &m, Direction const & dir )
+double Photon::Scatt( Model const &m, Direction3d const& dir )
 {
     double calpha; // cos(alpha), where alpha is angle between incident
                     // and outgoing (i.e., observed) photon direction
     double hgfrac;
-    calpha=dir_.nx()*dir.nx()+dir_.ny()*dir.ny()+dir_.nz()*dir.nz();
+    calpha=dir_.x()*dir.x()+dir_.y()*dir.y()+dir_.z()*dir.z();
 
     //weight photon for isotropic, Thomson, or HG scattering
     // hgfrac=0.5*(1.0+calpha*calpha)  ;       // Thomson
@@ -88,7 +88,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, Grid const &grid, st
     {
         Photon ph(*this);
         int tflag = 0;
-        ph.Stokes( m, Direction(), 0.0, false );
+        ph.Stokes( m, Direction3d(), 0.0, false );
         tflag = grid.TauInt2( ph );
         ph.nscat()+=1;
         while ( !tflag && ( ph.nscat() <= m.nscat() ) )
@@ -102,7 +102,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, Grid const &grid, st
             }
 
             // Scatter photon into new direction and update Stokes parameters
-            ph.Stokes( m, Direction(), 0.0, false );
+            ph.Stokes( m, Direction3d(), 0.0, false );
             ph.nscat()+=1;
             if (ph.nscat() > m.nscat()) break;
             // Find next scattering location
@@ -117,7 +117,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, Grid const &grid, st
         {
             double x, y, z;
             dirs.GetDirection( j, x, y, z );
-            calpha = dir_.nx()*x+dir_.ny()*y+dir_.nz()*z;
+            calpha = dir_.x()*x+dir_.y()*y+dir_.z()*z;
             sum += dirs.W( j )*(1.0-m.g2())/pow((1.0+m.g2()-2.*m.hgg()*calpha),1.5);
         }
 
@@ -146,10 +146,10 @@ void Photon::Scatt( Model const &m, Directions const &dirs, Grid const &grid, st
             z = t2;*/
             // randomized grid experiment
 
-            calpha = dir_.nx()*x+dir_.ny()*y+dir_.nz()*z;
+            calpha = dir_.x()*x+dir_.y()*y+dir_.z()*z;
             hgfrac=(1.0-m.g2())/pow((1.0+m.g2()-2.*m.hgg()*calpha),1.5);
             Photon ph0(pos_, dir_, weight_*dirs.W( j )*hgfrac/sum, nscat_+1, fi_, fq_, fu_, fv_ );
-            ph0.Stokes(m, Direction(x, y, z), calpha, true);
+            ph0.Stokes(m, Direction3d(Vector3d{x, y, z}), calpha, true);
 
             // Find optical depth, tau1, to edge of grid
             //double tau1 = grid.TauFind( ph0 );
@@ -190,7 +190,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, Grid const &grid, st
 
 // Stokes vector changes
 // spherical trigonometry is used
-void Photon::Stokes( Model const &m, Direction const &dir, double calpha, bool fDir )
+void Photon::Stokes( Model const &m, Direction3d const &dir, double calpha, bool fDir )
 {
     double a11,a12,a13,a21,a22,a23,a24,a31,a32,a33,a34;
         double a42,a43,a44;
@@ -202,8 +202,8 @@ void Photon::Stokes( Model const &m, Direction const &dir, double calpha, bool f
     fu_ /= wght;
     fv_ /= wght;
 
-    double costp = dir_.cost();
-    double sintp = dir_.sint();
+    double costp = dir_.cosTheta();
+    double sintp = dir_.sinTheta();
     double phip = dir_.phi();
 
     // dust scattering
@@ -233,8 +233,8 @@ void Photon::Stokes( Model const &m, Direction const &dir, double calpha, bool f
     {
         double ophi = dir.phi();
         if (ophi > 3.1415926) ophi -= 2*3.1415926;
-        double cosi1 = (dir.cost()-dir_.cost()*cosTh)/(dir_.sint()*sinTh);
-        double sini1 = sin(dir_.phi()-ophi-3.1415926)*dir.sint()/sinTh;
+        double cosi1 = (dir.cosTheta()-dir_.cosTheta()*cosTh)/(dir_.sinTheta()*sinTh);
+        double sini1 = sin(dir_.phi()-ophi-3.1415926)*dir.sinTheta()/sinTh;
         ri1 = atan2(sini1, cosi1)+3.1415926;
     } else {
         ri1=2*3.1415926*ran.Get();
@@ -260,8 +260,8 @@ void Photon::Stokes( Model const &m, Direction const &dir, double calpha, bool f
         }
         if (fDir)
         {
-            cost = dir.cost();
-            sint = dir.sint();
+            cost = dir.cosTheta();
+            sint = dir.sinTheta();
         } else {
             cost = costp*cosTh+sintp*sinTh*cosi3;
             sint = fabs(sqrt(1.0-cost*cost));
@@ -321,8 +321,8 @@ void Photon::Stokes( Model const &m, Direction const &dir, double calpha, bool f
         }
         if ( fDir )
         {
-            cost = dir.cost();
-            sint = dir.sint();
+            cost = dir.cosTheta();
+            sint = dir.sinTheta();
         } else {
             cost=costp*cosTh+sintp*sinTh*cosi1;
             sint=fabs(sqrt(1.0-cost*cost));
@@ -383,7 +383,7 @@ void Photon::Stokes( Model const &m, Direction const &dir, double calpha, bool f
     } else {
         double cosp=cos(phi);
         double sinp=sin(phi);
-        dir_ = Direction(sint*cosp, sint*sinp, cost);
+        dir_ = Direction3d(Vector3d{sint*cosp, sint*sinp, cost});
     }
 }
 

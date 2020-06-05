@@ -3,6 +3,7 @@
 
 #include "model.hpp"
 #include "Vector3d.hpp"
+#include "Direction3d.hpp"
 
 void Dustmat( double &p1, double &p2, double &p3, double &p4,
             double cost, double cost2, double pl, double pc,
@@ -15,18 +16,18 @@ class Photon
         // random direction photon generation
         Photon(Vector3d const &position, double weight, int nscat );
         // known direction photon generation
-        Photon(Vector3d const &position, Direction const &dir, double weight, int nscat, double fi=1.0, double fq=0.0, double fu=0.0, double fv=0.0);
+        Photon(Vector3d const &position, Direction3d const &dir, double weight, int nscat, double fi=1.0, double fq=0.0, double fu=0.0, double fv=0.0);
         // photon scattering
-        double Scatt( Model const &m, Direction const & dir );
+        double Scatt( Model const &m, Direction3d const & dir );
         void Scatt( Model const &m, Directions const &dirs, Grid const &grid, std::vector<Observer>& observers);
-        void Stokes( Model const &m, Direction const &dir, double calpha, bool fDir );
+        void Stokes( Model const &m, Direction3d const &dir, double calpha, bool fDir );
         void Move(double t)
         {
-            pos_ = Vector3d(pos_.x()+t*dir_.nx(), pos_.y()+t*dir_.ny(), pos_.z()+t*dir_.nz());
+            pos_ = pos_ + t * dir_.vector();
         }
-        Vector3d & pos()
+        Vector3d& pos()
         {	return pos_;	}
-        Direction & dir()
+        Direction3d& dir()
         {	return dir_;	}
         double &x( void )
         {	return pos_.x();}
@@ -48,7 +49,7 @@ class Photon
         {	return weight_;	}
     private:
         Vector3d	pos_;	// outpoint
-        Direction	dir_;	// vector of the direction
+        Direction3d	dir_;	// vector of the direction
         uint32_t 	nscat_;				// число рассеяний
         double weight_;				// статистический вес фотона
         double fi_, fq_, fu_, fv_;			// Stokes fluxes

@@ -6,7 +6,6 @@
 
 double const PI	= 3.1415926;
 
-class Direction ;
 class Grid ;
 class Pictures ;
 class Observer;

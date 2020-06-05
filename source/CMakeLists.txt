@@ -6,6 +6,7 @@ project(DGEM)
 set(SOURCES
         directions.cpp
         directions.hpp
+        Direction3d.hpp
         grid.cpp
         grid.hpp
         observers.hpp

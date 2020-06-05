@@ -67,7 +67,7 @@ int main(void)
                     }
 
                     // Scatter photon into new direction and update Stokes parameters
-                    ph.Stokes( model, Direction(), 0.0, false );
+                    ph.Stokes( model, Direction3d(), 0.0, false );
                     ph.nscat()+=1;
                     ++totscatt;
                     if (ph.nscat() > model.nscat()) break;
@@ -99,7 +99,7 @@ int main(void)
                 // Release photon from point source
                 double x, y, z;
                 pdir.GetDirection( j, x, y, z );
-                Photon ph0(sources[is].pos(), Direction(x, y, z), 1.0, 1 );
+                Photon ph0(sources[is].pos(), Direction3d(Vector3d{x, y, z}), 1.0, 1 );
 
                 // Find optical depth, tau1, to edge of grid
                 double tau1 = grid.TauFind( ph0 );
@@ -112,7 +112,7 @@ int main(void)
                 // Loop over scattering dots
                 for (size_t s=0; s!=model.NumOfPrimaryScatterings(); ++s)
                 {
-                    Photon ph( spos, Direction(x, y, z), w*w0*pdir.W( j ), 1 );
+                    Photon ph( spos, Direction3d(Vector3d{x, y, z}), w*w0*pdir.W( j ), 1 );
                     // Force photon to scatter at optical depth tau before edge of grid
                     tauold = tau;
                     tau=-log( 1.0-0.5*w*(2*s+1) );
@@ -146,8 +146,7 @@ int main(void)
         for (size_t io = 0; io != observers.size(); ++io)
         {
             // Set photon location, grid cell, and direction of observation
-            Vector3d op = observers[io].pos();
-            Photon ph(sources[is].pos(), Direction(op.x(), op.y(), op.z()), 1.0, 0);
+            Photon ph(sources[is].pos(), Direction3d(observers[io].pos()), 1.0, 0);
             // Find optical depth, tau1, to edge of grid along viewing direction
 
             double tau1 = grid.TauFind( ph );

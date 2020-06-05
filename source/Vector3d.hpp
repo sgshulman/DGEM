@@ -7,9 +7,6 @@ class Vector3d
 {
     public:
         Vector3d()
-            : x_(0.0)
-            , y_(0.0)
-            , z_(0.0)
         {}
 
         Vector3d(double const x, double const y, double const z)
@@ -49,7 +46,9 @@ class Vector3d
         inline double& z() { return z_; }
 
     private:
-        double x_, y_, z_;
+        double x_{ 0. };
+        double y_{ 0. };
+        double z_{ 0. };
 };
 
 

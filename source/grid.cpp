@@ -56,24 +56,24 @@ void Grid::Init(const Model &m, double R_i, double R_d, double rho_0, double h_0
 double Grid::PhotonSMax( Photon &ph ) const
 {	
     double dsx=0.0, dsy=0.0, dsz=0.0, smax =0.0;
-    if(ph.dir().nx() > 0.0) {
-        dsx= ( xmax_ - ph.pos().x() )/ph.dir().nx();
-    } else if(ph.dir().nx() < 0.0) {
-        dsx=-( ph.pos().x() + xmax_ )/ph.dir().nx();
+    if(ph.dir().x() > 0.0) {
+        dsx= ( xmax_ - ph.pos().x() )/ph.dir().x();
+    } else if(ph.dir().x() < 0.0) {
+        dsx=-( ph.pos().x() + xmax_ )/ph.dir().x();
     } else {
         dsx=200.0*xmax_;
     }
-    if(ph.dir().ny() > 0.0) {
-        dsy= ( ymax_ - ph.pos().y() )/ph.dir().ny();
-    } else if(ph.dir().ny() < 0.0) {
-        dsy=-( ph.pos().y() + ymax_ )/ph.dir().ny();
+    if(ph.dir().y() > 0.0) {
+        dsy= ( ymax_ - ph.pos().y() )/ph.dir().y();
+    } else if(ph.dir().y() < 0.0) {
+        dsy=-( ph.pos().y() + ymax_ )/ph.dir().y();
     } else {
         dsy=200.0*ymax_;
     }
-    if(ph.dir().nz() > 0.0) {
-        dsz= ( zmax_ - ph.pos().z() )/ph.dir().nz();
-    } else if(ph.dir().nz() < 0.0) {
-        dsz=-( ph.pos().z() + zmax_ )/ph.dir().nz();
+    if(ph.dir().z() > 0.0) {
+        dsz= ( zmax_ - ph.pos().z() )/ph.dir().z();
+    } else if(ph.dir().z() < 0.0) {
+        dsz=-( ph.pos().z() + zmax_ )/ph.dir().z();
     } else {
         dsz=200.0*zmax_;
     }
@@ -89,55 +89,55 @@ double Grid::PhotonCWall(Photon &ph, double delta) const
     double dx=200.0*xmax_, dy=200.0*ymax_, dz=200.0*zmax_, dcell=0.0;
     if (delta < 0.0 ) delta=0.0001*(2.*xmax_/Nx_);
     double tmp = 2.0*xmax_/Nx_;
-    if(ph.dir().nx() > 0.0)
+    if(ph.dir().x() > 0.0)
     {
-        dx = (( int( (ph.pos().x()+xmax_) / tmp ) + 1.0 )* tmp - xmax_ - ph.pos().x() )/ph.dir().nx();
+        dx = (( int( (ph.pos().x()+xmax_) / tmp ) + 1.0 )* tmp - xmax_ - ph.pos().x() )/ph.dir().x();
         if (dx < delta)
         {
-            dx = tmp/ph.dir().nx();
+            dx = tmp/ph.dir().x();
             ph.x() = (int( (ph.pos().x()+xmax_) / tmp ) + 1.0 )*tmp - xmax_ + delta;
         }
-    } else if (ph.dir().nx() < 0.0) {
-        dx = (( int( (ph.pos().x()+xmax_)/ tmp ) )* tmp - xmax_ - ph.pos().x() )/ph.dir().nx();
+    } else if (ph.dir().x() < 0.0) {
+        dx = (( int( (ph.pos().x()+xmax_)/ tmp ) )* tmp - xmax_ - ph.pos().x() )/ph.dir().x();
         if (dx < delta)
         {
-            dx =-tmp/ph.dir().nx();
+            dx =-tmp/ph.dir().x();
             ph.x() = ( int( (ph.pos().x()+xmax_)/tmp) )* tmp - xmax_ - delta;
         }
     }
 
     tmp = 2.0*ymax_/Ny_;
-    if(ph.dir().ny() > 0.0)
+    if(ph.dir().y() > 0.0)
     {
-        dy = (( int( (ph.pos().y()+ymax_)/tmp ) + 1.0 )* tmp - ymax_ - ph.pos().y() )/ph.dir().ny();
+        dy = (( int( (ph.pos().y()+ymax_)/tmp ) + 1.0 )* tmp - ymax_ - ph.pos().y() )/ph.dir().y();
         if (dy < delta)
         {
-            dy = tmp/ph.dir().ny();
+            dy = tmp/ph.dir().y();
             ph.y() = (int( (ph.pos().y()+ymax_)/tmp) + 1.0 )* tmp - ymax_+ delta;
         }
-    } else if (ph.dir().ny() < 0.0) {
-        dy = (( int( (ph.pos().y()+ymax_)/tmp ) )*tmp - ymax_ - ph.pos().y() )/ph.dir().ny();
+    } else if (ph.dir().y() < 0.0) {
+        dy = (( int( (ph.pos().y()+ymax_)/tmp ) )*tmp - ymax_ - ph.pos().y() )/ph.dir().y();
         if (dy < delta)
         {
-            dy =-tmp/ph.dir().ny();
+            dy =-tmp/ph.dir().y();
             ph.y() = ( int( (ph.pos().y()+xmax_)/tmp ) )* tmp - ymax_ - delta;
         }
     }
 
     tmp=2.0*zmax_/Nz_;
-    if(ph.dir().nz() > 0.0)
+    if(ph.dir().z() > 0.0)
     {
-        dz = (( int( (ph.pos().z()+zmax_)/tmp ) + 1.0 )* tmp - zmax_ - ph.pos().z() )/ph.dir().nz();
+        dz = (( int( (ph.pos().z()+zmax_)/tmp ) + 1.0 )* tmp - zmax_ - ph.pos().z() )/ph.dir().z();
         if (dz < delta)
         {
-            dz = tmp/ph.dir().nz();
+            dz = tmp/ph.dir().z();
             ph.z() = (int( (ph.pos().z()+zmax_)/tmp ) + 1.0 )* tmp - zmax_ + delta;
         }
-    } else if (ph.dir().nz() < 0.0) {
-        dz = (( int( (ph.pos().z()+zmax_)/tmp ))* tmp- zmax_ - ph.pos().z() )/ph.dir().nz();
+    } else if (ph.dir().z() < 0.0) {
+        dz = (( int( (ph.pos().z()+zmax_)/tmp ))* tmp- zmax_ - ph.pos().z() )/ph.dir().z();
         if (dz < delta)
         {
-            dz =-tmp/ph.dir().nz();
+            dz =-tmp/ph.dir().z();
             ph.z() = ( int( (ph.pos().z()+zmax_)/tmp ) )* tmp - zmax_ - delta;
         }
     }
@@ -242,8 +242,7 @@ int Grid::TauInt2( Photon &ph, double delta ) const
 
 void Grid::Peeloff( Photon ph, Observer& observer, Model const &m) const
 {
-    Vector3d op{observer.pos()};
-    double hgfac = ph.Scatt( m, Direction{op.x(), op.y(), op.z() } );
+    double hgfac = ph.Scatt(m, Direction3d{ observer.pos() });
 
     double tau2 = TauFind(ph);
 
