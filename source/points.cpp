@@ -9,6 +9,37 @@
 
 Random ran;
 
+void directPhotons(
+    Sources const& sources,
+    Grid const& grid,
+    std::vector<Observer>* observers,
+    unsigned long long const num_photons)
+{
+    // Direct photon loop.  Loop over sources and weight photons by
+    // W=ph*exp(-tau1)/4pi
+    for (uint64_t is = 0; is != sources.num(); ++is)
+    {
+        uint64_t nph = uint64_t(num_photons * sources[is].lum() / sources.totlum());
+
+        for (size_t io = 0; io != observers->size(); ++io)
+        {
+            // Set photon location, grid cell, and direction of observation
+            Photon ph(sources[is].pos(), Direction3d((*observers)[io].pos()), 1.0, 0);
+
+            // Find optical depth, tau1, to edge of grid along viewing direction
+            double tau1 = grid.TauFind(ph);
+
+            // direct photon weight is exp(-tau1)/4pi
+            ph.weight() = nph * exp(-tau1) / 4.0 / PI;
+
+            // bin the photon into the image according to its position and
+            // direction of travel.
+            (*observers)[io].Bin(ph);
+        }
+    }
+}
+
+
 int main(void)
 {
     // density grid and sources
@@ -137,27 +168,8 @@ int main(void)
         }
     }
 
-    // Direct photon loop.  Loop over sources and weight photons by
-    // W=ph*exp(-tau1)/4pi
-    for (uint64_t is=0; is!=sources.num(); ++is)
-    {
-        uint64_t nph = uint64_t(model.num_photons() * sources[is].lum() / sources.totlum());
+    directPhotons(sources, grid, &observers, model.num_photons());
 
-        for (size_t io = 0; io != observers.size(); ++io)
-        {
-            // Set photon location, grid cell, and direction of observation
-            Photon ph(sources[is].pos(), Direction3d(observers[io].pos()), 1.0, 0);
-            // Find optical depth, tau1, to edge of grid along viewing direction
-
-            double tau1 = grid.TauFind( ph );
-
-            // direct photon weight is exp(-tau1)/4pi
-            ph.weight() = nph * exp(-tau1) / 4.0 / PI;
-            // bin the photon into the image according to its position and
-            // direction of travel.
-            observers[io].Bin(ph);
-        }
-    }
     std::cout << "Finishing..." << std::endl;
 
     // Normalize images by nphotons
