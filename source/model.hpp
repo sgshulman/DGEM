@@ -70,56 +70,56 @@ class Model
 			static Model mod(grid, sources, observers) ;
 			return mod ;
 		}
-		bool fMonteCarlo( void ) const
+		bool fMonteCarlo() const
 		{	return fMonteCarlo_;	}
-		double taumin( void ) const
+		double taumin() const
 		{	return taumin_;	}
-		uint32_t nscat( void ) const
+		uint32_t nscat() const
 		{	return nscat_;	}
-		unsigned long long& num_photons( void )
+        uint64_t& num_photons()
 		{	return num_photons_;	}
-		int num_photons( void ) const
+        uint64_t num_photons() const
 		{	return num_photons_;	}
-		int32_t iseed( void ) const
+		int32_t iseed() const
 		{	return iseed_;	}
-		uint32_t PrimaryDirectionsLevel( void ) const
+		uint32_t PrimaryDirectionsLevel() const
 		{	return PrimaryDirectionsLevel_;	}
-		uint32_t SecondaryDirectionsLevel( void ) const
+		uint32_t SecondaryDirectionsLevel() const
 		{	return SecondaryDirectionsLevel_;	}
-		uint32_t MonteCarloStart( void ) const
+		uint32_t MonteCarloStart() const
 		{	return MonteCarloStart_;	}
-		uint32_t NumOfPrimaryScatterings( void ) const
+		uint32_t NumOfPrimaryScatterings() const
 		{	return NumOfPrimaryScatterings_;	}
-		uint32_t NumOfSecondaryScatterings( void ) const
+		uint32_t NumOfSecondaryScatterings() const
 		{	return NumOfSecondaryScatterings_;	}
-		double kappa( void ) const
+		double kappa() const
 		{	return kappa_;	}
-		double albedo( void ) const
+		double albedo() const
 		{	return albedo_;	}
-		double hgg( void ) const
+		double hgg() const
 		{	return hgg_;	}
-		double g2( void ) const
+		double g2() const
 		{	return g2_;		}
-		double pl( void ) const
+		double pl() const
 		{	return pl_;		}
-		double pc( void ) const
+		double pc() const
 		{	return pc_;		}
-		double sc( void ) const
+		double sc() const
 		{	return sc_;		}
-		double xmax( void ) const
+		double xmax() const
 		{	return xmax_;	}
-		double ymax( void ) const
+		double ymax() const
 		{	return ymax_;	}
-		double zmax( void ) const
+		double zmax() const
 		{	return zmax_;	}
-		double rimage( void ) const
+		double rimage() const
 		{	return rimage_;	}
 
 	private:
 		bool fMonteCarlo_;
 		double taumin_;
 		uint32_t nscat_;
-		unsigned long long num_photons_;
+		uint64_t num_photons_;
 		int32_t iseed_;
 		uint32_t PrimaryDirectionsLevel_;
 		uint32_t SecondaryDirectionsLevel_;
