@@ -89,16 +89,16 @@ int main(void)
                 int tflag = 0;
                 while ( !tflag && ( ph.nscat() <= model.nscat() ) )
                 {
-                    ph.weight() *= model.albedo();
+                    ph.weight() *= model.dust()->albedo();
                     // Do peeling off and project weighted photons into image
                     // учитыается нерассеяшийся свет от каждой точки рассеяния и последующие рассеяния, пока фотон не изыдет
                     for (Observer& observer : observers)
                     {
-                        grid.Peeloff(ph, observer, model);
+                        grid.Peeloff(ph, observer, model.dust());
                     }
 
                     // Scatter photon into new direction and update Stokes parameters
-                    ph.Stokes( model, Direction3d(), 0.0, false );
+                    ph.Stokes( model.dust(), Direction3d(), 0.0, false );
                     ph.nscat()+=1;
                     ++totscatt;
                     if (ph.nscat() > model.nscat()) break;
@@ -154,11 +154,11 @@ int main(void)
                     // of scatterings exceeds a set value (nscatt)
 
                     // Photons scattering
-                    ph.weight() *= model.albedo();
+                    ph.weight() *= model.dust()->albedo();
 
                     for (Observer& observer : observers)
                     {
-                        grid.Peeloff(ph, observer, model);
+                        grid.Peeloff(ph, observer, model.dust());
                     }
 
                     if (ph.nscat() < model.nscat() ) ph.Scatt( model, sdir, grid, observers );

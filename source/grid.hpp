@@ -20,7 +20,7 @@ class Grid
         double TauFind( Photon ph, double delta=-0.001 ) const;
         int TauInt( Photon & ph, double tau, double tauold=0.0, double delta=-0.001 ) const;
         int TauInt2( Photon & ph, double delta=-0.001 ) const;
-        void Peeloff( Photon ph, Observer &obs, Model const &m) const;
+        void Peeloff( Photon ph, Observer &obs, std::shared_ptr<Dust const> const& dust) const;
     private:
         uint32_t Nx_, Ny_, Nz_;
         double *rhokappa_;

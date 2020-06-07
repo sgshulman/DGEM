@@ -3,6 +3,8 @@
 
 #include <cstdint>
 #include <vector>
+#include <memory>
+#include "Dust.hpp"
 
 double const PI	= 3.1415926;
 
@@ -92,20 +94,8 @@ class Model
 		{	return NumOfPrimaryScatterings_;	}
 		uint32_t NumOfSecondaryScatterings() const
 		{	return NumOfSecondaryScatterings_;	}
-		double kappa() const
-		{	return kappa_;	}
-		double albedo() const
-		{	return albedo_;	}
-		double hgg() const
-		{	return hgg_;	}
-		double g2() const
-		{	return g2_;		}
-		double pl() const
-		{	return pl_;		}
-		double pc() const
-		{	return pc_;		}
-		double sc() const
-		{	return sc_;		}
+		std::shared_ptr<Dust const> dust() const
+        {   return dust_; }
 		double xmax() const
 		{	return xmax_;	}
 		double ymax() const
@@ -124,13 +114,10 @@ class Model
 		uint32_t PrimaryDirectionsLevel_;
 		uint32_t SecondaryDirectionsLevel_;
 		uint32_t MonteCarloStart_;
-		uint32_t NumOfPrimaryScatterings_, NumOfSecondaryScatterings_;	
-		double kappa_;
-		double albedo_;
-		double hgg_, g2_;
-		double pl_;
-		double pc_;
-		double sc_;
+		uint32_t NumOfPrimaryScatterings_, NumOfSecondaryScatterings_;
+
+		std::shared_ptr<Dust const> dust_;
+
 		double xmax_, ymax_, zmax_;
 		double rimage_;
 

@@ -17,6 +17,14 @@ Model::Model(Grid *grid, Sources *sources, std::vector<Observer>* observers)
     // sources parameters
     uint32_t nstars;
     double *x, *y, *z, *l;
+
+    double kappa;
+    double albedo;
+    double hgg;
+    double pl;
+    double pc;
+    double sc;
+
     std::ifstream input("params.par");
     input.ignore(1000000, '=');		input >> fMonteCarlo_;
     input.ignore(1000000, '=');		input >> taumin_;
@@ -28,12 +36,12 @@ Model::Model(Grid *grid, Sources *sources, std::vector<Observer>* observers)
     input.ignore(1000000, '=');		input >> NumOfPrimaryScatterings_;
     input.ignore(1000000, '=');		input >> NumOfSecondaryScatterings_;
     input.ignore(1000000, '=');		input >> MonteCarloStart_;
-    input.ignore(1000000, '=');		input >> kappa_;
-    input.ignore(1000000, '=');		input >> albedo_;
-    input.ignore(1000000, '=');		input >> hgg_;
-    input.ignore(1000000, '=');		input >> pl_;
-    input.ignore(1000000, '=');		input >> pc_;
-    input.ignore(1000000, '=');		input >> sc_;
+    input.ignore(1000000, '=');		input >> kappa;
+    input.ignore(1000000, '=');		input >> albedo;
+    input.ignore(1000000, '=');		input >> hgg;
+    input.ignore(1000000, '=');		input >> pl;
+    input.ignore(1000000, '=');		input >> pc;
+    input.ignore(1000000, '=');		input >> sc;
     input.ignore(1000000, '=');		input >> xmax_;
     input.ignore(1000000, '=');		input >> ymax_;
     input.ignore(1000000, '=');		input >> zmax_;
@@ -44,6 +52,9 @@ Model::Model(Grid *grid, Sources *sources, std::vector<Observer>* observers)
     input.ignore(1000000, '=');		input >> R_0;
     input.ignore(1000000, '=');		input >> alpha;
     input.ignore(1000000, '=');		input >> beta;
+
+    dust_ = std::make_shared<Dust>(kappa, albedo, hgg, pl, pc, sc);
+
     // sources parameters
     input.ignore(1000000, '=');		input >> nstars;
     x = new double[nstars];
@@ -105,7 +116,7 @@ Model::Model(Grid *grid, Sources *sources, std::vector<Observer>* observers)
     std::cout << "DGEM Parameters\n PrimaryDirectionsLevel=" << PrimaryDirectionsLevel_ << "\n SecondaryDirectionsLevel=" << SecondaryDirectionsLevel_;
     std::cout << "\n NumOfPrimaryScatterings=" << NumOfPrimaryScatterings_ << "\n NumOfSecondaryScatterings=" << NumOfSecondaryScatterings_;
     std::cout << "\n MonteCarloStart=" << MonteCarloStart_ << "\n\n";
-    std::cout << "Physics\n kappa=" << kappa_ << "\n albedo=" << albedo_ << "\n hgg=" << hgg_ << "\n pl=" << pl_ << "\n pc=" << pc_ << "\n sc=" << sc_ << "\n\n";
+    std::cout << "Physics\n kappa=" << kappa << "\n albedo=" << albedo << "\n hgg=" << hgg << "\n pl=" << pl << "\n pc=" << pc << "\n sc=" << sc << "\n\n";
     std::cout << "Image\n xmax=" << xmax_ << "\n ymax=" << ymax_ << "\n zmax=" << zmax_ << "\n\n";
     std::cout << "Disk\n R_i=" << R_i << "\n R_d=" << R_d << "\n rho_0=" << rho_0 << "\n h_0=" << h_0 << "\n R_0=" << R_0 << "\n alpha=" << alpha;
     std::cout << "\n beta=" << beta;
@@ -119,8 +130,6 @@ Model::Model(Grid *grid, Sources *sources, std::vector<Observer>* observers)
     std::cout << "\n nobservers=" << observers->size() << "\n";
     for (size_t i=0; i!=observers->size(); ++i)
         std::cout << " observer=" << (*observers)[i].phi() << "\t" << (*observers)[i].theta() << "\n";
-
-    g2_=hgg_*hgg_;
 
     grid->Init(*this, R_i, R_d, rho_0, h_0, R_0, alpha, beta, 201, 201, 201);
     sources->Init(nstars, x, y, z, l);

@@ -7,6 +7,7 @@ set(SOURCES
         directions.cpp
         directions.hpp
         Direction3d.hpp
+        Dust.hpp
         grid.cpp
         grid.hpp
         observers.hpp

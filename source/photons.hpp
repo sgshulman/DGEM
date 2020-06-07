@@ -18,9 +18,9 @@ class Photon
         // known direction photon generation
         Photon(Vector3d const &position, Direction3d const &dir, double weight, int nscat, double fi=1.0, double fq=0.0, double fu=0.0, double fv=0.0);
         // photon scattering
-        double Scatt( Model const &m, Direction3d const & dir );
+        double Scatt(std::shared_ptr<Dust const> const& dust, Direction3d const & dir );
         void Scatt( Model const &m, Directions const &dirs, Grid const &grid, std::vector<Observer>& observers);
-        void Stokes( Model const &m, Direction3d const &dir, double calpha, bool fDir );
+        void Stokes(std::shared_ptr<Dust const> const& dust, Direction3d const &dir, double calpha, bool fDir );
         void Move(double t)
         {
             pos_ = pos_ + t * dir_.vector();

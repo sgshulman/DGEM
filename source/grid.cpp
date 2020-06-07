@@ -45,7 +45,7 @@ void Grid::Init(const Model &m, double R_i, double R_d, double rho_0, double h_0
             for (size_t cntz=0; cntz!=Nz_; ++cntz)
             {
                 z=(cntz*2.0+1)*zmax_/Nz_-zmax_;
-                rhokappa_[cntx+cnty*Nx+cntz*Ny*Nx]=Density(x,y,z, R_i, R_d, rho_0, h_0, R_0, alpha, beta)*m.kappa()*1.5e13; // rho*kappa*R,
+                rhokappa_[cntx+cnty*Nx+cntz*Ny*Nx]=Density(x,y,z, R_i, R_d, rho_0, h_0, R_0, alpha, beta)*m.dust()->kappa()*1.5e13; // rho*kappa*R,
                 if (minrho_ > rhokappa_[cntx+cnty*Nx+cntz*Ny*Nx] && rhokappa_[cntx+cnty*Nx+cntz*Ny*Nx] > 0)
                     minrho_ = rhokappa_[cntx+cnty*Nx+cntz*Ny*Nx];
             }
@@ -240,9 +240,9 @@ int Grid::TauInt2( Photon &ph, double delta ) const
     return 0;
 }
 
-void Grid::Peeloff( Photon ph, Observer& observer, Model const &m) const
+void Grid::Peeloff( Photon ph, Observer& observer, std::shared_ptr<Dust const> const& dust) const
 {
-    double hgfac = ph.Scatt(m, Direction3d{ observer.pos() });
+    double hgfac = ph.Scatt(dust, Direction3d{ observer.pos() });
 
     double tau2 = TauFind(ph);
 
