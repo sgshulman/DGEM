@@ -5,32 +5,6 @@
 #include "photons.hpp"
 #include "directions.hpp"
 
-void Dustmat( double &p1, double &p2, double &p3, double &p4,
-            double cost, double cost2, double pl, double pc,
-            double sc, double hgg, double g2 )
-{
-// this calculates the elements of the phase matrix for a
-//	simple representation of the mrn dust mixture using the algorithms
-//	for the ultraviolet region due to richard l. white ap.j. 229, 954, 	1979.
-    double phi, f, f2, c;
-
-    p1 = (1 - g2)/pow( (1+g2-2*hgg*cost), 1.5);
-    p2 = -pl*p1*(1-cost2)/(1+cost2);
-    p3 = p1*2*cost/(1+cost2);
-
-    if(cost >= 1.0) cost= 1.0;
-    if(cost <=-1.0) cost=-1.0;
-
-//     angle in degrees!
-    phi=acos(cost)*180./3.1415926;
-    f=3.13*phi*exp(-7.0*phi/180.);
-//     now convert to radians
-    f2=(phi+sc*f)*3.1415926/180.0;
-
-    c=(cos(f2))*(cos(f2));
-    p4 = -pc*p1*(1-c)/(1+c);
-}
-
 Photon::Photon( Vector3d const& pos, double weight, int nscat )
 {
     // Set position
@@ -207,7 +181,7 @@ void Photon::Stokes(std::shared_ptr<Dust const> const& dust, Direction3d const &
     double phip = dir_.phi();
 
     // dust scattering
-    double cosTh, cos2Th; //bmu, bmu2;
+    double cosTh; //bmu, bmu2;
     if (fDir)
     {
         cosTh = calpha;
@@ -220,13 +194,12 @@ void Photon::Stokes(std::shared_ptr<Dust const> const& dust, Direction3d const &
     }else if( cosTh < -1.0 ) {
         cosTh=-1.0;
     }
-    cos2Th = cosTh*cosTh;
 
     double p1, p2, p3, p4;
-    Dustmat(p1, p2, p3, p4, cosTh, cos2Th, dust->pl(), dust->pc(), dust->sc(), dust->hgg(), dust->hgg2());
+    dust->scatteringMatrixElements(p1, p2, p3, p4, cosTh);
     double a = p1;
 
-    double sinTh = sqrt(1.0-cos2Th);//sinbt = sqrt(1.0-bmu2);
+    double sinTh = sqrt(1.0 - cosTh*cosTh);//sinbt = sqrt(1.0-bmu2);
 
     double ri1;
     if (fDir)

@@ -5,10 +5,6 @@
 #include "Vector3d.hpp"
 #include "Direction3d.hpp"
 
-void Dustmat( double &p1, double &p2, double &p3, double &p4,
-            double cost, double cost2, double pl, double pc,
-            double sc, double hgg, double g2 );
-
 // photon. It's properties and methods for the work with it
 class Photon
 {

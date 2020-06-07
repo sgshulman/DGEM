@@ -18,18 +18,15 @@ public:
     , sc_{ sc }
     {}
 
+    void scatteringMatrixElements(
+        double &p1, double &p2, double &p3, double &p4, double cosTheta) const;
+
     inline double albedo() const
     {	return albedo_;	}
     inline double hgg() const
     {	return hgg_;	}
     inline double hgg2() const
     {	return hgg2_;	}
-    inline double pl() const
-    {	return pl_;		}
-    inline double pc() const
-    {	return pc_;		}
-    inline double sc() const
-    {	return sc_;		}
 
 private:
     double const albedo_;
