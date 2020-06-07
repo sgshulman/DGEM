@@ -2,7 +2,12 @@
 #define GRID_HPP_
 
 #include <math.h>
-#include "model.hpp"
+#include <cstdint>
+#include <memory>
+
+class Observer;
+class Photon;
+class Dust;
 
 // cartezian grid
 class Grid
@@ -13,8 +18,11 @@ class Grid
         {
             if (rhokappa_ != nullptr) delete[] rhokappa_;
         }
-        void Init(const Model &m, double R_i, double R_d, double rho_0, double h_0, double R_0,
-                                    double alpha, double beta, uint32_t Nx, uint32_t Ny, uint32_t Nz );
+
+        void Init(double xmax, double ymax, double zmax, double kappa,
+                  double R_i, double R_d, double rho_0, double h_0, double R_0,
+                  double alpha, double beta, uint32_t Nx, uint32_t Ny, uint32_t Nz );
+
         double PhotonSMax( Photon &ph ) const;
         double PhotonCWall( Photon &ph, double delta ) const;
         double TauFind( Photon ph, double delta=-0.001 ) const;

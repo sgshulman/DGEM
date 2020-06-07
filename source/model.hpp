@@ -96,14 +96,6 @@ class Model
 		{	return NumOfSecondaryScatterings_;	}
 		std::shared_ptr<Dust const> dust() const
         {   return dust_; }
-		double xmax() const
-		{	return xmax_;	}
-		double ymax() const
-		{	return ymax_;	}
-		double zmax() const
-		{	return zmax_;	}
-		double rimage() const
-		{	return rimage_;	}
 
 	private:
 		bool fMonteCarlo_;
@@ -117,9 +109,6 @@ class Model
 		uint32_t NumOfPrimaryScatterings_, NumOfSecondaryScatterings_;
 
 		std::shared_ptr<Dust const> dust_;
-
-		double xmax_, ymax_, zmax_;
-		double rimage_;
 
 		Model (Grid *grid, Sources *sources, std::vector<Observer> *observers);
 		Model (Model const &);

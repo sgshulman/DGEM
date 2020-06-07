@@ -1,9 +1,11 @@
-#include <math.h>
+#include <cmath>
+#include <iostream>
+
 #include "grid.hpp"
 #include "observers.hpp"
 #include "model.hpp"
 #include "photons.hpp"
-#include <iostream>
+
 
 double Density(double x, double y, double z, double R_i, double R_d, double rho_0, double h_0, double R_0, double alpha, double beta)
 {
@@ -24,8 +26,9 @@ double Density(double x, double y, double z, double R_i, double R_d, double rho_
 }
 
 
-void Grid::Init(const Model &m, double R_i, double R_d, double rho_0, double h_0, double R_0,
-                                double alpha, double beta, uint32_t Nx, uint32_t Ny, uint32_t Nz )
+void Grid::Init(double const xmax, double const ymax, double const zmax, double const kappa,
+                double R_i, double R_d, double rho_0, double h_0, double R_0,
+                double alpha, double beta, uint32_t Nx, uint32_t Ny, uint32_t Nz )
 {
     double x, y, z;
     Nx_=Nx;
@@ -33,9 +36,11 @@ void Grid::Init(const Model &m, double R_i, double R_d, double rho_0, double h_0
     Nz_=Nz;
     rhokappa_ = new double[Nx_*Ny_*Nz_];
     minrho_ = 1e+38;
-    xmax_ = m.xmax();
-    ymax_ = m.ymax();
-    zmax_ = m.zmax();
+
+    xmax_ = xmax;
+    ymax_ = ymax;
+    zmax_ = zmax;
+
     for (size_t cntx=0; cntx!=Nx_; ++cntx)
     {
         x=(cntx*2.0+1)*xmax_/Nx_-xmax_;
@@ -45,7 +50,7 @@ void Grid::Init(const Model &m, double R_i, double R_d, double rho_0, double h_0
             for (size_t cntz=0; cntz!=Nz_; ++cntz)
             {
                 z=(cntz*2.0+1)*zmax_/Nz_-zmax_;
-                rhokappa_[cntx+cnty*Nx+cntz*Ny*Nx]=Density(x,y,z, R_i, R_d, rho_0, h_0, R_0, alpha, beta)*m.dust()->kappa()*1.5e13; // rho*kappa*R,
+                rhokappa_[cntx+cnty*Nx+cntz*Ny*Nx]=Density(x,y,z, R_i, R_d, rho_0, h_0, R_0, alpha, beta)*kappa*1.5e13; // rho*kappa*R,
                 if (minrho_ > rhokappa_[cntx+cnty*Nx+cntz*Ny*Nx] && rhokappa_[cntx+cnty*Nx+cntz*Ny*Nx] > 0)
                     minrho_ = rhokappa_[cntx+cnty*Nx+cntz*Ny*Nx];
             }

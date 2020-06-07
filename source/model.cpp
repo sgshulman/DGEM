@@ -25,6 +25,10 @@ Model::Model(Grid *grid, Sources *sources, std::vector<Observer>* observers)
     double pc;
     double sc;
 
+    double xmax;
+    double ymax;
+    double zmax;
+
     std::ifstream input("params.par");
     input.ignore(1000000, '=');		input >> fMonteCarlo_;
     input.ignore(1000000, '=');		input >> taumin_;
@@ -42,9 +46,9 @@ Model::Model(Grid *grid, Sources *sources, std::vector<Observer>* observers)
     input.ignore(1000000, '=');		input >> pl;
     input.ignore(1000000, '=');		input >> pc;
     input.ignore(1000000, '=');		input >> sc;
-    input.ignore(1000000, '=');		input >> xmax_;
-    input.ignore(1000000, '=');		input >> ymax_;
-    input.ignore(1000000, '=');		input >> zmax_;
+    input.ignore(1000000, '=');		input >> xmax;
+    input.ignore(1000000, '=');		input >> ymax;
+    input.ignore(1000000, '=');		input >> zmax;
     input.ignore(1000000, '=');		input >> R_i;
     input.ignore(1000000, '=');		input >> R_d;
     input.ignore(1000000, '=');		input >> rho_0;
@@ -53,7 +57,7 @@ Model::Model(Grid *grid, Sources *sources, std::vector<Observer>* observers)
     input.ignore(1000000, '=');		input >> alpha;
     input.ignore(1000000, '=');		input >> beta;
 
-    dust_ = std::make_shared<Dust>(kappa, albedo, hgg, pl, pc, sc);
+    dust_ = std::make_shared<Dust>(albedo, hgg, pl, pc, sc);
 
     // sources parameters
     input.ignore(1000000, '=');		input >> nstars;
@@ -117,7 +121,7 @@ Model::Model(Grid *grid, Sources *sources, std::vector<Observer>* observers)
     std::cout << "\n NumOfPrimaryScatterings=" << NumOfPrimaryScatterings_ << "\n NumOfSecondaryScatterings=" << NumOfSecondaryScatterings_;
     std::cout << "\n MonteCarloStart=" << MonteCarloStart_ << "\n\n";
     std::cout << "Physics\n kappa=" << kappa << "\n albedo=" << albedo << "\n hgg=" << hgg << "\n pl=" << pl << "\n pc=" << pc << "\n sc=" << sc << "\n\n";
-    std::cout << "Image\n xmax=" << xmax_ << "\n ymax=" << ymax_ << "\n zmax=" << zmax_ << "\n\n";
+    std::cout << "Image\n xmax=" << xmax << "\n ymax=" << ymax << "\n zmax=" << zmax << "\n\n";
     std::cout << "Disk\n R_i=" << R_i << "\n R_d=" << R_d << "\n rho_0=" << rho_0 << "\n h_0=" << h_0 << "\n R_0=" << R_0 << "\n alpha=" << alpha;
     std::cout << "\n beta=" << beta;
     // stars
@@ -131,7 +135,7 @@ Model::Model(Grid *grid, Sources *sources, std::vector<Observer>* observers)
     for (size_t i=0; i!=observers->size(); ++i)
         std::cout << " observer=" << (*observers)[i].phi() << "\t" << (*observers)[i].theta() << "\n";
 
-    grid->Init(*this, R_i, R_d, rho_0, h_0, R_0, alpha, beta, 201, 201, 201);
+    grid->Init(xmax, ymax, zmax, kappa, R_i, R_d, rho_0, h_0, R_0, alpha, beta, 201, 201, 201);
     sources->Init(nstars, x, y, z, l);
 
     delete[] x;

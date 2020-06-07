@@ -5,14 +5,12 @@ class Dust
 {
 public:
     Dust(
-        double const kappa,
         double const albedo,
         double const hgg,
         double const pl,
         double const pc,
         double const sc)
-    : kappa_{ kappa }
-    , albedo_{ albedo }
+    : albedo_{ albedo }
     , hgg_{ hgg }
     , hgg2_{ hgg_ * hgg_ }
     , pl_{ pl }
@@ -20,8 +18,6 @@ public:
     , sc_{ sc }
     {}
 
-    inline double kappa() const
-    {	return kappa_;	}
     inline double albedo() const
     {	return albedo_;	}
     inline double hgg() const
@@ -36,7 +32,6 @@ public:
     {	return sc_;		}
 
 private:
-    double const kappa_;
     double const albedo_;
     double const hgg_;
     double const hgg2_;
