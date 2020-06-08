@@ -41,15 +41,14 @@ Photon::Photon( Vector3d const& pos, Direction3d const& dir, double weight, int 
 
 double Photon::Scatt(std::shared_ptr<Dust const> const& dust, Direction3d const& dir )
 {
-    double calpha; // cos(alpha), where alpha is angle between incident
-                    // and outgoing (i.e., observed) photon direction
-    double hgfrac;
-    calpha=dir_.x()*dir.x()+dir_.y()*dir.y()+dir_.z()*dir.z();
+    // cos(alpha), where alpha is angle between incident
+    // and outgoing (i.e., observed) photon direction
+    double const calpha=dir_.x()*dir.x()+dir_.y()*dir.y()+dir_.z()*dir.z();
 
     //weight photon for isotropic, Thomson, or HG scattering
     // hgfrac=0.5*(1.0+calpha*calpha)  ;       // Thomson
     // hgfrac=1./4/3.1415926    ;              // isotropic
-     hgfrac=(1.0-dust->hgg2())/pow((1.0+dust->hgg2()-2.*dust->hgg()*calpha),1.5)/4/3.1415926; // HG
+     double const hgfrac = dust->fraction(calpha) / 4. / 3.1415926; // HG
        
      Stokes( dust, dir, calpha, true );
  //    dir_ = dir;
@@ -92,7 +91,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, Grid const &grid, st
             double x, y, z;
             dirs.GetDirection( j, x, y, z );
             calpha = dir_.x()*x+dir_.y()*y+dir_.z()*z;
-            sum += dirs.W( j )*(1.0-m.dust()->hgg2())/pow((1.0+m.dust()->hgg2()-2.*m.dust()->hgg()*calpha),1.5);
+            sum += dirs.W( j ) * m.dust()->fraction(calpha);
         }
 
         // randomized grid experiment
@@ -121,7 +120,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, Grid const &grid, st
             // randomized grid experiment
 
             calpha = dir_.x()*x+dir_.y()*y+dir_.z()*z;
-            hgfrac=(1.0-m.dust()->hgg2())/pow((1.0+m.dust()->hgg2()-2.*m.dust()->hgg()*calpha),1.5);
+            hgfrac = m.dust()->fraction(calpha);
             Photon ph0(pos_, dir_, weight_*dirs.W( j )*hgfrac/sum, nscat_+1, fi_, fq_, fu_, fv_ );
             ph0.Stokes(m.dust(), Direction3d(Vector3d{x, y, z}), calpha, true);
 
@@ -186,7 +185,7 @@ void Photon::Stokes(std::shared_ptr<Dust const> const& dust, Direction3d const &
     {
         cosTh = calpha;
     } else {
-        cosTh=((1.0+dust->hgg2())-pow( (( 1.0-dust->hgg2() )/( 1.0-dust->hgg()+2.0*dust->hgg()*ran.Get())), 2 ))/( 2.0*dust->hgg() );
+        cosTh = dust->cosRandomTheta(ran.Get());
     }
     if ( cosTh > 1.0 )
     {

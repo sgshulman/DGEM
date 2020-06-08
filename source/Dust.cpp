@@ -23,3 +23,16 @@ void Dust::scatteringMatrixElements(
     double const c2 = c * c;
     p4 = -pc_ * p1 * (1 - c2) / (1 + c2);
 }
+
+
+double Dust::fraction(double const cosTheta) const
+{
+    return (1.0 - hgg2_) / std::pow(1.0 + hgg2_ - 2. * hgg_ * cosTheta, 1.5);
+}
+
+
+double Dust::cosRandomTheta(double const v) const
+{
+    double const fraction = (1. - hgg2_) / (1. - hgg_ + 2 * hgg_ * v);
+    return (1. + hgg2_ - fraction * fraction) / (2. * hgg_);
+}

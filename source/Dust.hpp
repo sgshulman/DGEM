@@ -21,12 +21,11 @@ public:
     void scatteringMatrixElements(
         double &p1, double &p2, double &p3, double &p4, double cosTheta) const;
 
+    double fraction(double cosTheta) const;
+    double cosRandomTheta(double v) const;
+
     inline double albedo() const
     {	return albedo_;	}
-    inline double hgg() const
-    {	return hgg_;	}
-    inline double hgg2() const
-    {	return hgg2_;	}
 
 private:
     double const albedo_;
