@@ -10,9 +10,9 @@ class Photon
 {
     public:
         // random direction photon generation
-        Photon(Vector3d const &position, double weight, int nscat );
+        Photon(Vector3d const &position, double weight, uint32_t nscat );
         // known direction photon generation
-        Photon(Vector3d const &position, Direction3d const &dir, double weight, int nscat, double fi=1.0, double fq=0.0, double fu=0.0, double fv=0.0);
+        Photon(Vector3d const &position, Direction3d const &dir, double weight, uint32_t nscat, double fi=1.0, double fq=0.0, double fu=0.0, double fv=0.0);
         // photon scattering
         double Scatt(std::shared_ptr<Dust const> const& dust, Direction3d const & dir );
         void Scatt( Model const &m, Directions const &dirs, Grid const &grid, std::vector<Observer>& observers);
@@ -46,9 +46,9 @@ class Photon
     private:
         Vector3d	pos_;	// outpoint
         Direction3d	dir_;	// vector of the direction
-        uint32_t 	nscat_;				// число рассеяний
-        double weight_;				// статистический вес фотона
-        double fi_, fq_, fu_, fv_;			// Stokes fluxes
+        uint32_t 	nscat_;
+        double weight_;
+        double fi_, fq_, fu_, fv_;
 };
 // one source of photons
 class Source
