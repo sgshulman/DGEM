@@ -51,40 +51,6 @@ class DotN
             x_*=m; y_*=m; z_*=m;
             NumOfMids_ = 0;
         }
-        void Set1(DotN *d1, DotN *d2)
-        {
-            double r, r1, r2;
-            double m;
-
-            x_ = ( 1.9*d1->x() + 1.1*d2->x() )/3.0;
-            y_ = ( 1.9*d1->y() + 1.1*d2->y() )/3.0;
-            z_ = ( 1.9*d1->z() + 1.1*d2->z() )/3.0;
-
-            r1 = sqrt( d1->x()*d1->x() + d1->y()*d1->y() + d1->z()*d1->z() );
-            r2 = sqrt( d2->x()*d2->x() + d2->y()*d2->y() + d2->z()*d2->z() );
-            // сохранение R
-            r = sqrt( x_*x_ + y_*y_ + z_*z_ );
-            m = ( 2*r1+r2 )/( 3.0*r );
-            x_*=m; y_*=m; z_*=m;
-            NumOfMids_ = 0;
-        }
-        void Set2(DotN *d1, DotN *d2)
-        {
-            double r, r1, r2;
-            double m;
-
-            x_ = ( 1.1*d1->x() + 1.9*d2->x() )/3.0;
-            y_ = ( 1.1*d1->y() + 1.9*d2->y() )/3.0;
-            z_ = ( 1.1*d1->z() + 1.9*d2->z() )/3.0;
-
-            r1 = sqrt( d1->x()*d1->x() + d1->y()*d1->y() + d1->z()*d1->z() );
-            r2 = sqrt( d2->x()*d2->x() + d2->y()*d2->y() + d2->z()*d2->z() );
-            // сохранение R
-            r = sqrt( x_*x_ + y_*y_ + z_*z_ );
-            m = ( r1+2*r2 )/( 3.0*r );
-            x_*=m; y_*=m; z_*=m;
-            NumOfMids_ = 0;
-        }
         uint32_t NumOfMids( void )
         {	return NumOfMids_;	}
         MiddleDot md( int i )
