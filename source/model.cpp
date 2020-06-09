@@ -5,6 +5,7 @@
 #include "grid.hpp"
 #include "photons.hpp"
 #include "observers.hpp"
+#include "Dust.hpp"
 
 Model::Model(Grid *grid, Sources *sources, std::vector<Observer>* observers)
 {

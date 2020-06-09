@@ -1,9 +1,9 @@
 #include <math.h>
 #include "grid.hpp"
 #include "observers.hpp"
-#include "model.hpp"
 #include "photons.hpp"
 #include "directions.hpp"
+#include "Dust.hpp"
 
 Photon::Photon(Vector3d const& pos, double weight, uint32_t nscat)
     : pos_{ pos }
@@ -34,7 +34,7 @@ Photon::Photon( Vector3d const& pos, Direction3d const& dir, double weight, uint
 {}
 
 
-double Photon::Scatt(std::shared_ptr<Dust const> const& dust, Direction3d const& dir )
+double Photon::Scatt(DustCRef dust, Direction3d const& dir )
 {
     // cos(Theta), where Theta is angle between incident
     // and outgoing (i.e., observed) photon direction
@@ -130,7 +130,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, Grid const &grid, st
 
 // Stokes vector changes
 // spherical trigonometry is used
-void Photon::Stokes(std::shared_ptr<Dust const> const& dust, Direction3d const &dir, double calpha, bool fDir )
+void Photon::Stokes(DustCRef dust, Direction3d const &dir, double calpha, bool fDir )
 {
     double a11,a12,a13,a21,a22,a23,a24,a31,a32,a33,a34;
         double a42,a43,a44;

@@ -245,7 +245,7 @@ int Grid::TauInt2( Photon &ph, double delta ) const
     return 0;
 }
 
-void Grid::Peeloff( Photon ph, Observer& observer, std::shared_ptr<Dust const> const& dust) const
+void Grid::Peeloff( Photon ph, Observer& observer, DustCRef dust) const
 {
     double hgfac = ph.Scatt(dust, Direction3d{ observer.pos() });
 

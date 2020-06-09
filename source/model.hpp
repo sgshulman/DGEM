@@ -3,18 +3,10 @@
 
 #include <cstdint>
 #include <vector>
-#include <memory>
-#include "Dust.hpp"
+
+#include "Predefines.hpp"
 
 double const PI	= 3.1415926;
-
-class Grid ;
-class Pictures ;
-class Observer;
-class Photon ;
-class Source ;
-class Sources ;
-class Directions ;  // directions grid
 
 // Random number generator 
 // L’Ecuyer, P. 1988, Communications of the ACM, vol. 31, pp. 742,774.
@@ -94,7 +86,7 @@ class Model
 		{	return NumOfPrimaryScatterings_;	}
 		uint32_t NumOfSecondaryScatterings() const
 		{	return NumOfSecondaryScatterings_;	}
-		std::shared_ptr<Dust const> dust() const
+		DustCPtr dust() const
         {   return dust_; }
 
 	private:
@@ -108,7 +100,7 @@ class Model
 		uint32_t MonteCarloStart_;
 		uint32_t NumOfPrimaryScatterings_, NumOfSecondaryScatterings_;
 
-		std::shared_ptr<Dust const> dust_;
+		DustCPtr dust_;
 
 		Model (Grid *grid, Sources *sources, std::vector<Observer> *observers);
 		Model (Model const &);

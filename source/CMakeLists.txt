@@ -17,6 +17,7 @@ set(SOURCES
         photons.cpp
         photons.hpp
         points.cpp
+        Predefines.hpp
         Vector3d.hpp)
 
 add_executable(dgem ${SOURCES})
