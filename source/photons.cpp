@@ -78,22 +78,17 @@ void Photon::Scatt( Model const &m, Directions const &dirs, Grid const &grid, st
         double sum=0;
         for (size_t j=0; j!=dirs.NumOfDirections(); ++j)
         {
-            double x, y, z;
-            dirs.GetDirection( j, x, y, z );
-            calpha = dir_.x()*x+dir_.y()*y+dir_.z()*z;
-            sum += dirs.W( j ) * m.dust()->fraction(calpha);
+            calpha = dir_.vector() * dirs.direction(j);
+            sum += dirs.w(j) * m.dust()->fraction(calpha);
         }
 
         for (size_t j=0; j!=dirs.NumOfDirections(); ++j)
         {
             // Release photon from point source
-            double x, y, z;
-            dirs.GetDirection( j, x, y, z );
-
-            calpha = dir_.x()*x+dir_.y()*y+dir_.z()*z;
+            calpha = dir_.vector() * dirs.direction(j);
             hgfrac = m.dust()->fraction(calpha);
-            Photon ph0(pos_, dir_, weight_*dirs.W( j )*hgfrac/sum, nscat_+1, fi_, fq_, fu_, fv_ );
-            ph0.Stokes(m.dust(), Direction3d(Vector3d{x, y, z}), calpha, true);
+            Photon ph0(pos_, dir_, weight_ * dirs.w( j )*hgfrac/sum, nscat_+1, fi_, fq_, fu_, fv_ );
+            ph0.Stokes(m.dust(), dirs.direction(j), calpha, true);
 
             double w = 1.0 / m.NumOfSecondaryScatterings() ;
             Vector3d spos = pos_;
