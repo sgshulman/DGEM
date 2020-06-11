@@ -6,8 +6,7 @@
 class Vector3d
 {
     public:
-        Vector3d()
-        {}
+        Vector3d() = default;
 
         Vector3d(double const x, double const y, double const z)
             : x_(x)
@@ -81,5 +80,15 @@ inline double operator*(Vector3d const& left, Vector3d const& right)
 {
     return left.x()*right.x() + left.y()*right.y() + left.z()*right.z();
 }
+
+inline Vector3d vectorProduct(Vector3d const& left, Vector3d const& right)
+{
+    return {left.y() * right.z() - left.z() * right.y(),
+            left.z() * right.x() - left.x() * right.z(),
+            left.x() * right.y() - left.y() * right.x()};
+}
+
+inline double tripleProduct(Vector3d const& vector1, Vector3d const& vector2, Vector3d const& vector3)
+{    return vector1 * vectorProduct(vector2, vector3);  }
 
 #endif //VECTOR_3D_HPP_

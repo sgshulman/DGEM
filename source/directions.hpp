@@ -6,7 +6,7 @@
 
 class Directions {
     public:
-        Directions(uint32_t NumOfDirectionsLevels);
+        explicit Directions(uint32_t NumOfDirectionsLevels);
 
         ~Directions()
         {
