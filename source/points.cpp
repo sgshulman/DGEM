@@ -112,7 +112,7 @@ int main(void)
         // Set up directions grid
         Directions pdir( model.PrimaryDirectionsLevel() );
         Directions sdir( model.SecondaryDirectionsLevel() );
-        model.num_photons() = pdir.NumOfDirections();
+        model.num_photons() = pdir.number();
         std::cout << "Directions ready" << std::endl;
 
         // Loop over sources.
@@ -121,12 +121,12 @@ int main(void)
             double w0=sources[is].lum()/sources.totlum();
             uint64_t jcount=0;
             // Loop over primary directions
-            for (size_t j=0; j!=pdir.NumOfDirections(); ++j)
+            for (size_t j=0; j!=pdir.number(); ++j)
             {
                 ++jcount;
                 if( jcount%1000 == 0)
                 {
-                    std::cout << "Sources: " << is+1 << "/" << sources.num() << ". Directions: " << jcount << "/" << pdir.NumOfDirections() << std::endl;
+                    std::cout << "Sources: " << is+1 << "/" << sources.num() << ". Directions: " << jcount << "/" << pdir.number() << std::endl;
                 }
                 // Release photon from point source
                 Direction3d direction{ pdir.direction(j) };

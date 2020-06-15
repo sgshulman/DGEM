@@ -1,5 +1,6 @@
 #include <cmath>
 #include <cstddef>
+#include <cassert>
 #include "directions.hpp"
 
 namespace
@@ -90,151 +91,197 @@ namespace
                 return 2. * std::atan(triple / (1. + r0r1 + r1r2 + r0r2));
             }
 
+            PointWithNeighbors *readyMeadpoint(int const i, int const j)
+            {
+                assert(0 <= i && i <= 2 && 0 <= j && j <= 2);
+
+                for(size_t cnt=0; cnt!=dots_[i]->midpointsNumber(); ++cnt )
+                {
+                    if ( dots_[i]->neighbor(cnt) == dots_[j] )
+                    {
+                        return dots_[i]->midpoint(cnt);
+                    }
+                }
+
+                return nullptr;
+            }
+
             PointWithNeighbors *operator[](int i)
             { return dots_[i]; }
 
         private:
             PointWithNeighbors *dots_[3]{};
     };
+
+
+    class IcosahedronMesh
+    {
+        public:
+            explicit IcosahedronMesh(uint32_t directionsLevels)
+                : directionsNumber_{ 0 }
+                , readyPoints_{ 0 }
+                , nodes_{ new PointWithNeighbors[nodesNumber(directionsLevels)]{} }
+                , triangles_{ nullptr }
+            {
+                buildInitialMesh();
+
+                for(uint32_t cnt=1; cnt<directionsLevels; ++cnt)
+                {
+                    splitMesh();
+                }
+            }
+
+            ~IcosahedronMesh()
+            {
+                delete[] nodes_;
+                delete[] triangles_;
+            }
+
+            Vector3d* points() const
+            {
+                auto points = new Vector3d[ directionsNumber_ ];
+
+                for (uint64_t cnt=0; cnt<directionsNumber_; ++cnt)
+                {
+                    points[cnt] = triangles_[cnt].median();
+                }
+
+                return points;
+            }
+
+            double* weights() const
+            {
+                auto weights = new double[ directionsNumber_ ];
+
+                for (uint64_t cnt=0; cnt<directionsNumber_; ++cnt)
+                {
+                    weights[cnt] = triangles_[cnt].square() * directionsNumber_ / 4. / PI;
+                }
+
+                return weights;
+            }
+
+            uint64_t directionsNumber() const
+            {
+                return directionsNumber_;
+            }
+
+        private:
+            static uint32_t const ICOSAHEDRON_FACES{ 20 };
+            static uint32_t const ICOSAHEDRON_VERTICES{ 12 };
+
+            static uint64_t nodesNumber(uint32_t const directionsLevels)
+            {
+                uint64_t directionPointsNumber = ICOSAHEDRON_VERTICES;
+                uint64_t directionsNumber = ICOSAHEDRON_FACES;
+
+                for (size_t cnt=1; cnt<directionsLevels; ++cnt)
+                {
+                    directionPointsNumber = directionPointsNumber + (directionsNumber * 3) / 2;
+                    directionsNumber *= 4;
+                }
+
+                return directionPointsNumber;
+            }
+
+            void buildInitialMesh()
+            {
+                directionsNumber_ = ICOSAHEDRON_FACES;
+                readyPoints_ = ICOSAHEDRON_VERTICES;
+                triangles_ = new SphericalTriangle[directionsNumber_]{};
+
+                // initial sphere conditions
+                nodes_[0].set(Vector3d{0.0, 0.0, std::sqrt(5.0)/2.0});
+                for (int cnt=0; cnt!=5; ++cnt)
+                {
+                    double const angle = cnt * 72.;
+                    nodes_[cnt+1].set(Vector3d{ std::cos(angle*PI/180),  std::sin(angle*PI/180),  0.5 });
+                    nodes_[cnt+6].set(Vector3d{ std::cos((36.+angle)*PI/180),  std::sin((36.+angle)*PI/180),  -0.5});
+                }
+                nodes_[11].set(Vector3d{0.0, 0.0, -std::sqrt(5.0)/2.0});
+
+                // triangles
+                triangles_[0].set(&nodes_[0], &nodes_[1], &nodes_[2]);
+                triangles_[1].set(&nodes_[0], &nodes_[2], &nodes_[3]);
+                triangles_[2].set(&nodes_[0], &nodes_[3], &nodes_[4]);
+                triangles_[3].set(&nodes_[0], &nodes_[4], &nodes_[5]);
+                triangles_[4].set(&nodes_[0], &nodes_[5], &nodes_[1]);
+                triangles_[5].set(&nodes_[10], &nodes_[11], &nodes_[6]);
+                triangles_[6].set(&nodes_[11], &nodes_[7], &nodes_[6]);
+                triangles_[7].set(&nodes_[11], &nodes_[8], &nodes_[7]);
+                triangles_[8].set(&nodes_[11], &nodes_[9], &nodes_[8]);
+                triangles_[9].set(&nodes_[11], &nodes_[10], &nodes_[9]);
+                triangles_[10].set(&nodes_[6], &nodes_[1], &nodes_[10]);
+                triangles_[11].set(&nodes_[2], &nodes_[6], &nodes_[7]);
+                triangles_[12].set(&nodes_[3], &nodes_[7], &nodes_[8]);
+                triangles_[13].set(&nodes_[4], &nodes_[8], &nodes_[9]);
+                triangles_[14].set(&nodes_[5], &nodes_[9], &nodes_[10]);
+                triangles_[15].set(&nodes_[6], &nodes_[2], &nodes_[1]);
+                triangles_[16].set(&nodes_[7], &nodes_[3], &nodes_[2]);
+                triangles_[17].set(&nodes_[8], &nodes_[4], &nodes_[3]);
+                triangles_[18].set(&nodes_[9], &nodes_[5], &nodes_[4]);
+                triangles_[19].set(&nodes_[10], &nodes_[1], &nodes_[5]);
+            }
+
+            PointWithNeighbors *getMidpoint(uint64_t const triangleId, int const i, int const j)
+            {
+                assert(0 <= i && i <= 2 && 0 <= j && j <= 2);
+
+                // search for ready midpoint
+                PointWithNeighbors *midpoint = triangles_[triangleId].readyMeadpoint(i, j);
+
+                if (!midpoint)
+                {
+                    nodes_[readyPoints_].setMiddle(triangles_[triangleId][i], triangles_[triangleId][j]);
+                    midpoint = &(nodes_[readyPoints_]);
+                    ++readyPoints_;
+                    triangles_[triangleId][i]->addMidpoint(triangles_[triangleId][j], midpoint);
+                    triangles_[triangleId][j]->addMidpoint(triangles_[triangleId][i], midpoint);
+                }
+
+                return midpoint;
+            }
+
+            void splitMesh()
+            {
+                auto newTriangles = new SphericalTriangle[directionsNumber_ * 4]{};
+
+                for(size_t cnt = 0; cnt < directionsNumber_; ++cnt)
+                {
+                    PointWithNeighbors *d_rib01 = getMidpoint(cnt, 0, 1);
+                    PointWithNeighbors *d_rib02 = getMidpoint(cnt, 0, 2);
+                    PointWithNeighbors *d_rib12 = getMidpoint(cnt, 1, 2);
+
+                    newTriangles[ 4 * cnt     ].set(triangles_[cnt][0], d_rib01, d_rib02);
+                    newTriangles[ 4 * cnt + 1 ].set(triangles_[cnt][1], d_rib12, d_rib01);
+                    newTriangles[ 4 * cnt + 2 ].set(triangles_[cnt][2], d_rib02, d_rib12);
+                    newTriangles[ 4 * cnt + 3 ].set(d_rib01, d_rib12, d_rib02);
+                }
+
+                delete[] triangles_;
+                triangles_ = newTriangles;
+
+                for (uint64_t cnt=0; cnt!=readyPoints_; ++cnt)
+                {
+                    nodes_[cnt].removeMidpoints();
+                }
+
+                directionsNumber_ *= 4;
+            }
+
+            uint64_t directionsNumber_;
+            uint64_t readyPoints_;
+            PointWithNeighbors *nodes_;
+            SphericalTriangle *triangles_;
+    };
 }
+
 
 // directions
 Directions::Directions(uint32_t NumOfDirectionsLevels)
 {
-    NumOfDirections_ = 20;
-    uint64_t NumOfReadyDirDots;
-    uint64_t NumOfDirDots = 12;
-    for(size_t cnt=1; cnt<NumOfDirectionsLevels; cnt++)
-    {
-        NumOfDirDots = NumOfDirDots+(NumOfDirections_*3)/2;
-        NumOfDirections_ *= 4;
-    }
-    NumOfDirections_ = 20;
-
-    auto *DirDots = new PointWithNeighbors[ NumOfDirDots ];
-    auto *DirTrigon = new SphericalTriangle[ NumOfDirections_ ];
-    SphericalTriangle *DirTrigon2;
-
-    PointWithNeighbors *d_rib01, *d_rib02, *d_rib12;
-    // initial sphere conditions
-    (DirDots[0]).set( Vector3d{0.0, 0.0, std::sqrt(5.0)/2.0});
-    for (int cnt=0; cnt!=5; ++cnt)
-    {
-        double const angle = cnt * 72.;
-        DirDots[cnt+1].set(Vector3d{ std::cos(angle*PI/180),  std::sin(angle*PI/180),  0.5 });
-        DirDots[cnt+6].set(Vector3d{ std::cos((36+angle)*PI/180),  std::sin((36+angle)*PI/180),  -0.5});
-    }
-    (DirDots[11]).set(Vector3d{0.0, 0.0, -std::sqrt(5.0)/2.0});
-    NumOfReadyDirDots = 12;
-
-    // triangles
-    DirTrigon[0].set(&DirDots[0], &DirDots[1], &DirDots[2]);
-    DirTrigon[1].set(&DirDots[0], &DirDots[2], &DirDots[3]);
-    DirTrigon[2].set(&DirDots[0], &DirDots[3], &DirDots[4]);
-    DirTrigon[3].set(&DirDots[0], &DirDots[4], &DirDots[5]);
-    DirTrigon[4].set(&DirDots[0], &DirDots[5], &DirDots[1]);
-    DirTrigon[5].set(&DirDots[10], &DirDots[11], &DirDots[6]);
-    DirTrigon[6].set(&DirDots[11], &DirDots[7], &DirDots[6]);
-    DirTrigon[7].set(&DirDots[11], &DirDots[8], &DirDots[7]);
-    DirTrigon[8].set(&DirDots[11], &DirDots[9], &DirDots[8]);
-    DirTrigon[9].set(&DirDots[11], &DirDots[10], &DirDots[9]);
-    DirTrigon[10].set(&DirDots[6], &DirDots[1], &DirDots[10]);
-    DirTrigon[11].set(&DirDots[2], &DirDots[6], &DirDots[7]);
-    DirTrigon[12].set(&DirDots[3], &DirDots[7], &DirDots[8]);
-    DirTrigon[13].set(&DirDots[4], &DirDots[8], &DirDots[9]);
-    DirTrigon[14].set(&DirDots[5], &DirDots[9], &DirDots[10]);
-    DirTrigon[15].set(&DirDots[6], &DirDots[2], &DirDots[1]);
-    DirTrigon[16].set(&DirDots[7], &DirDots[3], &DirDots[2]);
-    DirTrigon[17].set(&DirDots[8], &DirDots[4], &DirDots[3]);
-    DirTrigon[18].set(&DirDots[9], &DirDots[5], &DirDots[4]);
-    DirTrigon[19].set(&DirDots[10], &DirDots[1], &DirDots[5]);
-
-    for(uint32_t cnt=1; cnt<NumOfDirectionsLevels; ++cnt)
-    {
-        // new triangles
-        DirTrigon2 = DirTrigon;
-        DirTrigon = new SphericalTriangle[NumOfDirections_ * 4];
-        // splitting
-        for(size_t cnt2 = 0; cnt2 < NumOfDirections_; ++cnt2)
-        {
-            // middle dots
-            d_rib01 = nullptr;
-            d_rib02 = nullptr;
-            d_rib12 = nullptr;
-            // search for ready ones
-            for(size_t cntm=0; cntm!=DirTrigon2[cnt2][0]->midpointsNumber(); ++cntm )
-            {
-                if ( DirTrigon2[cnt2][0]->neighbor(cntm) == DirTrigon2[cnt2][1] )
-                {
-                    d_rib01=DirTrigon2[cnt2][0]->midpoint(cntm);
-                    break;
-                }
-            }
-            for(size_t cntm=0; cntm!=DirTrigon2[cnt2][0]->midpointsNumber(); ++cntm )
-            {
-                if ( DirTrigon2[cnt2][0]->neighbor(cntm) == DirTrigon2[cnt2][2] )
-                {
-                    d_rib02=DirTrigon2[cnt2][0]->midpoint(cntm);
-                    break;
-                }
-            }
-            for(size_t cntm=0; cntm!=DirTrigon2[cnt2][1]->midpointsNumber(); ++cntm )
-            {
-                if ( DirTrigon2[cnt2][1]->neighbor(cntm) == DirTrigon2[cnt2][2] )
-                {
-                    d_rib12=DirTrigon2[cnt2][1]->midpoint(cntm);
-                    break;
-                }
-            }
-            // new ones adding
-            if (d_rib01 == nullptr)
-            {
-                DirDots[ NumOfReadyDirDots ].setMiddle(DirTrigon2[cnt2][0], DirTrigon2[cnt2][1] );
-                d_rib01 = &(DirDots[ NumOfReadyDirDots ]);
-                ++NumOfReadyDirDots;
-                DirTrigon2[cnt2][0]->addMidpoint( DirTrigon2[cnt2][1], d_rib01 );
-                DirTrigon2[cnt2][1]->addMidpoint( DirTrigon2[cnt2][0], d_rib01 );
-            }
-            if (d_rib02 == nullptr)
-            {
-                DirDots[ NumOfReadyDirDots ].setMiddle(DirTrigon2[cnt2][0], DirTrigon2[cnt2][2] );
-                d_rib02 = &(DirDots[ NumOfReadyDirDots ]);
-                ++NumOfReadyDirDots;
-                DirTrigon2[cnt2][0]->addMidpoint( DirTrigon2[cnt2][2], d_rib02 );
-                DirTrigon2[cnt2][2]->addMidpoint( DirTrigon2[cnt2][0], d_rib02 );
-            }
-            if (d_rib12 == nullptr)
-            {
-                DirDots[ NumOfReadyDirDots ].setMiddle(DirTrigon2[cnt2][1], DirTrigon2[cnt2][2] );
-                d_rib12 = &(DirDots[ NumOfReadyDirDots ]);
-                ++NumOfReadyDirDots;
-                DirTrigon2[cnt2][1]->addMidpoint( DirTrigon2[cnt2][2], d_rib12 );
-                DirTrigon2[cnt2][2]->addMidpoint( DirTrigon2[cnt2][1], d_rib12 );
-            }
-            // triangle splitting
-            DirTrigon[ 4*cnt2   ].set(DirTrigon2[cnt2][0], d_rib01, d_rib02);
-            DirTrigon[ 4*cnt2+1 ].set(DirTrigon2[cnt2][1], d_rib12, d_rib01);
-            DirTrigon[ 4*cnt2+2 ].set(DirTrigon2[cnt2][2], d_rib02, d_rib12);
-            DirTrigon[ 4*cnt2+3 ].set(d_rib01, d_rib12, d_rib02);
-        }
-        delete[] DirTrigon2;
-
-        for (uint64_t cnt2=0; cnt2!=NumOfReadyDirDots; ++cnt2)
-        {
-            DirDots[cnt2].removeMidpoints();
-        }
-
-        NumOfDirections_ *= 4;
-    }
-
-    dots_ = new Vector3d[ NumOfDirections_ ];
-    w_	  = new double[ NumOfDirections_ ];
-
-    for (uint64_t cnt=0; cnt<NumOfDirections_; ++cnt)
-    {
-        dots_[cnt] = DirTrigon[cnt].median();
-        w_[cnt] = DirTrigon[cnt].square()*NumOfDirections_ / 4. / PI;
-    }
-    delete[] DirDots;
-    delete[] DirTrigon;
+    IcosahedronMesh mesh(NumOfDirectionsLevels);
+    points_ = mesh.points();
+    w_	  = mesh.weights();
+    directionsNumber_ = mesh.directionsNumber();
 }

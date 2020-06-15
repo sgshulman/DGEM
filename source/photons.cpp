@@ -76,13 +76,13 @@ void Photon::Scatt( Model const &m, Directions const &dirs, Grid const &grid, st
         double hgfrac;
         // normalizing
         double sum=0;
-        for (size_t j=0; j!=dirs.NumOfDirections(); ++j)
+        for (size_t j=0; j!=dirs.number(); ++j)
         {
             calpha = dir_.vector() * dirs.direction(j);
             sum += dirs.w(j) * m.dust()->fraction(calpha);
         }
 
-        for (size_t j=0; j!=dirs.NumOfDirections(); ++j)
+        for (size_t j=0; j!=dirs.number(); ++j)
         {
             // Release photon from point source
             calpha = dir_.vector() * dirs.direction(j);
