@@ -6,8 +6,7 @@
 #include "model.hpp"
 #include "photons.hpp"
 
-
-double Density(double x, double y, double z, double R_i, double R_d, double rho_0, double h_0, double R_0, double alpha, double beta)
+double FlaredDisk::density(double x, double y, double z) const
 {
     // model flat disk
     double r, r2, h;
@@ -16,30 +15,36 @@ double Density(double x, double y, double z, double R_i, double R_d, double rho_
     r=sqrt(r2);
 
     // Disk Geometry
-    if(( r >= R_i ) && ( r <= R_d ))
+    if(( r >= rInner_ ) && ( r <= rOuter_ ))
     {
-        h=h_0*pow(r/R_0, beta);
-        return (rho_0*pow(R_0/r, alpha)*exp(-0.5*z*z/(h*h))); // rho in g/cm^3
+        h=h0_ * std::pow(r/r0_, beta_);
+        return (rho0_ * std::pow(r0_/r, alpha_)*exp(-0.5*z*z/(h*h))); // rho in g/cm^3
     } else {
         return 0.0;
     }
 }
 
 
-void Grid::Init(double const xmax, double const ymax, double const zmax, double const kappa,
-                double R_i, double R_d, double rho_0, double h_0, double R_0,
-                double alpha, double beta, uint32_t Nx, uint32_t Ny, uint32_t Nz )
+Grid::Grid(
+        double const xmax,
+        double const ymax,
+        double const zmax,
+        double const kappa,
+        uint32_t const Nx,
+        uint32_t const Ny,
+        uint32_t const Nz,
+        FlaredDiskCPtr disk)
+    : Nx_{ Nx }
+    , Ny_{ Ny }
+    , Nz_{ Nz }
+    , xmax_{ xmax }
+    , ymax_{ ymax }
+    , zmax_{ zmax }
+    , disk_{ std::move(disk) }
 {
     double x, y, z;
-    Nx_=Nx;
-    Ny_=Ny;
-    Nz_=Nz;
     rhokappa_ = new double[Nx_*Ny_*Nz_];
     minrho_ = 1e+38;
-
-    xmax_ = xmax;
-    ymax_ = ymax;
-    zmax_ = zmax;
 
     for (size_t cntx=0; cntx!=Nx_; ++cntx)
     {
@@ -50,7 +55,7 @@ void Grid::Init(double const xmax, double const ymax, double const zmax, double 
             for (size_t cntz=0; cntz!=Nz_; ++cntz)
             {
                 z=(cntz*2.0+1)*zmax_/Nz_-zmax_;
-                rhokappa_[cntx+cnty*Nx+cntz*Ny*Nx]=Density(x,y,z, R_i, R_d, rho_0, h_0, R_0, alpha, beta)*kappa*1.5e13; // rho*kappa*R,
+                rhokappa_[cntx+cnty*Nx+cntz*Ny*Nx]=disk_->density(x, y, z)*kappa*1.5e13; // rho*kappa*R,
                 if (minrho_ > rhokappa_[cntx+cnty*Nx+cntz*Ny*Nx] && rhokappa_[cntx+cnty*Nx+cntz*Ny*Nx] > 0)
                     minrho_ = rhokappa_[cntx+cnty*Nx+cntz*Ny*Nx];
             }

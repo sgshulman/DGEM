@@ -13,7 +13,7 @@ double const PI	= 3.1415926;
 class Random
 {
     public:
-		Random (int32_t iseed=-1556) : iseed_(iseed) { } ;
+		explicit Random (int32_t iseed=-1556) : iseed_(iseed) { } ;
 		double Get()
 		{
 			  int32_t IM1,IM2,IMM1,IA1,IA2,IQ1,IQ2,IR1,IR2,NTAB,NDIV,j,k;
@@ -59,9 +59,9 @@ extern Random ran;
 class Model
 {
 	public:
-		static Model & instance (Grid *grid, Sources *sources, std::vector<Observer> *observers)
+		static Model & instance (Sources *sources, std::vector<Observer> *observers)
 		{
-			static Model mod(grid, sources, observers) ;
+			static Model mod(sources, observers) ;
 			return mod ;
 		}
 		bool fMonteCarlo() const
@@ -86,6 +86,8 @@ class Model
 		{	return NumOfPrimaryScatterings_;	}
 		uint32_t NumOfSecondaryScatterings() const
 		{	return NumOfSecondaryScatterings_;	}
+		GridCPtr grid() const
+        {   return grid_; }
 		DustCPtr dust() const
         {   return dust_; }
 
@@ -101,8 +103,9 @@ class Model
 		uint32_t NumOfPrimaryScatterings_, NumOfSecondaryScatterings_;
 
 		DustCPtr dust_;
+        GridCPtr grid_;
 
-		Model (Grid *grid, Sources *sources, std::vector<Observer> *observers);
+		Model (Sources *sources, std::vector<Observer> *observers);
 		Model (Model const &);
 		Model & operator =( Model const &);
 };

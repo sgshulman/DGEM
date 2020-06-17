@@ -3,13 +3,19 @@
 
 #include <memory>
 
-class Grid ;
 class Pictures ;
 class Observer;
 class Photon ;
 class Source ;
 class Sources ;
 class Directions ;  // directions grid
+
+class FlaredDisk;
+using FlaredDiskCPtr = std::shared_ptr<FlaredDisk const>;
+
+class Grid;
+using GridCPtr = std::shared_ptr<Grid const>;
+using GridCRef = GridCPtr const &;
 
 class Dust;
 using DustCPtr = std::shared_ptr<Dust const>;

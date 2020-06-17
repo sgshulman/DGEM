@@ -7,19 +7,52 @@
 
 #include "Predefines.hpp"
 
+class FlaredDisk
+{
+public:
+    FlaredDisk(
+            double rInner,
+            double rOuter,
+            double rho0,
+            double h0,
+            double r0,
+            double alpha,
+            double beta)
+        : rInner_{ rInner }
+        , rOuter_{ rOuter }
+        , rho0_{ rho0 }
+        , h0_{ h0 }
+        , r0_{ r0 }
+        , alpha_{ alpha }
+        , beta_{ beta }
+    {}
+
+    double density(double x, double y, double z) const;
+
+private:
+    double const rInner_;
+    double const rOuter_;
+    double const rho0_;
+    double const h0_;
+    double const r0_;
+    double const alpha_;
+    double const beta_;
+};
+
 // cartezian grid
 class Grid
 {
     public:
-        Grid() : Nx_(0), Ny_(0), Nz_(0), rhokappa_(nullptr) {};
+        Grid(double xmax, double ymax, double zmax, double kappa,
+            uint32_t Nx, uint32_t Ny, uint32_t Nz, FlaredDiskCPtr disk);
+
         ~Grid()
         {
-            if (rhokappa_ != nullptr) delete[] rhokappa_;
+            delete[] rhokappa_;
         }
 
-        void Init(double xmax, double ymax, double zmax, double kappa,
-                  double R_i, double R_d, double rho_0, double h_0, double R_0,
-                  double alpha, double beta, uint32_t Nx, uint32_t Ny, uint32_t Nz );
+        Grid(Grid const &) = delete;
+        Grid& operator=(Grid const &) = delete;
 
         double PhotonSMax( Photon &ph ) const;
         double PhotonCWall( Photon &ph, double delta ) const;
@@ -29,11 +62,10 @@ class Grid
         void Peeloff( Photon ph, Observer &obs, DustCRef dust) const;
     private:
         uint32_t Nx_, Ny_, Nz_;
-        double *rhokappa_;
+        double *rhokappa_{ nullptr };
         double xmax_, ymax_, zmax_;
         double minrho_;
-        Grid ( Grid const &);
-        Grid & operator =( Grid const &);
+        FlaredDiskCPtr disk_;
 };
 #endif
 

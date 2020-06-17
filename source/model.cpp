@@ -7,7 +7,7 @@
 #include "observers.hpp"
 #include "Dust.hpp"
 
-Model::Model(Grid *grid, Sources *sources, std::vector<Observer>* observers)
+Model::Model(Sources *sources, std::vector<Observer>* observers)
 {
     // disk parameters
     double R_i, R_d;
@@ -136,7 +136,8 @@ Model::Model(Grid *grid, Sources *sources, std::vector<Observer>* observers)
     for (size_t i=0; i!=observers->size(); ++i)
         std::cout << " observer=" << (*observers)[i].phi() << "\t" << (*observers)[i].theta() << "\n";
 
-    grid->Init(xmax, ymax, zmax, kappa, R_i, R_d, rho_0, h_0, R_0, alpha, beta, 201, 201, 201);
+    FlaredDiskCPtr disk = std::make_shared<FlaredDisk const>(R_i, R_d, rho_0, h_0, R_0, alpha, beta);
+    grid_ = std::make_shared<Grid const>(xmax, ymax, zmax, kappa, 201, 201, 201, disk);
     sources->Init(nstars, x, y, z, l);
 
     delete[] x;

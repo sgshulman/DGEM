@@ -12,7 +12,7 @@ Random ran;
 
 void directPhotons(
     Sources const& sources,
-    Grid const& grid,
+    GridCRef grid,
     std::vector<Observer>* observers,
     unsigned long long const num_photons)
 {
@@ -28,7 +28,7 @@ void directPhotons(
             Photon ph(sources[is].pos(), Direction3d((*observers)[io].pos()), 1.0, 0);
 
             // Find optical depth, tau1, to edge of grid along viewing direction
-            double tau1 = grid.TauFind(ph);
+            double tau1 = grid->TauFind(ph);
 
             // direct photon weight is exp(-tau1)/4pi
             ph.weight() = nph * exp(-tau1) / 4.0 / PI;
@@ -41,15 +41,15 @@ void directPhotons(
 }
 
 
-int main(void)
+int main()
 {
     // density grid and sources
-    Grid grid;
     Sources	sources;
     std::vector<Observer> observers;
 
     // read the model parameters
-    Model & model = Model::instance(&grid, &sources, &observers);
+    Model & model = Model::instance(&sources, &observers);
+    GridCPtr grid = model.grid();
 
     // Scattered photon loop
     uint64_t totscatt=0;
@@ -76,7 +76,7 @@ int main(void)
                 Photon ph(sources[is].pos(), 1.0, 1 );
 
                 // Find optical depth, tau1, to edge of grid
-                double tau1 = grid.TauFind( ph );
+                double tau1 = grid->TauFind( ph );
                 if ( tau1 < model.taumin() ) continue;
                 double w = 1.0-exp(-tau1);
                 ph.weight() = w;
@@ -84,7 +84,7 @@ int main(void)
                 // Force photon to scatter at optical depth tau before edge of grid
                 double tau=-log(1.0-ran.Get()*w );
                 // Find scattering location of tau
-                grid.TauInt( ph, tau );
+                grid->TauInt( ph, tau );
                 // Photon scatters in grid until it exits (tflag=1) or number
                 // of scatterings exceeds a set value (nscatt)
                 int tflag = 0;
@@ -95,7 +95,7 @@ int main(void)
                     // учитыается нерассеяшийся свет от каждой точки рассеяния и последующие рассеяния, пока фотон не изыдет
                     for (Observer& observer : observers)
                     {
-                        grid.Peeloff(ph, observer, model.dust());
+                        grid->Peeloff(ph, observer, model.dust());
                     }
 
                     // Scatter photon into new direction and update Stokes parameters
@@ -104,7 +104,7 @@ int main(void)
                     ++totscatt;
                     if (ph.nscat() > model.nscat()) break;
                     // Find next scattering location
-                    tflag = grid.TauInt2( ph );
+                    tflag = grid->TauInt2( ph );
                 }
             } // end loop over nph photons
         } // end loop over nsource sources
@@ -133,7 +133,7 @@ int main(void)
                 Photon ph0(sources[is].pos(), direction, 1.0, 1 );
 
                 // Find optical depth, tau1, to edge of grid
-                double tau1 = grid.TauFind( ph0 );
+                double tau1 = grid->TauFind( ph0 );
                 if ( tau1 < model.taumin() ) continue;
 
                 double w = (1.0-exp(-tau1)) / model.NumOfPrimaryScatterings() ;
@@ -148,7 +148,7 @@ int main(void)
                     tauold = tau;
                     tau=-log( 1.0-0.5*w*(2*s+1) );
                     // Find scattering location of tau
-                    grid.TauInt( ph, tau, tauold );
+                    grid->TauInt( ph, tau, tauold );
                     spos = ph.pos();
                     // Photon scatters in grid until it exits (tflag=1) or number
                     // of scatterings exceeds a set value (nscatt)
@@ -158,7 +158,7 @@ int main(void)
 
                     for (Observer& observer : observers)
                     {
-                        grid.Peeloff(ph, observer, model.dust());
+                        grid->Peeloff(ph, observer, model.dust());
                     }
 
                     if (ph.nscat() < model.nscat() ) ph.Scatt( model, sdir, grid, observers );
