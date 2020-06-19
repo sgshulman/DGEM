@@ -25,23 +25,30 @@ class Photon
         {	return pos_;	}
         Direction3d& dir()
         {	return dir_;	}
-        double &x( void )
+        Vector3d const& pos() const
+        {	return pos_;	}
+        Direction3d const& dir() const
+        {	return dir_;	}
+
+        double& x()
         {	return pos_.x();}
-        double &y( void )
+        double& y()
         {	return pos_.y();}
-        double &z( void )
+        double& z()
         {	return pos_.z();}
-        double fi( void ) const
+
+        double fi() const
         {	return fi_;		}
-        double fq( void ) const
+        double fq() const
         {	return fq_;		}
-        double fu( void ) const
+        double fu() const
         {	return fu_;		}
-        double fv( void ) const
+        double fv() const
         {	return fv_;		}
-        uint32_t & nscat( void )
+
+        uint32_t& nscat()
         {	return nscat_;	}
-        double & weight( void )
+        double& weight()
         {	return weight_;	}
     private:
         Vector3d	pos_;	// outpoint

@@ -53,7 +53,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, GridCRef grid, std::
         Photon ph(*this);
         int tflag = 0;
         ph.Stokes( m.dust(), Direction3d(), 0.0, false );
-        tflag = grid->TauInt2( ph );
+        tflag = grid->movePhotonAtRandomDepth(ph);
         ph.nscat()+=1;
         while ( !tflag && ( ph.nscat() <= m.nscat() ) )
         {
@@ -61,7 +61,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, GridCRef grid, std::
             // Do peeling off and project weighted photons into image
             for (Observer& observer : observers)
             {
-                grid->Peeloff(ph, observer, m.dust());
+                grid->peeloff(ph, observer, m.dust());
             }
 
             // Scatter photon into new direction and update Stokes parameters
@@ -69,7 +69,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, GridCRef grid, std::
             ph.nscat()+=1;
             if (ph.nscat() > m.nscat()) break;
             // Find next scattering location
-            tflag = grid->TauInt2( ph );
+            tflag = grid->movePhotonAtRandomDepth(ph);
         }
     } else {
         double calpha;
@@ -102,7 +102,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, GridCRef grid, std::
                 tauold = tau;
                 tau=-log( 1.0-0.5*w*(2*s+1) );
                 // Find scattering location of tau
-                if( grid->TauInt( ph, tau, tauold ) )
+                if( grid->movePhotonAtDepth( ph, tau, tauold ) )
                 {
                     break;
                 } else {
@@ -113,7 +113,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, GridCRef grid, std::
 
                     for (Observer& observer : observers)
                     {
-                        grid->Peeloff(ph, observer, m.dust());
+                        grid->peeloff(ph, observer, m.dust());
                     }
 
                     if (ph.nscat() < m.nscat() ) ph.Scatt( m, dirs, grid, observers );
