@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 
@@ -5,6 +6,20 @@
 #include "observers.hpp"
 #include "model.hpp"
 #include "photons.hpp"
+
+namespace
+{
+    inline double ds(double const pos, double const velocity, double const max)
+    {
+        if(velocity > 0.0)
+        {
+            return (max - pos) / velocity;
+        } else if(velocity < 0.0) {
+            return (pos + max) / velocity;
+        }
+        return 2.0 * max;
+    }
+}
 
 double FlaredDisk::density(double x, double y, double z) const
 {
@@ -63,31 +78,11 @@ Grid::Grid(
 // calculate smax -- maximum distance photon can travel *******
 double Grid::maxDistance(Photon const& ph) const
 {	
-    double dsx=0.0, dsy=0.0, dsz=0.0, smax =0.0;
-    if(ph.dir().x() > 0.0) {
-        dsx = (xmax_ - ph.pos().x()) / ph.dir().x();
-    } else if(ph.dir().x() < 0.0) {
-        dsx =-(ph.pos().x() + xmax_) / ph.dir().x();
-    } else {
-        dsx = 200.0*xmax_;
-    }
-    if(ph.dir().y() > 0.0) {
-        dsy = (ymax_ - ph.pos().y()) / ph.dir().y();
-    } else if(ph.dir().y() < 0.0) {
-        dsy =-(ph.pos().y() + ymax_) / ph.dir().y();
-    } else {
-        dsy =200.0*ymax_;
-    }
-    if(ph.dir().z() > 0.0) {
-        dsz= (zmax_ - ph.pos().z()) / ph.dir().z();
-    } else if(ph.dir().z() < 0.0) {
-        dsz=-(ph.pos().z() + zmax_) / ph.dir().z();
-    } else {
-        dsz=200.0*zmax_;
-    }
-    smax = ( dsx < dsy) ? dsx  : dsy;
-    smax = (smax < dsz) ? smax : dsz;
-    return smax;
+    double const dsx = ds(ph.pos().x(), ph.dir().x(), xmax_);
+    double const dsy = ds(ph.pos().y(), ph.dir().y(), xmax_);
+    double const dsz = ds(ph.pos().z(), ph.dir().z(), xmax_);
+
+    return std::max(dsx, std::max(dsy, dsz));
 }
 
 // find distance to next x, y, and z cell walls.  
@@ -161,7 +156,7 @@ double Grid::findOpticalDepth( Photon ph, double delta ) const
 {
     double taurun=0.0, d=0.0;
 
-    if (delta < 0.0 ) delta=0.0001*(2.*xmax_/nx_);
+    if (delta < 0.0) delta=0.0001*(2.*xmax_/nx_);
     double const smax = maxDistance(ph);
 
     if(smax < delta)
