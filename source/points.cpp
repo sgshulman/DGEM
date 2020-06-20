@@ -11,21 +11,21 @@
 Random ran;
 
 void directPhotons(
-    Sources const& sources,
+    SourcesRef sources,
     GridCRef grid,
     std::vector<Observer>* observers,
     unsigned long long const num_photons)
 {
     // Direct photon loop.  Loop over sources and weight photons by
     // W=ph*exp(-tau1)/4pi
-    for (uint64_t is = 0; is != sources.num(); ++is)
+    for (uint64_t is = 0; is != sources->num(); ++is)
     {
-        uint64_t nph = uint64_t(num_photons * sources[is].lum() / sources.totlum());
+        uint64_t nph = uint64_t(num_photons * (*sources)[is].luminosity() / sources->totlum());
 
         for (size_t io = 0; io != observers->size(); ++io)
         {
             // Set photon location, grid cell, and direction of observation
-            Photon ph(sources[is].pos(), Direction3d((*observers)[io].pos()), 1.0, 0);
+            Photon ph((*sources)[is].pos(), Direction3d((*observers)[io].pos()), 1.0, 0);
 
             // Find optical depth, tau1, to edge of grid along viewing direction
             double tau1 = grid->findOpticalDepth(ph);
@@ -43,13 +43,12 @@ void directPhotons(
 
 int main()
 {
-    // density grid and sources
-    Sources	sources;
     std::vector<Observer> observers;
 
     // read the model parameters
-    Model & model = Model::instance(&sources, &observers);
+    Model & model = Model::instance(&observers);
     GridCPtr grid = model.grid();
+    SourcesPtr sources = model.sources();
 
     // Scattered photon loop
     uint64_t totscatt=0;
@@ -61,9 +60,9 @@ int main()
         Random ran( model.iseed() );
 
         // Loop over sources. nph=number of photons to release from each source
-        for (size_t is=0; is!=sources.num(); ++is)
+        for (size_t is=0; is!=sources->num(); ++is)
         {
-            uint64_t nph=(uint64_t)(model.num_photons() * sources[is].lum() / sources.totlum());
+            uint64_t nph=(uint64_t)(model.num_photons() * (*sources)[is].luminosity() / sources->totlum());
             // Loop over nph photons from each source
             for (uint64_t j=0; j<nph; ++j)
             {
@@ -73,7 +72,7 @@ int main()
                     std::cout << jcount << " scattered photons completed" << std::endl;
                 }
                 // Release photon from point source
-                Photon ph(sources[is].pos(), 1.0, 1 );
+                Photon ph((*sources)[is].pos(), 1.0, 1 );
 
                 // Find optical depth, tau1, to edge of grid
                 double tau1 = grid->findOpticalDepth( ph );
@@ -117,9 +116,9 @@ int main()
         std::cout << "Directions ready" << std::endl;
 
         // Loop over sources.
-        for (size_t is=0; is!=sources.num(); ++is)
+        for (size_t is=0; is!=sources->num(); ++is)
         {
-            double w0=sources[is].lum()/sources.totlum();
+            double w0=(*sources)[is].luminosity()/sources->totlum();
             uint64_t jcount=0;
             // Loop over primary directions
             for (size_t j=0; j!=pdir.number(); ++j)
@@ -127,18 +126,18 @@ int main()
                 ++jcount;
                 if( jcount%1000 == 0)
                 {
-                    std::cout << "Sources: " << is+1 << "/" << sources.num() << ". Directions: " << jcount << "/" << pdir.number() << std::endl;
+                    std::cout << "Sources: " << is+1 << "/" << sources->num() << ". Directions: " << jcount << "/" << pdir.number() << std::endl;
                 }
                 // Release photon from point source
                 Direction3d direction{ pdir.direction(j) };
-                Photon ph0(sources[is].pos(), direction, 1.0, 1 );
+                Photon ph0((*sources)[is].pos(), direction, 1.0, 1 );
 
                 // Find optical depth, tau1, to edge of grid
                 double tau1 = grid->findOpticalDepth( ph0 );
                 if ( tau1 < model.taumin() ) continue;
 
                 double w = (1.0-exp(-tau1)) / model.NumOfPrimaryScatterings() ;
-                Vector3d spos = sources[is].pos();
+                Vector3d spos = (*sources)[is].pos();
                 double tauold = 0.0, tau = 0.0;
 
                 // Loop over scattering dots

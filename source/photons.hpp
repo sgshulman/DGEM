@@ -57,56 +57,67 @@ class Photon
         double weight_;
         double fi_, fq_, fu_, fv_;
 };
-// one source of photons
-class Source
+
+// one point source of photons
+class PointSource
 {
     public:
-        Source() : pos_(Vector3d()), lum_(0.0) {};
-        Source( Vector3d const& pos, double lum ) : pos_(pos), lum_(lum) {};
-        Source( double x, double y, double z, double lum ) : pos_(Vector3d(x,y,z)), lum_(lum) {};
-        Vector3d const & pos( void ) const
+        PointSource()
+            : lum_{}
+        {}
+
+        PointSource(Vector3d const& pos, double lum)
+            : pos_(pos)
+            , lum_(lum)
+        {};
+
+        Vector3d const& pos() const
         {	return pos_; }
-        double lum( void ) const
+        
+        double luminosity() const
         {	return lum_; }
+
     private:
         Vector3d	pos_;
         double		lum_;
 };
+
 // all sources of photons
 class Sources
 {
     public:
-        Sources(  ) : num_(0), totlum_(0), sources_(nullptr) {};
-        ~Sources()
+        Sources(uint32_t nstars, double *x, double *y, double *z, double *l)
+        : number_{ nstars }
+        , totlum_{ 0. }
         {
-            if (num_ != 0) delete[] sources_;
-        }
-
-        void Init(uint32_t nstars, double *x, double *y, double *z, double *l)
-        {
-            num_ = nstars;
-            sources_ = new Source[num_];
-            for (size_t cnt=0; cnt!=num_; ++cnt)
+            sources_ = new PointSource[number_];
+            for (uint32_t cnt=0; cnt!=number_; ++cnt)
             {
-                sources_[cnt] = Source(x[cnt], y[cnt], z[cnt], l[cnt]);
-                totlum_ += sources_[cnt].lum();
+                sources_[cnt] = PointSource(Vector3d{x[cnt], y[cnt], z[cnt]}, l[cnt]);
+                totlum_ += sources_[cnt].luminosity();
             }
         }
-        uint32_t num( void ) const
-        {	return num_;	}
-        double totlum( void ) const
+
+        ~Sources()
+        {
+            delete[] sources_;
+        }
+
+        Sources(Sources const &) = delete;
+        Sources& operator=(Sources const&) = delete;
+
+        uint32_t num() const
+        {	return number_;	}
+        double totlum() const
         {	return totlum_;	}
-        Source & operator []( int i )
+        PointSource& operator []( int i )
         {	return sources_[i];	}
-        Source const & operator []( int i ) const
+        PointSource const& operator []( int i ) const
         {	return sources_[i];	}
     private:
-        uint32_t 	num_;
-        double	totlum_;
-        Source	*sources_;
-
-        Sources ( Sources const &);
-        Sources & operator =( Sources const &);
+        uint32_t number_;
+        double	 totlum_;
+        PointSource	*sources_;
 };
 
 #endif

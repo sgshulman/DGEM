@@ -59,9 +59,9 @@ extern Random ran;
 class Model
 {
 	public:
-		static Model & instance (Sources *sources, std::vector<Observer> *observers)
+		static Model& instance (std::vector<Observer> *observers)
 		{
-			static Model mod(sources, observers) ;
+			static Model mod(observers) ;
 			return mod ;
 		}
 		bool fMonteCarlo() const
@@ -90,7 +90,8 @@ class Model
         {   return grid_; }
 		DustCPtr dust() const
         {   return dust_; }
-
+        SourcesPtr sources()
+        {   return sources_; }
 	private:
 		bool fMonteCarlo_;
 		double taumin_;
@@ -104,10 +105,11 @@ class Model
 
 		DustCPtr dust_;
         GridCPtr grid_;
+        SourcesPtr sources_;
 
-		Model (Sources *sources, std::vector<Observer> *observers);
-		Model (Model const &);
-		Model & operator =( Model const &);
+		Model(std::vector<Observer> *observers);
+		Model(Model const &);
+		Model& operator=( Model const &);
 };
 
 #endif

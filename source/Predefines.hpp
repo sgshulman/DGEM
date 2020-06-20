@@ -7,8 +7,11 @@ class Pictures ;
 class Observer;
 class Photon ;
 class Source ;
-class Sources ;
 class Directions ;  // directions grid
+
+class Sources;
+using SourcesPtr = std::shared_ptr<Sources>;
+using SourcesRef = SourcesPtr const &;
 
 class FlaredDisk;
 using FlaredDiskCPtr = std::shared_ptr<FlaredDisk const>;
