@@ -15,7 +15,7 @@ namespace
         {
             return (max - pos) / velocity;
         } else if(velocity < 0.0) {
-            return (pos + max) / velocity;
+            return -(pos + max) / velocity;
         }
         return 2.0 * max;
     }
@@ -79,10 +79,10 @@ Grid::Grid(
 double Grid::maxDistance(Photon const& ph) const
 {	
     double const dsx = ds(ph.pos().x(), ph.dir().x(), xmax_);
-    double const dsy = ds(ph.pos().y(), ph.dir().y(), xmax_);
-    double const dsz = ds(ph.pos().z(), ph.dir().z(), xmax_);
+    double const dsy = ds(ph.pos().y(), ph.dir().y(), ymax_);
+    double const dsz = ds(ph.pos().z(), ph.dir().z(), zmax_);
 
-    return std::max(dsx, std::max(dsy, dsz));
+    return std::min(dsx, std::min(dsy, dsz));
 }
 
 // find distance to next x, y, and z cell walls.  
