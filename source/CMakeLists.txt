@@ -17,6 +17,8 @@ set(SOURCES
         photons.cpp
         photons.hpp
         points.cpp
+        Sources.cpp
+        Sources.hpp
         Predefines.hpp
         Vector3d.hpp)
 

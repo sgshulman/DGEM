@@ -3,7 +3,7 @@
 #include <vector>
 #include "model.hpp"
 #include "grid.hpp"
-#include "photons.hpp"
+#include "Sources.hpp"
 #include "observers.hpp"
 #include "Dust.hpp"
 

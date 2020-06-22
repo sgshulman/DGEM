@@ -7,6 +7,7 @@
 #include "photons.hpp"
 #include "directions.hpp"
 #include "Dust.hpp"
+#include "Sources.hpp"
 
 Random ran;
 
