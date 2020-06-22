@@ -30,13 +30,16 @@ Model::Model(std::vector<Observer>* observers)
     double ymax;
     double zmax;
 
+    SourceParameters sourceParameters;
+
     std::ifstream input("params.par");
-    input.ignore(1000000, '=');		input >> fMonteCarlo_;
+    input.ignore(1000000, '=');		input >> sourceParameters.useMonteCarlo_;
+    fMonteCarlo_ = sourceParameters.useMonteCarlo_;
     input.ignore(1000000, '=');		input >> taumin_;
     input.ignore(1000000, '=');		input >> nscat_;
-    input.ignore(1000000, '=');		input >> num_photons_;
+    input.ignore(1000000, '=');		input >> sourceParameters.num_photons_;
     input.ignore(1000000, '=');		input >> iseed_;
-    input.ignore(1000000, '=');		input >> PrimaryDirectionsLevel_;
+    input.ignore(1000000, '=');		input >> sourceParameters.PrimaryDirectionsLevel_;
     input.ignore(1000000, '=');		input >> SecondaryDirectionsLevel_;
     input.ignore(1000000, '=');		input >> NumOfPrimaryScatterings_;
     input.ignore(1000000, '=');		input >> NumOfSecondaryScatterings_;
@@ -116,9 +119,9 @@ Model::Model(std::vector<Observer>* observers)
     }
 
     input.close();
-    std::cout << "Parameters\n\nMethod\n fMonteCarlo=" << fMonteCarlo_ << "\n taumin=" << taumin_ << "\n nscat=" << nscat_;
-    std::cout << "\n\nMonte Carlo Parameters\n nphotons=" << num_photons_ << "\n iseed=" << iseed_ << "\n\n";
-    std::cout << "DGEM Parameters\n PrimaryDirectionsLevel=" << PrimaryDirectionsLevel_ << "\n SecondaryDirectionsLevel=" << SecondaryDirectionsLevel_;
+    std::cout << "Parameters\n\nMethod\n fMonteCarlo=" << sourceParameters.useMonteCarlo_ << "\n taumin=" << taumin_ << "\n nscat=" << nscat_;
+    std::cout << "\n\nMonte Carlo Parameters\n nphotons=" << sourceParameters.num_photons_ << "\n iseed=" << iseed_ << "\n\n";
+    std::cout << "DGEM Parameters\n PrimaryDirectionsLevel=" << sourceParameters.PrimaryDirectionsLevel_ << "\n SecondaryDirectionsLevel=" << SecondaryDirectionsLevel_;
     std::cout << "\n NumOfPrimaryScatterings=" << NumOfPrimaryScatterings_ << "\n NumOfSecondaryScatterings=" << NumOfSecondaryScatterings_;
     std::cout << "\n MonteCarloStart=" << MonteCarloStart_ << "\n\n";
     std::cout << "Physics\n kappa=" << kappa << "\n albedo=" << albedo << "\n hgg=" << hgg << "\n pl=" << pl << "\n pc=" << pc << "\n sc=" << sc << "\n\n";
@@ -138,7 +141,7 @@ Model::Model(std::vector<Observer>* observers)
 
     FlaredDiskCPtr disk = std::make_shared<FlaredDisk const>(R_i, R_d, rho_0, h_0, R_0, alpha, beta);
     grid_ = std::make_shared<Grid const>(xmax, ymax, zmax, kappa, 201, 201, 201, disk);
-    sources_ = std::make_shared<Sources>(nstars, x, y, z, l);
+    sources_ = std::make_shared<Sources>(sourceParameters, nstars, x, y, z, l);
 
     delete[] x;
     delete[] y;

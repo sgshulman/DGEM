@@ -66,18 +66,13 @@ class Model
 		}
 		bool fMonteCarlo() const
 		{	return fMonteCarlo_;	}
+
 		double taumin() const
 		{	return taumin_;	}
 		uint32_t nscat() const
 		{	return nscat_;	}
-        uint64_t& num_photons()
-		{	return num_photons_;	}
-        uint64_t num_photons() const
-		{	return num_photons_;	}
 		int32_t iseed() const
 		{	return iseed_;	}
-		uint32_t PrimaryDirectionsLevel() const
-		{	return PrimaryDirectionsLevel_;	}
 		uint32_t SecondaryDirectionsLevel() const
 		{	return SecondaryDirectionsLevel_;	}
 		uint32_t MonteCarloStart() const
@@ -95,13 +90,13 @@ class Model
 	private:
 		bool fMonteCarlo_;
 		double taumin_;
-		uint32_t nscat_;
-		uint64_t num_photons_;
 		int32_t iseed_;
-		uint32_t PrimaryDirectionsLevel_;
-		uint32_t SecondaryDirectionsLevel_;
+
+        uint32_t nscat_;
 		uint32_t MonteCarloStart_;
-		uint32_t NumOfPrimaryScatterings_, NumOfSecondaryScatterings_;
+		uint32_t SecondaryDirectionsLevel_;
+        uint32_t NumOfPrimaryScatterings_;
+		uint32_t NumOfSecondaryScatterings_;
 
 		DustCPtr dust_;
         GridCPtr grid_;

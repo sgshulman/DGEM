@@ -1,17 +1,16 @@
 #ifndef PHOTONS_HPP_
 #define PHOTONS_HPP_
 
+#include <limits>
 #include "model.hpp"
 #include "Vector3d.hpp"
 #include "Direction3d.hpp"
+#include "directions.hpp"
 
 // photon. It's properties and methods for the work with it
 class Photon
 {
     public:
-        // random direction photon generation
-        Photon(Vector3d const &position, double weight, uint32_t nscat );
-        // known direction photon generation
         Photon(Vector3d const &position, Direction3d const &dir, double weight, uint32_t nscat, double fi=1.0, double fq=0.0, double fu=0.0, double fv=0.0);
         // photon scattering
         double Scatt(DustCRef dust, Direction3d const & dir );
@@ -50,6 +49,10 @@ class Photon
         {	return nscat_;	}
         double& weight()
         {	return weight_;	}
+
+        bool termination() const
+        {   return nscat_ == std::numeric_limits<uint32_t>::max(); }
+
     private:
         Vector3d	pos_;	// outpoint
         Direction3d	dir_;	// vector of the direction
@@ -82,14 +85,33 @@ class PointSource
         double		lum_;
 };
 
+struct SourceParameters
+{
+    bool useMonteCarlo_;
+    uint64_t num_photons_;
+    uint32_t PrimaryDirectionsLevel_;
+    int32_t seed_;
+};
+
 // all sources of photons
 class Sources
 {
     public:
-        Sources(uint32_t nstars, double *x, double *y, double *z, double *l)
-        : number_{ nstars }
+        Sources(SourceParameters parameters, uint32_t nstars, double *x, double *y, double *z, double *l)
+        : parameters_{ parameters}
+        , number_{ nstars }
         , totlum_{ 0. }
+        , random_{ parameters_.seed_ }
+        , primaryDir_{ parameters_.PrimaryDirectionsLevel_ }
+        , currentSource_{ 0 }
+        , photonId_{ 0 }
         {
+            std::cout << "nstars " << nstars << std::endl;
+            if (!parameters.useMonteCarlo_)
+            {
+                parameters_.num_photons_ = primaryDir_.number();
+            }
+
             sources_ = new PointSource[number_];
             for (uint32_t cnt=0; cnt!=number_; ++cnt)
             {
@@ -106,18 +128,22 @@ class Sources
         Sources(Sources const &) = delete;
         Sources& operator=(Sources const&) = delete;
 
-        uint32_t num() const
-        {	return number_;	}
-        double totlum() const
-        {	return totlum_;	}
-        PointSource& operator []( int i )
-        {	return sources_[i];	}
-        PointSource const& operator []( int i ) const
-        {	return sources_[i];	}
+        Photon emitPhoton();
+        void directPhotons(GridCRef grid, std::vector<Observer>* observers);
+
+        size_t num_photons() const
+        {   return parameters_.num_photons_; }
+
     private:
-        uint32_t number_;
+        SourceParameters parameters_;
+        uint32_t const number_;
         double	 totlum_;
         PointSource	*sources_;
+
+        Random random_;
+        Directions primaryDir_;
+        uint32_t currentSource_;
+        uint64_t photonId_;
 };
 
 #endif
