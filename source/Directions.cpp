@@ -1,7 +1,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cassert>
-#include "directions.hpp"
+#include "Directions.hpp"
 
 namespace
 {

@@ -5,7 +5,7 @@
 #include "grid.hpp"
 #include "observers.hpp"
 #include "Photon.hpp"
-#include "directions.hpp"
+#include "Directions.hpp"
 #include "Dust.hpp"
 #include "Sources.hpp"
 

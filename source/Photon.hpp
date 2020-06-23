@@ -5,7 +5,7 @@
 #include "model.hpp"
 #include "Vector3d.hpp"
 #include "Direction3d.hpp"
-#include "directions.hpp"
+#include "Directions.hpp"
 
 // photon. It's properties and methods for the work with it
 class Photon

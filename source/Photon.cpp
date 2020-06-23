@@ -2,7 +2,7 @@
 #include "grid.hpp"
 #include "observers.hpp"
 #include "Photon.hpp"
-#include "directions.hpp"
+#include "Directions.hpp"
 #include "Dust.hpp"
 
 Photon::Photon( Vector3d const& pos, Direction3d const& dir, double weight, uint32_t nscat, double fi, double fq, double fu, double fv )
