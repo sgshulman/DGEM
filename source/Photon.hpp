@@ -22,19 +22,10 @@ class Photon
         }
         Vector3d& pos()
         {	return pos_;	}
-        Direction3d& dir()
-        {	return dir_;	}
         Vector3d const& pos() const
         {	return pos_;	}
         Direction3d const& dir() const
         {	return dir_;	}
-
-        double& x()
-        {	return pos_.x();}
-        double& y()
-        {	return pos_.y();}
-        double& z()
-        {	return pos_.z();}
 
         double fi() const
         {	return fi_;		}

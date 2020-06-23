@@ -6,11 +6,10 @@
 class Direction3d
 {
 public:
-    Direction3d()
-    {}
+    Direction3d() = default;
 
     Direction3d(Vector3d const vector)
-        : vector_{ std::move(vector.normalized()) }
+        : vector_{ vector.normalized() }
         , phi_{ std::atan2(vector_.y(), vector_.x()) }
         , sinTheta_{ std::sqrt(vector_.x()*vector_.x() + vector.y()*vector.y()) }
     {}

@@ -136,8 +136,11 @@ Model::Model(std::vector<Observer>* observers)
     // observers
     std::cout << "\n\nObservers\n rimage=" << rimage;
     std::cout << "\n nobservers=" << observers->size() << "\n";
+
     for (size_t i=0; i!=observers->size(); ++i)
+    {
         std::cout << " observer=" << (*observers)[i].phi() << "\t" << (*observers)[i].theta() << "\n";
+    }
 
     FlaredDiskCPtr disk = std::make_shared<FlaredDisk const>(R_i, R_d, rho_0, h_0, R_0, alpha, beta);
     grid_ = std::make_shared<Grid const>(xmax, ymax, zmax, kappa, 201, 201, 201, disk);

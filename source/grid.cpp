@@ -99,14 +99,14 @@ double Grid::cellDistance(Photon& ph, double delta) const
         if (dx < delta)
         {
             dx = tmp/ph.dir().x();
-            ph.x() = (int( (ph.pos().x()+xmax_) / tmp ) + 1.0 )*tmp - xmax_ + delta;
+            ph.pos().x() = (int( (ph.pos().x()+xmax_) / tmp ) + 1.0 )*tmp - xmax_ + delta;
         }
     } else if (ph.dir().x() < 0.0) {
         dx = (( int( (ph.pos().x()+xmax_)/ tmp ) )* tmp - xmax_ - ph.pos().x() )/ph.dir().x();
         if (dx < delta)
         {
             dx =-tmp/ph.dir().x();
-            ph.x() = ( int( (ph.pos().x()+xmax_)/tmp) )* tmp - xmax_ - delta;
+            ph.pos().x() = ( int( (ph.pos().x()+xmax_)/tmp) )* tmp - xmax_ - delta;
         }
     }
 
@@ -117,14 +117,14 @@ double Grid::cellDistance(Photon& ph, double delta) const
         if (dy < delta)
         {
             dy = tmp/ph.dir().y();
-            ph.y() = (int( (ph.pos().y()+ymax_)/tmp) + 1.0 )* tmp - ymax_+ delta;
+            ph.pos().y() = (int( (ph.pos().y()+ymax_)/tmp) + 1.0 )* tmp - ymax_+ delta;
         }
     } else if (ph.dir().y() < 0.0) {
         dy = (( int( (ph.pos().y()+ymax_)/tmp ) )*tmp - ymax_ - ph.pos().y() )/ph.dir().y();
         if (dy < delta)
         {
             dy =-tmp/ph.dir().y();
-            ph.y() = ( int( (ph.pos().y()+xmax_)/tmp ) )* tmp - ymax_ - delta;
+            ph.pos().y() = ( int( (ph.pos().y()+xmax_)/tmp ) )* tmp - ymax_ - delta;
         }
     }
 
@@ -135,14 +135,14 @@ double Grid::cellDistance(Photon& ph, double delta) const
         if (dz < delta)
         {
             dz = tmp/ph.dir().z();
-            ph.z() = (int( (ph.pos().z()+zmax_)/tmp ) + 1.0 )* tmp - zmax_ + delta;
+            ph.pos().z() = (int( (ph.pos().z()+zmax_)/tmp ) + 1.0 )* tmp - zmax_ + delta;
         }
     } else if (ph.dir().z() < 0.0) {
         dz = (( int( (ph.pos().z()+zmax_)/tmp ))* tmp- zmax_ - ph.pos().z() )/ph.dir().z();
         if (dz < delta)
         {
             dz =-tmp/ph.dir().z();
-            ph.z() = ( int( (ph.pos().z()+zmax_)/tmp ) )* tmp - zmax_ - delta;
+            ph.pos().z() = ( int( (ph.pos().z()+zmax_)/tmp ) )* tmp - zmax_ - delta;
         }
     }
 

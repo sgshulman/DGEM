@@ -139,14 +139,15 @@ public:
         cost_ = cos(theta_);
     }
 
-    void normalize(size_t numPhotons)
+    void normalize(size_t const numPhotons)
     {
         result_.normalize(numPhotons);
         result0_.normalize(numPhotons);
         result1_.normalize(numPhotons);
         result2_.normalize(numPhotons);
     }
-    void writeToMapFiles(bool fWriteSingleAndDoubleScatterings)
+
+    void writeToMapFiles(bool const fWriteSingleAndDoubleScatterings)
     {
         result_.write(phi_, theta_, 0);
 
@@ -157,7 +158,7 @@ public:
         }
     }
 
-    void write(std::ofstream & file)
+    void write(std::ofstream& file)
     {
         file << "phi = " << (phi_*180/3.1415926) << "\ttheta = " << (theta_*180/3.1415926);
         result_.sum(file);
@@ -166,10 +167,10 @@ public:
 
     void bin(Photon const& photon)
     {
-        double yimage=rimage_+photon.pos().z()*sint_-photon.pos().y()*cost_*sinp_-photon.pos().x()*cost_*cosp_;
-        double ximage=rimage_+photon.pos().y()*cosp_-photon.pos().x()*sinp_;
-        int64_t xl=int(nx_ * ximage / (2.0 * rimage_));
-        int64_t yl=int(ny_ * yimage / (2.0 * rimage_));
+        double const yimage = rimage_ + photon.pos().z()*sint_ - photon.pos().y()*cost_*sinp_ - photon.pos().x()*cost_*cosp_;
+        double const ximage = rimage_ + photon.pos().y()*cosp_ - photon.pos().x()*sinp_;
+        auto const xl = static_cast<int64_t>(nx_ * ximage / (2.0 * rimage_));
+        auto const yl = static_cast<int64_t>(ny_ * yimage / (2.0 * rimage_));
         result_.bin(photon, xl, yl, -1);
         result0_.bin(photon, xl, yl, 0);
         result1_.bin(photon, xl, yl, 1);

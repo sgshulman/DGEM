@@ -83,7 +83,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, GridCRef grid, std::
                 Photon ph( spos, ph0.dir(), ph0.weight()*w, nscat_+1, ph0.fi(), ph0.fq(), ph0.fu(), ph0.fv() );
                 // Force photon to scatter at optical depth tau before edge of grid
                 tauold = tau;
-                tau=-log( 1.0-0.5*w*(2*s+1) );
+                tau = -std::log( 1.0-0.5*w*(2*s+1) );
                 // Find scattering location of tau
                 if( grid->movePhotonAtDepth( ph, tau, tauold ) )
                 {
