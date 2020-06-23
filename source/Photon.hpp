@@ -47,7 +47,11 @@ class Photon
 
         uint32_t& nscat()
         {	return nscat_;	}
+        uint32_t nscat() const
+        {	return nscat_;	}
         double& weight()
+        {	return weight_;	}
+        double weight() const
         {	return weight_;	}
 
         bool termination() const

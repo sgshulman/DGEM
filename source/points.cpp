@@ -125,20 +125,20 @@ int main()
     // Normalize images
     for(size_t cnt=0; cnt!=observers.size(); ++cnt)
     {
-        observers[cnt].Normalize(sources->num_photons());
+        observers[cnt].normalize(sources->num_photons());
     }
 
     // put results into output files
     for (size_t cnt = 0; cnt != observers.size(); ++cnt)
     {
-        observers[cnt].WriteToMapFiles(true);
+        observers[cnt].writeToMapFiles(true);
     }
 
     // put general information into file
     std::ofstream observersResultFile("observers.dat");
     for (size_t cnt = 0; cnt != observers.size(); ++cnt)
     {
-        observers[cnt].Write(observersResultFile);
+        observers[cnt].write(observersResultFile);
     }
     observersResultFile.close();
 

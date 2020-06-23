@@ -73,7 +73,7 @@ void Sources::directPhotons(GridCRef grid, std::vector<Observer>* observers)
 
             // bin the photon into the image according to its position and
             // direction of travel.
-            (*observers)[io].Bin(ph);
+            (*observers)[io].bin(ph);
         }
     }
 }

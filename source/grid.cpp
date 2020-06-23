@@ -236,5 +236,5 @@ void Grid::peeloff(Photon ph, Observer& observer, DustCRef dust) const
 
     ph.weight() *= hgfac * exp(-tau);
     // Bin the photon into the image according to its position and direction of travel.
-    observer.Bin(ph);
+    observer.bin(ph);
 } 
