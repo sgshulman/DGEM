@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include "model.hpp"
-#include "photons.hpp"
+#include "Photon.hpp"
 
 // pictures 
 class Pictures

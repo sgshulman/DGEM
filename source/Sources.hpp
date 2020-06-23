@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include "Vector3d.hpp"
-#include "photons.hpp"
+#include "Photon.hpp"
 #include "Predefines.hpp"
 
 

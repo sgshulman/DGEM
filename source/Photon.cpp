@@ -1,7 +1,7 @@
-#include <math.h>
+#include <cmath>
 #include "grid.hpp"
 #include "observers.hpp"
-#include "photons.hpp"
+#include "Photon.hpp"
 #include "directions.hpp"
 #include "Dust.hpp"
 

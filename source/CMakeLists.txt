@@ -14,8 +14,8 @@ set(SOURCES
         observers.hpp
         model.cpp
         model.hpp
-        photons.cpp
-        photons.hpp
+        Photon.cpp
+        Photon.hpp
         points.cpp
         Sources.cpp
         Sources.hpp

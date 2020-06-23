@@ -5,7 +5,7 @@
 #include "grid.hpp"
 #include "observers.hpp"
 #include "model.hpp"
-#include "photons.hpp"
+#include "Photon.hpp"
 
 namespace
 {
