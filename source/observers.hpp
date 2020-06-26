@@ -118,25 +118,20 @@ class Pictures
 class Observer
 {
 public:
-    Observer(double phi, double theta, double rimage, uint32_t Nx=200, uint32_t Ny=200)
+    Observer(double const phi, double const theta, double const rimage, uint32_t const Nx=200, uint32_t const Ny=200)
             : result_(Nx, Ny)
             , result0_(Nx, Ny)
             , result1_(Nx, Ny)
             , result2_(Nx, Ny)
+            , direction_{phi, theta}
             , nx_(Nx)
             , ny_(Ny)
     {
         rimage_ = rimage;
-
-        phi_ = phi;
-        if(phi_ > 2*3.1415926 ) phi_=phi_-2*3.1415926;
-        if(phi_ < 0.0)          phi_=phi_+2*3.1415926;
         theta_ = theta;
 
-        cosp_ = cos(phi_);
-        sinp_ = sin(phi_);
-        sint_ = sin(theta_);
-        cost_ = cos(theta_);
+        cosp_ = std::cos(phi);
+        sinp_ = std::sin(phi);
     }
 
     void normalize(size_t const numPhotons)
@@ -149,26 +144,29 @@ public:
 
     void writeToMapFiles(bool const fWriteSingleAndDoubleScatterings)
     {
-        result_.write(phi_, theta_, 0);
+        result_.write(direction_.phi(), theta_, 0);
 
         if (fWriteSingleAndDoubleScatterings)
         {
-            result1_.write(phi_, theta_, 1);
-            result2_.write(phi_, theta_, 2);
+            result1_.write(direction_.phi(), theta_, 1);
+            result2_.write(direction_.phi(), theta_, 2);
         }
     }
 
     void write(std::ofstream& file)
     {
-        file << "phi = " << (phi_*180/3.1415926) << "\ttheta = " << (theta_*180/3.1415926);
+        file << "phi = " << (direction_.phi()*180/3.1415926) << "\ttheta = " << (theta_*180/3.1415926);
         result_.sum(file);
         result0_.sum(file);
     }
 
     void bin(Photon const& photon)
     {
-        double const yimage = rimage_ + photon.pos().z()*sint_ - photon.pos().y()*cost_*sinp_ - photon.pos().x()*cost_*cosp_;
+        double const yimage = rimage_ + photon.pos().z() * direction_.sinTheta() -
+            direction_.cosTheta() * (photon.pos().y()*sinp_ + photon.pos().x()*cosp_);
+
         double const ximage = rimage_ + photon.pos().y()*cosp_ - photon.pos().x()*sinp_;
+        
         auto const xl = static_cast<int64_t>(nx_ * ximage / (2.0 * rimage_));
         auto const yl = static_cast<int64_t>(ny_ * yimage / (2.0 * rimage_));
         result_.bin(photon, xl, yl, -1);
@@ -178,11 +176,11 @@ public:
     }
 
     double phi() const
-    {	return phi_;	}
+    {	return direction_.phi();	}
     double theta() const
     {	return theta_;	}
-    Vector3d pos() const
-    {	return {sin(theta_)*cos(phi_), sin(theta_)*sin(phi_), cos(theta_)};}
+    const Direction3d& direction() const
+    {	return direction_;}
 
     Observer(Observer const& other) = delete;
     Observer& operator=(Observer const& other) = delete;
@@ -192,11 +190,11 @@ public:
 
 private:
     Pictures result_, result0_, result1_, result2_;
+    Direction3d direction_;
     uint32_t nx_, ny_;
     double rimage_;
-    double phi_, theta_;
+    double theta_;
     double cosp_, sinp_;
-    double cost_, sint_;
 };
 
 #endif

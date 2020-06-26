@@ -226,7 +226,7 @@ int Grid::movePhotonAtRandomDepth( Photon &ph, double delta ) const
 
 void Grid::peeloff(Photon ph, Observer& observer, DustCRef dust) const
 {
-    double const hgfac = ph.Scatt(dust, Direction3d{observer.pos()});
+    double const hgfac = ph.Scatt(dust, observer.direction());
     double const tau = findOpticalDepth(ph);
 
     if (tau == 0.0)

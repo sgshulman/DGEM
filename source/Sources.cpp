@@ -66,7 +66,7 @@ void Sources::directPhotons(GridCRef grid, std::vector<Observer>* observers)
         for (size_t io=0; io!=observers->size(); ++io)
         {
             // Set photon location, grid cell, and direction of observation
-            Photon ph(sources_[is].pos(), Direction3d((*observers)[io].pos()), 1.0, 0);
+            Photon ph(sources_[is].pos(), (*observers)[io].direction(), 1.0, 0);
 
             // Find optical depth, tau1, to edge of grid along viewing direction
             double tau1 = grid->findOpticalDepth(ph);
