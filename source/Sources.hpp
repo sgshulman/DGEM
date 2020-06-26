@@ -48,7 +48,7 @@ public:
         , number_{ nstars }
         , totlum_{ 0. }
         , random_{ parameters_.seed_ }
-        , primaryDir_{ parameters_.PrimaryDirectionsLevel_ }
+        , primaryDir_{ parameters_.useMonteCarlo_ ? 1 : parameters_.PrimaryDirectionsLevel_ }
         , currentSource_{ 0 }
         , photonId_{ 0 }
     {
@@ -63,6 +63,10 @@ public:
             sources_[cnt] = PointSource(Vector3d{x[cnt], y[cnt], z[cnt]}, l[cnt]);
             totlum_ += sources_[cnt].luminosity();
         }
+
+        photonsNumber_ = parameters_.useMonteCarlo_
+                         ? (uint64_t) (parameters_.num_photons_ * sources_[0].luminosity() / totlum_)
+                         : primaryDir_.number();
     }
 
     ~Sources()
@@ -89,6 +93,7 @@ private:
     Directions primaryDir_;
     uint32_t currentSource_;
     uint64_t photonId_;
+    uint64_t photonsNumber_;
 };
 
 #endif

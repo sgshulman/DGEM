@@ -16,20 +16,23 @@ Photon Sources::emitPhoton()
 
     ++photonId_;
 
-    auto const photonsNumber = parameters_.useMonteCarlo_
-                               ? (uint64_t) (parameters_.num_photons_ * sources_[sourceId].luminosity() / totlum_)
-                               : primaryDir_.number();
+    uint64_t const period = parameters_.useMonteCarlo_ ? 10000 : 1000;
 
-    if (photonId_ == photonsNumber)
-    {
-        ++currentSource_;
-        photonId_ = 0;
-    }
-
-    if(photonId % 1000 == 0)
+    if(photonId % period == 0)
     {
         std::cout << "Sources: " << sourceId + 1 << "/" << number_ <<
-                  ". Photons: " << photonId << "/" << photonsNumber << std::endl;
+                  ". Photons: " << photonId << "/" << photonsNumber_ << std::endl;
+    }
+
+    if (photonId_ == photonsNumber_)
+    {
+        ++currentSource_;
+
+        photonsNumber_ = parameters_.useMonteCarlo_
+                        ? (uint64_t) (parameters_.num_photons_ * sources_[currentSource_].luminosity() / totlum_)
+                        : primaryDir_.number();
+
+        photonId_ = 0;
     }
 
     if (parameters_.useMonteCarlo_)
@@ -39,7 +42,7 @@ Photon Sources::emitPhoton()
 
         return {
             sources_[sourceId].pos(),
-            Direction3d( 2.0*PI*u, acos( 2*v - 1.0 ) ),
+            Direction3d( 2.0*PI*u, std::acos( 2*v - 1.0 ) ),
             1.0,
             1};
     }
@@ -47,7 +50,7 @@ Photon Sources::emitPhoton()
     return {
         sources_[sourceId].pos(),
         primaryDir_.direction(photonId),
-        primaryDir_.w(photonId) * sources_[currentSource_].luminosity() / totlum_,
+        primaryDir_.w(photonId) * sources_[sourceId].luminosity() / totlum_,
         1 };
 }
 
