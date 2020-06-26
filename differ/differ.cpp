@@ -24,8 +24,9 @@ int main( int argc, char *argv[] )
 	{
 		for (long int y=0; y!=Ny_; ++y)
 		{
-			fscanf(f1, "%lg", &a);
-			fscanf(f2, "%lg", &b);
+			int res = fscanf(f1, "%lg", &a);
+			res =fscanf(f2, "%lg", &b);
+			(void)res;
 			tmp = fabs(a-b);	
 			fprintf(fd1, "%lg\t", tmp);
 			if (0.5*fabs(a+b) < 0.07)
