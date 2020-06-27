@@ -1,0 +1,53 @@
+{
+  "method parameters": {
+    "fMonteCarlo": 0,
+    "taumin": 0.01,
+    "nscat": 1,
+    "nphotons": 250000000,
+    "iseed": -1556,
+    "PrimaryDirectionsLevel": 10,
+    "SecondaryDirectionsLevel": 1,
+    "NumOfPrimaryScatterings": 100,
+    "NumOfSecondaryScatterings": 1,
+    "MonteCarloStart": 1
+  },
+  "dust": {
+    "kappa": 66.0,
+    "albedo": 0.4,
+    "hgg": 0.41,
+    "pl": 0.51,
+    "pc": 0.0,
+    "sc": 1.0
+  },
+  "grid": {
+    "xmax": 800.0,
+    "ymax": 800.0,
+    "zmax": 800.0
+  },
+  "disk": {
+    "rinner": 200,
+    "router": 800,
+    "rho_0": 2.4e-15,
+    "h_0": 7,
+    "R_0": 100,
+    "alpha": 2.25,
+    "beta": 1.25
+  },
+  "stars": [
+    {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0,
+      "l": 0.0
+    }
+  ],
+  "observers": {
+    "rimage": 800.0,
+    "manual": [
+      {
+        "phi": 0.0,
+        "theta": 45.0
+      }
+    ]
+  }
+}
