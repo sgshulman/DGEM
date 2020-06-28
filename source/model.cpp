@@ -1,4 +1,3 @@
-#include <fstream>
 #include <iostream>
 #include <vector>
 #include "model.hpp"
@@ -6,148 +5,126 @@
 #include "Sources.hpp"
 #include "observers.hpp"
 #include "Dust.hpp"
+#include "third-party/nlohmann/json.hpp"
 
 Model::Model(std::vector<Observer>* observers)
 {
-    // disk parameters
-    double R_i, R_d;
-    double rho_0;
-    double h_0, R_0;
-    double alpha, beta;
-        
-    // sources parameters
-    uint32_t nstars;
-    double *x, *y, *z, *l;
-
-    double kappa;
-    double albedo;
-    double hgg;
-    double pl;
-    double pc;
-    double sc;
-
-    double xmax;
-    double ymax;
-    double zmax;
+    std::ifstream configurationFile("parameters.json");
+    nlohmann::json j;
+    configurationFile >> j;
 
     SourceParameters sourceParameters;
+    nlohmann::json const& methodJson = j.at("method parameters");
+    sourceParameters.useMonteCarlo_ = methodJson.at("fMonteCarlo").get<bool>();
+    sourceParameters.num_photons_ = methodJson.at("nphotons").get<uint64_t>();
+    sourceParameters.PrimaryDirectionsLevel_ = methodJson.at("PrimaryDirectionsLevel").get<uint32_t>();
+    sourceParameters.seed_ = methodJson.at("iseed").get<int32_t>();
 
-    std::ifstream input("params.par");
-    input.ignore(1000000, '=');		input >> sourceParameters.useMonteCarlo_;
     fMonteCarlo_ = sourceParameters.useMonteCarlo_;
-    input.ignore(1000000, '=');		input >> taumin_;
-    input.ignore(1000000, '=');		input >> nscat_;
-    input.ignore(1000000, '=');		input >> sourceParameters.num_photons_;
-    input.ignore(1000000, '=');		input >> iseed_;
-    input.ignore(1000000, '=');		input >> sourceParameters.PrimaryDirectionsLevel_;
-    input.ignore(1000000, '=');		input >> SecondaryDirectionsLevel_;
-    input.ignore(1000000, '=');		input >> NumOfPrimaryScatterings_;
-    input.ignore(1000000, '=');		input >> NumOfSecondaryScatterings_;
-    input.ignore(1000000, '=');		input >> MonteCarloStart_;
-    input.ignore(1000000, '=');		input >> kappa;
-    input.ignore(1000000, '=');		input >> albedo;
-    input.ignore(1000000, '=');		input >> hgg;
-    input.ignore(1000000, '=');		input >> pl;
-    input.ignore(1000000, '=');		input >> pc;
-    input.ignore(1000000, '=');		input >> sc;
-    input.ignore(1000000, '=');		input >> xmax;
-    input.ignore(1000000, '=');		input >> ymax;
-    input.ignore(1000000, '=');		input >> zmax;
-    input.ignore(1000000, '=');		input >> R_i;
-    input.ignore(1000000, '=');		input >> R_d;
-    input.ignore(1000000, '=');		input >> rho_0;
-    input.ignore(1000000, '=');		input >> h_0;
-    input.ignore(1000000, '=');		input >> R_0;
-    input.ignore(1000000, '=');		input >> alpha;
-    input.ignore(1000000, '=');		input >> beta;
+    taumin_ = methodJson.at("taumin").get<double>();
+    nscat_ = methodJson.at("nscat").get<uint32_t>();
+    SecondaryDirectionsLevel_ = methodJson.at("SecondaryDirectionsLevel").get<uint32_t>();
+    NumOfPrimaryScatterings_ = methodJson.at("NumOfPrimaryScatterings").get<uint32_t>();
+    NumOfSecondaryScatterings_ = methodJson.at("NumOfSecondaryScatterings").get<uint32_t>();
+    MonteCarloStart_ = methodJson.at("MonteCarloStart").get<uint32_t>();
 
-    dust_ = std::make_shared<Dust>(albedo, hgg, pl, pc, sc);
+    nlohmann::json const& dustJson = j.at("dust");
 
-    // sources parameters
-    input.ignore(1000000, '=');		input >> nstars;
-    x = new double[nstars];
-    y = new double[nstars];
-    z = new double[nstars];
-    l = new double[nstars];
-    for (size_t i=0; i!=nstars; ++i)
+    dust_ = std::make_shared<Dust>(
+        dustJson.at("albedo").get<double>(),
+        dustJson.at("hgg").get<double>(),
+        dustJson.at("pl").get<double>(),
+        dustJson.at("pc").get<double>(),
+        dustJson.at("sc").get<double>());
+
+    nlohmann::json const& diskJson = j.at("disk");
+
+    FlaredDiskCPtr disk = std::make_shared<FlaredDisk const>(
+        diskJson.at("rinner").get<double>(),
+        diskJson.at("router").get<double>(),
+        diskJson.at("rho_0").get<double>(),
+        diskJson.at("h_0").get<double>(),
+        diskJson.at("R_0").get<double>(),
+        diskJson.at("alpha").get<double>(),
+        diskJson.at("beta").get<double>());
+
+    nlohmann::json const& gridJson = j.at("grid");
+
+    grid_ = std::make_shared<Grid const>(
+        gridJson.at("xmax").get<double>(),
+        gridJson.at("ymax").get<double>(),
+        gridJson.at("zmax").get<double>(),
+        dustJson.at("kappa").get<double>(),
+        201,
+        201,
+        201,
+        disk);
+
+    nlohmann::json const& starsJson = j.at("stars");
+
+    auto *x = new double[starsJson.size()];
+    auto *y = new double[starsJson.size()];
+    auto *z = new double[starsJson.size()];
+    auto *l = new double[starsJson.size()];
+
     {
-        input.ignore(1000000, '=');
-        input >> x[i] >> y[i] >> z[i] >> l[i];
-    }
-
-    // observers parameters
-    double rimage;
-    input.ignore(1000000, '=');		input >> rimage;
-    std::string typeOfObserversPositions;
-    input.ignore(1000000, '=');		input >> typeOfObserversPositions;
-    if (typeOfObserversPositions == "MANUAL")
-    {
-        size_t numberOfObservers;
-        input.ignore(1000000, '=');		input >> numberOfObservers;
-        observers->reserve(numberOfObservers);
-        for (size_t i=0; i!=numberOfObservers; ++i)
+        int i = 0;
+        for (auto const &star : starsJson)
         {
-            double viewPhi, viewTheta;
-            input.ignore(1000000, '=');
-            input >> viewPhi >> viewTheta;
-            observers->emplace_back(viewPhi*3.1415926/180, viewTheta*3.1415926/180, rimage);
+            x[i] = star.at("x").get<double>();
+            y[i] = star.at("y").get<double>();
+            z[i] = star.at("z").get<double>();
+            l[i] = star.at("l").get<double>();
+            ++i;
         }
-    } else if (typeOfObserversPositions == "PARALLEL") {
-        size_t numberOfObservers;
-        input.ignore(1000000, '=');		input >> numberOfObservers;
-        observers->reserve(numberOfObservers);
-        for (size_t i=0; i!=numberOfObservers; ++i)
-        {
-            double viewTheta;
-            input.ignore(1000000, '=');
-            input >> viewTheta;
-            observers->emplace_back(2*3.141592/numberOfObservers*i, viewTheta*3.1415926/180, rimage);
-        }
-    } else if (typeOfObserversPositions == "MERIDIAN") {
-        size_t numberOfObservers;
-        input.ignore(1000000, '=');		input >> numberOfObservers;
-        observers->reserve(numberOfObservers);
-        for (size_t i=0; i!=numberOfObservers; ++i)
-        {
-            double viewPhi;
-            input.ignore(1000000, '=');
-            input >> viewPhi;
-            observers->emplace_back(viewPhi*3.1415926/180, 3.141592/(numberOfObservers-1)*i, rimage);
-        }
-    } else {
-        std::cout << "Error in observers positions" << std::endl;
+
+        sources_ = std::make_shared<Sources>(sourceParameters, i, x, y, z, l);
     }
-
-    input.close();
-    std::cout << "Parameters\n\nMethod\n fMonteCarlo=" << sourceParameters.useMonteCarlo_ << "\n taumin=" << taumin_ << "\n nscat=" << nscat_;
-    std::cout << "\n\nMonte Carlo Parameters\n nphotons=" << sourceParameters.num_photons_ << "\n iseed=" << iseed_ << "\n\n";
-    std::cout << "DGEM Parameters\n PrimaryDirectionsLevel=" << sourceParameters.PrimaryDirectionsLevel_ << "\n SecondaryDirectionsLevel=" << SecondaryDirectionsLevel_;
-    std::cout << "\n NumOfPrimaryScatterings=" << NumOfPrimaryScatterings_ << "\n NumOfSecondaryScatterings=" << NumOfSecondaryScatterings_;
-    std::cout << "\n MonteCarloStart=" << MonteCarloStart_ << "\n\n";
-    std::cout << "Physics\n kappa=" << kappa << "\n albedo=" << albedo << "\n hgg=" << hgg << "\n pl=" << pl << "\n pc=" << pc << "\n sc=" << sc << "\n\n";
-    std::cout << "Image\n xmax=" << xmax << "\n ymax=" << ymax << "\n zmax=" << zmax << "\n\n";
-    std::cout << "Disk\n R_i=" << R_i << "\n R_d=" << R_d << "\n rho_0=" << rho_0 << "\n h_0=" << h_0 << "\n R_0=" << R_0 << "\n alpha=" << alpha;
-    std::cout << "\n beta=" << beta;
-    // stars
-    std::cout << "\nStars\n nstars=" << nstars << "\n";
-    for (size_t i=0; i!=nstars; ++i)
-        std::cout << " star=" << x[i] << "\t" << y[i] << "\t" << z[i] << "\t" << l[i] << std::endl;
-
-    // observers
-    std::cout << "\n\nObservers\n rimage=" << rimage;
-    std::cout << "\n nobservers=" << observers->size() << "\n";
-
-    for (size_t i=0; i!=observers->size(); ++i)
-    {
-        std::cout << " observer=" << (*observers)[i].phi() << "\t" << (*observers)[i].theta() << "\n";
-    }
-
-    FlaredDiskCPtr disk = std::make_shared<FlaredDisk const>(R_i, R_d, rho_0, h_0, R_0, alpha, beta);
-    grid_ = std::make_shared<Grid const>(xmax, ymax, zmax, kappa, 201, 201, 201, disk);
-    sources_ = std::make_shared<Sources>(sourceParameters, nstars, x, y, z, l);
 
     delete[] x;
     delete[] y;
     delete[] z;
     delete[] l;
+
+    nlohmann::json const& observersJson = j.at("observers");
+    auto const rimage = observersJson.at("rimage").get<double>();
+
+    if (observersJson.contains("manual"))
+    {
+        nlohmann::json const& manualJson = observersJson.at("manual");
+        observers->reserve(manualJson.size());
+        for (const auto& observer : manualJson)
+        {
+            observers->emplace_back(
+                observer.at("phi").get<double>()*3.1415926/180,
+                observer.at("theta").get<double>()*3.1415926/180,
+                rimage);
+        }
+    }
+
+    if (observersJson.contains("parallel"))
+    {
+        nlohmann::json const& parallellJson = observersJson.at("parallel");
+        const auto numberOfObservers = parallellJson.at("numberOfObservers").get<int>();
+        const auto viewTheta = parallellJson.at("viewTheta").get<double>();
+        observers->reserve(observers->size() + numberOfObservers);
+
+        for (int i=0; i!=numberOfObservers; ++i)
+        {
+            observers->emplace_back(2*3.141592/numberOfObservers*i, viewTheta*3.1415926/180, rimage);
+        }
+    }
+
+    if (observersJson.contains("median"))
+    {
+        nlohmann::json const& medianJson = observersJson.at("median");
+        const auto numberOfObservers = medianJson.at("numberOfObservers").get<int>();
+        const auto viewPhi = medianJson.at("viewPhi").get<double>();
+        observers->reserve(observers->size() + numberOfObservers);
+
+        for (int i=0; i!=numberOfObservers; ++i)
+        {
+            observers->emplace_back(viewPhi*3.1415926/180, 3.141592/(numberOfObservers-1)*i, rimage);
+        }
+    }
 }

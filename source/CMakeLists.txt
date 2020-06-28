@@ -20,7 +20,8 @@ set(SOURCES
         Sources.cpp
         Sources.hpp
         Predefines.hpp
-        Vector3d.hpp)
+        Vector3d.hpp
+        third-party/nlohmann/json.hpp)
 
 add_executable(dgem ${SOURCES})
 
