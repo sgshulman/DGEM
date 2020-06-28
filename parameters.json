@@ -1,6 +1,6 @@
 {
   "method parameters": {
-    "fMonteCarlo": 0,
+    "fMonteCarlo": true,
     "taumin": 0.01,
     "nscat": 1,
     "nphotons": 250000000,
@@ -38,7 +38,7 @@
       "x": 0.0,
       "y": 0.0,
       "z": 0.0,
-      "l": 0.0
+      "l": 1.0
     }
   ],
   "observers": {
