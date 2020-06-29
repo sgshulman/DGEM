@@ -20,6 +20,12 @@ public:
         , lum_(lum)
     {};
 
+    PointSource(PointSource const& other) = delete;
+    PointSource& operator=(PointSource const& other) = delete;
+
+    PointSource(PointSource&& other) = default;
+    PointSource& operator=(PointSource&& other) = default;
+
     Vector3d const& pos() const
     {	return pos_; }
 
@@ -43,9 +49,9 @@ struct SourceParameters
 class Sources
 {
 public:
-    Sources(SourceParameters parameters, uint32_t nstars, double *x, double *y, double *z, double *l)
+    Sources(SourceParameters parameters, std::vector<PointSource> pointSources)
         : parameters_{ parameters}
-        , number_{ nstars }
+        , pointSources_{ std::move(pointSources) }
         , totlum_{ 0. }
         , random_{ parameters_.seed_ }
         , primaryDir_{ parameters_.useMonteCarlo_ ? 1 : parameters_.PrimaryDirectionsLevel_ }
@@ -57,22 +63,17 @@ public:
             parameters_.num_photons_ = primaryDir_.number();
         }
 
-        sources_ = new PointSource[number_];
-        for (uint32_t cnt=0; cnt!=number_; ++cnt)
+        for (const auto& pointSource : pointSources_)
         {
-            sources_[cnt] = PointSource(Vector3d{x[cnt], y[cnt], z[cnt]}, l[cnt]);
-            totlum_ += sources_[cnt].luminosity();
+            totlum_ += pointSource.luminosity();
         }
 
         photonsNumber_ = parameters_.useMonteCarlo_
-                         ? (uint64_t) (parameters_.num_photons_ * sources_[0].luminosity() / totlum_)
+                         ? (uint64_t) (parameters_.num_photons_ * pointSources_.at(0).luminosity() / totlum_)
                          : primaryDir_.number();
     }
 
-    ~Sources()
-    {
-        delete[] sources_;
-    }
+    ~Sources() = default;
 
     Sources(Sources const &) = delete;
     Sources& operator=(Sources const&) = delete;
@@ -85,9 +86,8 @@ public:
 
 private:
     SourceParameters parameters_;
-    uint32_t const number_;
+    std::vector<PointSource> const pointSources_;
     double	 totlum_;
-    PointSource	*sources_;
 
     Random random_;
     Directions primaryDir_;

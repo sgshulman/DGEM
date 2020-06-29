@@ -90,29 +90,20 @@ namespace
 
     SourcesPtr parseSources(nlohmann::json const& json, SourceParameters const& sourceParameters)
     {
-        auto *x = new double[json.size()];
-        auto *y = new double[json.size()];
-        auto *z = new double[json.size()];
-        auto *l = new double[json.size()];
+        std::vector<PointSource> pointSources;
+        pointSources.reserve(json.size());
 
-            int i = 0;
-            for (auto const &star : json)
-            {
-                x[i] = star.at("x").get<double>();
-                y[i] = star.at("y").get<double>();
-                z[i] = star.at("z").get<double>();
-                l[i] = star.at("l").get<double>();
-                ++i;
-            }
+        for (auto const &star : json)
+        {
+            pointSources.emplace_back(
+                Vector3d{
+                    star.at("x").get<double>(),
+                    star.at("y").get<double>(),
+                    star.at("z").get<double>()},
+                star.at("l").get<double>());
+        }
 
-        auto sources = std::make_shared<Sources>(sourceParameters, i, x, y, z, l);
-
-        delete[] x;
-        delete[] y;
-        delete[] z;
-        delete[] l;
-
-        return sources;
+        return std::make_shared<Sources>(sourceParameters, std::move(pointSources));
     }
 }
 
