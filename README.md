@@ -18,34 +18,34 @@ The program use parameters.json configuration file with following sections:
 #### method_parameters
 
 Common settings
-- fMonteCarlo  is 0 or 1. Set 0 for using DGEM or set 1 for using Monte Carlo method
-- taumin       is the minimum optical depth which gives scatterings
-- nscat        number of scatterings considered
+- fMonteCarlo &mdash; is True or False. Set False for using DGEM or set True for using Monte Carlo method
+- taumin &mdash; is the minimum optical depth which gives scatterings
+- nscat &mdash; number of scatterings considered
 
 Monte Carlo parameters
-- nphotons     total number of photon packets for Monte Carlo method
-- iseed        initialization parameter for random number generator in Monte Carlo method
+- nphotons &mdash; total number of photon packets for Monte Carlo method
+- iseed &mdash; initialization parameter for random number generator in Monte Carlo method
 
 DGEM parameters
-- PrimaryDirectionsLevel      primary directions number is 5 * 4 ^ PrimaryDirectionsLevel
-- SecondaryDirectionsLevel primary directions number is 5 * 4 ^ SecondaryDirectionsLevel
-- NumOfPrimaryScatterings     number of scatterings in every direction in the primary grid
-- NumOfSecondaryScatterings    number of scatterings in every direction in secondary grid
-- MonteCarloStart               number of scatterings of the photon package after which Monte Carlo
+- PrimaryDirectionsLevel &mdash; primary directions number is 5 * 4 ^ PrimaryDirectionsLevel
+- SecondaryDirectionsLevel &mdash; primary directions number is 5 * 4 ^ SecondaryDirectionsLevel
+- NumOfPrimaryScatterings &mdash; number of scatterings in every direction in the primary grid
+- NumOfSecondaryScatterings &mdash; number of scatterings in every direction in secondary grid
+- MonteCarloStart &mdash; number of scatterings of the photon package after which Monte Carlo
                             method is used instead of DGEM (1 is recommended)
 
 #### dust
-- kappa --- The extinction opacity
-- albedo --- Single scattering albedo
-- hgg ---- Henyey-Greenstein phase function anisotropy
-- pl --- Peak linear polarization
-- pc --- Peak circular polarization
-- sc --- Skew Factor
+- kappa &mdash; The extinction opacity
+- albedo &mdash; Single scattering albedo
+- hgg &mdash; Henyey-Greenstein phase function anisotropy
+- pl &mdash; Peak linear polarization
+- pc &mdash; Peak circular polarization
+- sc &mdash; Skew Factor
       
 ### stars
 Is a list of sources with 4 parameters:
-- x, y, z --- coordinates
-- l --- source luminosity
+- x, y, z &mdash; source coordinates
+- l &mdash; source luminosity
 
 Physical and disk parameters are discussed in the paper.
 
