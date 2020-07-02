@@ -38,3 +38,39 @@ jobs:
 
       - name: build
         run: cmake --build ./
+
+  build_clang6:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: cmake
+        run: cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -DCMAKE_CXX_COMPILER=clang++-6.0 -S ./source
+
+      - name: build
+        run: cmake --build ./
+
+  build_clang8:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: cmake
+        run: cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -DCMAKE_CXX_COMPILER=clang++-8 -S ./source
+
+      - name: build
+        run: cmake --build ./
+
+  build_clang9:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: cmake
+        run: cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -DCMAKE_CXX_COMPILER=clang++-9 -S ./source
+
+      - name: build
+        run: cmake --build ./
