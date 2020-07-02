@@ -3,7 +3,7 @@ name: Build Ubuntu
 on: [ push ]
 
 jobs:
-  build:
+  build_gcc7:
     runs-on: ubuntu-latest
     
     steps:
@@ -14,3 +14,27 @@ jobs:
       
     - name: build
       run: cmake --build ./
+
+  build_gcc8:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: cmake
+        run: cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -DCMAKE_CXX_COMPILER=g++-8 -S ./source
+
+      - name: build
+        run: cmake --build ./
+
+  build_gcc9:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: cmake
+        run: cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -DCMAKE_CXX_COMPILER=g++-9 -S ./source
+
+      - name: build
+        run: cmake --build ./
