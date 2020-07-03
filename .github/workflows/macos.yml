@@ -1,0 +1,41 @@
+name: Build macOS
+
+on: [ push ]
+
+jobs:
+  build_gcc8:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: cmake
+        run: cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8 -S ./source
+
+      - name: build
+        run: cmake --build ./
+
+  build_gcc9:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: cmake
+        run: cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc-9 -DCMAKE_CXX_COMPILER=g++-9 -S ./source
+
+      - name: build
+        run: cmake --build ./
+
+  build_clang10:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: cmake
+        run: cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -S ./source
+
+      - name: build
+        run: cmake --build ./
+
