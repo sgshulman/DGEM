@@ -30,7 +30,10 @@ set_target_properties(dgem PROPERTIES
         CXX_STANDARD_REQUIRED YES
         CXX_EXTENSIONS NO)
 
-set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -Wextra -Wpedantic")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -Wextra -Wpedantic")
-
-
+if ( MSVC )
+    set(CMAKE_CXX_FLAGS_DEBUG "/W4 /WX")
+    set(CMAKE_CXX_FLAGS_RELEASE "/O2 /W4 /WX")
+else()
+    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -Wextra -Wpedantic")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -Wextra -Wpedantic")
+endif()
