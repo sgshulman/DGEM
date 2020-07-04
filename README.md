@@ -2,6 +2,7 @@
 
 ![Build Ubuntu](https://github.com/sgshulman/DGEM/workflows/Build%20Ubuntu/badge.svg?branch=master&event=push)
 ![Build macOS](https://github.com/sgshulman/DGEM/workflows/Build%20macOS/badge.svg?branch=master&event=push)
+![Build Windows](https://github.com/sgshulman/DGEM/workflows/Build%20Windows/badge.svg?branch=master&event=push)
 
 A simple three-dimensional dust continuum radiative transfer code demonstrating directions grid enumeration method advantages.
 
