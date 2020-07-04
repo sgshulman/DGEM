@@ -1,0 +1,17 @@
+name: Build Windows
+
+on: [ push ]
+
+jobs:
+  build_mingw:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: cmake
+      run: cmake -DCMAKE_BUILD_TYPE=Debug -G "MinGW Makefiles" -S ./source
+      
+    - name: build
+      run: cmake --build ./
+      
