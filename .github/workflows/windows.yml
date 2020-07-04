@@ -15,3 +15,17 @@ jobs:
     - name: build
       run: cmake --build ./
       
+  build_msvc:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: cmake
+        shell: cmd
+        run: |
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -S ./source
+
+      - name: build
+        run: cmake --build ./ --config Debug
