@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <cstdio>
 #include "model.hpp"
 #include "Photon.hpp"
 
@@ -56,11 +57,12 @@ class Pictures
 
         void write(double const phi, double const theta, int const key) const
         {
-            char fname[30];
+            int const FILENAME_LENGTH{ 30 };
+            char fname[FILENAME_LENGTH];
             int const iPhi = int(phi*180/3.1415926+0.5);
             int const iTheta = int(theta*180/3.1415926+0.5);
 
-            sprintf(fname, "fimage%2.2i_%2.2i_%2.2i.dat", iPhi, iTheta, key);
+            snprintf(fname, FILENAME_LENGTH, "fimage%2.2i_%2.2i_%2.2i.dat", iPhi, iTheta, key);
             std::ofstream f(fname);
             for (size_t y=0; y != ny_; ++y)
             {
@@ -69,7 +71,8 @@ class Pictures
                 f << "\n";
             }
             f.close();
-            sprintf(fname, "qimage%2.2i_%2.2i_%2.2i.dat", iPhi, iTheta, key);
+
+            snprintf(fname, FILENAME_LENGTH, "qimage%2.2i_%2.2i_%2.2i.dat", iPhi, iTheta, key);
             std::ofstream q(fname);
             for (size_t y=0; y != ny_; ++y)
             {
@@ -79,7 +82,7 @@ class Pictures
             }
             q.close();
 
-            sprintf(fname, "uimage%2.2i_%2.2i_%2.2i.dat", iPhi, iTheta, key);
+            snprintf(fname, FILENAME_LENGTH, "uimage%2.2i_%2.2i_%2.2i.dat", iPhi, iTheta, key);
             std::ofstream u(fname);
             for (size_t y=0; y != ny_; ++y)
             {

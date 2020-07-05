@@ -35,10 +35,10 @@ namespace
             inline uint32_t midpointsNumber() const
             { return midpointsNumber_; }
 
-            inline PointWithNeighbors const *neighbor(int const i) const
+            inline PointWithNeighbors const *neighbor(uint32_t const i) const
             { return neighbors_[i]; }
 
-            inline PointWithNeighbors *midpoint(int const i)
+            inline PointWithNeighbors *midpoint(uint32_t const i)
             { return midpoints_[i]; }
 
             void addMidpoint(PointWithNeighbors const *neighbor, PointWithNeighbors *midpoint)
@@ -95,9 +95,9 @@ namespace
             {
                 assert(0 <= i && i <= 2 && 0 <= j && j <= 2);
 
-                for(size_t cnt=0; cnt!=dots_[i]->midpointsNumber(); ++cnt )
+                for(uint32_t cnt=0; cnt!=dots_[i]->midpointsNumber(); ++cnt )
                 {
-                    if ( dots_[i]->neighbor(cnt) == dots_[j] )
+                    if (dots_[i]->neighbor(cnt) == dots_[j])
                     {
                         return dots_[i]->midpoint(cnt);
                     }
