@@ -3,74 +3,43 @@ name: Build Ubuntu
 on: [ push ]
 
 jobs:
-  build_gcc7:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: cmake
-      run: cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -DCMAKE_C_COMPILER=gcc-7 -DCMAKE_CXX_COMPILER=g++-7 -S ./source
-      
-    - name: build
-      run: cmake --build ./
-
-  build_gcc8:
+  build:
+    name: ${{ matrix.compiler_name }}
     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v2
+    strategy:
+      matrix:
+        compiler_name: [build_gcc7, build_gcc8, build_gcc9, build_clang6, build_clang8, build_clang9]
+        include:
+          - compiler_name: build_gcc7
+            c_compiler: gcc-7
+            cxx_compiler: g++-7
 
-      - name: cmake
-        run: cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -DCMAKE_C_COMPILER=gcc-8 -DCMAKE_CXX_COMPILER=g++-8 -S ./source
+          - compiler_name: build_gcc8
+            c_compiler: gcc-8
+            cxx_compiler: g++-8
 
-      - name: build
-        run: cmake --build ./
+          - compiler_name: build_gcc9
+            c_compiler: gcc-9
+            cxx_compiler: g++-9
 
-  build_gcc9:
-    runs-on: ubuntu-latest
+          - compiler_name: build_clang6
+            c_compiler: clang-6.0
+            cxx_compiler: clang++-6.0
 
-    steps:
-      - uses: actions/checkout@v2
+          - compiler_name: build_clang8
+            c_compiler: clang-8
+            cxx_compiler: clang++-8
 
-      - name: cmake
-        run: cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -DCMAKE_C_COMPILER=gcc-9 -DCMAKE_CXX_COMPILER=g++-9 -S ./source
-
-      - name: build
-        run: cmake --build ./
-
-  build_clang6:
-    runs-on: ubuntu-latest
+          - compiler_name: build_clang9
+            c_compiler: clang-9
+            cxx_compiler: clang++-9
 
     steps:
       - uses: actions/checkout@v2
 
       - name: cmake
-        run: cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -DCMAKE_C_COMPILER=clang-6.0 -DCMAKE_CXX_COMPILER=clang++-6.0 -S ./source
-
-      - name: build
-        run: cmake --build ./
-
-  build_clang8:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: cmake
-        run: cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -DCMAKE_C_COMPILER=clang-8 -DCMAKE_CXX_COMPILER=clang++-8 -S ./source
-
-      - name: build
-        run: cmake --build ./
-
-  build_clang9:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: cmake
-        run: cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -DCMAKE_C_COMPILER=clang-9 -DCMAKE_CXX_COMPILER=clang++-9 -S ./source
+        run: cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }} -S ./source
 
       - name: build
         run: cmake --build ./
