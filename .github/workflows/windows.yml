@@ -1,4 +1,4 @@
-name: Build Windows
+name: Unit Tests Windows
 
 on: [ push ]
 
@@ -10,10 +10,13 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: cmake
-      run: cmake -DCMAKE_BUILD_TYPE=Debug -G "MinGW Makefiles" -S ./source
+      run: cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_UNIT_TESTS=TRUE -G "MinGW Makefiles" -S ./source
       
     - name: build
       run: cmake --build ./
+
+    - name: unit-tests
+      run: ./unittests
       
   build_msvc:
     runs-on: windows-latest
@@ -25,7 +28,10 @@ jobs:
         shell: cmd
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-          cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -S ./source
+          cmake -G "Visual Studio 16 2019" -A x64 -DENABLE_UNIT_TESTS=TRUE -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -S ./source
 
       - name: build
         run: cmake --build ./ --config Debug
+
+      - name: unit-tests
+        run: ./unittests

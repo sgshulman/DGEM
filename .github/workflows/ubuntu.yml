@@ -1,4 +1,4 @@
-name: Build Ubuntu
+name: Unit Tests Ubuntu
 
 on: [ push ]
 
@@ -39,7 +39,10 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: cmake
-        run: cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }} -S ./source
+        run: cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_UNIT_TESTS=TRUE  -G "CodeBlocks - Unix Makefiles" -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }} -S ./source
 
       - name: build
         run: cmake --build ./
+
+      - name: unit-tests
+        run: ./unittests
