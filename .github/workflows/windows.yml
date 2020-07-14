@@ -34,4 +34,4 @@ jobs:
         run: cmake --build ./ --config Debug
 
       - name: unit-tests
-        run: ./unittests
+        run: ./Debug/unittests
