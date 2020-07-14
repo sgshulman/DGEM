@@ -17,26 +17,26 @@ Photon::Photon( Vector3d const& pos, Direction3d const& dir, double weight, uint
 {}
 
 
-double Photon::Scatt(DustCRef dust, Direction3d const& dir )
+double Photon::Scatt(DustCRef dust, Direction3d const& dir, Random* ran)
 {
     // cos(Theta), where Theta is angle between incident
     // and outgoing (i.e., observed) photon direction
     double const cosTheta = dir_.vector() * dir.vector();
     double const hgfrac = dust->fraction(cosTheta) / 4. / 3.1415926;
        
-    Stokes(dust, dir, cosTheta, true);
+    Stokes(dust, dir, cosTheta, true, ran);
     return hgfrac;
 }
 
 
-void Photon::Scatt( Model const &m, Directions const &dirs, GridCRef grid, std::vector<Observer>& observers)
+void Photon::Scatt( Model const &m, Directions const &dirs, GridCRef grid, std::vector<Observer>& observers, Random* ran)
 {
     if (nscat_ == m.MonteCarloStart() )
     {
         Photon ph(*this);
         int tflag = 0;
-        ph.Stokes( m.dust(), Direction3d(), 0.0, false );
-        tflag = grid->movePhotonAtRandomDepth(ph);
+        ph.Stokes( m.dust(), Direction3d(), 0.0, false, ran);
+        tflag = grid->movePhotonAtRandomDepth(ph, ran);
         ph.nscat()+=1;
         while ( !tflag && ( ph.nscat() <= m.nscat() ) )
         {
@@ -48,11 +48,11 @@ void Photon::Scatt( Model const &m, Directions const &dirs, GridCRef grid, std::
             }
 
             // Scatter photon into new direction and update Stokes parameters
-            ph.Stokes( m.dust(), Direction3d(), 0.0, false );
+            ph.Stokes( m.dust(), Direction3d(), 0.0, false, ran);
             ph.nscat()+=1;
             if (ph.nscat() > m.nscat()) break;
             // Find next scattering location
-            tflag = grid->movePhotonAtRandomDepth(ph);
+            tflag = grid->movePhotonAtRandomDepth(ph, ran);
         }
     } else {
         double calpha;
@@ -71,7 +71,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, GridCRef grid, std::
             calpha = dir_.vector() * dirs.direction(j);
             hgfrac = m.dust()->fraction(calpha);
             Photon ph0(pos_, dir_, weight_ * dirs.w( j )*hgfrac/sum, nscat_+1, fi_, fq_, fu_, fv_ );
-            ph0.Stokes(m.dust(), dirs.direction(j), calpha, true);
+            ph0.Stokes(m.dust(), dirs.direction(j), calpha, true, ran);
 
             double w = 1.0 / m.NumOfSecondaryScatterings() ;
             Vector3d spos = pos_;
@@ -99,7 +99,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, GridCRef grid, std::
                         grid->peeloff(ph, observer, m.dust());
                     }
 
-                    if (ph.nscat() < m.nscat() ) ph.Scatt( m, dirs, grid, observers );
+                    if (ph.nscat() < m.nscat() ) ph.Scatt( m, dirs, grid, observers, ran);
                 }
             }
         }
@@ -108,7 +108,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, GridCRef grid, std::
 
 // Stokes vector changes
 // spherical trigonometry is used
-void Photon::Stokes(DustCRef dust, Direction3d const &dir, double calpha, bool fDir )
+void Photon::Stokes(DustCRef dust, Direction3d const &dir, double calpha, bool fDir, Random* ran)
 {
     double a11,a12,a13,a21,a22,a23,a24,a31,a32,a33,a34;
         double a42,a43,a44;
@@ -131,7 +131,7 @@ void Photon::Stokes(DustCRef dust, Direction3d const &dir, double calpha, bool f
     {
         cosTh = calpha;
     } else {
-        cosTh = dust->cosRandomTheta(ran.Get());
+        cosTh = dust->cosRandomTheta(ran->Get());
     }
 
     if ( cosTh > 1.0 )
@@ -156,7 +156,7 @@ void Photon::Stokes(DustCRef dust, Direction3d const &dir, double calpha, bool f
         double sini1 = sin(dir_.phi()-ophi-3.1415926)*dir.sinTheta()/sinTh;
         ri1 = atan2(sini1, cosi1)+3.1415926;
     } else {
-        ri1=2*3.1415926*ran.Get();
+        ri1=2*3.1415926*ran->Get();
     }
 
 

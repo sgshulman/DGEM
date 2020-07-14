@@ -53,7 +53,7 @@ class Random
 	private:
 		int iseed_;
 };
-extern Random ran;
+
 
 // model parameters
 class Model

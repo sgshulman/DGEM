@@ -36,7 +36,7 @@ if(DEFINED ENABLE_UNIT_TESTS)
         tests/unittests.cpp
         third-party/catch2/catch.hpp)
 
-    add_executable(unittests ${UNITTEST_SOURCES})
+    add_executable(unittests ${UNITTEST_SOURCES} ${SOURCES})
 
     set_target_properties(unittests PROPERTIES
             CXX_STANDARD 14

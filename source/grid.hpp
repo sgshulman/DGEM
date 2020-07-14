@@ -55,7 +55,7 @@ class Grid
 
         double findOpticalDepth(Photon ph, double delta=-0.001) const;
         int movePhotonAtDepth(Photon& ph, double tau, double tauold=0.0, double delta=-0.001) const;
-        int movePhotonAtRandomDepth(Photon& ph, double delta=-0.001) const;
+        int movePhotonAtRandomDepth(Photon& ph, Random *ran, double delta=-0.001) const;
         void peeloff(Photon ph, Observer& obs, DustCRef dust) const;
 
     private:

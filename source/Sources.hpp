@@ -53,7 +53,6 @@ public:
         : parameters_{ parameters}
         , pointSources_{ std::move(pointSources) }
         , totlum_{ 0. }
-        , random_{ parameters_.seed_ }
         , primaryDir_{ parameters_.useMonteCarlo_ ? 1 : parameters_.PrimaryDirectionsLevel_ }
         , currentSource_{ 0 }
         , photonId_{ 0 }
@@ -78,7 +77,7 @@ public:
     Sources(Sources const &) = delete;
     Sources& operator=(Sources const&) = delete;
 
-    Photon emitPhoton();
+    Photon emitPhoton(Random* ran);
     void directPhotons(GridCRef grid, std::vector<Observer>* observers);
 
     size_t num_photons() const
@@ -89,7 +88,6 @@ private:
     std::vector<PointSource> const pointSources_;
     double	 totlum_;
 
-    Random random_;
     Directions primaryDir_;
     uint32_t currentSource_;
     uint64_t photonId_;

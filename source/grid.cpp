@@ -218,15 +218,15 @@ int Grid::movePhotonAtDepth( Photon & ph, double tau, double tauold, double delt
     return d >= 0.999 * smax;
 }
 
-int Grid::movePhotonAtRandomDepth( Photon &ph, double delta ) const
+int Grid::movePhotonAtRandomDepth( Photon &ph, Random *ran, double delta) const
 {
-    double const tau = -std::log(ran.Get());
+    double const tau = -std::log(ran->Get());
     return movePhotonAtDepth(ph, tau, 0.0, delta);
 }
 
 void Grid::peeloff(Photon ph, Observer& observer, DustCRef dust) const
 {
-    double const hgfac = ph.Scatt(dust, observer.direction());
+    double const hgfac = ph.Scatt(dust, observer.direction(), nullptr);
     double const tau = findOpticalDepth(ph);
 
     if (tau == 0.0)

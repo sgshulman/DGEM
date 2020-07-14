@@ -9,8 +9,6 @@
 #include "Dust.hpp"
 #include "Sources.hpp"
 
-Random ran;
-
 
 int main()
 {
@@ -20,13 +18,14 @@ int main()
     Model & model = Model::instance(&observers);
     GridCPtr grid = model.grid();
     SourcesPtr sources = model.sources();
+    Random ran(model.iseed());
 
     // Scattered photon loop
     if (model.fMonteCarlo())
     {
         for (;;)
         {
-            Photon ph{ sources->emitPhoton() };
+            Photon ph{ sources->emitPhoton(&ran) };
 
             if (ph.termination())
             {
@@ -60,12 +59,12 @@ int main()
                 }
 
                 // Scatter photon into new direction and update Stokes parameters
-                ph.Stokes(model.dust(), Direction3d(), 0.0, false);
+                ph.Stokes(model.dust(), Direction3d(), 0.0, false, &ran);
                 ph.nscat() += 1;
                 if (ph.nscat() > model.nscat()) break;
 
                 // Find next scattering location
-                tflag = grid->movePhotonAtRandomDepth(ph);
+                tflag = grid->movePhotonAtRandomDepth(ph, &ran);
             }
         }
     } else {
@@ -74,7 +73,7 @@ int main()
 
         for (;;)
         {
-            Photon ph0{ sources->emitPhoton() };
+            Photon ph0{ sources->emitPhoton(&ran) };
 
             if (ph0.termination())
             {
@@ -113,7 +112,7 @@ int main()
                     grid->peeloff(ph, observer, model.dust());
                 }
 
-                if (ph.nscat() < model.nscat()) ph.Scatt(model, sdir, grid, observers);
+                if (ph.nscat() < model.nscat()) ph.Scatt(model, sdir, grid, observers, &ran);
             }
         }
     }

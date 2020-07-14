@@ -4,7 +4,7 @@
 #include "observers.hpp"
 #include "grid.hpp"
 
-Photon Sources::emitPhoton()
+Photon Sources::emitPhoton(Random* ran)
 {
     if (currentSource_ == pointSources_.size())
     {
@@ -37,8 +37,8 @@ Photon Sources::emitPhoton()
 
     if (parameters_.useMonteCarlo_)
     {
-        double const v = ran.Get();
-        double const u = ran.Get();
+        double const v = ran->Get();
+        double const u = ran->Get();
 
         return {
             pointSources_[sourceId].pos(),

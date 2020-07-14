@@ -8,6 +8,7 @@ class Observer;
 class Photon ;
 class Source ;
 class Directions ;  // directions grid
+class Random;
 
 class Sources;
 using SourcesPtr = std::shared_ptr<Sources>;
