@@ -16,19 +16,33 @@ set(SOURCES
         model.hpp
         Photon.cpp
         Photon.hpp
-        points.cpp
         Sources.cpp
         Sources.hpp
         Predefines.hpp
         Vector3d.hpp
         third-party/nlohmann/json.hpp)
 
-add_executable(dgem ${SOURCES})
+add_executable(dgem points.cpp ${SOURCES})
 
 set_target_properties(dgem PROPERTIES
         CXX_STANDARD 14
         CXX_STANDARD_REQUIRED YES
         CXX_EXTENSIONS NO)
+
+if(DEFINED ENABLE_UNIT_TESTS)
+    message("UNIT TESTS ENABLED")
+
+    set(UNITTEST_SOURCES
+        tests/unittests.cpp
+        third-party/catch2/catch.hpp)
+
+    add_executable(unittests ${UNITTEST_SOURCES})
+
+    set_target_properties(unittests PROPERTIES
+            CXX_STANDARD 14
+            CXX_STANDARD_REQUIRED YES
+            CXX_EXTENSIONS NO)
+endif()
 
 if ( MSVC )
     set(CMAKE_CXX_FLAGS_DEBUG "/W4 /WX")
