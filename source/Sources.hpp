@@ -42,7 +42,6 @@ struct SourceParameters
     bool useMonteCarlo_;
     uint64_t num_photons_;
     uint32_t PrimaryDirectionsLevel_;
-    int32_t seed_;
 };
 
 // all sources of photons

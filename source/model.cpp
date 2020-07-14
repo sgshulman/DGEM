@@ -119,7 +119,7 @@ Model::Model(std::vector<Observer>* observers)
     sourceParameters.useMonteCarlo_ = methodJson.at("fMonteCarlo").get<bool>();
     sourceParameters.num_photons_ = methodJson.at("nphotons").get<uint64_t>();
     sourceParameters.PrimaryDirectionsLevel_ = methodJson.at("PrimaryDirectionsLevel").get<uint32_t>();
-    sourceParameters.seed_ = methodJson.at("iseed").get<int32_t>();
+    iseed_ = methodJson.at("iseed").get<int32_t>();
 
     fMonteCarlo_ = sourceParameters.useMonteCarlo_;
     taumin_ = methodJson.at("taumin").get<double>();
