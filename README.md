@@ -54,6 +54,8 @@ Is a list of sources with 4 parameters:
 
 Physical and disk parameters are discussed in the paper.
 
-## Used third-party library
+## Used third-party libraries
 
 * **[nlohmann/json](https://github.com/nlohmann/json)** to parse a configuration file
+* **[catch2](https://github.com/catchorg/Catch2)** for unit testing
+
