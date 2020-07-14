@@ -107,6 +107,9 @@ namespace
     }
 }
 
+#ifdef ENABLE_UNIT_TESTS
+#include "tests/ModelTests.inl"
+#endif
 
 Model::Model(std::vector<Observer>* observers)
 {

@@ -34,6 +34,7 @@ if(DEFINED ENABLE_UNIT_TESTS)
 
     set(UNITTEST_SOURCES
         tests/unittests.cpp
+        tests/ModelTests.inl
         third-party/catch2/catch.hpp)
 
     add_executable(unittests ${UNITTEST_SOURCES} ${SOURCES})
@@ -41,7 +42,8 @@ if(DEFINED ENABLE_UNIT_TESTS)
     set_target_properties(unittests PROPERTIES
             CXX_STANDARD 14
             CXX_STANDARD_REQUIRED YES
-            CXX_EXTENSIONS NO)
+            CXX_EXTENSIONS NO
+            COMPILE_DEFINITIONS "ENABLE_UNIT_TESTS")
 endif()
 
 if ( MSVC )
