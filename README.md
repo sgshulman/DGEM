@@ -1,8 +1,8 @@
 # DGEM
 
-![Build Ubuntu](https://github.com/sgshulman/DGEM/workflows/Build%20Ubuntu/badge.svg?branch=master&event=push)
-![Build macOS](https://github.com/sgshulman/DGEM/workflows/Build%20macOS/badge.svg?branch=master&event=push)
-![Build Windows](https://github.com/sgshulman/DGEM/workflows/Build%20Windows/badge.svg?branch=master&event=push)
+![Unit Tests Ubuntu](https://github.com/sgshulman/DGEM/workflows/Unit%20Tests%20Ubuntu/badge.svg?branch=master&event=push)
+![Unit Tests macOS](https://github.com/sgshulman/DGEM/workflows/Unit%20Tests%20macOS/badge.svg?branch=master&event=push)
+![Unit Tests Windows](https://github.com/sgshulman/DGEM/workflows/Unit%20Tests%20Windows/badge.svg?branch=master&event=push)
 
 A simple three-dimensional dust continuum radiative transfer code demonstrating directions grid enumeration method advantages.
 
