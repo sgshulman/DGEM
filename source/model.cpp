@@ -65,7 +65,7 @@ namespace
         {
             nlohmann::json const& parallellJson = json.at("parallel");
             const auto numberOfObservers = parallellJson.at("numberOfObservers").get<int>();
-            const auto viewTheta = parallellJson.at("viewTheta").get<double>();
+            const auto viewTheta = parallellJson.at("theta").get<double>();
             observers->reserve(observers->size() + numberOfObservers);
 
             for (int i=0; i!=numberOfObservers; ++i)
@@ -74,16 +74,16 @@ namespace
             }
         }
 
-        if (json.contains("median"))
+        if (json.contains("meridian"))
         {
-            nlohmann::json const& medianJson = json.at("median");
+            nlohmann::json const& medianJson = json.at("meridian");
             const auto numberOfObservers = medianJson.at("numberOfObservers").get<int>();
-            const auto viewPhi = medianJson.at("viewPhi").get<double>();
+            const auto viewPhi = medianJson.at("phi").get<double>();
             observers->reserve(observers->size() + numberOfObservers);
 
             for (int i=0; i!=numberOfObservers; ++i)
             {
-                observers->emplace_back(viewPhi*PI/180., PI/(numberOfObservers-1)*i, rimage);
+                observers->emplace_back(viewPhi*PI/180., PI/numberOfObservers*(i + 0.5), rimage);
             }
         }
     }
