@@ -30,8 +30,27 @@ class Pictures
         Pictures (Pictures const& other) = delete;
         Pictures& operator=(Pictures const& other) = delete;
 
-        Pictures (Pictures&& other) = default;
-        Pictures& operator=(Pictures&& other) = default;
+        Pictures(Pictures&& other) noexcept
+            : nx_{ other.nx_ }
+            , ny_{ other.ny_ }
+            , f_{ other.f_ }
+            , q_{ other.q_ }
+            , u_{ other.u_ }
+        {
+            other.f_ = nullptr;
+            other.q_ = nullptr;
+            other.u_ = nullptr;
+        }
+
+        Pictures& operator=(Pictures&& other) noexcept
+        {
+            std::swap(f_, other.f_);
+            std::swap(q_, other.q_);
+            std::swap(u_, other.u_);
+            nx_ = other.nx_;
+            ny_ = other.ny_;
+            return *this;
+        }
 
         // place photon on the images
         void bin(Photon const& ph, int64_t const xl, int64_t const yl, int64_t const id)
