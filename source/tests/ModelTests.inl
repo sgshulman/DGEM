@@ -89,4 +89,33 @@ TEST_CASE("Parse Observers", "[model]")
         REQUIRE(Approx(7 * PI / 10.) == observers.at(3).theta());
         REQUIRE(Approx(9 * PI / 10.) == observers.at(4).theta());
     }
+
+    SECTION("Combined")
+    {
+        nlohmann::json observersJson = R"({
+            "rimage": 800.0,
+            "manual": [
+            {
+                "phi": 45.0,
+                    "theta": 45.0
+            },
+            {
+                "phi": 60.0,
+                    "theta": 120.0
+            }
+            ],
+            "parallel": {
+                "numberOfObservers" : 10,
+                    "theta" : 90.0
+            },
+            "meridian": {
+                "numberOfObservers" : 2,
+                    "phi" : 0.0
+            }}
+            )"_json;
+
+        parseObservers(&observers, observersJson);
+
+        REQUIRE(14 == observers.size());
+    }
 }

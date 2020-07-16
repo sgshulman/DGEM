@@ -54,6 +54,66 @@ Is a list of sources with 4 parameters:
 
 Physical and disk parameters are discussed in the paper.
 
+### Observers
+
+We use spherical coordinates [_&theta;_, _&phi;_] to describe the direction towards each observer.
+_&theta;_ is a zenith distance (an angle between positive _z_-axis direction and observers direction), measured from 0 to 180&deg;.
+_&phi;_ is an azimuth, measured counterclockwise in _xy_ plane from the positive _x_-axis direction.
+The azimuth may be in the range from -180&deg; to 180&deg; or from 0 to 360&deg;.
+
+The third parameter of the observer is _rimage_.
+It is a radius of the visible area in astronomy units.
+Both axes of the image will be from -_rimage_ to _rimage_.
+We specify _rimage_ once for all observers.
+
+There are three ways to specify observer directions:
+
+#### Manual
+
+One should specify the list of coordinates _&phi;_ and _&theta;_ for each observer position.
+
+#### Parallel
+
+All observers are evenly distributed on the circle with a constant _&theta;_.
+In this configuration, one should specify the number of observers _numberOfObservers_ and _&theta;_.
+The first observer has _&phi;_ equal to zero.
+
+#### Meridian
+
+All observers are evenly distributed on the meridian with a constant _&phi;_.
+In this configuration, one should specify the number of observers _numberOfObservers_ and _&phi;_.
+If _numberOfObservers_ is the odd one of the observers has _&theta;_ equal to 90&deg;.
+This configuration does not include poles.
+
+#### Example
+
+You can combine all three ways in one problem.
+The JSON configuration may be specified in the following way:
+
+```yaml
+"observers": {
+    "rimage": 800.0,
+    "manual": [
+      {
+        "phi": 45.0,
+        "theta": 45.0
+      },
+      {
+        "phi": 60.0,
+        "theta": 120.0
+      }
+    ],
+    "parallel": {
+      "numberOfObservers" : 10,
+      "theta" : 90.0
+    },
+    "meridian": {
+      "numberOfObservers" : 2,
+      "phi" : 0.0
+    }
+  }
+```
+
 ## Used third-party libraries
 
 * **[nlohmann/json](https://github.com/nlohmann/json)** to parse a configuration file
