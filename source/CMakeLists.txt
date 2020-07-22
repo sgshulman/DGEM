@@ -36,6 +36,7 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
         tests/unittests.cpp
         tests/ModelTests.inl
         tests/Vector3dTests.cpp
+        tests/Direction3dTests.cpp
         third-party/catch2/catch.hpp)
 
     add_executable(unittests ${UNITTEST_SOURCES} ${SOURCES})

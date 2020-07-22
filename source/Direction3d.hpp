@@ -11,7 +11,7 @@ public:
     Direction3d(Vector3d const vector)
         : vector_{ vector.normalized() }
         , phi_{ std::atan2(vector_.y(), vector_.x()) }
-        , sinTheta_{ std::sqrt(vector_.x()*vector_.x() + vector.y()*vector.y()) }
+        , sinTheta_{ std::sqrt(vector_.x()*vector_.x() + vector_.y()*vector_.y()) }
     {}
 
     Direction3d(double const phi, double const theta)
