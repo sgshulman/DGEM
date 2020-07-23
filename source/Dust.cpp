@@ -1,5 +1,6 @@
 #include <cmath>
 #include "Dust.hpp"
+#include "MathUtils.hpp"
 
 void Dust::scatteringMatrixElements(
     double &p1, double &p2, double &p3, double &p4, double cosTheta) const
@@ -17,7 +18,7 @@ void Dust::scatteringMatrixElements(
     p3 = 2. * p1 * cosTheta / (1. + cos2Theta);
 
     double const theta = std::acos(cosTheta);
-    double const f = std::exp(-7.0 * theta / 3.1415926);
+    double const f = std::exp(-7.0 * theta / PI);
     double const thetaF = theta * (1. + 3.13 * sc_ * f);
     double const c = std::cos(thetaF);
     double const c2 = c * c;

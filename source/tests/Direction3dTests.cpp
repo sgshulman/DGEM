@@ -1,6 +1,5 @@
 #include "../third-party/catch2/catch.hpp"
 #include "../Direction3d.hpp"
-#include "../model.hpp"
 
 TEST_CASE("Direction3d", "[vector3d]")
 {

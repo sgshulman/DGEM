@@ -1,6 +1,6 @@
 #include "../third-party/catch2/catch.hpp"
 #include "../Vector3d.hpp"
-#include "../model.hpp"
+#include "../MathUtils.hpp"
 
 namespace
 {

@@ -4,7 +4,6 @@
 #include <fstream>
 #include <iostream>
 #include <cstdio>
-#include "model.hpp"
 #include "Photon.hpp"
 
 // pictures 
@@ -78,8 +77,8 @@ class Pictures
         {
             int const FILENAME_LENGTH{ 30 };
             char fname[FILENAME_LENGTH];
-            int const iPhi = int(phi*180/3.1415926+0.5);
-            int const iTheta = int(theta*180/3.1415926+0.5);
+            int const iPhi = int(phi*180/PI+0.5);
+            int const iTheta = int(theta*180/PI+0.5);
 
             snprintf(fname, FILENAME_LENGTH, "fimage%2.2i_%2.2i_%2.2i.dat", iPhi, iTheta, key);
             std::ofstream f(fname);
@@ -126,7 +125,7 @@ class Pictures
             }
             file << "\tF= " << fsum << "\tQ= " << qsum << "\tU= " << usum
                     << "\tp= " << std::sqrt(qsum*qsum + usum*usum)/fsum
-                    << "\tphi= " << 90 * std::atan2(usum, qsum)/3.1415926 << "\n" ;
+                    << "\tphi= " << 90 * std::atan2(usum, qsum)/PI << "\n" ;
         }
 
     private:
@@ -177,7 +176,7 @@ public:
 
     void write(std::ofstream& file)
     {
-        file << "phi = " << (direction_.phi()*180/3.1415926) << "\ttheta = " << (theta_*180/3.1415926);
+        file << "phi = " << (direction_.phi()*180/PI) << "\ttheta = " << (theta_*180/PI);
         result_.sum(file);
         result0_.sum(file);
     }

@@ -2,11 +2,10 @@
 #include <cstddef>
 #include <cassert>
 #include "Directions.hpp"
+#include "MathUtils.hpp"
 
 namespace
 {
-    double const PI = 3.1415926;
-
     // Class presents mesh nodes on the union sphere.
     // Holds the dot and it neighbors for creating more detailed mesh
     class PointWithNeighbors

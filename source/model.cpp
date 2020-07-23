@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "model.hpp"
+#include "MathUtils.hpp"
 #include "grid.hpp"
 #include "Sources.hpp"
 #include "observers.hpp"

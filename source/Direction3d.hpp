@@ -2,6 +2,7 @@
 #define DIRECTION_3D_HPP_
 
 #include "Vector3d.hpp"
+#include "MathUtils.hpp"
 
 class Direction3d
 {
@@ -17,8 +18,8 @@ public:
     Direction3d(double const phi, double const theta)
     {
         phi_ = phi;
-        if(phi_ > 2*3.1415926 ) phi_=phi_-2*3.1415926;
-        if(phi_ < 0.0)          phi_=phi_+2*3.1415926;
+        if(phi_ > 2*PI) phi_=phi_-2*PI;
+        if(phi_ < 0.0)  phi_=phi_+2*PI;
 
         sinTheta_ = std::sin(theta);
 

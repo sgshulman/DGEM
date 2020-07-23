@@ -3,6 +3,7 @@
 #include <iostream>
 #include "observers.hpp"
 #include "grid.hpp"
+#include "MathUtils.hpp"
 
 Photon Sources::emitPhoton(Random* ran)
 {

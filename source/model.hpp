@@ -6,8 +6,6 @@
 
 #include "Predefines.hpp"
 
-double const PI	= 3.141592653589793238;
-
 // Random number generator 
 // L’Ecuyer, P. 1988, Communications of the ACM, vol. 31, pp. 742,774.
 class Random

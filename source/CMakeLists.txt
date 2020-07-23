@@ -12,6 +12,7 @@ set(SOURCES
         grid.cpp
         grid.hpp
         observers.hpp
+        MathUtils.hpp
         model.cpp
         model.hpp
         Photon.cpp

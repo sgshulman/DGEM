@@ -22,7 +22,7 @@ double Photon::Scatt(DustCRef dust, Direction3d const& dir, Random* ran)
     // cos(Theta), where Theta is angle between incident
     // and outgoing (i.e., observed) photon direction
     double const cosTheta = dir_.vector() * dir.vector();
-    double const hgfrac = dust->fraction(cosTheta) / 4. / 3.1415926;
+    double const hgfrac = dust->fraction(cosTheta) / 4. / PI;
        
     Stokes(dust, dir, cosTheta, true, ran);
     return hgfrac;
@@ -151,18 +151,18 @@ void Photon::Stokes(DustCRef dust, Direction3d const &dir, double calpha, bool f
     if (fDir)
     {
         double ophi = dir.phi();
-        if (ophi > 3.1415926) ophi -= 2*3.1415926;
+        if (ophi > PI) ophi -= 2*PI;
         double cosi1 = (dir.cosTheta()-dir_.cosTheta()*cosTh)/(dir_.sinTheta()*sinTh);
-        double sini1 = sin(dir_.phi()-ophi-3.1415926)*dir.sinTheta()/sinTh;
-        ri1 = atan2(sini1, cosi1)+3.1415926;
+        double sini1 = sin(dir_.phi()-ophi-PI)*dir.sinTheta()/sinTh;
+        ri1 = atan2(sini1, cosi1)+PI;
     } else {
-        ri1=2*3.1415926*ran->Get();
+        ri1=2*PI*ran->Get();
     }
 
 
-    if(ri1 >= 3.1415926)
+    if(ri1 >= PI)
     {
-        double ri3 = 3.1415926*2-ri1;
+        double ri3 = PI*2-ri1;
         double cosi3=cos(ri3);
         double sini3=sin(ri3);
         double sin2i3=2.0*sini3*cosi3;
@@ -202,8 +202,8 @@ void Photon::Stokes(DustCRef dust, Direction3d const &dir, double calpha, bool f
              if(cosdph <-1.0) cosdph=-1.0;
 
              phi=phip+acos(cosdph);
-             if(phi > 2*3.1415926 ) phi=phi-2*3.1415926;
-             if(phi < 0.0)          phi=phi+2*3.1415926;
+             if(phi > 2*PI ) phi=phi-2*PI;
+             if(phi < 0.0)   phi=phi+2*PI;
         }
         double sin2i2=2.0*sini2*cosi2;
         double cos2i2=2.0*cosi2*cosi2-1.0;
@@ -263,8 +263,8 @@ void Photon::Stokes(DustCRef dust, Direction3d const &dir, double calpha, bool f
             if( cosdph <-1.0 ) cosdph=-1.0;
 
             phi=phip-acos(cosdph);
-            if(phi > 2*3.1415926 ) phi=phi-2*3.1415926;
-            if(phi < 0.0)          phi=phi+2*3.1415926;
+            if(phi > 2*PI ) phi=phi-2*PI;
+            if(phi < 0.0)   phi=phi+2*PI;
         }
         double sin2i2=2.0*sini2*cosi2;
         double cos2i2=2.0*cosi2*cosi2-1.0;
