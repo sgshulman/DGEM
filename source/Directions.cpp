@@ -194,8 +194,8 @@ namespace
                 for (int cnt=0; cnt!=5; ++cnt)
                 {
                     double const angle = cnt * 72.;
-                    nodes_[cnt+1].set(Vector3d{ std::cos(angle*PI/180),  std::sin(angle*PI/180),  0.5 });
-                    nodes_[cnt+6].set(Vector3d{ std::cos((36.+angle)*PI/180),  std::sin((36.+angle)*PI/180),  -0.5});
+                    nodes_[cnt+1].set(Vector3d{ std::cos(radians(angle)),  std::sin(radians(angle)),  0.5 });
+                    nodes_[cnt+6].set(Vector3d{ std::cos(radians(36.+angle)),  std::sin(radians(36.+angle)),  -0.5});
                 }
                 nodes_[11].set(Vector3d{0.0, 0.0, -std::sqrt(5.0)/2.0});
 

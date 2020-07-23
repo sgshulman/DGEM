@@ -56,8 +56,8 @@ namespace
             for (const auto& observer : manualJson)
             {
                 observers->emplace_back(
-                    observer.at("phi").get<double>()*PI/180.,
-                    observer.at("theta").get<double>()*PI/180,
+                    radians(observer.at("phi").get<double>()),
+                    radians(observer.at("theta").get<double>()),
                     rimage);
             }
         }
@@ -71,7 +71,7 @@ namespace
 
             for (int i=0; i!=numberOfObservers; ++i)
             {
-                observers->emplace_back(2*PI/numberOfObservers*i, viewTheta*PI/180., rimage);
+                observers->emplace_back(2*PI/numberOfObservers*i, radians(viewTheta), rimage);
             }
         }
 
@@ -84,7 +84,7 @@ namespace
 
             for (int i=0; i!=numberOfObservers; ++i)
             {
-                observers->emplace_back(viewPhi*PI/180., PI/numberOfObservers*(i + 0.5), rimage);
+                observers->emplace_back(radians(viewPhi), PI/numberOfObservers*(i + 0.5), rimage);
             }
         }
     }

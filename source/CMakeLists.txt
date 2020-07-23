@@ -35,9 +35,10 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
 
     set(UNITTEST_SOURCES
         tests/unittests.cpp
+        tests/Direction3dTests.cpp
+        tests/MathUtilsTests.cpp
         tests/ModelTests.inl
         tests/Vector3dTests.cpp
-        tests/Direction3dTests.cpp
         third-party/catch2/catch.hpp)
 
     add_executable(unittests ${UNITTEST_SOURCES} ${SOURCES})

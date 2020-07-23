@@ -201,9 +201,7 @@ void Photon::Stokes(DustCRef dust, Direction3d const &dir, double calpha, bool f
              if(cosdph > 1.0) cosdph=1.0;
              if(cosdph <-1.0) cosdph=-1.0;
 
-             phi=phip+acos(cosdph);
-             if(phi > 2*PI ) phi=phi-2*PI;
-             if(phi < 0.0)   phi=phi+2*PI;
+             phi = normAngle(phip + acos(cosdph));
         }
         double sin2i2=2.0*sini2*cosi2;
         double cos2i2=2.0*cosi2*cosi2-1.0;
@@ -262,9 +260,7 @@ void Photon::Stokes(DustCRef dust, Direction3d const &dir, double calpha, bool f
             if( cosdph > 1.0 ) cosdph= 1.0;
             if( cosdph <-1.0 ) cosdph=-1.0;
 
-            phi=phip-acos(cosdph);
-            if(phi > 2*PI ) phi=phi-2*PI;
-            if(phi < 0.0)   phi=phi+2*PI;
+            phi = normAngle(phip - acos(cosdph));
         }
         double sin2i2=2.0*sini2*cosi2;
         double cos2i2=2.0*cosi2*cosi2-1.0;

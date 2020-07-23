@@ -77,10 +77,10 @@ class Pictures
         {
             int const FILENAME_LENGTH{ 30 };
             char fname[FILENAME_LENGTH];
-            int const iPhi = int(phi*180/PI+0.5);
-            int const iTheta = int(theta*180/PI+0.5);
+            long const iPhi = std::lround(degrees(phi));
+            long const iTheta = std::lround(degrees(theta));
 
-            snprintf(fname, FILENAME_LENGTH, "fimage%2.2i_%2.2i_%2.2i.dat", iPhi, iTheta, key);
+            snprintf(fname, FILENAME_LENGTH, "fimage%2.2li_%2.2li_%2.2i.dat", iPhi, iTheta, key);
             std::ofstream f(fname);
             for (size_t y=0; y != ny_; ++y)
             {
@@ -90,7 +90,7 @@ class Pictures
             }
             f.close();
 
-            snprintf(fname, FILENAME_LENGTH, "qimage%2.2i_%2.2i_%2.2i.dat", iPhi, iTheta, key);
+            snprintf(fname, FILENAME_LENGTH, "qimage%2.2li_%2.2li_%2.2i.dat", iPhi, iTheta, key);
             std::ofstream q(fname);
             for (size_t y=0; y != ny_; ++y)
             {
@@ -100,7 +100,7 @@ class Pictures
             }
             q.close();
 
-            snprintf(fname, FILENAME_LENGTH, "uimage%2.2i_%2.2i_%2.2i.dat", iPhi, iTheta, key);
+            snprintf(fname, FILENAME_LENGTH, "uimage%2.2li_%2.2li_%2.2i.dat", iPhi, iTheta, key);
             std::ofstream u(fname);
             for (size_t y=0; y != ny_; ++y)
             {
@@ -176,7 +176,7 @@ public:
 
     void write(std::ofstream& file)
     {
-        file << "phi = " << (direction_.phi()*180/PI) << "\ttheta = " << (theta_*180/PI);
+        file << "phi = " << degrees(direction_.phi()) << "\ttheta = " << degrees(theta_);
         result_.sum(file);
         result0_.sum(file);
     }

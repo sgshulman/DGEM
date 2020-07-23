@@ -16,13 +16,9 @@ public:
     {}
 
     Direction3d(double const phi, double const theta)
+        : phi_{ normAngle(phi) }
+        , sinTheta_{ std::sin(theta) }
     {
-        phi_ = phi;
-        if(phi_ > 2*PI) phi_=phi_-2*PI;
-        if(phi_ < 0.0)  phi_=phi_+2*PI;
-
-        sinTheta_ = std::sin(theta);
-
         vector_ = {sinTheta_ * std::cos(phi_), sinTheta_ * std::sin(phi_), std::cos(theta) };
     }
 
