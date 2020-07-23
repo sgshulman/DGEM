@@ -4,8 +4,8 @@
 
 #include "grid.hpp"
 #include "observers.hpp"
-#include "model.hpp"
 #include "Photon.hpp"
+#include "Random.hpp"
 
 namespace
 {

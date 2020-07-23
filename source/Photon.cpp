@@ -2,6 +2,7 @@
 #include "grid.hpp"
 #include "observers.hpp"
 #include "Photon.hpp"
+#include "Random.hpp"
 #include "Directions.hpp"
 #include "Dust.hpp"
 

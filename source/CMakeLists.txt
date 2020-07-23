@@ -17,6 +17,7 @@ set(SOURCES
         model.hpp
         Photon.cpp
         Photon.hpp
+        Random.hpp
         Sources.cpp
         Sources.hpp
         Predefines.hpp
