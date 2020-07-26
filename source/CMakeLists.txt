@@ -9,8 +9,11 @@ set(SOURCES
         Direction3d.hpp
         Dust.cpp
         Dust.hpp
+        FlaredDisk.cpp
+        FlaredDisk.hpp
         grid.cpp
         grid.hpp
+        IMatter.hpp
         observers.hpp
         MathUtils.hpp
         model.cpp

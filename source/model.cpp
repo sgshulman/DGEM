@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "model.hpp"
+#include "FlaredDisk.hpp"
 #include "MathUtils.hpp"
 #include "grid.hpp"
 #include "Sources.hpp"
@@ -10,7 +11,7 @@
 
 namespace
 {
-    FlaredDiskCPtr parseFlaredDisk(const nlohmann::json& json)
+    IMatterCPtr parseFlaredDisk(const nlohmann::json& json)
     {
         return std::make_shared<FlaredDisk const>(
             json.at("rinner").get<double>(),
@@ -32,7 +33,7 @@ namespace
             json.at("sc").get<double>());
     }
 
-    GridCPtr parseGrid(const nlohmann::json& json, double const kappa, FlaredDiskCPtr disk)
+    GridCPtr parseGrid(const nlohmann::json& json, double const kappa, IMatterCPtr disk)
     {
         return std::make_shared<Grid const>(
             json.at("xmax").get<double>(),
@@ -135,7 +136,7 @@ Model::Model(std::vector<Observer>* observers)
 
     nlohmann::json const& dustJson = j.at("dust");
     dust_ = parseDust(dustJson);
-    FlaredDiskCPtr disk = parseFlaredDisk(j.at("disk"));
+    IMatterCPtr disk = parseFlaredDisk(j.at("disk"));
     grid_ = parseGrid(j.at("grid"), dustJson.at("kappa").get<double>(), disk);
     sources_ = parseSources(j.at("stars"), sourceParameters);
     parseObservers(observers, j.at("observers"));

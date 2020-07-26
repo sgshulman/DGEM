@@ -1,8 +1,8 @@
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 
 #include "grid.hpp"
+#include "IMatter.hpp"
 #include "observers.hpp"
 #include "Photon.hpp"
 #include "Random.hpp"
@@ -21,21 +21,6 @@ namespace
     }
 }
 
-double FlaredDisk::density(double x, double y, double z) const
-{
-    double const r2 = x*x + y*y;
-    double const r  = std::sqrt(r2);
-
-    // Disk Geometry
-    if(( r >= rInner_ ) && ( r <= rOuter_ ))
-    {
-        double const h = h0_ * std::pow(r/r0_, beta_);
-        return rho0_ * std::pow(r0_ / r, alpha_) * std::exp(-0.5*z*z / (h*h)); // rho in g/cm^3
-    } else {
-        return 0.0;
-    }
-}
-
 
 Grid::Grid(
         double const xmax,
@@ -45,14 +30,14 @@ Grid::Grid(
         uint32_t const nx,
         uint32_t const ny,
         uint32_t const nz,
-        FlaredDiskCPtr disk)
+        IMatterCPtr matter)
     : nx_{ nx }
     , ny_{ ny }
     , nz_{ nz }
     , xmax_{ xmax }
     , ymax_{ ymax }
     , zmax_{ zmax }
-    , disk_{ std::move(disk) }
+    , matter_{ std::move(matter) }
 {
     rhokappa_ = new double[nx_ * ny_ * nz_];
     minrho_ = 1e+38;
@@ -67,7 +52,7 @@ Grid::Grid(
             {
                 double const z=(cntz*2.0+1) * zmax_/nz_ - zmax_;
                 size_t const idx = cntx+cnty*nx+cntz*ny*nx;
-                rhokappa_[idx] = disk_->density(x, y, z) * kappa * 1.5e13; // rho*kappa*R,
+                rhokappa_[idx] = matter_->density(x, y, z) * kappa * 1.5e13; // rho*kappa*R,
                 if (minrho_ > rhokappa_[idx] && rhokappa_[idx] > 0)
                     minrho_ = rhokappa_[idx];
             }

@@ -14,8 +14,8 @@ class Sources;
 using SourcesPtr = std::shared_ptr<Sources>;
 using SourcesRef = SourcesPtr const &;
 
-class FlaredDisk;
-using FlaredDiskCPtr = std::shared_ptr<FlaredDisk const>;
+class IMatter;
+using IMatterCPtr = std::shared_ptr<IMatter const>;
 
 class Grid;
 using GridCPtr = std::shared_ptr<Grid const>;

@@ -6,44 +6,12 @@
 
 #include "Predefines.hpp"
 
-class FlaredDisk
-{
-public:
-    FlaredDisk(
-            double rInner,
-            double rOuter,
-            double rho0,
-            double h0,
-            double r0,
-            double alpha,
-            double beta)
-        : rInner_{ rInner }
-        , rOuter_{ rOuter }
-        , rho0_{ rho0 }
-        , h0_{ h0 }
-        , r0_{ r0 }
-        , alpha_{ alpha }
-        , beta_{ beta }
-    {}
-
-    double density(double x, double y, double z) const;
-
-private:
-    double const rInner_;
-    double const rOuter_;
-    double const rho0_;
-    double const h0_;
-    double const r0_;
-    double const alpha_;
-    double const beta_;
-};
-
 // Cartesian grid
 class Grid
 {
     public:
         Grid(double xmax, double ymax, double zmax, double kappa,
-            uint32_t nx, uint32_t ny, uint32_t nz, FlaredDiskCPtr disk);
+            uint32_t nx, uint32_t ny, uint32_t nz, IMatterCPtr matter);
 
         ~Grid()
         {
@@ -66,7 +34,7 @@ class Grid
         double *rhokappa_{ nullptr };
         double xmax_, ymax_, zmax_;
         double minrho_;
-        FlaredDiskCPtr disk_;
+        IMatterCPtr matter_;
 };
 
 #endif
