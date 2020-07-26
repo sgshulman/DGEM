@@ -23,6 +23,8 @@ set(SOURCES
         Random.hpp
         Sources.cpp
         Sources.hpp
+        SafierWind.cpp
+        SafierWind.hpp
         SphereEnvelope.cpp
         SphereEnvelope.hpp
         Predefines.hpp
