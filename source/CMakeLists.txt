@@ -23,6 +23,8 @@ set(SOURCES
         Random.hpp
         Sources.cpp
         Sources.hpp
+        SphereEnvelope.cpp
+        SphereEnvelope.hpp
         Predefines.hpp
         Vector3d.hpp
         third-party/nlohmann/json.hpp)
@@ -42,6 +44,7 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
         tests/Direction3dTests.cpp
         tests/MathUtilsTests.cpp
         tests/ModelTests.inl
+        tests/SphereEnvelopeTests.cpp
         tests/Vector3dTests.cpp
         third-party/catch2/catch.hpp)
 
