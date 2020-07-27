@@ -4,6 +4,7 @@
 #include "FlaredDisk.hpp"
 #include "MathUtils.hpp"
 #include "grid.hpp"
+#include "SafierWind.hpp"
 #include "Sources.hpp"
 #include "observers.hpp"
 #include "Dust.hpp"
@@ -11,8 +12,27 @@
 
 namespace
 {
+    IMatterCPtr parseSafierWind(const nlohmann::json& json)
+    {
+        return std::make_shared<SafierWind const>(
+            json.at("model").get<std::string>().at(0),
+            json.at("mOut").get<double>(),
+            json.at("mStar").get<double>(),
+            json.at("h0").get<double>(),
+            json.at("rMin").get<double>(),
+            json.at("rMax").get<double>());
+    }
+
+
     IMatterCPtr parseFlaredDisk(const nlohmann::json& json)
     {
+        IMatterCPtr wind;
+
+        if (json.contains("safierWind"))
+        {
+            wind = parseSafierWind(json.at("safierWind"));
+        }
+
         return std::make_shared<FlaredDisk const>(
             json.at("rinner").get<double>(),
             json.at("router").get<double>(),
@@ -20,7 +40,8 @@ namespace
             json.at("h_0").get<double>(),
             json.at("R_0").get<double>(),
             json.at("alpha").get<double>(),
-            json.at("beta").get<double>());
+            json.at("beta").get<double>(),
+            wind);
     }
 
     DustCPtr parseDust(const nlohmann::json& json)

@@ -2,6 +2,7 @@
 #define FLARED_DISK_HPP_
 
 #include "IMatter.hpp"
+#include "Predefines.hpp"
 
 class FlaredDisk : public IMatter
 {
@@ -13,7 +14,8 @@ class FlaredDisk : public IMatter
                 double h0,
                 double r0,
                 double alpha,
-                double beta)
+                double beta,
+                IMatterCPtr wind)
             : rInner_{ rInner }
             , rOuter_{ rOuter }
             , rho0_{ rho0 }
@@ -21,6 +23,7 @@ class FlaredDisk : public IMatter
             , r0_{ r0 }
             , alpha_{ alpha }
             , beta_{ beta }
+            , wind_{ std::move(wind) }
         {}
 
         ~FlaredDisk() override = default;
@@ -35,6 +38,7 @@ class FlaredDisk : public IMatter
         double const r0_;
         double const alpha_;
         double const beta_;
+        IMatterCPtr wind_;
 };
 
 #endif
