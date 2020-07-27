@@ -16,6 +16,8 @@ set(SOURCES
         IMatter.hpp
         observers.hpp
         MathUtils.hpp
+        MatterArray.cpp
+        MatterArray.hpp
         model.cpp
         model.hpp
         Photon.cpp
@@ -45,6 +47,7 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
         tests/unittests.cpp
         tests/Direction3dTests.cpp
         tests/MathUtilsTests.cpp
+        tests/MatterArrayTests.cpp
         tests/ModelTests.inl
         tests/SphereEnvelopeTests.cpp
         tests/Vector3dTests.cpp
