@@ -1,7 +1,7 @@
 #include "SafierWind.hpp"
 #include <cmath>
 
-struct Model
+struct SafierWindModel
 {
     double dxi0;
     double a_1, a_2, a_3, a_4, a_5, a_6, a_7, a_8;
@@ -10,11 +10,11 @@ struct Model
 
 namespace
 {
-    constexpr Model modelB{1.73,
+    constexpr SafierWindModel modelB{1.73,
                            -0.30, 0.54, 1.14, 0.26, 1.76, 0.92, 0.09, 0.27,
                            0.035, 7.7, 1.01, 0.31, 1.1, 0.40, -0.10, 0.0, 1.25, 0.60};
 
-    Model const* getModel(char const key)
+    SafierWindModel const* getModel(char const key)
     {
         if (key == 'B')
         {
@@ -24,27 +24,27 @@ namespace
         return nullptr;
     }
 
-    double rho0(const Model* const model, double mOut, double mStar, double h0, double rRatio)
+    double rho0(const SafierWindModel* const model, double mOut, double mStar, double h0, double rRatio)
     {
         return 1.064e-15 * (mOut/1e-7) * std::pow(mStar/0.5, -0.5) / std::log(rRatio) /
             model->b_0/(1.0-h0*model->dxi0);
     }
 
-    double xi(const Model* const model, double h)
+    double xi(const SafierWindModel* const model, double h)
     {
         double xi1 = (1+model->a_1*h + model->a_2*pow(h, model->a_3)) * exp(-model->a_4*h);
         double xi2 = model->a_5 * pow(h, model->a_6)  * exp(-4*model->a_7*pow(h, model->a_8));
         return xi1 + xi2;
     }
 
-    double psi(const Model* const model, double h)
+    double psi(const SafierWindModel* const model, double h)
     {
         double psi1 = (model->b_0 + model->b_6*h + model->b_7*h*h) * exp(-model->b_8 * pow(h, model->b_9));
         double psi2 = model->b_1 * exp(-1.0/(model->b_2*pow(h, model->b_3)))  * exp(-model->b_4/(h*model->b_5));
         return psi1 + psi2;
     }
 
-    double dXidChi(const Model* const model, double h)
+    double dXidChi(const SafierWindModel* const model, double h)
     {
         double dXidChi1 = (model->a_1 + model->a_2*model->a_3*pow(h, model->a_3 - 1.0) - model->a_4 - model->a_1*model->a_4*h - model->a_2*model->a_4*pow(h, model->a_3))
                             *exp(-model->a_4*h);
@@ -54,7 +54,7 @@ namespace
         return dXidChi1 + dXidChi2;
     }
 
-    double eta(const Model* const model, double chi, double h0)
+    double eta(const SafierWindModel* const model, double chi, double h0)
     {
         double const h = fabs(chi) - h0;
         double const xi = ::xi(model, h);

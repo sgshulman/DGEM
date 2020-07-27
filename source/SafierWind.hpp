@@ -3,7 +3,7 @@
 
 #include "IMatter.hpp"
 
-struct Model;
+struct SafierWindModel;
 
 class SafierWind : public IMatter
 {
@@ -15,7 +15,7 @@ public:
     double density(double x, double y, double z) const override;
 
 private:
-    Model const * const model_;
+    SafierWindModel const * const model_;
     double rho0_;
     double h0_;
 };

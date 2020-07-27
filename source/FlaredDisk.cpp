@@ -1,4 +1,5 @@
 #include "FlaredDisk.hpp"
+#include <algorithm>
 #include <cmath>
 
 double FlaredDisk::density(double const x, double const y, double const z) const
