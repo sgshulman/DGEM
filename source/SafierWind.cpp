@@ -11,14 +11,50 @@ struct SafierWindModel
 namespace
 {
     constexpr SafierWindModel modelB{1.73,
-                           -0.30, 0.54, 1.14, 0.26, 1.76, 0.92, 0.09, 0.27,
-                           0.035, 7.7, 1.01, 0.31, 1.1, 0.40, -0.10, 0.0, 1.25, 0.60};
+        -0.30, 0.54, 1.14, 0.26, 1.76, 0.92, 0.09, 0.27,
+        0.035, 7.7, 1.01, 0.31, 1.1, 0.40, -0.10, 0.0, 1.25, 0.60};
+
+    constexpr SafierWindModel modelC{1.73,
+        0.21, 0.30, 1.23, 0.21, 1.27, 0.92, 0.04, 0.28,
+        0.035, 12.16, 0.65, 0.33, 1.0, 0.40, 0.50, 0.0, 1.25, 0.60};
+
+    constexpr SafierWindModel modelD {1.73,
+        0.49, 0.17, 1.27, 0.11, 0.89, 0.97, 0.02, 0.31,
+        0.035, 20.08, 0.42, 0.34, 1.0, 0.40, 0.90, 0.0, 1.00, 0.60};
+
+    constexpr SafierWindModel modelI{1.73,
+        0.18, 0.14, 1.86, 0.26, 1.30, 0.92, 0.02, 0.24,
+        0.035, 33.52, 0.55, 0.26, 2.5, 0.50, 1.00, 0.0, 0.75, 1.00};
+
+    constexpr SafierWindModel modelE{3.73,
+        -0.51, 0.62, 1.02, 0.03, 2.46, 0.91, 0.01, 0.32,
+        0.01, 6.95, 0.53, 0.30, 1.0, 0.40, 0.90, 0.0, 1.00, 0.60};
+
+    constexpr SafierWindModel modelF{3.73,
+        -0.22, 0.50, 0.98, 0.09, 2.78, 0.92, 0.01, 0.27,
+        0.01, 11.62, 0.67, 0.20, 1.8, 0.40, 1.00, 0.0, 0.85, 0.55};
+
+    constexpr SafierWindModel modelG {3.73,
+        0.07, 0.05, 0.42, 0.05, 2.95, 0.94, 0.008, 0.26,
+        0.01, 18.70, 0.78, 0.14, 3.3, 0.55, 1.00, 0.0, 0.30, 1.10};
 
     SafierWindModel const* getModel(char const key)
     {
         if (key == 'B')
         {
             return &modelB;
+        } else if (key == 'C') {
+            return &modelC;
+        } else if (key == 'D') {
+            return &modelD;
+        } else if (key == 'I') {
+            return &modelI;
+        } else if (key == 'E') {
+            return &modelE;
+        } else if (key == 'F') {
+            return &modelF;
+        } else if (key == 'G') {
+            return &modelG;
         }
 
         return nullptr;
