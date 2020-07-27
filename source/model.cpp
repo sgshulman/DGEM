@@ -61,9 +61,9 @@ namespace
             json.at("ymax").get<double>(),
             json.at("zmax").get<double>(),
             kappa,
-            201,
-            201,
-            201,
+            json.at("nx").get<uint32_t>(),
+            json.at("ny").get<uint32_t>(),
+            json.at("nz").get<uint32_t>(),
             std::move(disk));
     }
 
