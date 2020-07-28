@@ -15,16 +15,7 @@ class FlaredDisk : public IMatter
                 double r0,
                 double alpha,
                 double beta,
-                IMatterCPtr wind)
-            : rInner_{ rInner }
-            , rOuter_{ rOuter }
-            , rho0_{ rho0 }
-            , h0_{ h0 }
-            , r0_{ r0 }
-            , alpha_{ alpha }
-            , beta_{ beta }
-            , wind_{ std::move(wind) }
-        {}
+                IMatterCPtr wind);
 
         ~FlaredDisk() override = default;
 

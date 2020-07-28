@@ -4,6 +4,8 @@ set(CMAKE_GENERATOR "Unix Makefiles")
 project(DGEM)
 
 set(SOURCES
+        DebugUtils.cpp
+        DebugUtils.hpp
         Directions.cpp
         Directions.hpp
         Direction3d.hpp

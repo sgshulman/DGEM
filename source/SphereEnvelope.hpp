@@ -11,13 +11,7 @@ class SphereEnvelope : public IMatter
                 double rOuter,
                 double rho0,
                 double r0,
-                double alpha)
-            : rInner_{ rInner }
-            , rOuter_{ rOuter }
-            , rho0_{ rho0 }
-            , r0_{ r0 }
-            , alpha_{ alpha }
-        {}
+                double alpha);
 
         ~SphereEnvelope() override = default;
 
