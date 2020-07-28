@@ -97,25 +97,89 @@ TEST_CASE("Parse Observers", "[model]")
             "manual": [
             {
                 "phi": 45.0,
-                    "theta": 45.0
+                "theta": 45.0
             },
             {
                 "phi": 60.0,
-                    "theta": 120.0
+                "theta": 120.0
             }
             ],
             "parallel": {
                 "numberOfObservers" : 10,
-                    "theta" : 90.0
+                "theta" : 90.0
             },
             "meridian": {
                 "numberOfObservers" : 2,
-                    "phi" : 0.0
+                "phi" : 0.0
             }}
             )"_json;
 
         parseObservers(&observers, observersJson);
 
         REQUIRE(14 == observers.size());
+    }
+}
+
+TEST_CASE("Parse Geometry", "[model]")
+{
+    SECTION("Flared Disk")
+    {
+        nlohmann::json flaredDiskJson = R"({
+            "flaredDisk": {
+              "rInner": 200,
+              "rOuter": 800,
+              "rho0": 2.4e-15,
+              "h0": 7,
+              "r0": 100,
+              "alpha": 2.25,
+              "beta": 1.25
+            }}
+            )"_json;
+
+        const auto disk = parseGeometry(flaredDiskJson);
+        REQUIRE(disk);
+    }
+
+    SECTION("Sphere Envelope")
+    {
+        nlohmann::json sphereEnvelopJson = R"({
+            "sphereEnvelope": {
+              "rInner": 500,
+              "rOuter": 550,
+              "rho0": 2.4e-17,
+              "r0": 100,
+              "alpha": 0
+            }}
+            )"_json;
+
+        const auto sphere = parseGeometry(sphereEnvelopJson);
+        REQUIRE(sphere);
+    }
+
+    SECTION("Maximum")
+    {
+        nlohmann::json matterArrayJson = R"({
+            "max" : [
+              {"sphereEnvelope": {
+                "rInner": 500,
+                "rOuter": 550,
+                "rho0": 2.4e-17,
+                "r0": 100,
+                "alpha": 0
+              }},
+              {"flaredDisk": {
+                "rInner": 200,
+                "rOuter": 800,
+                "rho0": 2.4e-15,
+                "h0": 7,
+                "r0": 100,
+                "alpha": 2.25,
+                "beta": 1.25
+              }}
+            ]}
+            )"_json;
+
+        const auto matterArray = parseGeometry(matterArrayJson);
+        REQUIRE(matterArray);
     }
 }

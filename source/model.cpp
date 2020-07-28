@@ -3,9 +3,11 @@
 #include "model.hpp"
 #include "FlaredDisk.hpp"
 #include "MathUtils.hpp"
+#include "MatterArray.hpp"
 #include "grid.hpp"
 #include "SafierWind.hpp"
 #include "Sources.hpp"
+#include "SphereEnvelope.hpp"
 #include "observers.hpp"
 #include "Dust.hpp"
 #include "third-party/nlohmann/json.hpp"
@@ -34,15 +36,66 @@ namespace
         }
 
         return std::make_shared<FlaredDisk const>(
-            json.at("rinner").get<double>(),
-            json.at("router").get<double>(),
-            json.at("rho_0").get<double>(),
-            json.at("h_0").get<double>(),
-            json.at("R_0").get<double>(),
+            json.at("rInner").get<double>(),
+            json.at("rOuter").get<double>(),
+            json.at("rho0").get<double>(),
+            json.at("h0").get<double>(),
+            json.at("r0").get<double>(),
             json.at("alpha").get<double>(),
             json.at("beta").get<double>(),
             wind);
     }
+
+
+    IMatterCPtr parseSphereEnvelope(const nlohmann::json& json)
+    {
+        return std::make_shared<SphereEnvelope const>(
+            json.at("rInner").get<double>(),
+            json.at("rOuter").get<double>(),
+            json.at("rho0").get<double>(),
+            json.at("r0").get<double>(),
+            json.at("alpha").get<double>());
+    }
+
+
+    IMatterCPtr parseGeometry(const nlohmann::json& json)
+    {
+        if (json.contains("flaredDisk"))
+        {
+            return parseFlaredDisk(json.at("flaredDisk"));
+        } else if (json.contains("sphereEnvelope")) {
+            return parseSphereEnvelope(json.at("sphereEnvelope"));
+        } else if (json.contains("max")) {
+            nlohmann::json const& jsonList = json.at("max");
+            std::vector<IMatterCPtr> matterArray;
+            matterArray.reserve(jsonList.size());
+
+            for (const auto& matterJson : jsonList)
+            {
+                matterArray.emplace_back(parseGeometry(matterJson));
+            }
+
+            return std::make_shared<MatterArray const>(
+                std::move(matterArray),
+                MatterArray::max);
+        } else if (json.contains("sum")) {
+            nlohmann::json const& jsonList = json.at("sum");
+            std::vector<IMatterCPtr> matterArray;
+            matterArray.reserve(jsonList.size());
+
+            for (const auto& matterJson : jsonList)
+            {
+                matterArray.emplace_back(parseGeometry(matterJson));
+            }
+
+            return std::make_shared<MatterArray const>(
+                std::move(matterArray),
+                MatterArray::sum);
+        }
+
+        return nullptr;
+    }
+
 
     DustCPtr parseDust(const nlohmann::json& json)
     {
@@ -157,8 +210,8 @@ Model::Model(std::vector<Observer>* observers)
 
     nlohmann::json const& dustJson = j.at("dust");
     dust_ = parseDust(dustJson);
-    IMatterCPtr disk = parseFlaredDisk(j.at("disk"));
-    grid_ = parseGrid(j.at("grid"), dustJson.at("kappa").get<double>(), disk);
+    IMatterCPtr geometry = parseGeometry(j.at("geometry"));
+    grid_ = parseGrid(j.at("grid"), dustJson.at("kappa").get<double>(), geometry);
     sources_ = parseSources(j.at("stars"), sourceParameters);
     parseObservers(observers, j.at("observers"));
 }

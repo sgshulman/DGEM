@@ -27,14 +27,16 @@
     "ny" : 201,
     "nz" : 201
   },
-  "disk": {
-    "rinner": 200,
-    "router": 800,
-    "rho_0": 2.4e-15,
-    "h_0": 7,
-    "R_0": 100,
-    "alpha": 2.25,
-    "beta": 1.25
+  "geometry": {
+    "flaredDisk": {
+      "rInner": 200,
+      "rOuter": 800,
+      "rho0": 2.4e-15,
+      "h0": 7,
+      "r0": 100,
+      "alpha": 2.25,
+      "beta": 1.25
+    }
   },
   "stars": [
     {
