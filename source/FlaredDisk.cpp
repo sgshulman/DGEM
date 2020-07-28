@@ -23,7 +23,7 @@ FlaredDisk::FlaredDisk(
 {
     DATA_ASSERT(rInner > 0., "rInner (inner radius of the flared disk) must be positive.");
     DATA_ASSERT(rOuter > 0., "rOuter (outer radius of the flared disk) must be positive.");
-    DATA_ASSERT(rOuter > rInner, "rOuter (outer radius of the flared disk) must be greater than rInner (inner radius of the flared disk).");
+    DATA_ASSERT(rOuter > rInner, "rOuter (outer radius) must be greater than rInner (inner radius of the flared disk).");
     DATA_ASSERT(rho0 > 0., "rho0 (density of the flared disk) must be positive.");
     DATA_ASSERT(r0 > 0., "r0 (reference radius of the flared disk) must be positive.");
     DATA_ASSERT(h0 > 0., "h0 (the flared disk scale height) must be positive.");

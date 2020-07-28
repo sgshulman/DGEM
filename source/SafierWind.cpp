@@ -1,5 +1,7 @@
 #include "SafierWind.hpp"
+#include "DebugUtils.hpp"
 #include <cmath>
+#include <string>
 
 struct SafierWindModel
 {
@@ -111,7 +113,18 @@ SafierWind::SafierWind(
     : model_{ getModel(model) }
     , rho0_{ rho0(model_, mOut, mStar, h0, rMax / rMin) }
     , h0_{ h0 }
-{}
+{
+    DATA_ASSERT(
+        std::string("BCDIEFG").find(model) != std::string::npos,
+        "Safier Wind model must be B, C, D, I, E, F, or G");
+
+    DATA_ASSERT(mOut > 0., "mOut (the mass outflow rate of the wind) must be positive.");
+    DATA_ASSERT(mStar > 0., "mStar (the stellar mass) must be positive.");
+    DATA_ASSERT(h0 > 0., "h0 (density of the sphere envelope) must be positive.");
+    DATA_ASSERT(rMin > 0., "rMin (inner radius of the wind formation region) must be positive.");
+    DATA_ASSERT(rMax > 0., "rMax (outer radius of the wind formation region) must be positive.");
+    DATA_ASSERT(rMax > rMin, "rMax (outer radius) must be greater than rMin (inner radius of the wind formation region).");
+}
 
 
 double SafierWind::density(double x, double y, double z) const
