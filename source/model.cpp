@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include "model.hpp"
+#include "DebugUtils.hpp"
+#include "Dust.hpp"
 #include "FlaredDisk.hpp"
 #include "MathUtils.hpp"
 #include "MatterArray.hpp"
@@ -9,7 +11,6 @@
 #include "Sources.hpp"
 #include "SphereEnvelope.hpp"
 #include "observers.hpp"
-#include "Dust.hpp"
 #include "third-party/nlohmann/json.hpp"
 
 namespace
@@ -60,6 +61,10 @@ namespace
 
     IMatterCPtr parseGeometry(const nlohmann::json& json)
     {
+        DATA_ASSERT(
+            json.size() == 1,
+            "geometry section of the json must contain exactly one top level element");
+
         if (json.contains("flaredDisk"))
         {
             return parseFlaredDisk(json.at("flaredDisk"));
@@ -67,6 +72,11 @@ namespace
             return parseSphereEnvelope(json.at("sphereEnvelope"));
         } else if (json.contains("max")) {
             nlohmann::json const& jsonList = json.at("max");
+
+            DATA_ASSERT(
+                !jsonList.empty(),
+                "max section of the geometry must be nonempty");
+
             std::vector<IMatterCPtr> matterArray;
             matterArray.reserve(jsonList.size());
 
@@ -80,6 +90,11 @@ namespace
                 MatterArray::max);
         } else if (json.contains("sum")) {
             nlohmann::json const& jsonList = json.at("sum");
+
+            DATA_ASSERT(
+                !jsonList.empty(),
+                "sum section of the geometry must be nonempty");
+
             std::vector<IMatterCPtr> matterArray;
             matterArray.reserve(jsonList.size());
 
@@ -162,6 +177,10 @@ namespace
                 observers->emplace_back(radians(viewPhi), PI/numberOfObservers*(i + 0.5), rimage);
             }
         }
+
+        DATA_ASSERT(
+            !observers->empty(),
+            "observers section of the json must contain at least one observer");
     }
 
     SourcesPtr parseSources(nlohmann::json const& json, SourceParameters const& sourceParameters)
