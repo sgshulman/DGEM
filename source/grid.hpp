@@ -26,6 +26,8 @@ class Grid
         int movePhotonAtRandomDepth(Photon& ph, Random *ran, double delta=-0.001) const;
         void peeloff(Photon ph, Observer& obs, DustCRef dust) const;
 
+        double computeMatterMass() const;
+
     private:
         double maxDistance(Photon const& ph) const;
         double cellDistance(Photon& ph, double delta) const;

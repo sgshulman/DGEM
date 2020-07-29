@@ -203,11 +203,13 @@ int Grid::movePhotonAtDepth( Photon & ph, double tau, double tauold, double delt
     return d >= 0.999 * smax;
 }
 
+
 int Grid::movePhotonAtRandomDepth( Photon &ph, Random *ran, double delta) const
 {
     double const tau = -std::log(ran->Get());
     return movePhotonAtDepth(ph, tau, 0.0, delta);
 }
+
 
 void Grid::peeloff(Photon ph, Observer& observer, DustCRef dust) const
 {
@@ -222,4 +224,26 @@ void Grid::peeloff(Photon ph, Observer& observer, DustCRef dust) const
     ph.weight() *= hgfac * exp(-tau);
     // Bin the photon into the image according to its position and direction of travel.
     observer.bin(ph);
-} 
+}
+
+
+double Grid::computeMatterMass() const
+{
+    double density = 0.0;
+
+    for (size_t cntx=0; cntx!=nx_; ++cntx)
+    {
+        double const x = (cntx*2.0+1) * xmax_/nx_ - xmax_;
+        for (size_t cnty=0; cnty!=ny_; ++cnty)
+        {
+            double const y=(cnty*2.0+1) * ymax_/ny_ - ymax_;
+            for (size_t cntz=0; cntz!=nz_; ++cntz)
+            {
+                double const z=(cntz*2.0+1) * zmax_/nz_ - zmax_;
+                density += matter_->density({x, y, z});
+            }
+        }
+    }
+
+    return density * 8. * xmax_ / nx_ * ymax_ / ny_ * zmax_ / nz_ * 1683294;
+}

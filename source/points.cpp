@@ -21,6 +21,8 @@ int main()
     SourcesPtr sources = model.sources();
     Random ran(model.iseed());
 
+    std::cout << "Matter mass:\t" << grid->computeMatterMass() << "\t Solar Masses" << std::endl;
+
     // Scattered photon loop
     if (model.fMonteCarlo())
     {
