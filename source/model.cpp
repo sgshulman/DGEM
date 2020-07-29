@@ -19,9 +19,9 @@ namespace
     MatterTranslationCPtr parseTranslation(const nlohmann::json& json)
     {
         return std::make_shared<MatterTranslation const>(
-            json.contains("precession") ? json.at("precession").get<double>() : 0.0,
-            json.contains("nutation") ? json.at("nutation").get<double>() : 0.0,
-            json.contains("intrinsicRotation") ? json.at("intrinsicRotation").get<double>() : 0.0,
+            json.contains("precession") ? radians(json.at("precession").get<double>()) : 0.0,
+            json.contains("nutation") ? radians(json.at("nutation").get<double>()) : 0.0,
+            json.contains("intrinsicRotation") ? radians(json.at("intrinsicRotation").get<double>()) : 0.0,
             Vector3d{
                 json.contains("x") ? json.at("x").get<double>() : 0.0,
                 json.contains("y") ? json.at("y").get<double>() : 0.0,
