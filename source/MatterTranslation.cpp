@@ -16,18 +16,18 @@ Vector3d MatterTranslation::operator()(Vector3d const& position) const
 {
     Vector3d const c = position - translation_;
 
-    Vector3d const ir{
-        c.x() * cosIntrinsicRotation_ + c.y() * sinIntrinsicRotation_,
-        -c.x() * sinIntrinsicRotation_ + c.y() * cosIntrinsicRotation_,
+    Vector3d const p{
+        c.x() * cosPrecession_ + c.y() * sinPrecession_,
+        -c.x() * sinPrecession_ + c.y() * cosPrecession_,
         c.z() };
 
     Vector3d const n{
-        ir.x(),
-        ir.y() * cosNutation_ + ir.z() * sinNutation_,
-        -ir.y() * sinNutation_ + ir.z() * cosNutation_};
+        p.x(),
+        p.y() * cosNutation_ + p.z() * sinNutation_,
+        -p.y() * sinNutation_ + p.z() * cosNutation_};
 
     return {
-        n.x() * cosPrecession_ + n.y() * sinPrecession_,
-        -n.x() * sinPrecession_ + n.y() * cosPrecession_,
+        n.x() * cosIntrinsicRotation_ + n.y() * sinIntrinsicRotation_,
+        -n.x() * sinIntrinsicRotation_ + n.y() * cosIntrinsicRotation_,
         n.z() };
 }

@@ -60,7 +60,7 @@ TEST_CASE("Matter Translation", "[matter]")
 
     SECTION("Full Translation")
     {
-        MatterTranslation translation{-PI / 2.,PI / 3., PI / 6., Vector3d{10, 5, -5}};
+        MatterTranslation translation{PI / 6.,PI / 3., -PI / 2., Vector3d{10, 5, -5}};
 
         REQUIRE(equal(Vector3d{0., 0., 0.}, translation(Vector3d{10, 5, -5})));
 

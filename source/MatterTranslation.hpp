@@ -7,9 +7,9 @@
 // operator() converts position in global coordinate system to local position in IMatter system
 // Thus operator() provides the reverse conversation
 // The direct transformation order:
-// 1. precession
+// 1. intrinsicRotation
 // 2. nutation
-// 3. intrinsicRotation
+// 3. precession
 // 4. translation
 class MatterTranslation final
 {
