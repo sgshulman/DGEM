@@ -17,6 +17,9 @@ using SourcesRef = SourcesPtr const &;
 class IMatter;
 using IMatterCPtr = std::shared_ptr<IMatter const>;
 
+class MatterTranslation;
+using MatterTranslationCPtr = std::shared_ptr<MatterTranslation const>;
+
 class Grid;
 using GridCPtr = std::shared_ptr<Grid const>;
 using GridCRef = GridCPtr const &;

@@ -127,10 +127,10 @@ SafierWind::SafierWind(
 }
 
 
-double SafierWind::density(double x, double y, double z) const
+double SafierWind::density(Vector3d const& position) const
 {
-    double r = sqrt(x*x + y*y);
-    double chi = z/r;
+    double r = sqrt(position.x()*position.x() + position.y()*position.y());
+    double chi = position.z()/r;
 
     if (chi < h0_ || rho0_ == 0.0)
     {

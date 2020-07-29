@@ -12,7 +12,7 @@ namespace
 
             ~MatterStub() override = default;
 
-            double density(double /*x*/, double /*y*/, double /*z*/) const override
+            double density(Vector3d const& /*position*/) const override
             {
                 return rho_;
             }
@@ -33,7 +33,7 @@ TEST_CASE("Matter Array", "[matter]")
                 std::make_shared<MatterStub>(3.)},
             MatterArray::max};
 
-        REQUIRE(Approx(3.) == array.density(0., 0., 0.));
+        REQUIRE(Approx(3.) == array.density({0., 0., 0.}));
     }
 
     SECTION("Sum")
@@ -45,6 +45,6 @@ TEST_CASE("Matter Array", "[matter]")
                 std::make_shared<MatterStub>(3.)},
             MatterArray::sum};
 
-        REQUIRE(Approx(6.) == array.density(0., 0., 0.));
+        REQUIRE(Approx(6.) == array.density({0., 0., 0.}));
     }
 }

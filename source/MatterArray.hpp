@@ -29,7 +29,7 @@ public:
 
     ~MatterArray() override = default;
 
-    double density(double x, double y, double z) const override;
+    double density(Vector3d const& position) const override;
 
 private:
     std::vector<IMatterCPtr> matterArray_;

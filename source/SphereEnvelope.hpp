@@ -2,6 +2,7 @@
 #define SPHERE_ENVELOPE_HPP_
 
 #include "IMatter.hpp"
+#include "Predefines.hpp"
 
 class SphereEnvelope : public IMatter
 {
@@ -11,11 +12,12 @@ class SphereEnvelope : public IMatter
                 double rOuter,
                 double rho0,
                 double r0,
-                double alpha);
+                double alpha,
+                MatterTranslationCPtr translation);
 
         ~SphereEnvelope() override = default;
 
-        double density(double x, double y, double z) const override;
+        double density(Vector3d const& position) const override;
 
     private:
         double const rInner_;
@@ -23,6 +25,7 @@ class SphereEnvelope : public IMatter
         double const rho0_;
         double const r0_;
         double const alpha_;
+        MatterTranslationCPtr translation_;
 };
 
 #endif

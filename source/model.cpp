@@ -6,6 +6,7 @@
 #include "FlaredDisk.hpp"
 #include "MathUtils.hpp"
 #include "MatterArray.hpp"
+#include "MatterTranslation.hpp"
 #include "grid.hpp"
 #include "SafierWind.hpp"
 #include "Sources.hpp"
@@ -15,6 +16,19 @@
 
 namespace
 {
+    MatterTranslationCPtr parseTranslation(const nlohmann::json& json)
+    {
+        return std::make_shared<MatterTranslation const>(
+            json.contains("precession") ? json.at("precession").get<double>() : 0.0,
+            json.contains("nutation") ? json.at("nutation").get<double>() : 0.0,
+            json.contains("intrinsicRotation") ? json.at("intrinsicRotation").get<double>() : 0.0,
+            Vector3d{
+                json.contains("x") ? json.at("x").get<double>() : 0.0,
+                json.contains("y") ? json.at("y").get<double>() : 0.0,
+                json.contains("z") ? json.at("z").get<double>() : 0.0});
+    }
+
+
     IMatterCPtr parseSafierWind(const nlohmann::json& json)
     {
         return std::make_shared<SafierWind const>(
@@ -29,12 +43,13 @@ namespace
 
     IMatterCPtr parseFlaredDisk(const nlohmann::json& json)
     {
-        IMatterCPtr wind;
+        IMatterCPtr const wind{
+            json.contains("safierWind") ? parseSafierWind(json.at("safierWind")) : nullptr
+        };
 
-        if (json.contains("safierWind"))
-        {
-            wind = parseSafierWind(json.at("safierWind"));
-        }
+        MatterTranslationCPtr const translation{
+            json.contains("translation") ? parseTranslation(json.at("translation")) : nullptr
+        };
 
         return std::make_shared<FlaredDisk const>(
             json.at("rInner").get<double>(),
@@ -44,18 +59,24 @@ namespace
             json.at("r0").get<double>(),
             json.at("alpha").get<double>(),
             json.at("beta").get<double>(),
-            wind);
+            wind,
+            translation);
     }
 
 
     IMatterCPtr parseSphereEnvelope(const nlohmann::json& json)
     {
+        MatterTranslationCPtr const translation{
+            json.contains("translation") ? parseTranslation(json.at("translation")) : nullptr
+        };
+
         return std::make_shared<SphereEnvelope const>(
             json.at("rInner").get<double>(),
             json.at("rOuter").get<double>(),
             json.at("rho0").get<double>(),
             json.at("r0").get<double>(),
-            json.at("alpha").get<double>());
+            json.at("alpha").get<double>(),
+            translation);
     }
 
 

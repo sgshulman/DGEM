@@ -1,5 +1,6 @@
 #include "SphereEnvelope.hpp"
 #include "DebugUtils.hpp"
+#include "MatterTranslation.hpp"
 #include <cmath>
 
 SphereEnvelope::SphereEnvelope(
@@ -7,12 +8,14 @@ SphereEnvelope::SphereEnvelope(
     double const rOuter,
     double const rho0,
     double const r0,
-    double const alpha)
+    double const alpha,
+    MatterTranslationCPtr translation)
     : rInner_{ rInner }
     , rOuter_{ rOuter }
     , rho0_{ rho0 }
     , r0_{ r0 }
     , alpha_{ alpha }
+    , translation_{ std::move(translation) }
 {
     DATA_ASSERT(rInner > 0., "rInner (inner radius of the sphere envelope) must be positive.");
     DATA_ASSERT(rOuter > 0., "rOuter (outer radius of the sphere envelope) must be positive.");
@@ -22,10 +25,10 @@ SphereEnvelope::SphereEnvelope(
 }
 
 
-double SphereEnvelope::density(double const x, double const y, double const z) const
+double SphereEnvelope::density(Vector3d const& position) const
 {
-    double const r2 = x*x + y*y + z*z;
-    double const r = std::sqrt(r2);
+    Vector3d const pos = translation_ ? (*translation_)(position) : position;
+    double const r = pos.norm();
 
     if (r >= rInner_ && r <= rOuter_)
     {

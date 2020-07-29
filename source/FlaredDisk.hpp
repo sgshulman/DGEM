@@ -15,11 +15,12 @@ class FlaredDisk : public IMatter
                 double r0,
                 double alpha,
                 double beta,
-                IMatterCPtr wind);
+                IMatterCPtr wind,
+                MatterTranslationCPtr translation);
 
         ~FlaredDisk() override = default;
 
-        double density(double x, double y, double z) const override;
+        double density(Vector3d const& position) const override;
 
     private:
         double const rInner_;
@@ -30,6 +31,7 @@ class FlaredDisk : public IMatter
         double const alpha_;
         double const beta_;
         IMatterCPtr wind_;
+        MatterTranslationCPtr translation_;
 };
 
 #endif

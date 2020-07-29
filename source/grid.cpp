@@ -52,7 +52,7 @@ Grid::Grid(
             {
                 double const z=(cntz*2.0+1) * zmax_/nz_ - zmax_;
                 size_t const idx = cntx+cnty*nx+cntz*ny*nx;
-                rhokappa_[idx] = matter_->density(x, y, z) * kappa * 1.5e13; // rho*kappa*R,
+                rhokappa_[idx] = matter_->density({x, y, z}) * kappa * 1.5e13; // rho*kappa*R,
                 if (minrho_ > rhokappa_[idx] && rhokappa_[idx] > 0)
                     minrho_ = rhokappa_[idx];
             }
