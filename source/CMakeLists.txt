@@ -20,6 +20,8 @@ set(SOURCES
         MathUtils.hpp
         MatterArray.cpp
         MatterArray.hpp
+        MatterTranslation.cpp
+        MatterTranslation.hpp
         model.cpp
         model.hpp
         Photon.cpp
@@ -50,8 +52,10 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
         tests/Direction3dTests.cpp
         tests/MathUtilsTests.cpp
         tests/MatterArrayTests.cpp
+        tests/MatterTranslationTests.cpp
         tests/ModelTests.inl
         tests/SphereEnvelopeTests.cpp
+        tests/TestUtils.hpp
         tests/Vector3dTests.cpp
         third-party/catch2/catch.hpp)
 
