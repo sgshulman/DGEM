@@ -182,4 +182,36 @@ TEST_CASE("Parse Geometry", "[model]")
         const auto matterArray = parseGeometry(matterArrayJson);
         REQUIRE(matterArray);
     }
+
+    SECTION("Flared Disk with the wind and translation")
+    {
+        nlohmann::json flaredDiskJson = R"({
+            "flaredDisk": {
+              "rInner": 0.1,
+              "rOuter": 26,
+              "rho0": 11.945e-8,
+              "h0": 0.035,
+              "r0": 1,
+              "alpha": 3.04,
+              "beta": 1.25,
+              "safierWind" : {
+                "model" : "C",
+                "mOut" : 1e-8,
+                "mStar" : 2.4,
+                "h0" : 0.1,
+                "rMin" : 0.1,
+                "rMax" : 1
+              },
+              "translation" : {
+                "precession" : 75,
+                "nutation" : 15,
+                "x" : 1,
+                "y" : 0.5
+              }
+            }}
+            )"_json;
+
+        const auto disk = parseGeometry(flaredDiskJson);
+        REQUIRE(disk);
+    }
 }
