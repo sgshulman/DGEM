@@ -57,6 +57,10 @@ DGEM parameters
 
 ### Geometry
 
+The geometry of the scattering matter is described as a set of geometric shapes. 
+On the top level, there are should be flared disk, sphere envelope or max/sum list.
+All angles of this section are measured in degrees, all distances are supposed to be in astronomy units.
+
 #### Flared Disk
 
 ![flared disk](./docs_src/images/flared_disk.svg)
@@ -75,7 +79,23 @@ DGEM parameters
       
 #### Sum / Max
 
+The list of other geometry shapes (including other lists).
+The density of the sum list is the sum of densities of all elements.
+The density of the max list is the maximum density of all elements.
+
 #### Translation
+
+The Flared Disk and the Sphere Envelope may contain additional Translation section.
+It describes a rotation and a translation of the shape in the global coordinate system.
+We use the Euler angles for rotation.
+So there are six parameters: intrinsicRotation, nutation, precession, x, y, z.
+All transformations are applied in the global coordinate system, thus the order of operations is:
+1. Intrinsic Rotation (rotation around _z_-axis)
+2. Nutation (rotation around _x_-axis)
+3. Precession (rotation around _z_-axis)
+4. (x, y, z) vector translation
+
+Every value may be omitted (it will be treated as zero).
 
 ### Stars
 Is a list of sources with 4 parameters:
