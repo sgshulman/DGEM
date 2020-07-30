@@ -63,12 +63,27 @@ All angles of this section are measured in degrees, all distances are supposed t
 
 #### Flared Disk
 
+The density of the flared disk is is described by the following formulae:
+
 ![flared disk](./docs_src/images/flared_disk.svg)
+
+where the scale height
 
 ![flared disk height](./docs_src/images/flared_disk_h.svg)
 
+and the radial coordinate in the disk plane.
+
 ![flared disk radius](./docs_src/images/flared_disk_r.svg)
-    
+
+The model parameters are:
+- rInner &mdash; the inner disk radius
+- rOuter &mdash; the outer disk radius
+- rho0 &mdash; the density at the disk midplane at a radius r0
+- h0 &mdash; the disk scale height at a radius r0
+- r0 &mdash; the radius, where h0 and rho0 are defined
+- alpha &mdash; the radial density exponent
+- beta &mdash; the flaring power
+
 ##### Safier Wind
 
 #### Sphere Envelope
