@@ -9,7 +9,7 @@
 {$\endpreview}
 
 \begin{document}
-\begin{equation}\label{disk}
+\begin{equation}
 \rho(\mathit{x},\mathit{y},\mathit{z}) = \begin{cases}
                \mathrm{rho0} \left(\frac{\mathrm{r0}}{r}\right)^\mathrm{alpha} \exp\left[-\frac{1}{2}\left(\frac{ \mathit{z}}{h(r)}\right)^2\right],       &  \mathrm{rInner} \le \mathrm{r} \le  \mathrm{rOuter}, \\
                0,& \text{otherwise},          \end{cases}
@@ -21,6 +21,16 @@
 
 \begin{equation}
  r=\sqrt{\mathit{x}^2+\mathit{y}^2}
+\end{equation}
+
+\begin{equation}
+\rho(\mathit{x},\mathit{y},\mathit{z}) = \begin{cases}
+               \mathrm{rho0} \left(\frac{\mathrm{r0}}{r}\right)^\mathrm{alpha},       &  \mathrm{rInner} \le \mathrm{r} \le  \mathrm{rOuter}, \\
+               0,& \text{otherwise},          \end{cases}
+\end{equation}
+
+\begin{equation}
+ r=\sqrt{\mathit{x}^2+\mathit{y}^2+\mathit{z}^2}
 \end{equation}
 
 \end{document}
