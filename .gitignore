@@ -1,3 +1,7 @@
 source/cmake-build-*
 *.iml
 .idea
+docs_src/tex/*.aux
+docs_src/tex/*.log
+docs_src/tex/*.svg
+docs_src/tex/*.pdf

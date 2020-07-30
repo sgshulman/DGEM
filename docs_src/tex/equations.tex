@@ -1,0 +1,26 @@
+\documentclass[a4paper,14pt]{extarticle}
+\usepackage[active,tightpage]{preview}
+\usepackage{amsmath}
+\PreviewEnvironment{equation}
+\PreviewBorder=2pt\relax
+
+\renewenvironment{equation}
+{\preview$\displaystyle}
+{$\endpreview}
+
+\begin{document}
+\begin{equation}\label{disk}
+\rho(\mathit{x},\mathit{y},\mathit{z}) = \begin{cases}
+               \mathrm{rho0} \left(\frac{\mathrm{r0}}{r}\right)^\mathrm{alpha} \exp\left[-\frac{1}{2}\left(\frac{ \mathit{z}}{h(r)}\right)^2\right],       &  \mathrm{rInner} \le \mathrm{r} \le  \mathrm{rOuter}, \\
+               0,& \text{otherwise},          \end{cases}
+\end{equation}
+
+\begin{equation}
+ h(r)=\mathrm{h0}\left(\frac{r}{\mathrm{r0}}\right)^\mathrm{beta}
+\end{equation}
+
+\begin{equation}
+ r=\sqrt{\mathit{x}^2+\mathit{y}^2}
+\end{equation}
+
+\end{document}
