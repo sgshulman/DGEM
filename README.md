@@ -63,7 +63,7 @@ All angles of this section are measured in degrees, all distances are supposed t
 
 #### Flared Disk
 
-The density of the flared disk is is described by the following formulae:
+The density of the flared disk is described by the following formulae:
 
 ![flared disk](./docs_src/images/flared_disk.svg)
 
@@ -71,9 +71,9 @@ where the scale height
 
 ![flared disk height](./docs_src/images/flared_disk_h.svg)
 
-and the radial coordinate in the disk plane.
+and the radial coordinate in the disk plane
 
-![flared disk radius](./docs_src/images/flared_disk_r.svg)
+![flared disk radius](./docs_src/images/flared_disk_r.svg).
 
 The model parameters are:
 - rInner &mdash; the inner disk radius
@@ -88,9 +88,20 @@ The model parameters are:
 
 #### Sphere Envelope
 
+The density of the sphere envelope is described by the equation
+
 ![sphere envelope](./docs_src/images/sphere_envelope.svg)
+
+where the radius is
     
-![sphere envelope radius](./docs_src/images/sphere_envelope_r.svg)
+![sphere envelope radius](./docs_src/images/sphere_envelope_r.svg).
+
+The model parameters are:
+- rInner &mdash; the inner sphere radius
+- rOuter &mdash; the outer sphere radius
+- rho0 &mdash; the density at a radius r0
+- r0 &mdash; the radius, where rho0 is defined
+- alpha &mdash; the radial density exponent
       
 #### Sum / Max
 
