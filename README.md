@@ -9,6 +9,7 @@ A simple three-dimensional dust continuum radiative transfer code demonstrating 
 - [DGEM Configuration](#dgem-configuration)
   - [Method Parameters](#method-parameters)
   - [Dust](#dust)
+  - [Geometry](#geometry)
   - [Stars](#stars)
   - [Observers](#observers)
 - [Used third-party libraries](#used-third-party-libraries)
@@ -46,15 +47,37 @@ DGEM parameters
 - MonteCarloStart &mdash; number of scatterings of the photon package after which Monte Carlo
                             method is used instead of DGEM (1 is recommended)
 
-### dust
+### Dust
 - kappa &mdash; The extinction opacity
 - albedo &mdash; Single scattering albedo
 - hgg &mdash; Henyey-Greenstein phase function anisotropy
 - pl &mdash; Peak linear polarization
 - pc &mdash; Peak circular polarization
 - sc &mdash; Skew Factor
+
+### Geometry
+
+#### Flared Disk
+
+![flared disk](./docs_src/images/flared_disk.svg)
+
+![flared disk height](./docs_src/images/flared_disk_h.svg)
+
+![flared disk radius](./docs_src/images/flared_disk_r.svg)
+    
+##### Safier Wind
+
+#### Sphere Envelope
+
+![sphere envelope](./docs_src/images/sphere_envelope.svg)
+    
+![sphere envelope radius](./docs_src/images/sphere_envelope_r.svg)
       
-### stars
+#### Sum / Max
+
+#### Translation
+
+### Stars
 Is a list of sources with 4 parameters:
 - x, y, z &mdash; source coordinates
 - l &mdash; source luminosity
