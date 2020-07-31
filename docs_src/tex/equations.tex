@@ -1,36 +1,42 @@
 \documentclass[a4paper,14pt]{extarticle}
 \usepackage[active,tightpage]{preview}
 \usepackage{amsmath}
-\PreviewEnvironment{equation}
+\PreviewEnvironment{equation*}
 \PreviewBorder=2pt\relax
 
-\renewenvironment{equation}
-{\preview$\displaystyle}
-{$\endpreview}
-
 \begin{document}
-\begin{equation}
+\begin{equation*}
 \rho(\mathit{x},\mathit{y},\mathit{z}) = \begin{cases}
                \mathrm{rho0} \left(\frac{\mathrm{r0}}{r}\right)^\mathrm{alpha} \exp\left[-\frac{1}{2}\left(\frac{ \mathit{z}}{h(r)}\right)^2\right],       &  \mathrm{rInner} \le \mathrm{r} \le  \mathrm{rOuter}, \\
                0,& \text{otherwise},          \end{cases}
-\end{equation}
+\end{equation*}
 
-\begin{equation}
+\begin{equation*}
  h(r)=\mathrm{h0}\left(\frac{r}{\mathrm{r0}}\right)^\mathrm{beta}
-\end{equation}
+\end{equation*}
 
-\begin{equation}
+\begin{equation*}
  r=\sqrt{\mathit{x}^2+\mathit{y}^2}
-\end{equation}
+\end{equation*}
 
-\begin{equation}
+
+\begin{equation*}
+ \rho(\mathit{x},\mathit{y},\mathit{z}) = \rho_0 \cdot r^{-3/2}\eta(\chi)
+\end{equation*}
+
+\begin{equation*}\begin{split}
+  &\qquad \rho_0= 1.064 \times 10^{-15}\left( \frac{\mathrm{mOut}}{10^{-7}M_\odot yr^{-1}}\right)\\
+ \times&\left(  \frac{\mathrm{mStar}}{0.5M_\odot}\right)^{-0.5} \frac{1}{\ln (\mathrm{rMax}/\mathrm{rMin}) \psi_0 (1 - \mathrm{h0}\cdot\xi'_0)}
+\end{split}\end{equation*}
+
+\begin{equation*}
 \rho(\mathit{x},\mathit{y},\mathit{z}) = \begin{cases}
                \mathrm{rho0} \left(\frac{\mathrm{r0}}{r}\right)^\mathrm{alpha},       &  \mathrm{rInner} \le \mathrm{r} \le  \mathrm{rOuter}, \\
                0,& \text{otherwise},          \end{cases}
-\end{equation}
+\end{equation*}
 
-\begin{equation}
+\begin{equation*}
  r=\sqrt{\mathit{x}^2+\mathit{y}^2+\mathit{z}^2}
-\end{equation}
+\end{equation*}
 
 \end{document}
