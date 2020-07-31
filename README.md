@@ -128,7 +128,16 @@ Is a list of sources with 4 parameters:
 - x, y, z &mdash; source coordinates
 - l &mdash; source luminosity
 
-Physical and disk parameters are discussed in the paper.
+```yaml
+"stars": [
+    {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0,
+      "l": 1.0
+    }
+  ]
+```
 
 ### Observers
 
