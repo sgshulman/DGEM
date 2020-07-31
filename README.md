@@ -86,6 +86,28 @@ The model parameters are:
 
 ##### Safier Wind
 
+One can add the disk wind to the flared disk.
+The density of the disk with the wind is the maximum of the wind and disk densities.
+The density of the Safier wind is
+ 
+![safier wind](./docs_src/images/safier_wind.svg)
+
+where _&chi; = z / r_ is the dimensionless height above the disk plane and _&rho;<sub>0</sub>_ is the wind density on
+the disk surface at distance 1 AU from the star.
+
+![safier wind](./docs_src/images/safier_wind_rho0.svg)
+
+The function _&eta; (&chi;)_ can be obtained by solving the gas-dynamic equations.
+_&xi;'<sub>0</sub>_ and _&psi;<sub>0</sub>_ are wind model parameters, which are defined in Safier papers for a list of models.
+
+The parameters of the wind are:
+- model &mdash; the model of the wind from Safier papers. Should be B, C, D, I, E, F or G
+- mOut &mdash; the mass outflow rate in solar masses per year
+- mStar &mdash; the stellar mass in solar masses
+- h0 &mdash; the dimensionless height from which the wind begins
+- rMin &mdash; the inner radius of the wind formation region
+- rMax &mdash; the outer radius of the wind formation region
+
 #### Sphere Envelope
 
 The density of the sphere envelope is described by the equation
