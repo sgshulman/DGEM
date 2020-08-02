@@ -2,13 +2,14 @@
 #define SAFIER_WIND_HPP_
 
 #include "IMatter.hpp"
+#include "Predefines.hpp"
 
 struct SafierWindModel;
 
 class SafierWind : public IMatter
 {
 public:
-    SafierWind(char model, double mOut, double mStar, double h0, double rMin, double rMax);
+    SafierWind(char model, double mOut, double mStar, double h0, double rMin, double rMax, IDiskHumpCPtr hump);
 
     ~SafierWind() override = default;
 
@@ -18,6 +19,7 @@ private:
     SafierWindModel const * const model_;
     double rho0_;
     double h0_;
+    IDiskHumpCPtr hump_;
 };
 
 #endif

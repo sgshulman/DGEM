@@ -16,7 +16,8 @@ class FlaredDisk : public IMatter
                 double alpha,
                 double beta,
                 IMatterCPtr wind,
-                MatterTranslationCPtr translation);
+                MatterTranslationCPtr translation,
+                IDiskHumpCPtr hump);
 
         ~FlaredDisk() override = default;
 
@@ -32,6 +33,7 @@ class FlaredDisk : public IMatter
         double const beta_;
         IMatterCPtr wind_;
         MatterTranslationCPtr translation_;
+        IDiskHumpCPtr hump_;
 };
 
 #endif

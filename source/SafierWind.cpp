@@ -1,5 +1,6 @@
 #include "SafierWind.hpp"
 #include "DebugUtils.hpp"
+#include "IDiskHump.hpp"
 #include <cmath>
 #include <string>
 
@@ -109,10 +110,12 @@ SafierWind::SafierWind(
         double const mStar,
         double const h0,
         double const rMin,
-        double const rMax)
+        double const rMax,
+        IDiskHumpCPtr hump)
     : model_{ getModel(model) }
     , rho0_{ rho0(model_, mOut, mStar, h0, rMax / rMin) }
     , h0_{ h0 }
+    , hump_{ std::move(hump) }
 {
     DATA_ASSERT(
         std::string("BCDIEFG").find(model) != std::string::npos,
@@ -137,5 +140,12 @@ double SafierWind::density(Vector3d const& position) const
         return 0.0;
     }
 
-    return rho0_ * std::pow(r, -1.5) * eta(model_, chi, h0_);
+    double const rho = rho0_ * std::pow(r, -1.5) * eta(model_, chi, h0_);
+
+    if (hump_)
+    {
+        return hump_->hump(rho, position);
+    }
+
+    return rho;
 }

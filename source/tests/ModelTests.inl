@@ -183,6 +183,35 @@ TEST_CASE("Parse Geometry", "[model]")
         REQUIRE(matterArray);
     }
 
+    SECTION("Round Hump")
+    {
+        nlohmann::json humpJson = R"({
+            "roundHump": {
+              "r": 1,
+              "h": 2,
+              "sigma2": 0.1
+            }}
+            )"_json;
+
+        const auto hump = parseDiskHump(humpJson);
+        REQUIRE(hump);
+    }
+
+    SECTION("Azimuthal Hump")
+    {
+        nlohmann::json humpJson = R"({
+            "azimuthalHump": {
+              "r": 1,
+              "h": 2,
+              "sigma2": 0.1,
+              "sigma2azimuthal": 0.2
+            }}
+            )"_json;
+
+        const auto hump = parseDiskHump(humpJson);
+        REQUIRE(hump);
+    }
+
     SECTION("Flared Disk with the wind and translation")
     {
         nlohmann::json flaredDiskJson = R"({
@@ -200,7 +229,15 @@ TEST_CASE("Parse Geometry", "[model]")
                 "mStar" : 2.4,
                 "h0" : 0.1,
                 "rMin" : 0.1,
-                "rMax" : 1
+                "rMax" : 1,
+                "hump" : {
+                  "azimuthalHump": {
+                    "r": 1,
+                    "h": 2,
+                    "sigma2": 0.1,
+                    "sigma2azimuthal": 0.2
+                  }
+                }
               },
               "translation" : {
                 "precession" : 75,

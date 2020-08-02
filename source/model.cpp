@@ -1,12 +1,14 @@
 #include <iostream>
 #include <vector>
 #include "model.hpp"
+#include "AzimuthalHump.hpp"
 #include "DebugUtils.hpp"
 #include "Dust.hpp"
 #include "FlaredDisk.hpp"
 #include "MathUtils.hpp"
 #include "MatterArray.hpp"
 #include "MatterTranslation.hpp"
+#include "RoundHump.hpp"
 #include "grid.hpp"
 #include "SafierWind.hpp"
 #include "Sources.hpp"
@@ -28,16 +30,51 @@ namespace
                 json.contains("z") ? json.at("z").get<double>() : 0.0});
     }
 
+    IDiskHumpCPtr parseDiskHump(const nlohmann::json& json)
+    {
+        if (json.empty())
+        {
+            return nullptr;
+        }
+
+        DATA_ASSERT(json.size() == 1, "only one hump for the element is allowed");
+
+        if (json.contains("roundHump"))
+        {
+            nlohmann::json const& jsonHump = json.at("roundHump");
+
+            return std::make_shared<RoundHump const>(
+                jsonHump.at("h").get<double>(),
+                jsonHump.at("r").get<double>(),
+                jsonHump.at("sigma2").get<double>());
+        } else if (json.contains("azimuthalHump")) {
+            nlohmann::json const& jsonHump = json.at("azimuthalHump");
+
+            return std::make_shared<AzimuthalHump const>(
+                jsonHump.at("h").get<double>(),
+                jsonHump.at("r").get<double>(),
+                jsonHump.at("sigma2").get<double>(),
+                jsonHump.at("sigma2azimuthal").get<double>());
+        }
+
+        return nullptr;
+    }
+
 
     IMatterCPtr parseSafierWind(const nlohmann::json& json)
     {
+        IDiskHumpCPtr const hump{
+            json.contains("hump") ? parseDiskHump(json.at("hump")) : nullptr
+        };
+
         return std::make_shared<SafierWind const>(
             json.at("model").get<std::string>().at(0),
             json.at("mOut").get<double>(),
             json.at("mStar").get<double>(),
             json.at("h0").get<double>(),
             json.at("rMin").get<double>(),
-            json.at("rMax").get<double>());
+            json.at("rMax").get<double>(),
+            hump);
     }
 
 
@@ -51,6 +88,10 @@ namespace
             json.contains("translation") ? parseTranslation(json.at("translation")) : nullptr
         };
 
+        IDiskHumpCPtr const hump{
+            json.contains("hump") ? parseDiskHump(json.at("hump")) : nullptr
+        };
+
         return std::make_shared<FlaredDisk const>(
             json.at("rInner").get<double>(),
             json.at("rOuter").get<double>(),
@@ -60,7 +101,8 @@ namespace
             json.at("alpha").get<double>(),
             json.at("beta").get<double>(),
             wind,
-            translation);
+            translation,
+            hump);
     }
 
 

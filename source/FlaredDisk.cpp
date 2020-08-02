@@ -1,6 +1,8 @@
 #include "FlaredDisk.hpp"
 #include "DebugUtils.hpp"
 #include "MatterTranslation.hpp"
+#include "IDiskHump.hpp"
+
 #include <algorithm>
 #include <cmath>
 
@@ -13,7 +15,8 @@ FlaredDisk::FlaredDisk(
     double const alpha,
     double const beta,
     IMatterCPtr wind,
-    MatterTranslationCPtr translation)
+    MatterTranslationCPtr translation,
+    IDiskHumpCPtr hump)
     : rInner_{ rInner }
     , rOuter_{ rOuter }
     , rho0_{ rho0 }
@@ -23,6 +26,7 @@ FlaredDisk::FlaredDisk(
     , beta_{ beta }
     , wind_{ std::move(wind) }
     , translation_{ std::move(translation) }
+    , hump_{ std::move(hump) }
 {
     DATA_ASSERT(rInner > 0., "rInner (inner radius of the flared disk) must be positive.");
     DATA_ASSERT(rOuter > 0., "rOuter (outer radius of the flared disk) must be positive.");
@@ -43,7 +47,13 @@ double FlaredDisk::density(Vector3d const& position) const
     // Disk Geometry
     if(( r >= rInner_ ) && ( r <= rOuter_ ))
     {
-        double const h = h0_ * std::pow(r/r0_, beta_);
+        double h = h0_ * std::pow(r/r0_, beta_);
+
+        if (hump_)
+        {
+            h = hump_->hump(h, pos);
+        }
+
         double const diskRho = rho0_ * std::pow(r0_ / r, alpha_) * std::exp(-0.5*pos.z()*pos.z() / (h*h)); // rho in g/cm^3
         double const windRho = wind_ ? wind_->density(pos) : 0.0;
         return std::max(diskRho, windRho);
