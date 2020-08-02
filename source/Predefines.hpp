@@ -17,6 +17,9 @@ using SourcesRef = SourcesPtr const &;
 class IMatter;
 using IMatterCPtr = std::shared_ptr<IMatter const>;
 
+class IDiskHump;
+using IDiskHumpCPtr = std::shared_ptr<IDiskHump const>;
+
 class MatterTranslation;
 using MatterTranslationCPtr = std::shared_ptr<MatterTranslation const>;
 

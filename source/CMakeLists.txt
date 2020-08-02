@@ -4,6 +4,8 @@ set(CMAKE_GENERATOR "Unix Makefiles")
 project(DGEM)
 
 set(SOURCES
+        AzimuthalHump.cpp
+        AzimuthalHump.hpp
         DebugUtils.cpp
         DebugUtils.hpp
         Directions.cpp
@@ -15,6 +17,7 @@ set(SOURCES
         FlaredDisk.hpp
         grid.cpp
         grid.hpp
+        IDiskHump.hpp
         IMatter.hpp
         observers.hpp
         MathUtils.hpp
@@ -27,6 +30,8 @@ set(SOURCES
         Photon.cpp
         Photon.hpp
         Random.hpp
+        RoundHump.cpp
+        RoundHump.hpp
         Sources.cpp
         Sources.hpp
         SafierWind.cpp
@@ -49,11 +54,13 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
 
     set(UNITTEST_SOURCES
         tests/unittests.cpp
+        tests/AzimuthalHumpTests.cpp
         tests/Direction3dTests.cpp
         tests/MathUtilsTests.cpp
         tests/MatterArrayTests.cpp
         tests/MatterTranslationTests.cpp
         tests/ModelTests.inl
+        tests/RoundHumpTests.cpp
         tests/SphereEnvelopeTests.cpp
         tests/TestUtils.hpp
         tests/Vector3dTests.cpp
