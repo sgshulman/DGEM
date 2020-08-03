@@ -156,6 +156,23 @@ TEST_CASE("Parse Geometry", "[model]")
         REQUIRE(sphere);
     }
 
+    SECTION("Fractal cloud")
+    {
+        nlohmann::json fractalCloudJson = R"({
+            "fractalCloud": {
+              "n": 200,
+              "max": 800,
+              "dCube": 2.3,
+              "rho0" : 2.7e-17,
+              "dotsN": 32,
+              "seed": -1556
+            }}
+            )"_json;
+
+        const auto cloud = parseGeometry(fractalCloudJson);
+        REQUIRE(cloud);
+    }
+
     SECTION("Maximum")
     {
         nlohmann::json matterArrayJson = R"({

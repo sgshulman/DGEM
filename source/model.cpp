@@ -5,6 +5,7 @@
 #include "DebugUtils.hpp"
 #include "Dust.hpp"
 #include "FlaredDisk.hpp"
+#include "FractalCloud.hpp"
 #include "MathUtils.hpp"
 #include "MatterArray.hpp"
 #include "MatterTranslation.hpp"
@@ -122,6 +123,18 @@ namespace
     }
 
 
+    IMatterCPtr parseFractalCloud(const nlohmann::json& json)
+    {
+        return std::make_shared<FractalCloud const>(
+            json.at("n").get<uint32_t>(),
+            json.at("max").get<double>(),
+            json.at("dCube").get<double>(),
+            json.at("rho0").get<double>(),
+            json.at("dotsN").get<uint32_t>(),
+            json.at("seed").get<int32_t>());
+    }
+
+
     IMatterCPtr parseGeometry(const nlohmann::json& json)
     {
         DATA_ASSERT(
@@ -133,6 +146,8 @@ namespace
             return parseFlaredDisk(json.at("flaredDisk"));
         } else if (json.contains("sphereEnvelope")) {
             return parseSphereEnvelope(json.at("sphereEnvelope"));
+        } else if (json.contains("fractalCloud")) {
+            return parseFractalCloud(json.at("fractalCloud"));
         } else if (json.contains("max")) {
             nlohmann::json const& jsonList = json.at("max");
 

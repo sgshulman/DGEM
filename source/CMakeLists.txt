@@ -15,6 +15,8 @@ set(SOURCES
         Dust.hpp
         FlaredDisk.cpp
         FlaredDisk.hpp
+        FractalCloud.cpp
+        FractalCloud.hpp
         grid.cpp
         grid.hpp
         IDiskHump.hpp
