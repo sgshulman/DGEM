@@ -97,7 +97,7 @@ the disk surface at distance 1 AU from the star.
 
 ![safier wind](./docs_src/images/safier_wind_rho0.svg)
 
-The function _&eta; (&chi;)_ can be obtained by solving the gas-dynamic equations.
+The function _&eta;(&chi;)_ can be obtained by solving the gas-dynamic equations.
 _&xi;'<sub>0</sub>_ and _&psi;<sub>0</sub>_ are wind model parameters, which are defined in Safier papers for a list of models.
 
 The parameters of the wind are:
@@ -107,6 +107,28 @@ The parameters of the wind are:
 - h0 &mdash; the dimensionless height from which the wind begins
 - rMin &mdash; the inner radius of the wind formation region
 - rMax &mdash; the outer radius of the wind formation region
+
+##### Disk Humps
+
+One can add humps based on the Gaussian function to model disk perturbations.
+There are two types of humps: a round hump and an azimuthal hump.
+Both humps may be applied to the flared disk and Safier wind.
+In the case of the disk hump, it is applied to the disk scale height _h_.
+In the case of the wind hump it is applied to the density _&rho;_.
+Only one hump is allowed for the disk (or wind).
+The hump centre is located on the _x_ axis of the disk.
+
+The round hump has a shape
+![round hump](./docs_src/images/round_hump.svg)
+
+The azimuthal hump has a bit more complicated shape
+![azimuthal hump](./docs_src/images/azimuthal_hump.svg)
+
+In this equations _v_ is the value the hump changes and other values are hump model parameters:
+- h &mdash; the hump relative height
+- r &mdash; the distance from the disk axis to the centre of the hump
+- sigma2 &mdash; the variance of the hump mass distribution along the disk plane (for the round hump) or the radius (for azimuthal hump)
+- rMax &mdash; the variance of the hump mass distribution along the azimuth for azimuthal hump.
 
 #### Sphere Envelope
 
