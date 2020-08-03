@@ -29,6 +29,23 @@
  \times&\left(  \frac{\mathrm{mStar}}{0.5M_\odot}\right)^{-0.5} \frac{1}{\ln (\mathrm{rMax}/\mathrm{rMin}) \psi_0 (1 - \mathrm{h0}\cdot\xi'_0)}
 \end{split}\end{equation*}
 
+
+\begin{equation*}
+v_{\mathrm{hump}}(\mathit{x},\mathit{y},\mathit{z}) = 
+v \cdot \left[1 + \mathrm{h} \cdot \exp\left(
+        -\frac{(\mathit{x}-\mathrm{r})^2 + \mathit{y}^2}
+        {2 \cdot \mathrm{sigma2}} 
+        \right) \right]
+\end{equation*}
+
+\begin{equation*}\begin{aligned}
+     v_{\mathrm{hump}}(\mathit{x},\mathit{y},\mathit{z}) = &
+     v \cdot\Biggl[1 + \mathrm{h} \cdot \exp\left(
+        -\frac{(\sqrt{\mathit{x}^2 + \mathit{y}^2}-\mathrm{r})^2}{2 \cdot \mathrm{sigma2}} \right) \times  \\ 
+      &  \exp\left(
+        -\frac{\arctan(y, x)^2}{2 \cdot \mathrm{sigma2azimuthal}} \right)\Biggr]             
+\end{aligned}\end{equation*}
+
 \begin{equation*}
 \rho(\mathit{x},\mathit{y},\mathit{z}) = \begin{cases}
                \mathrm{rho0} \left(\frac{\mathrm{r0}}{r}\right)^\mathrm{alpha},       &  \mathrm{rInner} \le \mathrm{r} \le  \mathrm{rOuter}, \\
