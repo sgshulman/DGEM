@@ -5,6 +5,7 @@
 ![Unit Tests Windows](https://github.com/sgshulman/DGEM/workflows/Unit%20Tests%20Windows/badge.svg?branch=master&event=push)
 
 A simple three-dimensional dust continuum radiative transfer code demonstrating directions grid enumeration method advantages.
+The method was described in [Shulman (2018)](#shulman2018).
 
 - [DGEM Configuration](#dgem-configuration)
   - [Method Parameters](#method-parameters)
@@ -13,6 +14,7 @@ A simple three-dimensional dust continuum radiative transfer code demonstrating 
   - [Stars](#stars)
   - [Observers](#observers)
 - [Used third-party libraries](#used-third-party-libraries)
+- [References](#references)
 
 This code is based on mcpolar program by Kenneth Wood (http://www-star.st-and.ac.uk/~kw25/research/montecarlo/montecarlo.html). The code was translated from FORTRAN to C++, refactored and improved. Now it realizes two radiative transfer techniques: Monte Carlo method and directions grid enumeration method (DGEM). DGEM uses precalculated directions of the photons propagation instead of the random ones to speed up the calculations process.
 
@@ -87,6 +89,7 @@ The model parameters are:
 ##### Safier Wind
 
 One can add the disk wind to the flared disk.
+The wind model was suggested by Safier ([1993a](#safier1993a), [1993b](#safier1993b)).
 The density of the disk with the wind is the maximum of the wind and disk densities.
 The density of the Safier wind is
  
@@ -98,7 +101,7 @@ the disk surface at distance 1 AU from the star.
 ![safier wind](./docs_src/images/safier_wind_rho0.svg)
 
 The function _&eta;(&chi;)_ can be obtained by solving the gas-dynamic equations.
-_&xi;'<sub>0</sub>_ and _&psi;<sub>0</sub>_ are wind model parameters, which are defined in Safier papers for a list of models.
+_&xi;'<sub>0</sub>_ and _&psi;<sub>0</sub>_ are wind model parameters, which are defined in Safier papers ([1993a](#safier1993a), [1993b](#safier1993b)) for a list of models.
 
 The parameters of the wind are:
 - model &mdash; the model of the wind from Safier papers. Should be B, C, D, I, E, F or G
@@ -151,7 +154,7 @@ The model parameters are:
 
 #### Fractal Cloud
 
-The fractal cloud is a clumpy dust cloud, which is obtained by the following algorithm:
+The fractal cloud suggested by [Elmegreen (1997)](#elmegreen1997) is a clumpy dust cloud, which is obtained by the following algorithm:
 1. Consider a cube space with size **2max**, consisting of **n**<sup>3</sup> cubical cells.
 2. Place **dotsN** points randomly in the cube. 
 3. For every point build a smaller cub with a center in the point. The size of
@@ -272,3 +275,9 @@ The JSON configuration may be specified in the following way:
 * **[nlohmann/json](https://github.com/nlohmann/json)** to parse a configuration file
 * **[catch2](https://github.com/catchorg/Catch2)** for unit testing
 
+## References
+
+1. <a name="elmegreen1997"></a>Elmegreen, B.G., 1997. Intercloud structure in a turbulent fractal interstellar medium. Astrophys. J. **477**, 196–203.
+2. <a name="safier1993a"></a>Safier, P. N., 1993a. Centrifugally Driven Winds from Protostellar Disks. I. Wind Model and Thermal Structure. Astrophys. J. **408**, 115.
+3. <a name="safier1993b"></a>Safier, P. N., 1993b. Centrifugally Driven Winds from Protostellar Disks. II. Forbidden-Line Emission in T Tauri Stars. Astrophys. J. **408**, 148.
+4. <a name="shulman2018"></a>Shulman, S.G., 2018. Three-dimensional heuristic radiation transfer method based on enumeration using the directions grid. Astronomy and Computing **24** 104–116.
