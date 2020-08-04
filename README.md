@@ -58,7 +58,7 @@ DGEM parameters
 ### Geometry
 
 The geometry of the scattering matter is described as a set of geometric shapes. 
-On the top level, there are should be flared disk, sphere envelope or max/sum list.
+On the top level, there are should be flared disk, sphere envelope, fractal cloud or max/sum list.
 All angles of this section are measured in degrees, all distances are supposed to be in astronomy units.
 
 #### Flared Disk
@@ -119,9 +119,11 @@ Only one hump is allowed for the disk (or wind).
 The hump centre is located on the _x_ axis of the disk.
 
 The round hump has a shape
+
 ![round hump](./docs_src/images/round_hump.svg)
 
 The azimuthal hump has a bit more complicated shape
+
 ![azimuthal hump](./docs_src/images/azimuthal_hump.svg)
 
 In this equations _v_ is the value the hump changes and other values are hump model parameters:
@@ -146,7 +148,29 @@ The model parameters are:
 - rho0 &mdash; the density at a radius r0
 - r0 &mdash; the radius, where rho0 is defined
 - alpha &mdash; the radial density exponent
-      
+
+#### Fractal Cloud
+
+The fractal cloud is a clumpy dust cloud, which is obtained by the following algorithm:
+1. Consider a cube space with size **2max**, consisting of **n**<sup>3</sup> cubical cells.
+2. Place **dotsN** points randomly in the cube. 
+3. For every point build a smaller cub with a center in the point. The size of
+new cubes is **max**/&Delta;, where &Delta; = **dotsN<sup>1/dCube</sup>**.
+**dCube** is the fractal dimension.
+4. Place other **dotsN** points randomly in every small cube.
+Do not shift any points outside of the considered big cube and use them in the next steps.
+5. Repeat steps 3–4 twice more. The total number of created points is **dotsN**<sup>4</sup>.
+6. Shift all points outside the big cube to within it by changing point coordinates per **2max**.
+7. Set the density in every cell proportional to the number of dots in this cell
+
+The model parameters are:
+- n &mdash; the number of cells along each direction of the cube.
+- max &mdash; the distance from the cube centre to a cube border along each axis
+- dCube &mdash; the fractal dimension
+- rho0 &mdash; the density per one dot
+- dotsN &mdash; the number of initial dots
+- seed &mdash; the seed for a random number generator
+
 #### Sum / Max
 
 The list of other geometry shapes (including other lists).
