@@ -57,7 +57,7 @@ Photon Sources::emitPhoton(Random* ran)
 }
 
 
-void Sources::directPhotons(CartesianGridCRef grid, std::vector<Observer>* observers)
+void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
 {
     // Direct photon loop.  Loop over sources and weight photons by
     // W=ph*exp(-tau1)/4pi

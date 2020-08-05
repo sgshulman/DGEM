@@ -17,7 +17,7 @@ int main()
 
     // read the model parameters
     Model & model = Model::instance(&observers);
-    CartesianGridCPtr grid = model.grid();
+    IGridCPtr grid = model.grid();
     SourcesPtr sources = model.sources();
     Random ran(model.iseed());
 

@@ -200,7 +200,8 @@ namespace
             json.at("sc").get<double>());
     }
 
-    CartesianGridCPtr parseGrid(const nlohmann::json& json, double const kappa, IMatterCPtr disk)
+
+    IGridCPtr parseGrid(const nlohmann::json& json, double const kappa, IMatterCPtr disk)
     {
         return std::make_shared<CartesianGrid const>(
             json.at("xmax").get<double>(),

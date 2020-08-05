@@ -30,7 +30,7 @@ double Photon::Scatt(DustCRef dust, Direction3d const& dir, Random* ran)
 }
 
 
-void Photon::Scatt( Model const &m, Directions const &dirs, CartesianGridCRef grid, std::vector<Observer>& observers, Random* ran)
+void Photon::Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std::vector<Observer>& observers, Random* ran)
 {
     if (nscat_ == m.MonteCarloStart() )
     {
