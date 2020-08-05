@@ -32,7 +32,7 @@ class Model
 		{	return NumOfPrimaryScatterings_;	}
 		uint32_t NumOfSecondaryScatterings() const
 		{	return NumOfSecondaryScatterings_;	}
-		GridCPtr grid() const
+        CartesianGridCPtr grid() const
         {   return grid_; }
 		DustCPtr dust() const
         {   return dust_; }
@@ -50,7 +50,7 @@ class Model
 		uint32_t NumOfSecondaryScatterings_;
 
 		DustCPtr dust_;
-        GridCPtr grid_;
+        CartesianGridCPtr grid_;
         SourcesPtr sources_;
 
 		Model(std::vector<Observer> *observers);

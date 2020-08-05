@@ -23,9 +23,9 @@ using IDiskHumpCPtr = std::shared_ptr<IDiskHump const>;
 class MatterTranslation;
 using MatterTranslationCPtr = std::shared_ptr<MatterTranslation const>;
 
-class Grid;
-using GridCPtr = std::shared_ptr<Grid const>;
-using GridCRef = GridCPtr const &;
+class CartesianGrid;
+using CartesianGridCPtr = std::shared_ptr<CartesianGrid const>;
+using CartesianGridCRef = CartesianGridCPtr const &;
 
 class Dust;
 using DustCPtr = std::shared_ptr<Dust const>;

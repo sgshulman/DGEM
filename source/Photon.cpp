@@ -1,5 +1,5 @@
 #include <cmath>
-#include "grid.hpp"
+#include "CartesianGrid.hpp"
 #include "observers.hpp"
 #include "Photon.hpp"
 #include "Random.hpp"
@@ -30,14 +30,14 @@ double Photon::Scatt(DustCRef dust, Direction3d const& dir, Random* ran)
 }
 
 
-void Photon::Scatt( Model const &m, Directions const &dirs, GridCRef grid, std::vector<Observer>& observers, Random* ran)
+void Photon::Scatt( Model const &m, Directions const &dirs, CartesianGridCRef grid, std::vector<Observer>& observers, Random* ran)
 {
     if (nscat_ == m.MonteCarloStart() )
     {
         Photon ph(*this);
         int tflag = 0;
         ph.Stokes( m.dust(), Direction3d(), 0.0, false, ran);
-        tflag = grid->movePhotonAtRandomDepth(ph, ran);
+        tflag = grid->movePhotonAtRandomDepth(ph, ran, -0.001);
         ph.nscat()+=1;
         while ( !tflag && ( ph.nscat() <= m.nscat() ) )
         {
@@ -53,7 +53,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, GridCRef grid, std::
             ph.nscat()+=1;
             if (ph.nscat() > m.nscat()) break;
             // Find next scattering location
-            tflag = grid->movePhotonAtRandomDepth(ph, ran);
+            tflag = grid->movePhotonAtRandomDepth(ph, ran, -0.001);
         }
     } else {
         double calpha;
@@ -86,7 +86,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, GridCRef grid, std::
                 tauold = tau;
                 tau = -std::log( 1.0-0.5*w*(2*s+1) );
                 // Find scattering location of tau
-                if( grid->movePhotonAtDepth( ph, tau, tauold ) )
+                if( grid->movePhotonAtDepth(ph, tau, tauold, -0.001) )
                 {
                     break;
                 } else {

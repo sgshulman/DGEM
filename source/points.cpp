@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include "model.hpp"
-#include "grid.hpp"
+#include "CartesianGrid.hpp"
 #include "observers.hpp"
 #include "Photon.hpp"
 #include "Random.hpp"
@@ -17,7 +17,7 @@ int main()
 
     // read the model parameters
     Model & model = Model::instance(&observers);
-    GridCPtr grid = model.grid();
+    CartesianGridCPtr grid = model.grid();
     SourcesPtr sources = model.sources();
     Random ran(model.iseed());
 
@@ -36,7 +36,7 @@ int main()
             }
 
             // Find optical depth, tau1, to edge of grid
-            double tau1 = grid->findOpticalDepth(ph);
+            double tau1 = grid->findOpticalDepth(ph, -0.001);
             if (tau1 < model.taumin())
             {
                 continue;
@@ -47,7 +47,7 @@ int main()
             // Force photon to scatter at optical depth tau before edge of grid
             double tau = -std::log(1.0 - ran.Get() * w);
             // Find scattering location of tau
-            grid->movePhotonAtDepth(ph, tau);
+            grid->movePhotonAtDepth(ph, tau, 0.0, -0.001);
             // Photon scatters in grid until it exits (tflag=1) or number
             // of scatterings exceeds a set value (nscatt)
             int tflag = 0;
@@ -67,7 +67,7 @@ int main()
                 if (ph.nscat() > model.nscat()) break;
 
                 // Find next scattering location
-                tflag = grid->movePhotonAtRandomDepth(ph, &ran);
+                tflag = grid->movePhotonAtRandomDepth(ph, &ran, -0.001);
             }
         }
     } else {
@@ -84,7 +84,7 @@ int main()
             }
 
             // Find optical depth, tau1, to edge of grid
-            double tau1 = grid->findOpticalDepth( ph0 );
+            double tau1 = grid->findOpticalDepth(ph0, -0.001);
             if ( tau1 < model.taumin() )
             {
                 continue;
@@ -102,7 +102,7 @@ int main()
                 tauold = tau;
                 tau=-log( 1.0-0.5*w*(2*s+1) );
                 // Find scattering location of tau
-                grid->movePhotonAtDepth( ph, tau, tauold );
+                grid->movePhotonAtDepth(ph, tau, tauold, -0.001);
                 spos = ph.pos();
                 // Photon scatters in grid until it exits (tflag=1) or number
                 // of scatterings exceeds a set value (nscatt)

@@ -1,0 +1,22 @@
+#ifndef I_GRID_HPP_
+#define I_GRID_HPP_
+
+#include "Predefines.hpp"
+
+class IGrid
+{
+    public:
+        IGrid() = default;
+        virtual ~IGrid() = default;
+
+        IGrid(IGrid const&) = delete;
+        IGrid& operator=(IGrid const&) = delete;
+
+        virtual double findOpticalDepth(Photon ph, double delta) const = 0;
+        virtual int movePhotonAtDepth(Photon& ph, double tau, double tauold, double delta) const = 0;
+        virtual int movePhotonAtRandomDepth(Photon& ph, Random *ran, double delta) const = 0;
+        virtual void peeloff(Photon ph, Observer& obs, DustCRef dust) const = 0;
+        virtual double computeMatterMass() const = 0;
+};
+
+#endif

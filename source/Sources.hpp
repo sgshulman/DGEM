@@ -77,7 +77,7 @@ public:
     Sources& operator=(Sources const&) = delete;
 
     Photon emitPhoton(Random* ran);
-    void directPhotons(GridCRef grid, std::vector<Observer>* observers);
+    void directPhotons(CartesianGridCRef grid, std::vector<Observer>* observers);
 
     size_t num_photons() const
     {   return parameters_.num_photons_; }

@@ -6,6 +6,8 @@ project(DGEM)
 set(SOURCES
         AzimuthalHump.cpp
         AzimuthalHump.hpp
+        CartesianGrid.cpp
+        CartesianGrid.hpp
         DebugUtils.cpp
         DebugUtils.hpp
         Directions.cpp
@@ -17,9 +19,8 @@ set(SOURCES
         FlaredDisk.hpp
         FractalCloud.cpp
         FractalCloud.hpp
-        grid.cpp
-        grid.hpp
         IDiskHump.hpp
+        IGrid.hpp
         IMatter.hpp
         observers.hpp
         MathUtils.hpp

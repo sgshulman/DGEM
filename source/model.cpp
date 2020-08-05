@@ -2,6 +2,7 @@
 #include <vector>
 #include "model.hpp"
 #include "AzimuthalHump.hpp"
+#include "CartesianGrid.hpp"
 #include "DebugUtils.hpp"
 #include "Dust.hpp"
 #include "FlaredDisk.hpp"
@@ -10,7 +11,6 @@
 #include "MatterArray.hpp"
 #include "MatterTranslation.hpp"
 #include "RoundHump.hpp"
-#include "grid.hpp"
 #include "SafierWind.hpp"
 #include "Sources.hpp"
 #include "SphereEnvelope.hpp"
@@ -200,9 +200,9 @@ namespace
             json.at("sc").get<double>());
     }
 
-    GridCPtr parseGrid(const nlohmann::json& json, double const kappa, IMatterCPtr disk)
+    CartesianGridCPtr parseGrid(const nlohmann::json& json, double const kappa, IMatterCPtr disk)
     {
-        return std::make_shared<Grid const>(
+        return std::make_shared<CartesianGrid const>(
             json.at("xmax").get<double>(),
             json.at("ymax").get<double>(),
             json.at("zmax").get<double>(),

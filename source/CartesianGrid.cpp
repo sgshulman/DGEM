@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include "grid.hpp"
+#include "CartesianGrid.hpp"
 #include "IMatter.hpp"
 #include "observers.hpp"
 #include "Photon.hpp"
@@ -22,7 +22,7 @@ namespace
 }
 
 
-Grid::Grid(
+CartesianGrid::CartesianGrid(
         double const xmax,
         double const ymax,
         double const zmax,
@@ -61,7 +61,7 @@ Grid::Grid(
 }
 
 // calculate smax -- maximum distance photon can travel *******
-double Grid::maxDistance(Photon const& ph) const
+double CartesianGrid::maxDistance(Photon const& ph) const
 {	
     double const dsx = ds(ph.pos().x(), ph.dir().x(), xmax_);
     double const dsy = ds(ph.pos().y(), ph.dir().y(), ymax_);
@@ -73,7 +73,7 @@ double Grid::maxDistance(Photon const& ph) const
 // find distance to next x, y, and z cell walls.  
 // note that dx is not the x-distance, but the actual distance along 
 // the direction of travel to the next x-face, and likewise for dy and dz.
-double Grid::cellDistance(Photon& ph, double delta) const
+double CartesianGrid::cellDistance(Photon& ph, double delta) const
 {
     double dx=200.0*xmax_, dy=200.0*ymax_, dz=200.0*zmax_, dcell=0.0;
     if (delta < 0.0) delta=0.0001*(2.*xmax_/nx_);
@@ -137,7 +137,7 @@ double Grid::cellDistance(Photon& ph, double delta) const
     return dcell;
 }
 
-double Grid::findOpticalDepth( Photon ph, double delta ) const
+double CartesianGrid::findOpticalDepth(Photon ph, double delta ) const
 {
     double taurun=0.0, d=0.0;
 
@@ -164,7 +164,7 @@ double Grid::findOpticalDepth( Photon ph, double delta ) const
     return taurun;
 }
 
-int Grid::movePhotonAtDepth( Photon & ph, double tau, double tauold, double delta ) const
+int CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold, double delta ) const
 {
     double taurun=tauold, d=0.0;
 
@@ -204,17 +204,17 @@ int Grid::movePhotonAtDepth( Photon & ph, double tau, double tauold, double delt
 }
 
 
-int Grid::movePhotonAtRandomDepth( Photon &ph, Random *ran, double delta) const
+int CartesianGrid::movePhotonAtRandomDepth(Photon &ph, Random *ran, double delta) const
 {
     double const tau = -std::log(ran->Get());
     return movePhotonAtDepth(ph, tau, 0.0, delta);
 }
 
 
-void Grid::peeloff(Photon ph, Observer& observer, DustCRef dust) const
+void CartesianGrid::peeloff(Photon ph, Observer& observer, DustCRef dust) const
 {
     double const hgfac = ph.Scatt(dust, observer.direction(), nullptr);
-    double const tau = findOpticalDepth(ph);
+    double const tau = findOpticalDepth(ph, -0.001);
 
     if (tau == 0.0)
     {
@@ -227,7 +227,7 @@ void Grid::peeloff(Photon ph, Observer& observer, DustCRef dust) const
 }
 
 
-double Grid::computeMatterMass() const
+double CartesianGrid::computeMatterMass() const
 {
     double density = 0.0;
 
