@@ -20,12 +20,14 @@
     "sc": 1.0
   },
   "grid": {
-    "xmax": 800.0,
-    "ymax": 800.0,
-    "zmax": 800.0,
-    "nx" : 201,
-    "ny" : 201,
-    "nz" : 201
+    "cartesian": {
+      "xmax": 800.0,
+      "ymax": 800.0,
+      "zmax": 800.0,
+      "nx": 201,
+      "ny": 201,
+      "nz": 201
+    }
   },
   "geometry": {
     "flaredDisk": {

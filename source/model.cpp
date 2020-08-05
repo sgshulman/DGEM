@@ -201,7 +201,7 @@ namespace
     }
 
 
-    IGridCPtr parseGrid(const nlohmann::json& json, double const kappa, IMatterCPtr disk)
+    IGridCPtr parseCartesianGrid(const nlohmann::json& json, double const kappa, IMatterCPtr matter)
     {
         return std::make_shared<CartesianGrid const>(
             json.at("xmax").get<double>(),
@@ -211,8 +211,24 @@ namespace
             json.at("nx").get<uint32_t>(),
             json.at("ny").get<uint32_t>(),
             json.at("nz").get<uint32_t>(),
-            std::move(disk));
+            std::move(matter));
     }
+
+
+    IGridCPtr parseGrid(const nlohmann::json& json, double const kappa, IMatterCPtr matter)
+    {
+        DATA_ASSERT(
+            json.size() == 1,
+            "grid section of the json must contain exactly one top level element");
+
+        if (json.contains("cartesian"))
+        {
+            return parseCartesianGrid(json.at("cartesian"), kappa, std::move(matter));
+        }
+
+        return nullptr;
+    }
+
 
     void parseObservers(std::vector<Observer>* observers, nlohmann::json const& json)
     {

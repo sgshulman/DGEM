@@ -269,3 +269,25 @@ TEST_CASE("Parse Geometry", "[model]")
         REQUIRE(disk);
     }
 }
+
+
+TEST_CASE("Parse Grid", "[model]")
+{
+    SECTION("Cartesian Grid")
+    {
+        nlohmann::json gridJson = R"({
+              "cartesian": {
+                "xmax": 800.0,
+                "ymax": 800.0,
+                "zmax": 800.0,
+                "nx": 201,
+                "ny": 201,
+                "nz": 201
+            }}
+            )"_json;
+
+        IMatterCPtr matter = std::make_shared<SphereEnvelope const>(500., 550., 2.4e-17, 100, 0, nullptr);
+        const auto grid = parseGrid(gridJson, 100., matter);
+        REQUIRE(grid);
+    }
+}
