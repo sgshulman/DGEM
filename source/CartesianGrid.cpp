@@ -137,11 +137,11 @@ double CartesianGrid::cellDistance(Photon& ph, double delta) const
     return dcell;
 }
 
-double CartesianGrid::findOpticalDepth(Photon ph, double delta ) const
+double CartesianGrid::findOpticalDepth(Photon ph) const
 {
     double taurun=0.0, d=0.0;
 
-    if (delta < 0.0) delta=0.0001*(2.*xmax_/nx_);
+    double const delta=0.0001*(2.*xmax_/nx_);
     double const smax = maxDistance(ph);
 
     if(smax < delta)
@@ -164,15 +164,11 @@ double CartesianGrid::findOpticalDepth(Photon ph, double delta ) const
     return taurun;
 }
 
-int CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold, double delta ) const
+int CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold) const
 {
     double taurun=tauold, d=0.0;
 
-    if (delta < 0.0 )
-    {
-        delta=0.0001*(2.*xmax_/nx_);
-    }
-
+    double const delta=0.0001*(2.*xmax_/nx_);
     double const smax = maxDistance(ph);
 
     // integrate through grid
@@ -204,17 +200,17 @@ int CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold, dou
 }
 
 
-int CartesianGrid::movePhotonAtRandomDepth(Photon &ph, Random *ran, double delta) const
+int CartesianGrid::movePhotonAtRandomDepth(Photon &ph, Random *ran) const
 {
     double const tau = -std::log(ran->Get());
-    return movePhotonAtDepth(ph, tau, 0.0, delta);
+    return movePhotonAtDepth(ph, tau, 0.0);
 }
 
 
 void CartesianGrid::peeloff(Photon ph, Observer& observer, DustCRef dust) const
 {
     double const hgfac = ph.Scatt(dust, observer.direction(), nullptr);
-    double const tau = findOpticalDepth(ph, -0.001);
+    double const tau = findOpticalDepth(ph);
 
     if (tau == 0.0)
     {

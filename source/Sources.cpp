@@ -71,7 +71,7 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
             Photon ph(pointSources_[is].pos(), (*observers)[io].direction(), 1.0, 0);
 
             // Find optical depth, tau1, to edge of grid along viewing direction
-            double tau1 = grid->findOpticalDepth(ph, -0.001);
+            double tau1 = grid->findOpticalDepth(ph);
 
             // direct photon weight is exp(-tau1)/4pi
             ph.weight() = nph * std::exp(-tau1) / 4.0 / PI;

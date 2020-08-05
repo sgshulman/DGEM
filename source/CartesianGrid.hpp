@@ -17,9 +17,9 @@ class CartesianGrid : public IGrid
             delete[] rhokappa_;
         }
 
-        double findOpticalDepth(Photon ph, double delta) const override;
-        int movePhotonAtDepth(Photon& ph, double tau, double tauold, double delta) const override;
-        int movePhotonAtRandomDepth(Photon& ph, Random *ran, double delta) const override;
+        double findOpticalDepth(Photon ph) const override;
+        int movePhotonAtDepth(Photon& ph, double tau, double tauold) const override;
+        int movePhotonAtRandomDepth(Photon& ph, Random *ran) const override;
         void peeloff(Photon ph, Observer& obs, DustCRef dust) const override;
         double computeMatterMass() const override;
 
