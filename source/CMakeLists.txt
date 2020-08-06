@@ -32,6 +32,7 @@ set(SOURCES
         model.hpp
         Photon.cpp
         Photon.hpp
+        Predefines.hpp
         Random.hpp
         RoundHump.cpp
         RoundHump.hpp
@@ -41,7 +42,8 @@ set(SOURCES
         SafierWind.hpp
         SphereEnvelope.cpp
         SphereEnvelope.hpp
-        Predefines.hpp
+        TetrahedralGrid.cpp
+        TetrahedralGrid.hpp
         Vector3d.hpp
         third-party/nlohmann/json.hpp)
 
