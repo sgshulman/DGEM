@@ -363,7 +363,7 @@ std::uint32_t TetrahedralGrid::cellIdByPOS(const Vector3d& v) const
             return elId;
         }
     }
-    return elements_.size();
+    return static_cast<uint32_t>(elements_.size());
 }
 
 

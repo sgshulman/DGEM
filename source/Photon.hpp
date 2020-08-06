@@ -46,7 +46,7 @@ class Photon
         {	return weight_;	}
         double weight() const
         {	return weight_;	}
-        size_t cellId() const
+        uint32_t cellId() const
         {	return cellId_;	}
 
         bool termination() const
