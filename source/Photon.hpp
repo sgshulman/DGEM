@@ -16,8 +16,10 @@ class Photon
         double Scatt(DustCRef dust, Direction3d const & dir, Random* ran);
         void Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std::vector<Observer>& observers, Random* ran);
         void Stokes(DustCRef dust, Direction3d const &dir, double calpha, bool fDir, Random* ran);
-        void Move(double t)
+
+        void Move(double t, uint32_t cellId)
         {
+            cellId_ = cellId;
             pos_ = pos_ + t * dir_.vector();
         }
         Vector3d& pos()
@@ -44,6 +46,8 @@ class Photon
         {	return weight_;	}
         double weight() const
         {	return weight_;	}
+        size_t cellId() const
+        {	return cellId_;	}
 
         bool termination() const
         {   return nscat_ == std::numeric_limits<uint32_t>::max(); }
@@ -52,6 +56,7 @@ class Photon
         Vector3d	pos_;	// outpoint
         Direction3d	dir_;	// vector of the direction
         uint32_t 	nscat_;
+        uint32_t    cellId_;
         double weight_;
         double fi_, fq_, fu_, fv_;
 };

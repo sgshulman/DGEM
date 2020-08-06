@@ -417,9 +417,21 @@ double TetrahedralGrid::distanceToPlane(Vector3d const& dot, Vector3d const& dot
     return (1./norm1.norm()) * norm1 * v;
 }
 
-std::pair<double, std::uint32_t> TetrahedralGrid::cellDistance(Photon &/*ph*/) const
+
+double TetrahedralGrid::rhoInDot(const Vector3d& dot, const Tetrahedron& el) const
 {
-   /* double const delta=0.001*(elements_[ph.cellId()].size());
+    double L1 = distanceToPlane(dot, dots_[el.dot2], dots_[el.dot3], dots_[el.dot4]) / el.d1;
+    double L2 = distanceToPlane(dot, dots_[el.dot1], dots_[el.dot3], dots_[el.dot4]) / el.d2;
+    double L3 = distanceToPlane(dot, dots_[el.dot1], dots_[el.dot2], dots_[el.dot4]) / el.d3;
+    double L4 = 1.0 - L1 - L2 - L3;
+
+    return L1*dots_[el.dot1].rhoKappa() + L2*dots_[el.dot2].rhoKappa() + L3*dots_[el.dot3].rhoKappa() + L4*dots_[el.dot4].rhoKappa();
+}
+
+
+std::pair<double, std::uint32_t> TetrahedralGrid::cellDistance(Photon& ph) const
+{
+    double const delta=0.001*(elements_[ph.cellId()].size());
     Vector3d const dot1 = dots_[elements_[ph.cellId()].dot1];
     Vector3d const dot2 = dots_[elements_[ph.cellId()].dot2];
     Vector3d const dot3 = dots_[elements_[ph.cellId()].dot3];
@@ -439,18 +451,17 @@ std::pair<double, std::uint32_t> TetrahedralGrid::cellDistance(Photon &/*ph*/) c
     d4 = timeToPlane(dot1, dot2, dot3, ph);
     d = std::min(std::min(d1, d2), std::min(d3, d4));
 
-    if (fabs(d - d1) < 0.0000001) return std::make_pair(d, elements_[ph.cellId()].neighbor1);
-    if (fabs(d - d2) < 0.0000001) return std::make_pair(d, elements_[ph.cellId()].neighbor2);
-    if (fabs(d - d3) < 0.0000001) return std::make_pair(d, elements_[ph.cellId()].neighbor3);
-    return std::make_pair(d, elements_[ph.cellId()].neighbor4);*/
-   return {};
+    if (std::abs(d - d1) < 0.0000001) return std::make_pair(d, elements_[ph.cellId()].neighbor1);
+    if (std::fabs(d - d2) < 0.0000001) return std::make_pair(d, elements_[ph.cellId()].neighbor2);
+    if (std::fabs(d - d3) < 0.0000001) return std::make_pair(d, elements_[ph.cellId()].neighbor3);
+    return std::make_pair(d, elements_[ph.cellId()].neighbor4);
 }
 
 
 // NEED TO BE REDONE
-double TetrahedralGrid::findOpticalDepth(Photon /*ph*/) const
+double TetrahedralGrid::findOpticalDepth(Photon ph) const
 {
-/*  if (ph.cellId() >= elements_.size()) return 0.0;
+    if (ph.cellId() >= elements_.size()) return 0.0;
     double taurun=0.0, taucell, d=0.0;
     double const delta=0.001*(elements_[ph.cellId()].size());
     double smax = maxDistance(ph);
@@ -464,22 +475,21 @@ double TetrahedralGrid::findOpticalDepth(Photon /*ph*/) const
         double rho1=0.0, rho2=0.0;
         if (!elements_[ph.cellId()].fEmpty)
         {
-            rho1 = RhoInDot(ph.pos(), elements_[ph.cellId()]);
-            rho2 = RhoInDot(ph.pos() + dcell.first * ph.dir().vector(), elements_[ph.cellId()]);
+            rho1 = rhoInDot(ph.pos(), elements_[ph.cellId()]);
+            rho2 = rhoInDot(ph.pos() + dcell.first * ph.dir().vector(), elements_[ph.cellId()]);
         }
         taucell=dcell.first* (rho1 + rho2)*0.5;
         taurun+=std::max(taucell, 0.0);
         ph.Move( dcell.first, dcell.second );
         d += dcell.first;
     }
-    return taurun;*/
-    return 0.;
+    return taurun;
 }
 
 // NEED TO BE REDONE
-int TetrahedralGrid::movePhotonAtDepth(Photon& /*ph*/, double /*tau*/, double /*tauold*/) const
+int TetrahedralGrid::movePhotonAtDepth(Photon& ph, double tau, double tauold) const
 {
-   /* if (ph.cellId() >= elements_.size()) return 1;
+    if (ph.cellId() >= elements_.size()) return 1;
     double taurun=tauold, taucell, d=0.0;
     double const delta=0.0001*(elements_[ph.cellId()].size());
     double smax = maxDistance(ph);
@@ -494,8 +504,8 @@ int TetrahedralGrid::movePhotonAtDepth(Photon& /*ph*/, double /*tau*/, double /*
         double rho1=0.0, rho2=0.0;
         if (!elements_[ph.cellId()].fEmpty)
         {
-            rho1 = RhoInDot(ph.pos(), elements_[ph.cellId()]);
-            rho2 = RhoInDot(ph.pos() + dcell.first * ph.dir().vector(), elements_[ph.cellId()]);
+            rho1 = rhoInDot(ph.pos(), elements_[ph.cellId()]);
+            rho2 = rhoInDot(ph.pos() + dcell.first * ph.dir().vector(), elements_[ph.cellId()]);
         }
         taucell=dcell.first* (rho1 + rho2)*0.5;
         if( (taurun+taucell) >= tau)
@@ -514,7 +524,7 @@ int TetrahedralGrid::movePhotonAtDepth(Photon& /*ph*/, double /*tau*/, double /*
             ph.Move( dcell.first, dcell.second );
         }
     }
-    if((d>=(0.999*smax))) return 1;*/
+    if((d>=(0.999*smax))) return 1;
     return 0;
 }
 

@@ -157,7 +157,7 @@ double CartesianGrid::findOpticalDepth(Photon ph) const
         auto const z = uint32_t( (ph.pos().z()+zmax_)*nz_ / 2.0 / zmax_ );
 
         taurun += dcell * rhokappa_[ x+y*nx_+z*ny_*nx_ ];
-        ph.Move(dcell);
+        ph.Move(dcell, 0);
         d += dcell;
     }
 
@@ -184,10 +184,10 @@ int CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold) con
         {
             double const d1 = (tau-taurun) / rhokappa_[ x+y*nx_+z*ny_*nx_ ];
             d += d1;
-            ph.Move(d1);
+            ph.Move(d1, 0);
         } else {
             d += dcell;
-            ph.Move(dcell);
+            ph.Move(dcell, 0);
         }
 
         taurun += taucell;

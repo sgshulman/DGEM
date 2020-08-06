@@ -46,6 +46,7 @@ private:
     void readElements(std::string const & file);
     void calculateElementSizes();
     void findElementsNeighbours();
+    double rhoInDot(const Vector3d& dot, const Tetrahedron& el) const;
 };
 
 #endif
