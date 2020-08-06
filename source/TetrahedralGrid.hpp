@@ -4,6 +4,7 @@
 #include "IGrid.hpp"
 #include "Vector3d.hpp"
 #include <vector>
+#include <string>
 
 // Tetrahedral Grid
 class TetrahedralGrid : public IGrid

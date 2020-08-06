@@ -95,11 +95,11 @@ double TetrahedralGrid::calculateRealTau(const Vector3d& v, double const kappa) 
 // Nodes for the grid
 void TetrahedralGrid::readNodes(std::string const& file)
 {
-    size_t NumberOfDots;
+    uint32_t NumberOfDots;
     std::ifstream nodes(file);
     nodes >> NumberOfDots;
     dots_.reserve(NumberOfDots);
-    for (size_t cnt=0; cnt != NumberOfDots; ++cnt)
+    for (uint32_t cnt=0; cnt != NumberOfDots; ++cnt)
     {
         std::uint32_t id;
         double x, y, z;
@@ -110,7 +110,7 @@ void TetrahedralGrid::readNodes(std::string const& file)
 
 void TetrahedralGrid::calculateNodesRhoKappa(double const kappa)
 {
-    for (size_t cnt=0; cnt != dots_.size(); ++cnt)
+    for (uint32_t cnt=0; cnt != dots_.size(); ++cnt)
     {
         double rhoKappa = matter_->density(dots_[cnt])*kappa*1.5e13;
         dots_[cnt].setRhoKappa(rhoKappa);
@@ -120,12 +120,12 @@ void TetrahedralGrid::calculateNodesRhoKappa(double const kappa)
 // Elements of the grid
 void TetrahedralGrid::readElements(std::string const & file)
 {
-    size_t NumberOfElements;
+    uint32_t NumberOfElements;
     std::ifstream nodes(file);
     nodes >> NumberOfElements;
     elements_.reserve(NumberOfElements);
 
-    for (size_t cnt=0; cnt != NumberOfElements; ++cnt)
+    for (uint32_t cnt=0; cnt != NumberOfElements; ++cnt)
     {
         std::uint32_t id, rubbish;
         std::uint32_t dot[4];
@@ -138,7 +138,7 @@ void TetrahedralGrid::readElements(std::string const & file)
 
 void TetrahedralGrid::calculateElementSizes()
 {
-    for (size_t i = 0; i != elements_.size(); ++i)
+    for (uint32_t i = 0; i != elements_.size(); ++i)
     {
         double size = (dots_[elements_[i].dot1] - dots_[elements_[i].dot2]).norm();
         size = std::min(size, (dots_[elements_[i].dot2] - dots_[elements_[i].dot3]).norm());
@@ -185,15 +185,15 @@ bool operator < (const Plane& l, const Plane& r)
 void TetrahedralGrid::findElementsNeighbours()
 {
     std::map<Plane, std::uint32_t> hash;
-    for (size_t cnt = 0; cnt != elements_.size(); ++cnt)
+    for (uint32_t cnt = 0; cnt != elements_.size(); ++cnt)
     {
-        elements_[cnt].neighbor1 = elements_.size();
-        elements_[cnt].neighbor2 = elements_.size();
-        elements_[cnt].neighbor3 = elements_.size();
-        elements_[cnt].neighbor4 = elements_.size();
+        elements_[cnt].neighbor1 = static_cast<uint32_t>(elements_.size());
+        elements_[cnt].neighbor2 = static_cast<uint32_t>(elements_.size());
+        elements_[cnt].neighbor3 = static_cast<uint32_t>(elements_.size());
+        elements_[cnt].neighbor4 = static_cast<uint32_t>(elements_.size());
     }
 
-    for (size_t cnt = 0; cnt != elements_.size(); ++cnt)
+    for (uint32_t cnt = 0; cnt != elements_.size(); ++cnt)
     {
         Plane firstPlane(elements_[cnt].dot2, elements_[cnt].dot3, elements_[cnt].dot4);
         auto iter = hash.find(firstPlane);
@@ -532,7 +532,7 @@ int TetrahedralGrid::movePhotonAtDepth(Photon& ph, double tau, double tauold) co
 double TetrahedralGrid::computeMatterMass() const
 {
     double m = 0;
-    for(size_t id=0; id != elements_.size(); ++id)
+    for(uint32_t id=0; id != elements_.size(); ++id)
     {
         if (!elements_[id].fEmpty)
         {
