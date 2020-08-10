@@ -11,7 +11,7 @@
 class Photon
 {
     public:
-        Photon(Vector3d const &position, Direction3d const &dir, double weight, uint32_t nscat, double fi=1.0, double fq=0.0, double fu=0.0, double fv=0.0);
+        Photon(Vector3d const &position, std::uint32_t cellId, Direction3d const &dir, double weight, uint32_t nscat, double fi=1.0, double fq=0.0, double fu=0.0, double fv=0.0);
         // photon scattering
         double Scatt(DustCRef dust, Direction3d const & dir, Random* ran);
         void Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std::vector<Observer>& observers, Random* ran);

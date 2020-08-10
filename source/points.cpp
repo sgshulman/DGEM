@@ -93,17 +93,21 @@ int main()
             double const w = (1.0-exp(-tau1)) / model.NumOfPrimaryScatterings() ;
             double tauold = 0.0, tau = 0.0;
             Vector3d spos = ph0.pos();
+            std::uint32_t sCellId = ph0.cellId();
 
             // Loop over scattering dots
             for (size_t s=0; s!=model.NumOfPrimaryScatterings(); ++s)
             {
-                Photon ph( spos, ph0.dir(), ph0.weight() * w, 1 );
+                Photon ph( spos, sCellId, ph0.dir(), ph0.weight() * w, 1 );
                 // Force photon to scatter at optical depth tau before edge of grid
                 tauold = tau;
                 tau=-log( 1.0-0.5*w*(2*s+1) );
+
                 // Find scattering location of tau
                 grid->movePhotonAtDepth(ph, tau, tauold);
                 spos = ph.pos();
+                sCellId = ph.cellId();
+
                 // Photon scatters in grid until it exits (tflag=1) or number
                 // of scatterings exceeds a set value (nscatt)
 

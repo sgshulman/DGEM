@@ -10,7 +10,7 @@ Photon Sources::emitPhoton(Random* ran)
 {
     if (currentSource_ == pointSources_.size())
     {
-        return {Vector3d{}, Direction3d{}, 0.0, std::numeric_limits<uint32_t>::max()};
+        return {Vector3d{}, 0, Direction3d{}, 0.0, std::numeric_limits<uint32_t>::max()};
     }
 
     uint32_t const sourceId{ currentSource_ };
@@ -44,6 +44,7 @@ Photon Sources::emitPhoton(Random* ran)
 
         return {
             pointSources_[sourceId].pos(),
+            pointSources_[sourceId].cellId(),
             Direction3d( 2.0*PI*u, std::acos( 2*v - 1.0 ) ),
             1.0,
             1};
@@ -51,6 +52,7 @@ Photon Sources::emitPhoton(Random* ran)
 
     return {
         pointSources_[sourceId].pos(),
+        pointSources_[sourceId].cellId(),
         primaryDir_.direction(photonId),
         primaryDir_.w(photonId) * pointSources_[sourceId].luminosity() / totlum_,
         1 };
@@ -68,7 +70,7 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
         for (size_t io=0; io!=observers->size(); ++io)
         {
             // Set photon location, grid cell, and direction of observation
-            Photon ph(pointSources_[is].pos(), (*observers)[io].direction(), 1.0, 0);
+            Photon ph(pointSources_[is].pos(), pointSources_[is].cellId(), (*observers)[io].direction(), 1.0, 0);
 
             // Find optical depth, tau1, to edge of grid along viewing direction
             double tau1 = grid->findOpticalDepth(ph);

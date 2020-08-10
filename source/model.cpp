@@ -278,18 +278,21 @@ namespace
             "observers section of the json must contain at least one observer");
     }
 
-    SourcesPtr parseSources(nlohmann::json const& json, SourceParameters const& sourceParameters)
+    SourcesPtr parseSources(nlohmann::json const& json, SourceParameters const& sourceParameters, IGridCPtr grid)
     {
         std::vector<PointSource> pointSources;
         pointSources.reserve(json.size());
 
         for (auto const &star : json)
         {
+            Vector3d const position{
+                star.at("x").get<double>(),
+                star.at("y").get<double>(),
+                star.at("z").get<double>()};
+
             pointSources.emplace_back(
-                Vector3d{
-                    star.at("x").get<double>(),
-                    star.at("y").get<double>(),
-                    star.at("z").get<double>()},
+                position,
+                grid->cellId(position),
                 star.at("l").get<double>());
         }
 
@@ -326,6 +329,6 @@ Model::Model(std::vector<Observer>* observers)
     dust_ = parseDust(dustJson);
     IMatterCPtr geometry = parseGeometry(j.at("geometry"));
     grid_ = parseGrid(j.at("grid"), dustJson.at("kappa").get<double>(), geometry);
-    sources_ = parseSources(j.at("stars"), sourceParameters);
+    sources_ = parseSources(j.at("stars"), sourceParameters, grid_);
     parseObservers(observers, j.at("observers"));
 }

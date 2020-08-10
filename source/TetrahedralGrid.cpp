@@ -296,77 +296,6 @@ TetrahedralGrid::TetrahedralGrid(
 }
 
 
-void TetrahedralGrid::calculateSourcesCells(Sources& /*sources*/) const
-{
-    // Calculate cell sizes
-/*    std::vector<double> size(elements_.size());
-    std::vector<Vector3d> position(elements_.size());
-
-    for (size_t elId = 0; elId != elements_.size(); ++elId)
-    {
-        Vector3d const d1 = dots_[elements_[elId].dot1];
-        Vector3d const d2 = dots_[elements_[elId].dot2];
-        Vector3d const d3 = dots_[elements_[elId].dot3];
-        Vector3d const d4 = dots_[elements_[elId].dot4];
-
-        position[elId] = 0.25 * (d1 + d2 + d3 + d4);
-
-        Vector3d r1 = position[elId] - d1;
-        Vector3d r2 = position[elId] - d2;
-        Vector3d r3 = position[elId] - d3;
-        Vector3d r4 = position[elId] - d4;
-        size[elId] = std::max( { r1*r1, r2*r2, r3*r3, r4*r4 } );
-    }
-
-    for (size_t sId=0; sId != sources.size(); ++sId)
-    {
-        for (size_t elId = 0; elId != elements_.size(); ++elId)
-        {
-            Vector3d r{ position[elId] - sources[sId]->pos() };
-            if (r * r <= size[elId])
-            {
-                Vector3d const d1 = dots_[elements_[elId].dot1];
-                Vector3d const d2 = dots_[elements_[elId].dot2];
-                Vector3d const d3 = dots_[elements_[elId].dot3];
-                Vector3d const d4 = dots_[elements_[elId].dot4];
-
-                if (tripleProduct(sources[sId]->pos()-d1, d2-d1, d3-d1)*tripleProduct(d4-d1, d2-d1, d3-d1) >= 0
-                    && tripleProduct(sources[sId]->pos()-d1, d2-d1, d4-d1)*tripleProduct(d3-d1, d2-d1, d4-d1) >= 0
-                    && tripleProduct(sources[sId]->pos()-d1, d3-d1, d4-d1)*tripleProduct(d2-d1, d3-d1, d4-d1) >= 0
-                    && tripleProduct(sources[sId]->pos()-d2, d3-d2, d4-d2)*tripleProduct(d1-d2, d3-d2, d4-d2) >= 0)
-                {
-                    sources[sId]->setCelId(elId);
-                    std::cout << "Source " << sId << " Cell " << elId << std::endl;
-                    break;
-                }
-            }
-        }
-    }
-    std::cout << "Source cells are calculated" << std::endl;*/
-}
-
-
-std::uint32_t TetrahedralGrid::cellIdByPOS(const Vector3d& v) const
-{
-    for (std::uint32_t elId = 0; elId != elements_.size(); ++elId)
-    {
-        Vector3d const d1 = dots_[elements_[elId].dot1];
-        Vector3d const d2 = dots_[elements_[elId].dot2];
-        Vector3d const d3 = dots_[elements_[elId].dot3];
-        Vector3d const d4 = dots_[elements_[elId].dot4];
-
-        if (tripleProduct(v-d1, d2-d1, d3-d1)*tripleProduct(d4-d1, d2-d1, d3-d1) >= 0
-            && tripleProduct(v-d1, d2-d1, d4-d1)*tripleProduct(d3-d1, d2-d1, d4-d1) >= 0
-            && tripleProduct(v-d1, d3-d1, d4-d1)*tripleProduct(d2-d1, d3-d1, d4-d1) >= 0
-            && tripleProduct(v-d2, d3-d2, d4-d2)*tripleProduct(d1-d2, d3-d2, d4-d2) >= 0)
-        {
-            return elId;
-        }
-    }
-    return static_cast<uint32_t>(elements_.size());
-}
-
-
 // calculate smax -- maximum distance photon can travel *******
 double TetrahedralGrid::maxDistance(Photon const &ph) const
 {
@@ -566,5 +495,38 @@ double TetrahedralGrid::computeMatterMass() const
         }
     }
     return m*3.34792898e+6/2;
+}
+
+
+std::uint32_t TetrahedralGrid::cellId(const Vector3d &position) const
+{
+    for (size_t i = 0; i != elements_.size(); ++i)
+    {
+        Vector3d const d1 = dots_[elements_[i].dot1];
+        Vector3d const d2 = dots_[elements_[i].dot2];
+        Vector3d const d3 = dots_[elements_[i].dot3];
+        Vector3d const d4 = dots_[elements_[i].dot4];
+        Vector3d const center = 0.25 * (d1 + d2 + d3 + d4);
+
+        Vector3d r1 = center - d1;
+        Vector3d r2 = center - d2;
+        Vector3d r3 = center - d3;
+        Vector3d r4 = center - d4;
+        double const size = std::max( { r1*r1, r2*r2, r3*r3, r4*r4 } );
+
+        Vector3d r{ center - position };
+        if (r * r <= size)
+        {
+            if (tripleProduct(position-d1, d2-d1, d3-d1)*tripleProduct(d4-d1, d2-d1, d3-d1) >= 0
+                && tripleProduct(position-d1, d2-d1, d4-d1)*tripleProduct(d3-d1, d2-d1, d4-d1) >= 0
+                && tripleProduct(position-d1, d3-d1, d4-d1)*tripleProduct(d2-d1, d3-d1, d4-d1) >= 0
+                && tripleProduct(position-d2, d3-d2, d4-d2)*tripleProduct(d1-d2, d3-d2, d4-d2) >= 0)
+            {
+                return i;
+            }
+        }
+    }
+
+    return elements_.size();
 }
 

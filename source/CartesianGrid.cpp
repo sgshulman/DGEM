@@ -249,3 +249,12 @@ double CartesianGrid::computeMatterMass() const
 
     return density * 8. * xmax_ / nx_ * ymax_ / ny_ * zmax_ / nz_ * 1683294;
 }
+
+
+std::uint32_t CartesianGrid::cellId(const Vector3d& position) const
+{
+    auto const x = uint32_t((position.x()+xmax_)*xCellSizeInv_);
+    auto const y = uint32_t((position.y()+ymax_)*yCellSizeInv_);
+    auto const z = uint32_t((position.z()+zmax_)*zCellSizeInv_);
+    return x + y*nx_ + z*ny_ * nx_;
+}

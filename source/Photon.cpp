@@ -6,10 +6,11 @@
 #include "Directions.hpp"
 #include "Dust.hpp"
 
-Photon::Photon( Vector3d const& pos, Direction3d const& dir, double weight, uint32_t nscat, double fi, double fq, double fu, double fv )
+Photon::Photon( Vector3d const& pos, std::uint32_t cellId, Direction3d const& dir, double weight, uint32_t nscat, double fi, double fq, double fu, double fv )
     : pos_{ pos }
     , dir_{ dir }
     , nscat_{ nscat }
+    , cellId_{ cellId }
     , weight_{ weight }
     , fi_{ fi }
     , fq_{ fq }
@@ -71,17 +72,19 @@ void Photon::Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std:
             // Release photon from point source
             calpha = dir_.vector() * dirs.direction(j);
             hgfrac = m.dust()->fraction(calpha);
-            Photon ph0(pos_, dir_, weight_ * dirs.w( j )*hgfrac/sum, nscat_+1, fi_, fq_, fu_, fv_ );
+            Photon ph0(pos_, cellId_, dir_, weight_ * dirs.w( j )*hgfrac/sum, nscat_+1, fi_, fq_, fu_, fv_ );
             ph0.Stokes(m.dust(), dirs.direction(j), calpha, true, ran);
 
             double w = 1.0 / m.NumOfSecondaryScatterings() ;
             Vector3d spos = pos_;
+            std::uint32_t sCellId = cellId_;
+
             double tauold = 0.0, tau = 0.0;
 
             // Loop over scattering dots
             for (size_t s=0; s!=m.NumOfSecondaryScatterings(); ++s)
             {
-                Photon ph( spos, ph0.dir(), ph0.weight()*w, nscat_+1, ph0.fi(), ph0.fq(), ph0.fu(), ph0.fv() );
+                Photon ph(spos, sCellId, ph0.dir(), ph0.weight()*w, nscat_+1, ph0.fi(), ph0.fq(), ph0.fu(), ph0.fv() );
                 // Force photon to scatter at optical depth tau before edge of grid
                 tauold = tau;
                 tau = -std::log( 1.0-0.5*w*(2*s+1) );
@@ -91,6 +94,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std:
                     break;
                 } else {
                     spos = ph.pos();
+                    sCellId = ph.cellId();
 
                     // Photon scattering
                     ph.weight() *= m.dust()->albedo();
