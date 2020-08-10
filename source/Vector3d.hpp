@@ -2,6 +2,7 @@
 #define VECTOR_3D_HPP_
 
 #include <cmath>
+#include <limits>
 
 class Vector3d
 {
@@ -33,7 +34,10 @@ class Vector3d
 
         inline Vector3d inverse() const
         {
-            return {1. / x_, 1. / y_, 1. / z_};
+            return {
+                x_ != 0. ? 1. / x_ : std::numeric_limits<double>::infinity(),
+                y_ != 0. ? 1. / y_ : std::numeric_limits<double>::infinity(),
+                z_ != 0. ? 1. / z_ : std::numeric_limits<double>::infinity()};
         }
 
         inline double norm() const

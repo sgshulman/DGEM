@@ -500,7 +500,7 @@ double TetrahedralGrid::computeMatterMass() const
 
 std::uint32_t TetrahedralGrid::cellId(const Vector3d &position) const
 {
-    for (size_t i = 0; i != elements_.size(); ++i)
+    for (std::uint32_t i = 0; i != elements_.size(); ++i)
     {
         Vector3d const d1 = dots_[elements_[i].dot1];
         Vector3d const d2 = dots_[elements_[i].dot2];
@@ -527,6 +527,6 @@ std::uint32_t TetrahedralGrid::cellId(const Vector3d &position) const
         }
     }
 
-    return elements_.size();
+    return static_cast<std::uint32_t>(elements_.size());
 }
 
