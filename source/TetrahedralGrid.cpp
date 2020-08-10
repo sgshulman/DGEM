@@ -1,6 +1,8 @@
 #include "TetrahedralGrid.hpp"
 #include "IMatter.hpp"
+#include "observers.hpp"
 #include "Photon.hpp"
+#include "Random.hpp"
 
 #include <algorithm>
 #include <fstream>
@@ -458,6 +460,13 @@ int TetrahedralGrid::movePhotonAtDepth(Photon& ph, double tau, double tauold) co
 }
 
 
+int TetrahedralGrid::movePhotonAtRandomDepth(Photon &ph, Random *ran) const
+{
+    double const tau = -std::log(ran->Get());
+    return movePhotonAtDepth(ph, tau, 0.0);
+}
+
+
 double TetrahedralGrid::computeMatterMass() const
 {
     double m = 0;
@@ -528,5 +537,20 @@ std::uint32_t TetrahedralGrid::cellId(const Vector3d &position) const
     }
 
     return static_cast<std::uint32_t>(elements_.size());
+}
+
+void TetrahedralGrid::peeloff(Photon ph, Observer &observer, const DustCPtr &dust) const
+{
+    double const hgfac = ph.Scatt(dust, observer.direction(), nullptr);
+    double const tau = findOpticalDepth(ph);
+
+    if (tau == 0.0)
+    {
+        return;
+    }
+
+    ph.weight() *= hgfac * exp(-tau);
+    // Bin the photon into the image according to its position and direction of travel.
+    observer.bin(ph);
 }
 

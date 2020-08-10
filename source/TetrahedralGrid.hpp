@@ -21,9 +21,8 @@ public:
 
     double findOpticalDepth(Photon ph) const override;
     int movePhotonAtDepth(Photon &ph, double tau, double tauold) const override;
-  // TODO:  int movePhotonAtRandomDepth(Photon& ph, Random *ran) const override;
-  // TODO:  void peeloff(Photon ph, Observer& obs, DustCRef dust) const override;
-
+    int movePhotonAtRandomDepth(Photon& ph, Random *ran) const override;
+    void peeloff(Photon ph, Observer& observer, DustCRef dust) const override;
     double computeMatterMass() const override;
     std::uint32_t cellId(const Vector3d& position) const override;
 
