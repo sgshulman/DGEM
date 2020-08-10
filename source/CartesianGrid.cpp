@@ -37,6 +37,12 @@ CartesianGrid::CartesianGrid(
     , xmax_{ xmax }
     , ymax_{ ymax }
     , zmax_{ zmax }
+    , xCellSize_ { 2. * xmax_ / nx_ }
+    , yCellSize_ { 2. * ymax_ / ny_ }
+    , zCellSize_ { 2. * zmax_ / nz_ }
+    , xCellSizeInv_{ 1. / xCellSize_ }
+    , yCellSizeInv_{ 1. / yCellSize_ }
+    , zCellSizeInv_{ 1. / zCellSize_ }
     , matter_{ std::move(matter) }
 {
     rhokappa_ = new double[nx_ * ny_ * nz_];
@@ -77,57 +83,55 @@ double CartesianGrid::cellDistance(Photon& ph, double delta) const
 {
     double dx=200.0*xmax_, dy=200.0*ymax_, dz=200.0*zmax_, dcell=0.0;
     if (delta < 0.0) delta=0.0001*(2.*xmax_/nx_);
-    double tmp = 2.0*xmax_/nx_;
+
     if(ph.dir().x() > 0.0)
     {
-        dx = (( int( (ph.pos().x()+xmax_) / tmp ) + 1.0 )* tmp - xmax_ - ph.pos().x() )/ph.dir().x();
+        dx = ((int((ph.pos().x()+xmax_) * xCellSizeInv_) + 1.0) * xCellSize_ - xmax_ - ph.pos().x() )/ph.dir().x();
         if (dx < delta)
         {
-            dx = tmp/ph.dir().x();
-            ph.pos().x() = (int( (ph.pos().x()+xmax_) / tmp ) + 1.0 )*tmp - xmax_ + delta;
+            dx = xCellSize_/ph.dir().x();
+            ph.pos().x() = (int((ph.pos().x()+xmax_) * xCellSizeInv_) + 1.0)*xCellSize_ - xmax_ + delta;
         }
     } else if (ph.dir().x() < 0.0) {
-        dx = (( int( (ph.pos().x()+xmax_)/ tmp ) )* tmp - xmax_ - ph.pos().x() )/ph.dir().x();
+        dx = (( int( (ph.pos().x()+xmax_) * xCellSizeInv_)) * xCellSize_ - xmax_ - ph.pos().x() )/ph.dir().x();
         if (dx < delta)
         {
-            dx =-tmp/ph.dir().x();
-            ph.pos().x() = ( int( (ph.pos().x()+xmax_)/tmp) )* tmp - xmax_ - delta;
+            dx =-xCellSize_/ph.dir().x();
+            ph.pos().x() = ( int( (ph.pos().x()+xmax_) * xCellSizeInv_) ) * xCellSize_ - xmax_ - delta;
         }
     }
 
-    tmp = 2.0*ymax_/ny_;
     if(ph.dir().y() > 0.0)
     {
-        dy = (( int( (ph.pos().y()+ymax_)/tmp ) + 1.0 )* tmp - ymax_ - ph.pos().y() )/ph.dir().y();
+        dy = ((int( (ph.pos().y()+ymax_) * yCellSizeInv_) + 1.0) * yCellSize_ - ymax_ - ph.pos().y() )/ph.dir().y();
         if (dy < delta)
         {
-            dy = tmp/ph.dir().y();
-            ph.pos().y() = (int( (ph.pos().y()+ymax_)/tmp) + 1.0 )* tmp - ymax_+ delta;
+            dy = yCellSize_/ph.dir().y();
+            ph.pos().y() = (int( (ph.pos().y()+ymax_) * yCellSizeInv_) + 1.0 ) * yCellSize_ - ymax_+ delta;
         }
     } else if (ph.dir().y() < 0.0) {
-        dy = (( int( (ph.pos().y()+ymax_)/tmp ) )*tmp - ymax_ - ph.pos().y() )/ph.dir().y();
+        dy = (( int( (ph.pos().y()+ymax_) * yCellSizeInv_)) * yCellSize_ - ymax_ - ph.pos().y() )/ph.dir().y();
         if (dy < delta)
         {
-            dy =-tmp/ph.dir().y();
-            ph.pos().y() = ( int( (ph.pos().y()+xmax_)/tmp ) )* tmp - ymax_ - delta;
+            dy =-yCellSize_/ph.dir().y();
+            ph.pos().y() = (int( (ph.pos().y()+xmax_) * yCellSizeInv_))* yCellSize_ - ymax_ - delta;
         }
     }
 
-    tmp=2.0*zmax_/nz_;
     if(ph.dir().z() > 0.0)
     {
-        dz = (( int( (ph.pos().z()+zmax_)/tmp ) + 1.0 )* tmp - zmax_ - ph.pos().z() )/ph.dir().z();
+        dz = (( int( (ph.pos().z()+zmax_) * zCellSizeInv_) + 1.0) * zCellSize_ - zmax_ - ph.pos().z() )/ph.dir().z();
         if (dz < delta)
         {
-            dz = tmp/ph.dir().z();
-            ph.pos().z() = (int( (ph.pos().z()+zmax_)/tmp ) + 1.0 )* tmp - zmax_ + delta;
+            dz = zCellSize_/ph.dir().z();
+            ph.pos().z() = (int( (ph.pos().z()+zmax_) * zCellSizeInv_) + 1.0) * zCellSize_ - zmax_ + delta;
         }
     } else if (ph.dir().z() < 0.0) {
-        dz = (( int( (ph.pos().z()+zmax_)/tmp ))* tmp- zmax_ - ph.pos().z() )/ph.dir().z();
+        dz = (( int( (ph.pos().z()+zmax_) * zCellSizeInv_))* zCellSize_- zmax_ - ph.pos().z() )/ph.dir().z();
         if (dz < delta)
         {
-            dz =-tmp/ph.dir().z();
-            ph.pos().z() = ( int( (ph.pos().z()+zmax_)/tmp ) )* tmp - zmax_ - delta;
+            dz =-zCellSize_/ph.dir().z();
+            ph.pos().z() = (int( (ph.pos().z()+zmax_) * zCellSizeInv_))* zCellSize_ - zmax_ - delta;
         }
     }
 
@@ -152,9 +156,9 @@ double CartesianGrid::findOpticalDepth(Photon ph) const
     while (d < 0.999*smax)
     {
         double const dcell = cellDistance(ph, delta);
-        auto const x = uint32_t( (ph.pos().x()+xmax_)*nx_ / 2.0 / xmax_ );
-        auto const y = uint32_t( (ph.pos().y()+ymax_)*ny_ / 2.0 / ymax_ );
-        auto const z = uint32_t( (ph.pos().z()+zmax_)*nz_ / 2.0 / zmax_ );
+        auto const x = uint32_t( (ph.pos().x()+xmax_)*xCellSizeInv_);
+        auto const y = uint32_t( (ph.pos().y()+ymax_)*yCellSizeInv_);
+        auto const z = uint32_t( (ph.pos().z()+zmax_)*zCellSizeInv_);
 
         taurun += dcell * rhokappa_[ x+y*nx_+z*ny_*nx_ ];
         ph.Move(dcell, 0);
@@ -175,9 +179,9 @@ int CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold) con
     while (taurun < tau && d < (0.9999*smax))
     {
         double const dcell = cellDistance(ph, delta);
-        auto const x = uint32_t( (ph.pos().x()+xmax_)*nx_ / 2.0 / xmax_ );
-        auto const y = uint32_t( (ph.pos().y()+ymax_)*ny_ / 2.0 / ymax_ );
-        auto const z = uint32_t( (ph.pos().z()+zmax_)*nz_ / 2.0 / zmax_ );
+        auto const x = uint32_t((ph.pos().x()+xmax_)*xCellSizeInv_);
+        auto const y = uint32_t((ph.pos().y()+ymax_)*yCellSizeInv_);
+        auto const z = uint32_t((ph.pos().z()+zmax_)*zCellSizeInv_);
         double const taucell = dcell*rhokappa_[ x+y*nx_+z*ny_*nx_ ];
 
         if(taurun + taucell >= tau)

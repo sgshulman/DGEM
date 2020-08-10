@@ -30,6 +30,8 @@ class CartesianGrid : public IGrid
         uint32_t nx_, ny_, nz_;
         double *rhokappa_{ nullptr };
         double xmax_, ymax_, zmax_;
+        double const xCellSize_, yCellSize_, zCellSize_;
+        double const xCellSizeInv_, yCellSizeInv_, zCellSizeInv_;
         double minrho_;
         IMatterCPtr matter_;
 };
