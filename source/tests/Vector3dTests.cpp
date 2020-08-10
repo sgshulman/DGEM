@@ -93,4 +93,10 @@ TEST_CASE("Vector3d", "[vector3d]")
         REQUIRE(Approx(tripleProduct({0., 2., 0.}, {-1., 0., 0.}, {0., 0., 1.})) == 2.);
         REQUIRE(Approx(tripleProduct({1., 0., 0.}, {0., 1., 0.}, {0., 0., -1.})) == -1.);
     }
+
+    SECTION("Inverse")
+    {
+        REQUIRE(equal(Vector3d{1., 2., 0.1}.inverse(), Vector3d{1., 0.5, 10.}));
+        REQUIRE(equal(Vector3d{0., 1., 1.}.inverse(), Vector3d{std::numeric_limits<double>::infinity(), 1., 1.}));
+    }
 }

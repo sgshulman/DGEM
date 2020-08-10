@@ -31,6 +31,11 @@ class Vector3d
             return {x_/l, y_/l, z_/l};
         }
 
+        inline Vector3d inverse() const
+        {
+            return {1. / x_, 1. / y_, 1. / z_};
+        }
+
         inline double norm() const
         {
             return std::sqrt(x_*x_ + y_*y_ + z_*z_);

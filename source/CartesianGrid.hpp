@@ -2,6 +2,7 @@
 #define CARTESIAN_GRID_HPP_
 
 #include "IGrid.hpp"
+#include "Predefines.hpp"
 #include <cstdint>
 #include <memory>
 
@@ -25,7 +26,7 @@ class CartesianGrid : public IGrid
 
     private:
         double maxDistance(Photon const& ph) const;
-        double cellDistance(Photon& ph, double delta) const;
+        double cellDistance(Photon& ph, double delta, Vector3d const& phDirInv) const;
 
         uint32_t nx_, ny_, nz_;
         double *rhokappa_{ nullptr };

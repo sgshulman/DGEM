@@ -3,6 +3,8 @@
 
 #include <memory>
 
+class Vector3d;
+
 class Pictures ;
 class Observer;
 class Photon ;

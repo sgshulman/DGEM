@@ -79,65 +79,64 @@ double CartesianGrid::maxDistance(Photon const& ph) const
 // find distance to next x, y, and z cell walls.  
 // note that dx is not the x-distance, but the actual distance along 
 // the direction of travel to the next x-face, and likewise for dy and dz.
-double CartesianGrid::cellDistance(Photon& ph, double delta) const
+double CartesianGrid::cellDistance(Photon& ph, double delta, Vector3d const& phDirInv) const
 {
     double dx=200.0*xmax_, dy=200.0*ymax_, dz=200.0*zmax_, dcell=0.0;
-    if (delta < 0.0) delta=0.0001*(2.*xmax_/nx_);
 
     if(ph.dir().x() > 0.0)
     {
-        dx = ((int((ph.pos().x()+xmax_) * xCellSizeInv_) + 1.0) * xCellSize_ - xmax_ - ph.pos().x() )/ph.dir().x();
+        dx = ((int((ph.pos().x()+xmax_) * xCellSizeInv_) + 1.0) * xCellSize_ - xmax_ - ph.pos().x() ) * phDirInv.x();
         if (dx < delta)
         {
-            dx = xCellSize_/ph.dir().x();
+            dx = xCellSize_ * phDirInv.x();
             ph.pos().x() = (int((ph.pos().x()+xmax_) * xCellSizeInv_) + 1.0)*xCellSize_ - xmax_ + delta;
         }
     } else if (ph.dir().x() < 0.0) {
-        dx = (( int( (ph.pos().x()+xmax_) * xCellSizeInv_)) * xCellSize_ - xmax_ - ph.pos().x() )/ph.dir().x();
+        dx = (( int( (ph.pos().x()+xmax_) * xCellSizeInv_)) * xCellSize_ - xmax_ - ph.pos().x() ) * phDirInv.x();
         if (dx < delta)
         {
-            dx =-xCellSize_/ph.dir().x();
+            dx = -xCellSize_ * phDirInv.x();
             ph.pos().x() = ( int( (ph.pos().x()+xmax_) * xCellSizeInv_) ) * xCellSize_ - xmax_ - delta;
         }
     }
 
     if(ph.dir().y() > 0.0)
     {
-        dy = ((int( (ph.pos().y()+ymax_) * yCellSizeInv_) + 1.0) * yCellSize_ - ymax_ - ph.pos().y() )/ph.dir().y();
+        dy = ((int( (ph.pos().y()+ymax_) * yCellSizeInv_) + 1.0) * yCellSize_ - ymax_ - ph.pos().y() ) * phDirInv.y();
         if (dy < delta)
         {
-            dy = yCellSize_/ph.dir().y();
+            dy = yCellSize_ * phDirInv.y();
             ph.pos().y() = (int( (ph.pos().y()+ymax_) * yCellSizeInv_) + 1.0 ) * yCellSize_ - ymax_+ delta;
         }
     } else if (ph.dir().y() < 0.0) {
-        dy = (( int( (ph.pos().y()+ymax_) * yCellSizeInv_)) * yCellSize_ - ymax_ - ph.pos().y() )/ph.dir().y();
+        dy = (( int( (ph.pos().y()+ymax_) * yCellSizeInv_)) * yCellSize_ - ymax_ - ph.pos().y() ) * phDirInv.y();
         if (dy < delta)
         {
-            dy =-yCellSize_/ph.dir().y();
+            dy = -yCellSize_ * phDirInv.y();
             ph.pos().y() = (int( (ph.pos().y()+xmax_) * yCellSizeInv_))* yCellSize_ - ymax_ - delta;
         }
     }
 
     if(ph.dir().z() > 0.0)
     {
-        dz = (( int( (ph.pos().z()+zmax_) * zCellSizeInv_) + 1.0) * zCellSize_ - zmax_ - ph.pos().z() )/ph.dir().z();
+        dz = (( int( (ph.pos().z()+zmax_) * zCellSizeInv_) + 1.0) * zCellSize_ - zmax_ - ph.pos().z() ) * phDirInv.z();
         if (dz < delta)
         {
-            dz = zCellSize_/ph.dir().z();
+            dz = zCellSize_  * phDirInv.z();
             ph.pos().z() = (int( (ph.pos().z()+zmax_) * zCellSizeInv_) + 1.0) * zCellSize_ - zmax_ + delta;
         }
     } else if (ph.dir().z() < 0.0) {
-        dz = (( int( (ph.pos().z()+zmax_) * zCellSizeInv_))* zCellSize_- zmax_ - ph.pos().z() )/ph.dir().z();
+        dz = (( int( (ph.pos().z()+zmax_) * zCellSizeInv_))* zCellSize_- zmax_ - ph.pos().z() ) * phDirInv.z();
         if (dz < delta)
         {
-            dz =-zCellSize_/ph.dir().z();
+            dz = -zCellSize_ * phDirInv.z();
             ph.pos().z() = (int( (ph.pos().z()+zmax_) * zCellSizeInv_))* zCellSize_ - zmax_ - delta;
         }
     }
 
     dcell = ( dx   < dy ) ? dx    : dy;
     dcell = (dcell < dz ) ? dcell : dz;
-//	printf("d %g %g %g \n", dx, dy, dz);
+
     return dcell;
 }
 
@@ -145,7 +144,7 @@ double CartesianGrid::findOpticalDepth(Photon ph) const
 {
     double taurun=0.0, d=0.0;
 
-    double const delta=0.0001*(2.*xmax_/nx_);
+    double const delta=0.0001 * xCellSize_;
     double const smax = maxDistance(ph);
 
     if(smax < delta)
@@ -153,9 +152,11 @@ double CartesianGrid::findOpticalDepth(Photon ph) const
         return 0.0;
     }
 
+    Vector3d const phDirInv = ph.dir().vector().inverse();
+
     while (d < 0.999*smax)
     {
-        double const dcell = cellDistance(ph, delta);
+        double const dcell = cellDistance(ph, delta, phDirInv);
         auto const x = uint32_t( (ph.pos().x()+xmax_)*xCellSizeInv_);
         auto const y = uint32_t( (ph.pos().y()+ymax_)*yCellSizeInv_);
         auto const z = uint32_t( (ph.pos().z()+zmax_)*zCellSizeInv_);
@@ -172,13 +173,14 @@ int CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold) con
 {
     double taurun=tauold, d=0.0;
 
-    double const delta=0.0001*(2.*xmax_/nx_);
+    double const delta=0.0001 * xCellSize_;
     double const smax = maxDistance(ph);
+    Vector3d const phDirInv = ph.dir().vector().inverse();
 
     // integrate through grid
     while (taurun < tau && d < (0.9999*smax))
     {
-        double const dcell = cellDistance(ph, delta);
+        double const dcell = cellDistance(ph, delta, phDirInv);
         auto const x = uint32_t((ph.pos().x()+xmax_)*xCellSizeInv_);
         auto const y = uint32_t((ph.pos().y()+ymax_)*yCellSizeInv_);
         auto const z = uint32_t((ph.pos().z()+zmax_)*zCellSizeInv_);
