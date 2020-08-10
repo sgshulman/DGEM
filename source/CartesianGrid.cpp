@@ -79,63 +79,80 @@ double CartesianGrid::maxDistance(Photon const& ph) const
 // find distance to next x, y, and z cell walls.  
 // note that dx is not the x-distance, but the actual distance along 
 // the direction of travel to the next x-face, and likewise for dy and dz.
-double CartesianGrid::cellDistance(Photon& ph, double delta, Vector3d const& phDirInv) const
+std::pair<double, std::uint32_t> CartesianGrid::cellDistance(Photon& ph, double delta, Vector3d const& phDirInv) const
 {
-    double dx=200.0*xmax_, dy=200.0*ymax_, dz=200.0*zmax_, dcell=0.0;
+    double dx=200.0*xmax_, dy=200.0*ymax_, dz=200.0*zmax_;
+    std::uint32_t newCellX=0, newCellY=0, newCellZ=0;
+
+    std::uint32_t x = ph.cellId() & 0x0000FFu;
+    std::uint32_t y = (ph.cellId() & 0x00FF00u) >> 8u;
+    std::uint32_t z = (ph.cellId() & 0xFF0000u) >> 16u;
 
     if(ph.dir().x() > 0.0)
     {
-        dx = ((int((ph.pos().x()+xmax_) * xCellSizeInv_) + 1.0) * xCellSize_ - xmax_ - ph.pos().x() ) * phDirInv.x();
+        dx = ((x + 1.0) * xCellSize_ - xmax_ - ph.pos().x()) * phDirInv.x();
         if (dx < delta)
         {
             dx = xCellSize_ * phDirInv.x();
-            ph.pos().x() = (int((ph.pos().x()+xmax_) * xCellSizeInv_) + 1.0)*xCellSize_ - xmax_ + delta;
+            ph.pos().x() = (x + 1.0) * xCellSize_ - xmax_ + delta;
+            ph.cellId() += 1u;
         }
+        newCellX = ph.cellId() + 1u;
     } else if (ph.dir().x() < 0.0) {
-        dx = (( int( (ph.pos().x()+xmax_) * xCellSizeInv_)) * xCellSize_ - xmax_ - ph.pos().x() ) * phDirInv.x();
+        dx = (x * xCellSize_ - xmax_ - ph.pos().x()) * phDirInv.x();
         if (dx < delta)
         {
             dx = -xCellSize_ * phDirInv.x();
-            ph.pos().x() = ( int( (ph.pos().x()+xmax_) * xCellSizeInv_) ) * xCellSize_ - xmax_ - delta;
+            ph.pos().x() = x * xCellSize_ - xmax_ - delta;
+            ph.cellId() -= 1u;
         }
+        newCellX = ph.cellId() -1u;
     }
 
     if(ph.dir().y() > 0.0)
     {
-        dy = ((int( (ph.pos().y()+ymax_) * yCellSizeInv_) + 1.0) * yCellSize_ - ymax_ - ph.pos().y() ) * phDirInv.y();
+        dy = ((y + 1.0) * yCellSize_ - ymax_ - ph.pos().y()) * phDirInv.y();
         if (dy < delta)
         {
             dy = yCellSize_ * phDirInv.y();
-            ph.pos().y() = (int( (ph.pos().y()+ymax_) * yCellSizeInv_) + 1.0 ) * yCellSize_ - ymax_+ delta;
+            ph.pos().y() = (y + 1.0 ) * yCellSize_ - ymax_+ delta;
+            ph.cellId() += 256u;
         }
+        newCellY = ph.cellId() + 256u;
     } else if (ph.dir().y() < 0.0) {
-        dy = (( int( (ph.pos().y()+ymax_) * yCellSizeInv_)) * yCellSize_ - ymax_ - ph.pos().y() ) * phDirInv.y();
+        dy = (y * yCellSize_ - ymax_ - ph.pos().y()) * phDirInv.y();
         if (dy < delta)
         {
             dy = -yCellSize_ * phDirInv.y();
-            ph.pos().y() = (int( (ph.pos().y()+xmax_) * yCellSizeInv_))* yCellSize_ - ymax_ - delta;
+            ph.pos().y() = y * yCellSize_ - ymax_ - delta;
+            ph.cellId() -= 256u;
         }
+        newCellY = ph.cellId() - 256u;
     }
 
     if(ph.dir().z() > 0.0)
     {
-        dz = (( int( (ph.pos().z()+zmax_) * zCellSizeInv_) + 1.0) * zCellSize_ - zmax_ - ph.pos().z() ) * phDirInv.z();
+        dz = ((z + 1.0) * zCellSize_ - zmax_ - ph.pos().z()) * phDirInv.z();
         if (dz < delta)
         {
             dz = zCellSize_  * phDirInv.z();
-            ph.pos().z() = (int( (ph.pos().z()+zmax_) * zCellSizeInv_) + 1.0) * zCellSize_ - zmax_ + delta;
+            ph.pos().z() = (z + 1.0) * zCellSize_ - zmax_ + delta;
+            ph.cellId() += 256u * 256u;
         }
+        newCellZ = ph.cellId() + 256u * 256u;
     } else if (ph.dir().z() < 0.0) {
-        dz = (( int( (ph.pos().z()+zmax_) * zCellSizeInv_))* zCellSize_- zmax_ - ph.pos().z() ) * phDirInv.z();
+        dz = (z * zCellSize_- zmax_ - ph.pos().z()) * phDirInv.z();
         if (dz < delta)
         {
             dz = -zCellSize_ * phDirInv.z();
-            ph.pos().z() = (int( (ph.pos().z()+zmax_) * zCellSizeInv_))* zCellSize_ - zmax_ - delta;
+            ph.pos().z() = z * zCellSize_ - zmax_ - delta;
+            ph.cellId() -= 256u * 256u;
         }
+        newCellZ = ph.cellId() - 256u * 256u;
     }
 
-    dcell = ( dx   < dy ) ? dx    : dy;
-    dcell = (dcell < dz ) ? dcell : dz;
+    std::pair<double, std::uint32_t> dcell = (dx < dy) ? std::make_pair(dx, newCellX) : std::make_pair(dy, newCellY);
+    dcell = (dcell.first < dz ) ? dcell : std::make_pair(dz, newCellZ);
 
     return dcell;
 }
@@ -156,14 +173,15 @@ double CartesianGrid::findOpticalDepth(Photon ph) const
 
     while (d < 0.999*smax)
     {
-        double const dcell = cellDistance(ph, delta, phDirInv);
-        auto const x = uint32_t( (ph.pos().x()+xmax_)*xCellSizeInv_);
-        auto const y = uint32_t( (ph.pos().y()+ymax_)*yCellSizeInv_);
-        auto const z = uint32_t( (ph.pos().z()+zmax_)*zCellSizeInv_);
+        std::pair<double, std::uint32_t> const dcell = cellDistance(ph, delta, phDirInv);
 
-        taurun += dcell * rhokappa_[ x+y*nx_+z*ny_*nx_ ];
-        ph.Move(dcell, 0);
-        d += dcell;
+        std::uint32_t const x = ph.cellId() & 0x0000FFu;
+        std::uint32_t const y = (ph.cellId() & 0x00FF00u) >> 8u;
+        std::uint32_t const z = (ph.cellId() & 0xFF0000u) >> 16u;
+
+        taurun += dcell.first * rhokappa_[ x+y*nx_+z*ny_*nx_ ];
+        ph.Move(dcell.first, dcell.second);
+        d += dcell.first;
     }
 
     return taurun;
@@ -180,20 +198,22 @@ int CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold) con
     // integrate through grid
     while (taurun < tau && d < (0.9999*smax))
     {
-        double const dcell = cellDistance(ph, delta, phDirInv);
-        auto const x = uint32_t((ph.pos().x()+xmax_)*xCellSizeInv_);
-        auto const y = uint32_t((ph.pos().y()+ymax_)*yCellSizeInv_);
-        auto const z = uint32_t((ph.pos().z()+zmax_)*zCellSizeInv_);
-        double const taucell = dcell*rhokappa_[ x+y*nx_+z*ny_*nx_ ];
+        std::pair<double, std::uint32_t> const dcell = cellDistance(ph, delta, phDirInv);
+
+        std::uint32_t x = ph.cellId() & 0x0000FFu;
+        std::uint32_t y = (ph.cellId() & 0x00FF00u) >> 8u;
+        std::uint32_t z = (ph.cellId() & 0xFF0000u) >> 16u;
+
+        double const taucell = dcell.first * rhokappa_[ x+y*nx_+z*ny_*nx_ ];
 
         if(taurun + taucell >= tau)
         {
             double const d1 = (tau-taurun) / rhokappa_[ x+y*nx_+z*ny_*nx_ ];
             d += d1;
-            ph.Move(d1, 0);
+            ph.Move(d1, ph.cellId());
         } else {
-            d += dcell;
-            ph.Move(dcell, 0);
+            d += dcell.first;
+            ph.Move(dcell.first, dcell.second);
         }
 
         taurun += taucell;
@@ -256,5 +276,5 @@ std::uint32_t CartesianGrid::cellId(const Vector3d& position) const
     auto const x = uint32_t((position.x()+xmax_)*xCellSizeInv_);
     auto const y = uint32_t((position.y()+ymax_)*yCellSizeInv_);
     auto const z = uint32_t((position.z()+zmax_)*zCellSizeInv_);
-    return x + y*nx_ + z*ny_ * nx_;
+    return x + y*256 + z*256*256;
 }
