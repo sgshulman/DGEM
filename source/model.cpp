@@ -14,6 +14,7 @@
 #include "SafierWind.hpp"
 #include "Sources.hpp"
 #include "SphereEnvelope.hpp"
+#include "TetrahedralGrid.hpp"
 #include "observers.hpp"
 #include "third-party/nlohmann/json.hpp"
 
@@ -215,6 +216,17 @@ namespace
     }
 
 
+    IGridCPtr parseTetrahedralGrid(const nlohmann::json& json, double const kappa, IMatterCPtr matter)
+    {
+        return std::make_shared<TetrahedralGrid const>(
+            json.at("nodesFile").get<std::string>(),
+            json.at("elementsFile").get<std::string>(),
+            json.at("max").get<double>(),
+            kappa,
+            std::move(matter));
+    }
+
+
     IGridCPtr parseGrid(const nlohmann::json& json, double const kappa, IMatterCPtr matter)
     {
         DATA_ASSERT(
@@ -224,6 +236,8 @@ namespace
         if (json.contains("cartesian"))
         {
             return parseCartesianGrid(json.at("cartesian"), kappa, std::move(matter));
+        } else if (json.contains("tetrahedral")) {
+            return parseTetrahedralGrid(json.at("tetrahedral"), kappa, std::move(matter));
         }
 
         return nullptr;

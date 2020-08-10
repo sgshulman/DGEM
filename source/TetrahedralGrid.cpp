@@ -298,6 +298,9 @@ TetrahedralGrid::TetrahedralGrid(
 }
 
 
+TetrahedralGrid::~TetrahedralGrid() = default;
+
+
 // calculate smax -- maximum distance photon can travel *******
 double TetrahedralGrid::maxDistance(Photon const &ph) const
 {
@@ -553,4 +556,3 @@ void TetrahedralGrid::peeloff(Photon ph, Observer &observer, const DustCPtr &dus
     // Bin the photon into the image according to its position and direction of travel.
     observer.bin(ph);
 }
-

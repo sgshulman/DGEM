@@ -17,6 +17,8 @@ public:
         double kappa,
         IMatterCPtr matter);
 
+    ~TetrahedralGrid() override;
+
     double calculateRealTau(const Vector3d& v, double kappa) const;
 
     double findOpticalDepth(Photon ph) const override;
