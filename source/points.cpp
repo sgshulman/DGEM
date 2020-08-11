@@ -93,7 +93,7 @@ int main()
             double const w = (1.0-exp(-tau1)) / model.NumOfPrimaryScatterings() ;
             double tauold = 0.0, tau = 0.0;
             Vector3d spos = ph0.pos();
-            std::uint32_t sCellId = ph0.cellId();
+            std::uint64_t sCellId = ph0.cellId();
 
             // Loop over scattering dots
             for (std::uint64_t s=0; s!=model.NumOfPrimaryScatterings(); ++s)

@@ -26,7 +26,7 @@ public:
     int movePhotonAtRandomDepth(Photon& ph, Random *ran) const override;
     void peeloff(Photon ph, Observer& observer, DustCRef dust) const override;
     double computeMatterMass() const override;
-    std::uint32_t cellId(const Vector3d& position) const override;
+    std::uint64_t cellId(const Vector3d& position) const override;
 
 private:
     class Node;
@@ -38,7 +38,7 @@ private:
     IMatterCPtr matter_;
 
     double maxDistance(Photon const &ph) const;
-    std::pair<double, std::uint32_t> cellDistance(Photon &ph) const;
+    std::pair<double, std::uint64_t> cellDistance(Photon &ph) const;
     double timeToPlane(Vector3d const &dot1, Vector3d const &dot2, Vector3d const &dot3, Photon const &ph) const;
     double distanceToPlane(Vector3d const &dot, Vector3d const &dot1, Vector3d const &dot2, Vector3d const &dot3) const;
     void readNodes(std::string const & file);

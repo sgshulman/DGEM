@@ -6,7 +6,7 @@
 #include "Directions.hpp"
 #include "Dust.hpp"
 
-Photon::Photon( Vector3d const& pos, std::uint32_t cellId, Direction3d const& dir, double weight, std::uint32_t nscat, double fi, double fq, double fu, double fv )
+Photon::Photon( Vector3d const& pos, std::uint64_t cellId, Direction3d const& dir, double weight, std::uint32_t nscat, double fi, double fq, double fu, double fv )
     : pos_{ pos }
     , dir_{ dir }
     , nscat_{ nscat }
@@ -77,7 +77,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std:
 
             double w = 1.0 / m.NumOfSecondaryScatterings() ;
             Vector3d spos = pos_;
-            std::uint32_t sCellId = cellId_;
+            std::uint64_t sCellId = cellId_;
 
             double tauold = 0.0, tau = 0.0;
 

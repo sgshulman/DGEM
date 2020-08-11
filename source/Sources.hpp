@@ -16,7 +16,7 @@ public:
         , lum_{}
     {}
 
-    PointSource(Vector3d const& pos, std::uint32_t cellId, double lum)
+    PointSource(Vector3d const& pos, std::uint64_t cellId, double lum)
         : pos_(pos)
         , cellId_{ cellId }
         , lum_(lum)
@@ -34,13 +34,13 @@ public:
     double luminosity() const
     {	return lum_; }
 
-    std::uint32_t cellId() const
+    std::uint64_t cellId() const
     {   return cellId_; }
 
 private:
-    Vector3d	pos_;
-    std::uint32_t    cellId_;
-    double		lum_;
+    Vector3d	   pos_;
+    std::uint64_t  cellId_;
+    double		   lum_;
 };
 
 struct SourceParameters

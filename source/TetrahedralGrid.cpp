@@ -363,7 +363,7 @@ double TetrahedralGrid::rhoInDot(const Vector3d& dot, const Tetrahedron& el) con
 }
 
 
-std::pair<double, std::uint32_t> TetrahedralGrid::cellDistance(Photon& ph) const
+std::pair<double, std::uint64_t> TetrahedralGrid::cellDistance(Photon& ph) const
 {
     double const delta=0.001*(elements_[ph.cellId()].size());
     Vector3d const dot1 = dots_[elements_[ph.cellId()].dot1];
@@ -405,7 +405,7 @@ double TetrahedralGrid::findOpticalDepth(Photon ph) const
            && -max_ < ph.pos().x() && -max_ < ph.pos().y() && -max_ < ph.pos().z()
            && ph.cellId() < elements_.size())
     {
-        std::pair<double, std::uint32_t> dcell = cellDistance(ph);
+        std::pair<double, std::uint64_t> dcell = cellDistance(ph);
         double rho1=0.0, rho2=0.0;
         if (!elements_[ph.cellId()].fEmpty)
         {
@@ -433,7 +433,7 @@ int TetrahedralGrid::movePhotonAtDepth(Photon& ph, double tau, double tauold) co
             && (-max_ < ph.pos().x() && -max_ < ph.pos().y() && -max_ < ph.pos().z())
             && ph.cellId() < elements_.size())
     {
-        std::pair<double, std::uint32_t> dcell = cellDistance(ph);
+        std::pair<double, std::uint64_t> dcell = cellDistance(ph);
 
         double rho1=0.0, rho2=0.0;
         if (!elements_[ph.cellId()].fEmpty)
@@ -510,9 +510,9 @@ double TetrahedralGrid::computeMatterMass() const
 }
 
 
-std::uint32_t TetrahedralGrid::cellId(const Vector3d &position) const
+std::uint64_t TetrahedralGrid::cellId(const Vector3d &position) const
 {
-    for (std::uint32_t i = 0; i != elements_.size(); ++i)
+    for (std::uint64_t i = 0; i != elements_.size(); ++i)
     {
         Vector3d const d1 = dots_[elements_[i].dot1];
         Vector3d const d2 = dots_[elements_[i].dot2];
@@ -539,7 +539,7 @@ std::uint32_t TetrahedralGrid::cellId(const Vector3d &position) const
         }
     }
 
-    return static_cast<std::uint32_t>(elements_.size());
+    return static_cast<std::uint64_t>(elements_.size());
 }
 
 void TetrahedralGrid::peeloff(Photon ph, Observer &observer, const DustCPtr &dust) const
