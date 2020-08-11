@@ -11,6 +11,7 @@ The method was described in [Shulman (2018)](#shulman2018).
   - [Method Parameters](#method-parameters)
   - [Dust](#dust)
   - [Geometry](#geometry)
+  - [Grid](#grid)
   - [Stars](#stars)
   - [Observers](#observers)
 - [Used third-party libraries](#used-third-party-libraries)
@@ -194,6 +195,27 @@ All transformations are applied in the global coordinate system, thus the order 
 
 Every value may be omitted (it will be treated as zero).
 
+### Grid
+
+Two types of grids are supported: a regular cartesian grid and an unstructured tetrahedral grid.
+
+#### Cartesian grid
+
+The cartesian grid has following parameters __xmax__, __ymax__, __zmax__, __nx__, __ny__, and __nz__.
+The studied area is [__-xmax__ : __xmax__] x  [__-ymax__ : __ymax__] x [__-zmax__ : __zmax__] and consists of __nx * ny * nz__ cells.
+__nx__, __ny__, and __nz__ are the numbers of cells along each axis.
+
+#### Tetrahedral grid
+
+The tetrahedral grid is based on the Delaunay triangulation.
+The area is from __-max__ to __max__ along all axes.
+The nodes of the grid are described in the __nodesFile__ and elements are listed in __elementsFile__.
+The grid may be constructed in a separate programs, e.g. [_gmsh_](https://gmsh.info/) ([Geuzaine and  Remacle, 2009](#geuzaine2009))
+
+The first line of the __nodesFile__ is the number of nodes. All other lines contain four values: node number and _x_, _y_, _z_ coordinates.
+
+The first line of the __elementsFile__ is the number of nodes. All other lines contain five unused values and four node numbers of the tetrahedral vertices.
+
 ### Stars
 Is a list of sources with 4 parameters:
 - x, y, z &mdash; source coordinates
@@ -278,6 +300,8 @@ The JSON configuration may be specified in the following way:
 ## References
 
 1. <a name="elmegreen1997"></a>Elmegreen, B.G., 1997. Intercloud structure in a turbulent fractal interstellar medium. Astrophys. J. **477**, 196–203.
-2. <a name="safier1993a"></a>Safier, P. N., 1993a. Centrifugally Driven Winds from Protostellar Disks. I. Wind Model and Thermal Structure. Astrophys. J. **408**, 115.
-3. <a name="safier1993b"></a>Safier, P. N., 1993b. Centrifugally Driven Winds from Protostellar Disks. II. Forbidden-Line Emission in T Tauri Stars. Astrophys. J. **408**, 148.
-4. <a name="shulman2018"></a>Shulman, S.G., 2018. Three-dimensional heuristic radiation transfer method based on enumeration using the directions grid. Astronomy and Computing **24** 104–116.
+2. <a name="geuzaine2009"></a>Geuzaine, C. and  Remacle, J.-F., 2009. Gmsh: a three-dimensional finite element mesh generator with built-in pre- and post-processing facilities. International Journal for Numerical Methods in Engineering, **79**(11), 1309-1331.
+3. <a name="safier1993a"></a>Safier, P. N., 1993a. Centrifugally Driven Winds from Protostellar Disks. I. Wind Model and Thermal Structure. Astrophys. J. **408**, 115.
+4. <a name="safier1993b"></a>Safier, P. N., 1993b. Centrifugally Driven Winds from Protostellar Disks. II. Forbidden-Line Emission in T Tauri Stars. Astrophys. J. **408**, 148.
+5. <a name="shulman2018"></a>Shulman, S.G., 2018. Three-dimensional heuristic radiation transfer method based on enumeration using the directions grid. Astronomy and Computing **24** 104–116.
+ 
