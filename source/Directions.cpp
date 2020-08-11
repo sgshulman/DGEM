@@ -31,13 +31,13 @@ namespace
                 midpointsNumber_ = 0;
             }
 
-            inline uint32_t midpointsNumber() const
+            inline std::uint32_t midpointsNumber() const
             { return midpointsNumber_; }
 
-            inline PointWithNeighbors const *neighbor(uint32_t const i) const
+            inline PointWithNeighbors const *neighbor(std::uint32_t const i) const
             { return neighbors_[i]; }
 
-            inline PointWithNeighbors *midpoint(uint32_t const i)
+            inline PointWithNeighbors *midpoint(std::uint32_t const i)
             { return midpoints_[i]; }
 
             void addMidpoint(PointWithNeighbors const *neighbor, PointWithNeighbors *midpoint)
@@ -52,7 +52,7 @@ namespace
 
         private:
             Vector3d pos_;
-            uint32_t midpointsNumber_{ 0 };
+            std::uint32_t midpointsNumber_{ 0 };
             PointWithNeighbors const *neighbors_[6]{};
             PointWithNeighbors *midpoints_[6]{};
     };
@@ -94,7 +94,7 @@ namespace
             {
                 assert(0 <= i && i <= 2 && 0 <= j && j <= 2);
 
-                for(uint32_t cnt=0; cnt!=dots_[i]->midpointsNumber(); ++cnt )
+                for(std::uint32_t cnt=0; cnt!=dots_[i]->midpointsNumber(); ++cnt )
                 {
                     if (dots_[i]->neighbor(cnt) == dots_[j])
                     {
@@ -116,7 +116,7 @@ namespace
     class IcosahedronMesh
     {
         public:
-            explicit IcosahedronMesh(uint32_t directionsLevels)
+            explicit IcosahedronMesh(std::uint32_t directionsLevels)
                 : directionsNumber_{ 0 }
                 , readyPoints_{ 0 }
                 , nodes_{ new PointWithNeighbors[nodesNumber(directionsLevels)]{} }
@@ -124,7 +124,7 @@ namespace
             {
                 buildInitialMesh();
 
-                for(uint32_t cnt=1; cnt<directionsLevels; ++cnt)
+                for(std::uint32_t cnt=1; cnt<directionsLevels; ++cnt)
                 {
                     splitMesh();
                 }
@@ -140,7 +140,7 @@ namespace
             {
                 auto points = new Vector3d[ directionsNumber_ ];
 
-                for (uint64_t cnt=0; cnt<directionsNumber_; ++cnt)
+                for (std::uint64_t cnt=0; cnt<directionsNumber_; ++cnt)
                 {
                     points[cnt] = triangles_[cnt].median();
                 }
@@ -152,7 +152,7 @@ namespace
             {
                 auto weights = new double[ directionsNumber_ ];
 
-                for (uint64_t cnt=0; cnt<directionsNumber_; ++cnt)
+                for (std::uint64_t cnt=0; cnt<directionsNumber_; ++cnt)
                 {
                     weights[cnt] = triangles_[cnt].square() * directionsNumber_ / 4. / PI;
                 }
@@ -160,21 +160,21 @@ namespace
                 return weights;
             }
 
-            uint64_t directionsNumber() const
+            std::uint64_t directionsNumber() const
             {
                 return directionsNumber_;
             }
 
         private:
-            static uint32_t const ICOSAHEDRON_FACES{ 20 };
-            static uint32_t const ICOSAHEDRON_VERTICES{ 12 };
+            static std::uint32_t const ICOSAHEDRON_FACES{ 20 };
+            static std::uint32_t const ICOSAHEDRON_VERTICES{ 12 };
 
-            static uint64_t nodesNumber(uint32_t const directionsLevels)
+            static std::uint64_t nodesNumber(std::uint32_t const directionsLevels)
             {
-                uint64_t directionPointsNumber = ICOSAHEDRON_VERTICES;
-                uint64_t directionsNumber = ICOSAHEDRON_FACES;
+                std::uint64_t directionPointsNumber = ICOSAHEDRON_VERTICES;
+                std::uint64_t directionsNumber = ICOSAHEDRON_FACES;
 
-                for (size_t cnt=1; cnt<directionsLevels; ++cnt)
+                for (std::uint64_t cnt=1; cnt<directionsLevels; ++cnt)
                 {
                     directionPointsNumber = directionPointsNumber + (directionsNumber * 3) / 2;
                     directionsNumber *= 4;
@@ -222,7 +222,7 @@ namespace
                 triangles_[19].set(&nodes_[10], &nodes_[1], &nodes_[5]);
             }
 
-            PointWithNeighbors *getMidpoint(uint64_t const triangleId, int const i, int const j)
+            PointWithNeighbors *getMidpoint(std::uint64_t const triangleId, int const i, int const j)
             {
                 assert(0 <= i && i <= 2 && 0 <= j && j <= 2);
 
@@ -245,7 +245,7 @@ namespace
             {
                 auto newTriangles = new SphericalTriangle[directionsNumber_ * 4]{};
 
-                for(size_t cnt = 0; cnt < directionsNumber_; ++cnt)
+                for(std::uint64_t cnt = 0; cnt < directionsNumber_; ++cnt)
                 {
                     PointWithNeighbors *d_rib01 = getMidpoint(cnt, 0, 1);
                     PointWithNeighbors *d_rib02 = getMidpoint(cnt, 0, 2);
@@ -260,7 +260,7 @@ namespace
                 delete[] triangles_;
                 triangles_ = newTriangles;
 
-                for (uint64_t cnt=0; cnt!=readyPoints_; ++cnt)
+                for (std::uint64_t cnt=0; cnt!=readyPoints_; ++cnt)
                 {
                     nodes_[cnt].removeMidpoints();
                 }
@@ -268,8 +268,8 @@ namespace
                 directionsNumber_ *= 4;
             }
 
-            uint64_t directionsNumber_;
-            uint64_t readyPoints_;
+            std::uint64_t directionsNumber_;
+            std::uint64_t readyPoints_;
             PointWithNeighbors *nodes_;
             SphericalTriangle *triangles_;
     };
@@ -277,7 +277,7 @@ namespace
 
 
 // directions
-Directions::Directions(uint32_t NumOfDirectionsLevels)
+Directions::Directions(std::uint32_t NumOfDirectionsLevels)
 {
     IcosahedronMesh mesh(NumOfDirectionsLevels);
     points_ = mesh.points();

@@ -127,11 +127,11 @@ namespace
     IMatterCPtr parseFractalCloud(const nlohmann::json& json)
     {
         return std::make_shared<FractalCloud const>(
-            json.at("n").get<uint32_t>(),
+            json.at("n").get<std::uint32_t>(),
             json.at("max").get<double>(),
             json.at("dCube").get<double>(),
             json.at("rho0").get<double>(),
-            json.at("dotsN").get<uint32_t>(),
+            json.at("dotsN").get<std::uint32_t>(),
             json.at("seed").get<int32_t>());
     }
 
@@ -209,9 +209,9 @@ namespace
             json.at("ymax").get<double>(),
             json.at("zmax").get<double>(),
             kappa,
-            json.at("nx").get<uint32_t>(),
-            json.at("ny").get<uint32_t>(),
-            json.at("nz").get<uint32_t>(),
+            json.at("nx").get<std::uint32_t>(),
+            json.at("ny").get<std::uint32_t>(),
+            json.at("nz").get<std::uint32_t>(),
             std::move(matter));
     }
 
@@ -327,17 +327,17 @@ Model::Model(std::vector<Observer>* observers)
     SourceParameters sourceParameters{};
     nlohmann::json const& methodJson = j.at("method parameters");
     sourceParameters.useMonteCarlo_ = methodJson.at("fMonteCarlo").get<bool>();
-    sourceParameters.num_photons_ = methodJson.at("nphotons").get<uint64_t>();
-    sourceParameters.PrimaryDirectionsLevel_ = methodJson.at("PrimaryDirectionsLevel").get<uint32_t>();
+    sourceParameters.num_photons_ = methodJson.at("nphotons").get<std::uint64_t>();
+    sourceParameters.PrimaryDirectionsLevel_ = methodJson.at("PrimaryDirectionsLevel").get<std::uint32_t>();
     iseed_ = methodJson.at("iseed").get<int32_t>();
 
     fMonteCarlo_ = sourceParameters.useMonteCarlo_;
     taumin_ = methodJson.at("taumin").get<double>();
-    nscat_ = methodJson.at("nscat").get<uint32_t>();
-    SecondaryDirectionsLevel_ = methodJson.at("SecondaryDirectionsLevel").get<uint32_t>();
-    NumOfPrimaryScatterings_ = methodJson.at("NumOfPrimaryScatterings").get<uint32_t>();
-    NumOfSecondaryScatterings_ = methodJson.at("NumOfSecondaryScatterings").get<uint32_t>();
-    MonteCarloStart_ = methodJson.at("MonteCarloStart").get<uint32_t>();
+    nscat_ = methodJson.at("nscat").get<std::uint32_t>();
+    SecondaryDirectionsLevel_ = methodJson.at("SecondaryDirectionsLevel").get<std::uint32_t>();
+    NumOfPrimaryScatterings_ = methodJson.at("NumOfPrimaryScatterings").get<std::uint32_t>();
+    NumOfSecondaryScatterings_ = methodJson.at("NumOfSecondaryScatterings").get<std::uint32_t>();
+    MonteCarloStart_ = methodJson.at("MonteCarloStart").get<std::uint32_t>();
 
     nlohmann::json const& dustJson = j.at("dust");
     dust_ = parseDust(dustJson);

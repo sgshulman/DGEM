@@ -27,9 +27,9 @@ CartesianGrid::CartesianGrid(
         double const ymax,
         double const zmax,
         double const kappa,
-        uint32_t const nx,
-        uint32_t const ny,
-        uint32_t const nz,
+        std::uint32_t const nx,
+        std::uint32_t const ny,
+        std::uint32_t const nz,
         IMatterCPtr matter)
     : nx_{ nx }
     , ny_{ ny }
@@ -48,16 +48,16 @@ CartesianGrid::CartesianGrid(
     rhokappa_ = new double[nx_ * ny_ * nz_];
     minrho_ = 1e+38;
 
-    for (size_t cntx=0; cntx!=nx_; ++cntx)
+    for (std::uint64_t cntx=0; cntx!=nx_; ++cntx)
     {
         double const x = (cntx*2.0+1) * xmax_/nx_ - xmax_;
-        for (size_t cnty=0; cnty!=ny_; ++cnty)
+        for (std::uint64_t cnty=0; cnty!=ny_; ++cnty)
         {
             double const y=(cnty*2.0+1) * ymax_/ny_ - ymax_;
-            for (size_t cntz=0; cntz!=nz_; ++cntz)
+            for (std::uint64_t cntz=0; cntz!=nz_; ++cntz)
             {
                 double const z=(cntz*2.0+1) * zmax_/nz_ - zmax_;
-                size_t const idx = cntx+cnty*nx+cntz*ny*nx;
+                std::uint64_t const idx = cntx+cnty*nx+cntz*ny*nx;
                 rhokappa_[idx] = matter_->density({x, y, z}) * kappa * 1.5e13; // rho*kappa*R,
                 if (minrho_ > rhokappa_[idx] && rhokappa_[idx] > 0)
                     minrho_ = rhokappa_[idx];
@@ -253,13 +253,13 @@ double CartesianGrid::computeMatterMass() const
 {
     double density = 0.0;
 
-    for (size_t cntx=0; cntx!=nx_; ++cntx)
+    for (std::uint64_t cntx=0; cntx!=nx_; ++cntx)
     {
         double const x = (cntx*2.0+1) * xmax_/nx_ - xmax_;
-        for (size_t cnty=0; cnty!=ny_; ++cnty)
+        for (std::uint64_t cnty=0; cnty!=ny_; ++cnty)
         {
             double const y=(cnty*2.0+1) * ymax_/ny_ - ymax_;
-            for (size_t cntz=0; cntz!=nz_; ++cntz)
+            for (std::uint64_t cntz=0; cntz!=nz_; ++cntz)
             {
                 double const z=(cntz*2.0+1) * zmax_/nz_ - zmax_;
                 density += matter_->density({x, y, z});
@@ -273,8 +273,8 @@ double CartesianGrid::computeMatterMass() const
 
 std::uint32_t CartesianGrid::cellId(const Vector3d& position) const
 {
-    auto const x = uint32_t((position.x()+xmax_)*xCellSizeInv_);
-    auto const y = uint32_t((position.y()+ymax_)*yCellSizeInv_);
-    auto const z = uint32_t((position.z()+zmax_)*zCellSizeInv_);
+    auto const x = std::uint32_t((position.x()+xmax_)*xCellSizeInv_);
+    auto const y = std::uint32_t((position.y()+ymax_)*yCellSizeInv_);
+    auto const z = std::uint32_t((position.z()+zmax_)*zCellSizeInv_);
     return x + y*256 + z*256*256;
 }

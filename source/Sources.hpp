@@ -34,7 +34,7 @@ public:
     double luminosity() const
     {	return lum_; }
 
-    uint32_t cellId() const
+    std::uint32_t cellId() const
     {   return cellId_; }
 
 private:
@@ -46,8 +46,8 @@ private:
 struct SourceParameters
 {
     bool useMonteCarlo_;
-    uint64_t num_photons_;
-    uint32_t PrimaryDirectionsLevel_;
+    std::uint64_t num_photons_;
+    std::uint32_t PrimaryDirectionsLevel_;
 };
 
 // all sources of photons
@@ -73,7 +73,7 @@ public:
         }
 
         photonsNumber_ = parameters_.useMonteCarlo_
-                         ? (uint64_t) (parameters_.num_photons_ * pointSources_.at(0).luminosity() / totlum_)
+                         ? (std::uint64_t) (parameters_.num_photons_ * pointSources_.at(0).luminosity() / totlum_)
                          : primaryDir_.number();
     }
 
@@ -85,7 +85,7 @@ public:
     Photon emitPhoton(Random* ran);
     void directPhotons(IGridCRef grid, std::vector<Observer>* observers);
 
-    size_t num_photons() const
+    std::uint64_t num_photons() const
     {   return parameters_.num_photons_; }
 
 private:
@@ -94,9 +94,9 @@ private:
     double	 totlum_;
 
     Directions primaryDir_;
-    uint32_t currentSource_;
-    uint64_t photonId_;
-    uint64_t photonsNumber_;
+    std::uint32_t currentSource_;
+    std::uint64_t photonId_;
+    std::uint64_t photonsNumber_;
 };
 
 #endif

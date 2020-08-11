@@ -20,17 +20,17 @@ class Model
 
 		double taumin() const
 		{	return taumin_;	}
-		uint32_t nscat() const
+		std::uint32_t nscat() const
 		{	return nscat_;	}
 		int32_t iseed() const
 		{	return iseed_;	}
-		uint32_t SecondaryDirectionsLevel() const
+		std::uint32_t SecondaryDirectionsLevel() const
 		{	return SecondaryDirectionsLevel_;	}
-		uint32_t MonteCarloStart() const
+		std::uint32_t MonteCarloStart() const
 		{	return MonteCarloStart_;	}
-		uint32_t NumOfPrimaryScatterings() const
+		std::uint32_t NumOfPrimaryScatterings() const
 		{	return NumOfPrimaryScatterings_;	}
-		uint32_t NumOfSecondaryScatterings() const
+		std::uint32_t NumOfSecondaryScatterings() const
 		{	return NumOfSecondaryScatterings_;	}
         IGridCPtr grid() const
         {   return grid_; }
@@ -43,11 +43,11 @@ class Model
 		double taumin_;
 		int32_t iseed_;
 
-        uint32_t nscat_;
-		uint32_t MonteCarloStart_;
-		uint32_t SecondaryDirectionsLevel_;
-        uint32_t NumOfPrimaryScatterings_;
-		uint32_t NumOfSecondaryScatterings_;
+        std::uint32_t nscat_;
+		std::uint32_t MonteCarloStart_;
+		std::uint32_t SecondaryDirectionsLevel_;
+        std::uint32_t NumOfPrimaryScatterings_;
+		std::uint32_t NumOfSecondaryScatterings_;
 
 		DustCPtr dust_;
         IGridCPtr grid_;

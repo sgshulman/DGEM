@@ -11,13 +11,13 @@
 class Photon
 {
     public:
-        Photon(Vector3d const &position, std::uint32_t cellId, Direction3d const &dir, double weight, uint32_t nscat, double fi=1.0, double fq=0.0, double fu=0.0, double fv=0.0);
+        Photon(Vector3d const &position, std::uint32_t cellId, Direction3d const &dir, double weight, std::uint32_t nscat, double fi=1.0, double fq=0.0, double fu=0.0, double fv=0.0);
         // photon scattering
         double Scatt(DustCRef dust, Direction3d const & dir, Random* ran);
         void Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std::vector<Observer>& observers, Random* ran);
         void Stokes(DustCRef dust, Direction3d const &dir, double calpha, bool fDir, Random* ran);
 
-        void Move(double t, uint32_t cellId)
+        void Move(double t, std::uint32_t cellId)
         {
             cellId_ = cellId;
             pos_ = pos_ + t * dir_.vector();
@@ -38,27 +38,27 @@ class Photon
         double fv() const
         {	return fv_;		}
 
-        uint32_t& nscat()
+        std::uint32_t& nscat()
         {	return nscat_;	}
-        uint32_t nscat() const
+        std::uint32_t nscat() const
         {	return nscat_;	}
         double& weight()
         {	return weight_;	}
         double weight() const
         {	return weight_;	}
-        uint32_t& cellId()
+        std::uint32_t& cellId()
         {	return cellId_;	}
-        uint32_t cellId() const
+        std::uint32_t cellId() const
         {	return cellId_;	}
 
         bool termination() const
-        {   return nscat_ == std::numeric_limits<uint32_t>::max(); }
+        {   return nscat_ == std::numeric_limits<std::uint32_t>::max(); }
 
     private:
         Vector3d	pos_;	// outpoint
         Direction3d	dir_;	// vector of the direction
-        uint32_t 	nscat_;
-        uint32_t    cellId_;
+        std::uint32_t 	nscat_;
+        std::uint32_t    cellId_;
         double weight_;
         double fi_, fq_, fu_, fv_;
 };

@@ -10,7 +10,7 @@
 class Pictures
 {
     public:
-        Pictures(uint32_t nx, uint32_t ny)
+        Pictures(std::uint32_t nx, std::uint32_t ny)
             : nx_{ nx }
             , ny_{ ny }
         {
@@ -55,7 +55,7 @@ class Pictures
         void bin(Photon const& ph, int64_t const xl, int64_t const yl, int64_t const id)
         {
             // place weighted photon into image location
-            if((id == -1 || static_cast<size_t>(id) == ph.nscat()) && (xl>=0) && (yl >= 0) && ((uint32_t)xl < nx_) && ((uint32_t)yl < ny_) )
+            if((id == -1 || static_cast<std::uint64_t>(id) == ph.nscat()) && (xl>=0) && (yl >= 0) && ((std::uint32_t)xl < nx_) && ((std::uint32_t)yl < ny_) )
             {
                 f_[xl+yl*nx_] += ph.weight()*ph.fi();
                 q_[xl+yl*nx_] += ph.weight()*ph.fq();
@@ -63,9 +63,9 @@ class Pictures
             }
         }
             
-        void normalize(size_t const numPhotons)
+        void normalize(std::uint64_t const numPhotons)
         {
-            for (size_t i=0; i!=nx_*ny_; ++i)
+            for (std::uint64_t i=0; i!=nx_*ny_; ++i)
             {
                f_[i] /= numPhotons;
                q_[i] /= numPhotons;
@@ -82,9 +82,9 @@ class Pictures
 
             snprintf(fname, FILENAME_LENGTH, "fimage%2.2li_%2.2li_%2.2i.dat", iPhi, iTheta, key);
             std::ofstream f(fname);
-            for (size_t y=0; y != ny_; ++y)
+            for (std::uint64_t y=0; y != ny_; ++y)
             {
-                for (size_t x=0; x!=nx_; ++x)
+                for (std::uint64_t x=0; x!=nx_; ++x)
                     f << f_[x+y*nx_] << "\t";
                 f << "\n";
             }
@@ -92,9 +92,9 @@ class Pictures
 
             snprintf(fname, FILENAME_LENGTH, "qimage%2.2li_%2.2li_%2.2i.dat", iPhi, iTheta, key);
             std::ofstream q(fname);
-            for (size_t y=0; y != ny_; ++y)
+            for (std::uint64_t y=0; y != ny_; ++y)
             {
-                for (size_t x=0; x!=nx_; ++x)
+                for (std::uint64_t x=0; x!=nx_; ++x)
                     q << q_[x+y*nx_] << "\t";
                 q << "\n";
             }
@@ -102,9 +102,9 @@ class Pictures
 
             snprintf(fname, FILENAME_LENGTH, "uimage%2.2li_%2.2li_%2.2i.dat", iPhi, iTheta, key);
             std::ofstream u(fname);
-            for (size_t y=0; y != ny_; ++y)
+            for (std::uint64_t y=0; y != ny_; ++y)
             {
-                for (size_t x=0; x!=nx_; ++x)
+                for (std::uint64_t x=0; x!=nx_; ++x)
                     u << u_[x+y*nx_] << "\t";
                 u << "\n";
             }
@@ -114,9 +114,9 @@ class Pictures
         void sum(std::ofstream& file)
         {
             double fsum=0, qsum=0, usum=0;
-            for (size_t x=0; x!=nx_; ++x)
+            for (std::uint64_t x=0; x!=nx_; ++x)
             {
-                for (size_t y=0; y != ny_; ++y)
+                for (std::uint64_t y=0; y != ny_; ++y)
                 {
                     fsum += f_[y + x * ny_];
                     qsum += q_[y + x * ny_];
@@ -129,7 +129,7 @@ class Pictures
         }
 
     private:
-        uint32_t nx_, ny_;
+        std::uint32_t nx_, ny_;
         double *f_;
         double *q_;
         double *u_;
@@ -139,7 +139,7 @@ class Pictures
 class Observer
 {
 public:
-    Observer(double const phi, double const theta, double const rimage, uint32_t const Nx=200, uint32_t const Ny=200)
+    Observer(double const phi, double const theta, double const rimage, std::uint32_t const Nx=200, std::uint32_t const Ny=200)
             : result_(Nx, Ny)
             , result0_(Nx, Ny)
             , result1_(Nx, Ny)
@@ -155,7 +155,7 @@ public:
         sinp_ = std::sin(phi);
     }
 
-    void normalize(size_t const numPhotons)
+    void normalize(std::uint64_t const numPhotons)
     {
         result_.normalize(numPhotons);
         result0_.normalize(numPhotons);
@@ -212,7 +212,7 @@ public:
 private:
     Pictures result_, result0_, result1_, result2_;
     Direction3d direction_;
-    uint32_t nx_, ny_;
+    std::uint32_t nx_, ny_;
     double rimage_;
     double theta_;
     double cosp_, sinp_;

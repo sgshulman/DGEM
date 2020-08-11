@@ -96,7 +96,7 @@ int main()
             std::uint32_t sCellId = ph0.cellId();
 
             // Loop over scattering dots
-            for (size_t s=0; s!=model.NumOfPrimaryScatterings(); ++s)
+            for (std::uint64_t s=0; s!=model.NumOfPrimaryScatterings(); ++s)
             {
                 Photon ph( spos, sCellId, ph0.dir(), ph0.weight() * w, 1 );
                 // Force photon to scatter at optical depth tau before edge of grid
@@ -129,20 +129,20 @@ int main()
     std::cout << "Finishing..." << std::endl;
 
     // Normalize images
-    for(size_t cnt=0; cnt!=observers.size(); ++cnt)
+    for(std::uint64_t cnt=0; cnt!=observers.size(); ++cnt)
     {
         observers[cnt].normalize(sources->num_photons());
     }
 
     // put results into output files
-    for (size_t cnt = 0; cnt != observers.size(); ++cnt)
+    for (std::uint64_t cnt = 0; cnt != observers.size(); ++cnt)
     {
         observers[cnt].writeToMapFiles(true);
     }
 
     // put general information into file
     std::ofstream observersResultFile("observers.dat");
-    for (size_t cnt = 0; cnt != observers.size(); ++cnt)
+    for (std::uint64_t cnt = 0; cnt != observers.size(); ++cnt)
     {
         observers[cnt].write(observersResultFile);
     }

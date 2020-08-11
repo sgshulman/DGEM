@@ -7,14 +7,14 @@
 class FractalCloud : public IMatter
 {
     public:
-        FractalCloud(uint32_t N, double max, double dCube, double rho0, uint32_t dotsN, int32_t seed);
+        FractalCloud(std::uint32_t N, double max, double dCube, double rho0, std::uint32_t dotsN, std::int32_t seed);
 
         ~FractalCloud() override;
 
         double density(Vector3d const& position) const override;
 
     private:
-        uint32_t const n_;
+        std::uint32_t const n_;
         double const max_;
         double *density_;
 };

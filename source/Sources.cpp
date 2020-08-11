@@ -10,15 +10,15 @@ Photon Sources::emitPhoton(Random* ran)
 {
     if (currentSource_ == pointSources_.size())
     {
-        return {Vector3d{}, 0, Direction3d{}, 0.0, std::numeric_limits<uint32_t>::max()};
+        return {Vector3d{}, 0, Direction3d{}, 0.0, std::numeric_limits<std::uint32_t>::max()};
     }
 
-    uint32_t const sourceId{ currentSource_ };
-    uint64_t const photonId{ photonId_ };
+    std::uint32_t const sourceId{ currentSource_ };
+    std::uint64_t const photonId{ photonId_ };
 
     ++photonId_;
 
-    uint64_t const period = parameters_.useMonteCarlo_ ? 10000 : 1000;
+    std::uint64_t const period = parameters_.useMonteCarlo_ ? 10000 : 1000;
 
     if(photonId % period == 0)
     {
@@ -31,7 +31,7 @@ Photon Sources::emitPhoton(Random* ran)
         ++currentSource_;
 
         photonsNumber_ = parameters_.useMonteCarlo_
-                        ? (uint64_t) (parameters_.num_photons_ * pointSources_[currentSource_].luminosity() / totlum_)
+                        ? (std::uint64_t) (parameters_.num_photons_ * pointSources_[currentSource_].luminosity() / totlum_)
                         : primaryDir_.number();
 
         photonId_ = 0;
@@ -63,11 +63,11 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
 {
     // Direct photon loop.  Loop over sources and weight photons by
     // W=ph*exp(-tau1)/4pi
-    for (uint64_t is=0; is!=pointSources_.size(); ++is)
+    for (std::uint64_t is=0; is!=pointSources_.size(); ++is)
     {
-        auto const nph = uint64_t(parameters_.num_photons_ * pointSources_[is].luminosity() / totlum_);
+        auto const nph = std::uint64_t(parameters_.num_photons_ * pointSources_[is].luminosity() / totlum_);
 
-        for (size_t io=0; io!=observers->size(); ++io)
+        for (std::uint64_t io=0; io!=observers->size(); ++io)
         {
             // Set photon location, grid cell, and direction of observation
             Photon ph(pointSources_[is].pos(), pointSources_[is].cellId(), (*observers)[io].direction(), 1.0, 0);

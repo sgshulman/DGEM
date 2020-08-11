@@ -6,7 +6,7 @@
 #include "Directions.hpp"
 #include "Dust.hpp"
 
-Photon::Photon( Vector3d const& pos, std::uint32_t cellId, Direction3d const& dir, double weight, uint32_t nscat, double fi, double fq, double fu, double fv )
+Photon::Photon( Vector3d const& pos, std::uint32_t cellId, Direction3d const& dir, double weight, std::uint32_t nscat, double fi, double fq, double fu, double fv )
     : pos_{ pos }
     , dir_{ dir }
     , nscat_{ nscat }
@@ -61,13 +61,13 @@ void Photon::Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std:
         double hgfrac;
         // normalizing
         double sum=0;
-        for (size_t j=0; j!=dirs.number(); ++j)
+        for (std::uint64_t j=0; j!=dirs.number(); ++j)
         {
             calpha = dir_.vector() * dirs.direction(j);
             sum += dirs.w(j) * m.dust()->fraction(calpha);
         }
 
-        for (size_t j=0; j!=dirs.number(); ++j)
+        for (std::uint64_t j=0; j!=dirs.number(); ++j)
         {
             // Release photon from point source
             calpha = dir_.vector() * dirs.direction(j);
@@ -82,7 +82,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std:
             double tauold = 0.0, tau = 0.0;
 
             // Loop over scattering dots
-            for (size_t s=0; s!=m.NumOfSecondaryScatterings(); ++s)
+            for (std::uint64_t s=0; s!=m.NumOfSecondaryScatterings(); ++s)
             {
                 Photon ph(spos, sCellId, ph0.dir(), ph0.weight()*w, nscat_+1, ph0.fi(), ph0.fq(), ph0.fu(), ph0.fv() );
                 // Force photon to scatter at optical depth tau before edge of grid

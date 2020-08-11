@@ -62,7 +62,7 @@ TEST_CASE("Parse Observers", "[model]")
 
         REQUIRE(10 == observers.size());
 
-        for (std::size_t i = 0; i != observers.size(); ++i)
+        for (std::uint64_t i = 0; i != observers.size(); ++i)
         {
             REQUIRE(Approx(0.2 * PI * i).margin(1e-12) == observers.at(i).phi());
             REQUIRE(Approx(PI / 2.) == observers.at(i).theta());

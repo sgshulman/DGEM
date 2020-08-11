@@ -11,7 +11,7 @@ class CartesianGrid : public IGrid
 {
     public:
         CartesianGrid(double xmax, double ymax, double zmax, double kappa,
-                      uint32_t nx, uint32_t ny, uint32_t nz, IMatterCPtr matter);
+                      std::uint32_t nx, std::uint32_t ny, std::uint32_t nz, IMatterCPtr matter);
 
         ~CartesianGrid() override
         {
@@ -29,7 +29,7 @@ class CartesianGrid : public IGrid
         double maxDistance(Photon const& ph) const;
         std::pair<double, std::uint32_t> cellDistance(Photon& ph, double delta, Vector3d const& phDirInv) const;
 
-        uint32_t nx_, ny_, nz_;
+        std::uint32_t nx_, ny_, nz_;
         double *rhokappa_{ nullptr };
         double xmax_, ymax_, zmax_;
         double const xCellSize_, yCellSize_, zCellSize_;
