@@ -19,8 +19,7 @@ public:
 
     ~TetrahedralGrid() override;
 
-    double calculateRealTau(const Vector3d& v, double kappa) const;
-
+    double calculateRealTau(const Vector3d& v) const override;
     double findOpticalDepth(Photon ph) const override;
     int movePhotonAtDepth(Photon &ph, double tau, double tauold) const override;
     int movePhotonAtRandomDepth(Photon& ph, Random *ran) const override;
@@ -35,6 +34,7 @@ private:
     std::vector<Node> dots_;
     std::vector<Tetrahedron> elements_;
     double const max_;
+    double const kappa_;
     IMatterCPtr matter_;
 
     double maxDistance(Photon const &ph) const;

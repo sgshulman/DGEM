@@ -82,14 +82,14 @@ private:
 };
 
 
-double TetrahedralGrid::calculateRealTau(const Vector3d& v, double const kappa) const
+double TetrahedralGrid::calculateRealTau(const Vector3d& v) const
 {
     double tau=0.0;
     for (double x = 0.0, y = 0.0, z=0.0;
          x <= max_ && y <= max_ && z <= max_;
          x+=0.001*v.x(), y+=0.001*v.y(), z+=0.001*v.z())
     {
-        tau += 0.001*matter_->density({x,y,z})*kappa*1.5e13;
+        tau += 0.001*matter_->density({x,y,z})*kappa_*1.5e13;
     }
     return tau;
 }
@@ -288,6 +288,7 @@ TetrahedralGrid::TetrahedralGrid(
     double const kappa,
     IMatterCPtr matter)
     : max_{ max }
+    , kappa_{ kappa }
     , matter_{ std::move(matter) }
 {
     readNodes(nodes_file);

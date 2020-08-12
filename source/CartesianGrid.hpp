@@ -18,6 +18,7 @@ class CartesianGrid : public IGrid
             delete[] rhokappa_;
         }
 
+        double calculateRealTau(const Vector3d& v) const override;
         double findOpticalDepth(Photon ph) const override;
         int movePhotonAtDepth(Photon& ph, double tau, double tauold) const override;
         int movePhotonAtRandomDepth(Photon& ph, Random *ran) const override;
@@ -35,6 +36,7 @@ class CartesianGrid : public IGrid
         double const xCellSize_, yCellSize_, zCellSize_;
         double const xCellSizeInv_, yCellSizeInv_, zCellSizeInv_;
         double minrho_;
+        double const kappa_;
         IMatterCPtr matter_;
 };
 

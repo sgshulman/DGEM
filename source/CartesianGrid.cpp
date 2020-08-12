@@ -43,6 +43,7 @@ CartesianGrid::CartesianGrid(
     , xCellSizeInv_{ 1. / xCellSize_ }
     , yCellSizeInv_{ 1. / yCellSize_ }
     , zCellSizeInv_{ 1. / zCellSize_ }
+    , kappa_{ kappa }
     , matter_{ std::move(matter) }
 {
     rhokappa_ = new double[nx_ * ny_ * nz_];
@@ -65,6 +66,20 @@ CartesianGrid::CartesianGrid(
         }
     }
 }
+
+
+double CartesianGrid::calculateRealTau(const Vector3d &v) const
+{
+    double tau=0.0;
+    for (double x = 0.0, y = 0.0, z=0.0;
+         x <= xmax_ && y <= ymax_ && z <= zmax_;
+         x+=0.001*v.x(), y+=0.001*v.y(), z+=0.001*v.z())
+    {
+        tau += 0.001*matter_->density({x,y,z})*kappa_*1.5e13;
+    }
+    return tau;
+}
+
 
 // calculate smax -- maximum distance photon can travel *******
 double CartesianGrid::maxDistance(Photon const& ph) const
