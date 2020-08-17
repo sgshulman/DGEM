@@ -218,9 +218,19 @@ namespace
 
     IGridCPtr parseTetrahedralGrid(const nlohmann::json& json, double const kappa, IMatterCPtr matter)
     {
+        if (json.contains("nodesFile") && json.contains("elementsFile"))
+        {
+            return std::make_shared<TetrahedralGrid const>(
+                json.at("nodesFile").get<std::string>(),
+                json.at("elementsFile").get<std::string>(),
+                json.contains("gridBinFile") ? json.at("gridBinFile").get<std::string>() : "",
+                json.at("max").get<double>(),
+                kappa,
+                std::move(matter));
+        }
+
         return std::make_shared<TetrahedralGrid const>(
-            json.at("nodesFile").get<std::string>(),
-            json.at("elementsFile").get<std::string>(),
+            json.at("gridBinFile").get<std::string>(),
             json.at("max").get<double>(),
             kappa,
             std::move(matter));

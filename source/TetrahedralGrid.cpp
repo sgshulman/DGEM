@@ -67,6 +67,25 @@ public:
         , fEmpty(false), size_(0)
     {}
 
+    Tetrahedron(
+        std::uint32_t dot_1,
+        std::uint32_t dot_2,
+        std::uint32_t dot_3,
+        std::uint32_t dot_4,
+        std::uint32_t neighbor1,
+        std::uint32_t neighbor2,
+        std::uint32_t neighbor3,
+        std::uint32_t neighbor4,
+        double d1,
+        double d2,
+        double d3,
+        double size)
+        : dot1(dot_1), dot2(dot_2), dot3(dot_3), dot4(dot_4)
+        , neighbor1(neighbor1), neighbor2(neighbor2), neighbor3(neighbor3), neighbor4(neighbor4)
+        , d1(d1), d2(d2), d3(d3)
+        , fEmpty(false), size_(size)
+    {}
+
     void setSize(double size)
     {   size_ = size;   }
 
@@ -283,6 +302,7 @@ void TetrahedralGrid::findElementsNeighbours()
 TetrahedralGrid::TetrahedralGrid(
     std::string const& nodes_file,
     std::string const& elements_file,
+    std::string const& binary_file,
     double const max,
     double const kappa,
     IMatterCPtr matter)
@@ -295,7 +315,77 @@ TetrahedralGrid::TetrahedralGrid(
     readElements(elements_file);
     calculateElementSizes();
     findElementsNeighbours();
+
+    if (!binary_file.empty())
+    {
+        saveGridToBinaryFile(binary_file);
+    }
 }
+
+
+TetrahedralGrid::TetrahedralGrid(
+    const std::string &binary_file,
+    double max,
+    double kappa,
+    IMatterCPtr matter)
+    : max_{ max }
+    , kappa_{ kappa }
+    , matter_{ std::move(matter) }
+{
+    std::ifstream gridBin(binary_file, std::ios::binary);
+
+    std::uint32_t dotsSize{0};
+    gridBin.read((char *)&dotsSize, 4);
+
+    dots_.reserve(dotsSize);
+
+    for (std::uint32_t i=0; i!=dotsSize; ++i)
+    {
+        double x, y, z;
+        gridBin.read((char *)&x, sizeof(double));
+        gridBin.read((char *)&y, sizeof(double));
+        gridBin.read((char *)&z, sizeof(double));
+        dots_.emplace_back(Vector3d{x,y,z});
+    }
+
+    std::uint32_t elementsSize{0};
+    gridBin.read((char *)&elementsSize, 4);
+    elements_.reserve(elementsSize);
+
+    for (std::uint32_t i=0; i!=elementsSize; ++i)
+    {
+        std::uint32_t dot[4];
+        std::uint32_t neighbors[4];
+        double d[3];
+        double size;
+
+        gridBin.read((char *)&dot[0], 4);
+        gridBin.read((char *)&dot[1], 4);
+        gridBin.read((char *)&dot[2], 4);
+        gridBin.read((char *)&dot[3], 4);
+
+        gridBin.read((char *)&neighbors[0], 4);
+        gridBin.read((char *)&neighbors[1], 4);
+        gridBin.read((char *)&neighbors[2], 4);
+        gridBin.read((char *)&neighbors[3], 4);
+
+        gridBin.read((char *)&d[0], sizeof(double));
+        gridBin.read((char *)&d[1], sizeof(double));
+        gridBin.read((char *)&d[2], sizeof(double));
+
+        gridBin.read((char *)&size, sizeof(double));
+
+        elements_.emplace_back(dot[0], dot[1], dot[2], dot[3],
+            neighbors[0], neighbors[1], neighbors[2], neighbors[3],
+            d[0], d[1], d[2], size);
+
+        Vector3d middle = 0.25*(dots_[elements_[i].dot1]+dots_[elements_[i].dot2]+dots_[elements_[i].dot3]+dots_[elements_[i].dot4]);
+        elements_[i].fEmpty = matter_->density({middle.x(), middle.y(), middle.z()}) == 0.0;
+    }
+
+    calculateNodesRhoKappa(kappa);
+}
+
 
 
 TetrahedralGrid::~TetrahedralGrid() = default;
@@ -555,4 +645,47 @@ void TetrahedralGrid::peeloff(Photon ph, Observer &observer, const DustCPtr &dus
     ph.weight() *= hgfac * exp(-tau);
     // Bin the photon into the image according to its position and direction of travel.
     observer.bin(ph);
+}
+
+
+void TetrahedralGrid::saveGridToBinaryFile(const std::string &file)
+{
+    std::ofstream gridBin(file, std::ios::binary);
+    auto size = static_cast<uint32_t>(dots_.size());
+    gridBin.write((char *)&size, 4);
+
+    for (const auto& dot : dots_)
+    {
+        double const x = dot.x();
+        gridBin.write((char *)&x, sizeof(double));
+
+        double const y = dot.y();
+        gridBin.write((char *)&y, sizeof(double));
+
+        double const z = dot.z();
+        gridBin.write((char *)&z, sizeof(double));
+    }
+
+    auto elementsSize = static_cast<uint32_t>(elements_.size());
+    gridBin.write((char *)&elementsSize, 4);
+
+    for (const auto& element : elements_)
+    {
+        gridBin.write((char *)&element.dot1, 4);
+        gridBin.write((char *)&element.dot2, 4);
+        gridBin.write((char *)&element.dot3, 4);
+        gridBin.write((char *)&element.dot4, 4);
+
+        gridBin.write((char *)&element.neighbor1, 4);
+        gridBin.write((char *)&element.neighbor2, 4);
+        gridBin.write((char *)&element.neighbor3, 4);
+        gridBin.write((char *)&element.neighbor4, 4);
+
+        gridBin.write((char *)&element.d1, sizeof(double));
+        gridBin.write((char *)&element.d2, sizeof(double));
+        gridBin.write((char *)&element.d3, sizeof(double));
+
+        auto z = element.size();
+        gridBin.write((char *)&z, sizeof(double));
+    }
 }

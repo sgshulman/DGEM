@@ -13,6 +13,13 @@ public:
     TetrahedralGrid(
         std::string const& nodes_file,
         std::string const& elements_file,
+        std::string const& binary_file,
+        double max,
+        double kappa,
+        IMatterCPtr matter);
+
+    TetrahedralGrid(
+        std::string const& binary_file,
         double max,
         double kappa,
         IMatterCPtr matter);
@@ -46,6 +53,7 @@ private:
     void readElements(std::string const & file);
     void calculateElementSizes();
     void findElementsNeighbours();
+    void saveGridToBinaryFile(std::string const & file);
     double rhoInDot(const Vector3d& dot, const Tetrahedron& el) const;
 };
 
