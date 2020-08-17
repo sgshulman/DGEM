@@ -15,8 +15,9 @@ def format_mesh(mesh_file, nodes_file, elements_file):
             if regime == 1:
                 nf.write(line)
             elif regime == 2:
-                if len(line.split()) == 9:
-                    ef.write(line) 
+                lineElements = line.split()
+                if len(lineElements) == 9:
+                    ef.write(" ".join(lineElements[-4:]) + "\n")
                     number_of_elements += 1
                     
     with open(elements_file, 'r+') as ef:

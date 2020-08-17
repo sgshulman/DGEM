@@ -129,9 +129,8 @@ void TetrahedralGrid::readElements(std::string const & file)
 
     for (std::uint32_t cnt=0; cnt != NumberOfElements; ++cnt)
     {
-        std::uint32_t id, rubbish;
         std::uint32_t dot[4];
-        nodes >> id >> rubbish >> rubbish >> rubbish >> rubbish >> dot[0] >> dot[1] >> dot[2] >> dot[3];
+        nodes >> dot[0] >> dot[1] >> dot[2] >> dot[3];
         std::sort(dot, dot + 4);
         elements_.emplace_back(Tetrahedron(--dot[0], --dot[1], --dot[2], --dot[3]));
     }
