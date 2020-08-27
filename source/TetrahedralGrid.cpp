@@ -534,13 +534,12 @@ double TetrahedralGrid::findOpticalDepth(Photon ph) const
             rawElement};
 
         std::pair<double, std::uint64_t> dcell = element.cellDistance(ph);
-        double rho1=0.0, rho2=0.0;
+        double rho=0.0;
         if (!element.fEmpty)
         {
-            rho1 = element.rhoInDot(ph.pos());
-            rho2 = element.rhoInDot(ph.pos() + dcell.first * ph.dir().vector());
+            rho = element.rhoInDot(ph.pos() + 0.5 * dcell.first * ph.dir().vector());
         }
-        taucell=dcell.first* (rho1 + rho2)*0.5;
+        taucell=dcell.first * rho;
         taurun+=std::max(taucell, 0.0);
         ph.Move( dcell.first, dcell.second );
         d += dcell.first;
