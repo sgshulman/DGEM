@@ -9,6 +9,26 @@
 #include <map>
 #include <iostream>
 
+double distanceToPlane(Vector3d const& dot, Vector3d const& dot1, Vector3d const& dot2, Vector3d const& dot3)
+{
+    Vector3d norm1 = vectorProduct(dot2 - dot1, dot3 - dot1);
+    Vector3d v = dot1 - dot;
+    return (1./norm1.norm()) * norm1 * v;
+}
+
+
+double timeToPlane(Vector3d const& dot1, Vector3d const& dot2, Vector3d const& dot3, Photon const& ph)
+{
+    Vector3d norm1 = vectorProduct(dot2 - dot1, dot3 - dot1);
+    Vector3d v = dot1 - ph.pos();
+    double d = norm1 * v;
+    double e = norm1 * ph.dir().vector();
+    double t = std::numeric_limits<double>::max();
+    if (e != 0.0) t = d / e;
+    if (t <= 0.0) t = std::numeric_limits<double>::max();
+    return t;
+}
+
 class TetrahedralGrid::Node
 {
 public:
@@ -93,6 +113,64 @@ public:
     {   return size_;        }
 
     std::uint32_t dot1, dot2, dot3, dot4; // must be sorted
+    std::uint32_t neighbor1, neighbor2, neighbor3, neighbor4;
+    double d1, d2, d3;
+    bool fEmpty;
+private:
+    double size_;
+};
+
+
+class TetrahedralGrid::PlaneTetrahedron
+{
+public:
+    PlaneTetrahedron(
+        TetrahedralGrid::Node const& node1,
+        TetrahedralGrid::Node const& node2,
+        TetrahedralGrid::Node const& node3,
+        TetrahedralGrid::Node const& node4,
+        TetrahedralGrid::Tetrahedron const& element)
+        : dot1(node1), dot2(node2), dot3(node3), dot4(node4)
+        , neighbor1(element.neighbor1), neighbor2(element.neighbor2), neighbor3(element.neighbor3), neighbor4(element.neighbor4)
+        , d1(element.d1), d2(element.d2), d3(element.d3)
+        , fEmpty(element.fEmpty), size_(element.size())
+    {}
+
+    std::pair<double, std::uint64_t> cellDistance(Photon& ph) const
+    {
+        double const delta=0.001*size_;
+
+        // сдвиг к центру элемента (изначально должны быть на границе)
+        Vector3d v = 0.25*(dot1+dot2+dot3+dot4)-ph.pos();
+        v = (1.0/v.norm())*v;
+        ph.pos() = ph.pos() + 11*delta*v;
+
+        // поиск расстояния
+        std::pair<double, std::uint64_t> d[4];
+
+        d[0] = std::make_pair(timeToPlane(dot2, dot3, dot4, ph), neighbor1);
+        d[1] = std::make_pair(timeToPlane(dot1, dot3, dot4, ph), neighbor2);
+        d[2] = std::make_pair(timeToPlane(dot1, dot2, dot4, ph), neighbor3);
+        d[3] = std::make_pair(timeToPlane(dot1, dot2, dot3, ph), neighbor4);
+
+        return *std::min_element(d, d+4);
+    }
+
+
+    double rhoInDot(const Vector3d& dot) const
+    {
+        double L1 = distanceToPlane(dot, dot2, dot3, dot4) / d1;
+        double L2 = distanceToPlane(dot, dot1, dot3, dot4) / d2;
+        double L3 = distanceToPlane(dot, dot1, dot2, dot4) / d3;
+        double L4 = 1.0 - L1 - L2 - L3;
+
+        return L1*dot1.rhoKappa() + L2*dot2.rhoKappa() + L3*dot3.rhoKappa() + L4*dot4.rhoKappa();
+    }
+
+    double size() const
+    {   return size_;        }
+
+    TetrahedralGrid::Node dot1, dot2, dot3, dot4;
     std::uint32_t neighbor1, neighbor2, neighbor3, neighbor4;
     double d1, d2, d3;
     bool fEmpty;
@@ -422,26 +500,6 @@ double TetrahedralGrid::maxDistance(Photon const &ph) const
 }
 
 
-double TetrahedralGrid::timeToPlane(Vector3d const& dot1, Vector3d const& dot2, Vector3d const& dot3, Photon const& ph) const
-{
-    Vector3d norm1 = vectorProduct(dot2 - dot1, dot3 - dot1);
-    Vector3d v = dot1 - ph.pos();
-    double d = norm1 * v;
-    double e = norm1 * ph.dir().vector();
-    double t = 200 * max_;
-    if (e != 0.0) t = d / e;
-    if (t <= 0.0) t = 200 * max_;
-    return t;
-}
-
-double TetrahedralGrid::distanceToPlane(Vector3d const& dot, Vector3d const& dot1, Vector3d const& dot2, Vector3d const& dot3) const
-{
-    Vector3d norm1 = vectorProduct(dot2 - dot1, dot3 - dot1);
-    Vector3d v = dot1 - dot;
-    return (1./norm1.norm()) * norm1 * v;
-}
-
-
 double TetrahedralGrid::rhoInDot(const Vector3d& dot, const Tetrahedron& el) const
 {
     double L1 = distanceToPlane(dot, dots_[el.dot2], dots_[el.dot3], dots_[el.dot4]) / el.d1;
@@ -450,35 +508,6 @@ double TetrahedralGrid::rhoInDot(const Vector3d& dot, const Tetrahedron& el) con
     double L4 = 1.0 - L1 - L2 - L3;
 
     return L1*dots_[el.dot1].rhoKappa() + L2*dots_[el.dot2].rhoKappa() + L3*dots_[el.dot3].rhoKappa() + L4*dots_[el.dot4].rhoKappa();
-}
-
-
-std::pair<double, std::uint64_t> TetrahedralGrid::cellDistance(Photon& ph) const
-{
-    double const delta=0.001*(elements_[ph.cellId()].size());
-    Vector3d const dot1 = dots_[elements_[ph.cellId()].dot1];
-    Vector3d const dot2 = dots_[elements_[ph.cellId()].dot2];
-    Vector3d const dot3 = dots_[elements_[ph.cellId()].dot3];
-    Vector3d const dot4 = dots_[elements_[ph.cellId()].dot4];
-
-    // сдвиг к центру элемента (изначально должны быть на границе)
-    Vector3d v = 0.25*(dot1+dot2+dot3+dot4)-ph.pos();
-    v = (1.0/v.norm())*v;
-    ph.pos() = ph.pos() + 11*delta*v;
-
-    // поиск расстояния
-    double d1, d2, d3, d4, d;
-
-    d1 = timeToPlane(dot2, dot3, dot4, ph);
-    d2 = timeToPlane(dot1, dot3, dot4, ph);
-    d3 = timeToPlane(dot1, dot2, dot4, ph);
-    d4 = timeToPlane(dot1, dot2, dot3, ph);
-    d = std::min(std::min(d1, d2), std::min(d3, d4));
-
-    if (std::abs(d - d1) < 0.0000001) return std::make_pair(d, elements_[ph.cellId()].neighbor1);
-    if (std::fabs(d - d2) < 0.0000001) return std::make_pair(d, elements_[ph.cellId()].neighbor2);
-    if (std::fabs(d - d3) < 0.0000001) return std::make_pair(d, elements_[ph.cellId()].neighbor3);
-    return std::make_pair(d, elements_[ph.cellId()].neighbor4);
 }
 
 
@@ -495,12 +524,21 @@ double TetrahedralGrid::findOpticalDepth(Photon ph) const
            && -max_ < ph.pos().x() && -max_ < ph.pos().y() && -max_ < ph.pos().z()
            && ph.cellId() < elements_.size())
     {
-        std::pair<double, std::uint64_t> dcell = cellDistance(ph);
+        const auto& rawElement = elements_[ph.cellId()];
+
+        PlaneTetrahedron element{
+            dots_[rawElement.dot1],
+            dots_[rawElement.dot2],
+            dots_[rawElement.dot3],
+            dots_[rawElement.dot4],
+            rawElement};
+
+        std::pair<double, std::uint64_t> dcell = element.cellDistance(ph);
         double rho1=0.0, rho2=0.0;
-        if (!elements_[ph.cellId()].fEmpty)
+        if (!element.fEmpty)
         {
-            rho1 = rhoInDot(ph.pos(), elements_[ph.cellId()]);
-            rho2 = rhoInDot(ph.pos() + dcell.first * ph.dir().vector(), elements_[ph.cellId()]);
+            rho1 = element.rhoInDot(ph.pos());
+            rho2 = element.rhoInDot(ph.pos() + dcell.first * ph.dir().vector());
         }
         taucell=dcell.first* (rho1 + rho2)*0.5;
         taurun+=std::max(taucell, 0.0);
@@ -523,13 +561,22 @@ int TetrahedralGrid::movePhotonAtDepth(Photon& ph, double tau, double tauold) co
             && (-max_ < ph.pos().x() && -max_ < ph.pos().y() && -max_ < ph.pos().z())
             && ph.cellId() < elements_.size())
     {
-        std::pair<double, std::uint64_t> dcell = cellDistance(ph);
+        const auto& rawElement = elements_[ph.cellId()];
+
+        PlaneTetrahedron element{
+            dots_[rawElement.dot1],
+            dots_[rawElement.dot2],
+            dots_[rawElement.dot3],
+            dots_[rawElement.dot4],
+            rawElement};
+
+        std::pair<double, std::uint64_t> dcell = element.cellDistance(ph);
 
         double rho1=0.0, rho2=0.0;
-        if (!elements_[ph.cellId()].fEmpty)
+        if (!element.fEmpty)
         {
-            rho1 = rhoInDot(ph.pos(), elements_[ph.cellId()]);
-            rho2 = rhoInDot(ph.pos() + dcell.first * ph.dir().vector(), elements_[ph.cellId()]);
+            rho1 = element.rhoInDot(ph.pos());
+            rho2 = element.rhoInDot(ph.pos() + dcell.first * ph.dir().vector());
         }
         taucell=dcell.first* (rho1 + rho2)*0.5;
         if( (taurun+taucell) >= tau)

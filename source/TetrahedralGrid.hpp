@@ -37,6 +37,7 @@ public:
 private:
     class Node;
     class Tetrahedron;
+    class PlaneTetrahedron;
 
     std::vector<Node> dots_;
     std::vector<Tetrahedron> elements_;
@@ -45,9 +46,6 @@ private:
     IMatterCPtr matter_;
 
     double maxDistance(Photon const &ph) const;
-    std::pair<double, std::uint64_t> cellDistance(Photon &ph) const;
-    double timeToPlane(Vector3d const &dot1, Vector3d const &dot2, Vector3d const &dot3, Photon const &ph) const;
-    double distanceToPlane(Vector3d const &dot, Vector3d const &dot1, Vector3d const &dot2, Vector3d const &dot3) const;
     void readNodes(std::string const & file);
     void calculateNodesRhoKappa(double kappa);
     void readElements(std::string const & file);
