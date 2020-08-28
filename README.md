@@ -210,6 +210,8 @@ __nx__, __ny__, and __nz__ are the numbers of cells along each axis.
 The tetrahedral grid is based on the Delaunay triangulation.
 The area is from __-max__ to __max__ along all axes.
 The nodes of the grid are described in the __nodesFile__ and elements are listed in __elementsFile__.
+Instead of these two files the grid may be presented in the form of one binary file __gridBinFile__.
+If all three files exist, grid from __nodesFile__ and __elementsFile__ will be saved in __gridBinFile__.
 The grid may be constructed in a separate programs, e.g. [_gmsh_](https://gmsh.info/) ([Geuzaine and  Remacle, 2009](#geuzaine2009))
 
 The first line of the __nodesFile__ is the number of nodes. All other lines contain four values: node number and _x_, _y_, _z_ coordinates.
