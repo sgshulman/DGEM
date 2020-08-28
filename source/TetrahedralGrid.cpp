@@ -47,7 +47,7 @@ public:
         return rhokappa_;
     }
 
-    operator Vector3d() const // NOLINT
+    Vector3d const& pos() const
     {
         return pos_;
     }
@@ -141,17 +141,17 @@ public:
         double const delta=0.001*size_;
 
         // сдвиг к центру элемента (изначально должны быть на границе)
-        Vector3d v = 0.25*(dot1+dot2+dot3+dot4)-ph.pos();
+        Vector3d v = 0.25*(dot1.pos()+dot2.pos()+dot3.pos()+dot4.pos())-ph.pos();
         v = (1.0/v.norm())*v;
         ph.pos() = ph.pos() + 11*delta*v;
 
         // поиск расстояния
         std::pair<double, std::uint64_t> d[4];
 
-        d[0] = std::make_pair(timeToPlane(dot2, dot3, dot4, ph), neighbor1);
-        d[1] = std::make_pair(timeToPlane(dot1, dot3, dot4, ph), neighbor2);
-        d[2] = std::make_pair(timeToPlane(dot1, dot2, dot4, ph), neighbor3);
-        d[3] = std::make_pair(timeToPlane(dot1, dot2, dot3, ph), neighbor4);
+        d[0] = std::make_pair(timeToPlane(dot2.pos(), dot3.pos(), dot4.pos(), ph), neighbor1);
+        d[1] = std::make_pair(timeToPlane(dot1.pos(), dot3.pos(), dot4.pos(), ph), neighbor2);
+        d[2] = std::make_pair(timeToPlane(dot1.pos(), dot2.pos(), dot4.pos(), ph), neighbor3);
+        d[3] = std::make_pair(timeToPlane(dot1.pos(), dot2.pos(), dot3.pos(), ph), neighbor4);
 
         return *std::min_element(d, d+4);
     }
@@ -159,9 +159,9 @@ public:
 
     double rhoInDot(const Vector3d& dot) const
     {
-        double L1 = distanceToPlane(dot, dot2, dot3, dot4) / d1;
-        double L2 = distanceToPlane(dot, dot1, dot3, dot4) / d2;
-        double L3 = distanceToPlane(dot, dot1, dot2, dot4) / d3;
+        double L1 = distanceToPlane(dot, dot2.pos(), dot3.pos(), dot4.pos()) / d1;
+        double L2 = distanceToPlane(dot, dot1.pos(), dot3.pos(), dot4.pos()) / d2;
+        double L3 = distanceToPlane(dot, dot1.pos(), dot2.pos(), dot4.pos()) / d3;
         double L4 = 1.0 - L1 - L2 - L3;
 
         return L1*dot1.rhoKappa() + L2*dot2.rhoKappa() + L3*dot3.rhoKappa() + L4*dot4.rhoKappa();
@@ -211,7 +211,7 @@ void TetrahedralGrid::calculateNodesRhoKappa(double const kappa)
 {
     for (std::uint32_t cnt=0; cnt != dots_.size(); ++cnt)
     {
-        double rhoKappa = matter_->density(dots_[cnt])*kappa*1.5e13;
+        double rhoKappa = matter_->density(dots_[cnt].pos())*kappa*1.5e13;
         dots_[cnt].setRhoKappa(rhoKappa);
     }
 }
@@ -238,19 +238,19 @@ void TetrahedralGrid::calculateElementSizes()
 {
     for (std::uint32_t i = 0; i != elements_.size(); ++i)
     {
-        double size = (dots_[elements_[i].dot1] - dots_[elements_[i].dot2]).norm();
-        size = std::min(size, (dots_[elements_[i].dot2] - dots_[elements_[i].dot3]).norm());
-        size = std::min(size, (dots_[elements_[i].dot1] - dots_[elements_[i].dot3]).norm());
-        size = std::min(size, (dots_[elements_[i].dot1] - dots_[elements_[i].dot4]).norm());
-        size = std::min(size, (dots_[elements_[i].dot2] - dots_[elements_[i].dot4]).norm());
-        size = std::min(size, (dots_[elements_[i].dot3] - dots_[elements_[i].dot4]).norm());
+        double size = (dots_[elements_[i].dot1].pos() - dots_[elements_[i].dot2].pos()).norm();
+        size = std::min(size, (dots_[elements_[i].dot2].pos() - dots_[elements_[i].dot3].pos()).norm());
+        size = std::min(size, (dots_[elements_[i].dot1].pos() - dots_[elements_[i].dot3].pos()).norm());
+        size = std::min(size, (dots_[elements_[i].dot1].pos() - dots_[elements_[i].dot4].pos()).norm());
+        size = std::min(size, (dots_[elements_[i].dot2].pos() - dots_[elements_[i].dot4].pos()).norm());
+        size = std::min(size, (dots_[elements_[i].dot3].pos() - dots_[elements_[i].dot4].pos()).norm());
         elements_[i].setSize(size);
 
-        elements_[i].d1 = distanceToPlane(dots_[elements_[i].dot1], dots_[elements_[i].dot2], dots_[elements_[i].dot3], dots_[elements_[i].dot4]);
-        elements_[i].d2 = distanceToPlane(dots_[elements_[i].dot2], dots_[elements_[i].dot1], dots_[elements_[i].dot3], dots_[elements_[i].dot4]);
-        elements_[i].d3 = distanceToPlane(dots_[elements_[i].dot3], dots_[elements_[i].dot1], dots_[elements_[i].dot2], dots_[elements_[i].dot4]);
+        elements_[i].d1 = distanceToPlane(dots_[elements_[i].dot1].pos(), dots_[elements_[i].dot2].pos(), dots_[elements_[i].dot3].pos(), dots_[elements_[i].dot4].pos());
+        elements_[i].d2 = distanceToPlane(dots_[elements_[i].dot2].pos(), dots_[elements_[i].dot1].pos(), dots_[elements_[i].dot3].pos(), dots_[elements_[i].dot4].pos());
+        elements_[i].d3 = distanceToPlane(dots_[elements_[i].dot3].pos(), dots_[elements_[i].dot1].pos(), dots_[elements_[i].dot2].pos(), dots_[elements_[i].dot4].pos());
 
-        Vector3d middle = 0.25*(dots_[elements_[i].dot1]+dots_[elements_[i].dot2]+dots_[elements_[i].dot3]+dots_[elements_[i].dot4]);
+        Vector3d middle = 0.25*(dots_[elements_[i].dot1].pos()+dots_[elements_[i].dot2].pos()+dots_[elements_[i].dot3].pos()+dots_[elements_[i].dot4].pos());
         elements_[i].fEmpty = matter_->density({middle.x(), middle.y(), middle.z()}) == 0.0;
     }
 }
@@ -457,7 +457,7 @@ TetrahedralGrid::TetrahedralGrid(
             neighbors[0], neighbors[1], neighbors[2], neighbors[3],
             d[0], d[1], d[2], size);
 
-        Vector3d middle = 0.25*(dots_[elements_[i].dot1]+dots_[elements_[i].dot2]+dots_[elements_[i].dot3]+dots_[elements_[i].dot4]);
+        Vector3d middle = 0.25*(dots_[elements_[i].dot1].pos()+dots_[elements_[i].dot2].pos()+dots_[elements_[i].dot3].pos()+dots_[elements_[i].dot4].pos());
         elements_[i].fEmpty = matter_->density({middle.x(), middle.y(), middle.z()}) == 0.0;
     }
 
@@ -502,9 +502,9 @@ double TetrahedralGrid::maxDistance(Photon const &ph) const
 
 double TetrahedralGrid::rhoInDot(const Vector3d& dot, const Tetrahedron& el) const
 {
-    double L1 = distanceToPlane(dot, dots_[el.dot2], dots_[el.dot3], dots_[el.dot4]) / el.d1;
-    double L2 = distanceToPlane(dot, dots_[el.dot1], dots_[el.dot3], dots_[el.dot4]) / el.d2;
-    double L3 = distanceToPlane(dot, dots_[el.dot1], dots_[el.dot2], dots_[el.dot4]) / el.d3;
+    double L1 = distanceToPlane(dot, dots_[el.dot2].pos(), dots_[el.dot3].pos(), dots_[el.dot4].pos()) / el.d1;
+    double L2 = distanceToPlane(dot, dots_[el.dot1].pos(), dots_[el.dot3].pos(), dots_[el.dot4].pos()) / el.d2;
+    double L3 = distanceToPlane(dot, dots_[el.dot1].pos(), dots_[el.dot2].pos(), dots_[el.dot4].pos()) / el.d3;
     double L4 = 1.0 - L1 - L2 - L3;
 
     return L1*dots_[el.dot1].rhoKappa() + L2*dots_[el.dot2].rhoKappa() + L3*dots_[el.dot3].rhoKappa() + L4*dots_[el.dot4].rhoKappa();
@@ -638,7 +638,7 @@ double TetrahedralGrid::computeMatterMass() const
 
             V = fabs(V) / 6;
 
-            Vector3d middle = 0.25*(d1+d2+d3+d4);
+            Vector3d middle = 0.25*(d1.pos()+d2.pos()+d3.pos()+d4.pos());
             m += V * matter_->density({middle.x(), middle.y(), middle.z()});
         }
     }
@@ -650,10 +650,10 @@ std::uint64_t TetrahedralGrid::cellId(const Vector3d &position) const
 {
     for (std::uint64_t i = 0; i != elements_.size(); ++i)
     {
-        Vector3d const d1 = dots_[elements_[i].dot1];
-        Vector3d const d2 = dots_[elements_[i].dot2];
-        Vector3d const d3 = dots_[elements_[i].dot3];
-        Vector3d const d4 = dots_[elements_[i].dot4];
+        Vector3d const d1 = dots_[elements_[i].dot1].pos();
+        Vector3d const d2 = dots_[elements_[i].dot2].pos();
+        Vector3d const d3 = dots_[elements_[i].dot3].pos();
+        Vector3d const d4 = dots_[elements_[i].dot4].pos();
         Vector3d const center = 0.25 * (d1 + d2 + d3 + d4);
 
         Vector3d r1 = center - d1;
