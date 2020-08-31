@@ -125,7 +125,7 @@ class Pictures
             }
             file << "\tF= " << fsum << "\tQ= " << qsum << "\tU= " << usum
                     << "\tp= " << std::sqrt(qsum*qsum + usum*usum)/fsum
-                    << "\tphi= " << 90 * std::atan2(usum, qsum)/PI << "\n" ;
+                    << "\tphi= " << 90 * std::atan2(usum, qsum)/PI;
         }
 
     private:
@@ -176,9 +176,12 @@ public:
 
     void write(std::ofstream& file)
     {
-        file << "phi = " << degrees(direction_.phi()) << "\ttheta = " << degrees(theta_);
+        file << "phi= " << degrees(direction_.phi()) << "\ttheta= " << degrees(theta_);
         result_.sum(file);
         result0_.sum(file);
+        result1_.sum(file);
+        result2_.sum(file);
+        file << "\n";
     }
 
     void bin(Photon const& photon)
