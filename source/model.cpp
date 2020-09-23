@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <stdexcept>
+#include <sstream>
 #include "model.hpp"
 #include "AzimuthalHump.hpp"
 #include "CartesianGrid.hpp"
@@ -20,6 +22,30 @@
 
 namespace
 {
+    void checkParameters(
+        const nlohmann::json& json,
+        char const* const section,
+        std::initializer_list<const char*> items)
+    {
+        for (auto k = json.cbegin(); k != json.cend(); ++k)
+        {
+            if (cend(items) == std::find(cbegin(items), cend(items), k.key()))
+            {
+                std::stringstream ss;
+                ss << "Section " << section << " contains invalid item " << k.key()
+                   << ". Possible items are: ";
+
+                for (const auto& i: items)
+                {
+                    ss << i << ", ";
+                }
+                ss << "\n";
+
+                throw std::invalid_argument(ss.str());
+            }
+        }
+    }
+
     MatterTranslationCPtr parseTranslation(const nlohmann::json& json)
     {
         return std::make_shared<MatterTranslation const>(
@@ -193,6 +219,8 @@ namespace
 
     DustCPtr parseDust(const nlohmann::json& json)
     {
+        checkParameters(json, "Dust", {"kappa", "albedo", "hgg", "pl", "pc", "sc"});
+
         return std::make_shared<Dust>(
             json.at("albedo").get<double>(),
             json.at("hgg").get<double>(),
