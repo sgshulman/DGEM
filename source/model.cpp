@@ -48,6 +48,8 @@ namespace
 
     MatterTranslationCPtr parseTranslation(const nlohmann::json& json)
     {
+        checkParameters(json, "translation", {"precession", "nutation", "intrinsicRotation", "x", "y", "z"});
+
         return std::make_shared<MatterTranslation const>(
             json.contains("precession") ? radians(json.at("precession").get<double>()) : 0.0,
             json.contains("nutation") ? radians(json.at("nutation").get<double>()) : 0.0,
@@ -67,9 +69,12 @@ namespace
 
         DATA_ASSERT(json.size() == 1, "only one hump for the element is allowed");
 
+        checkParameters(json, "hump", {"roundHump", "azimuthalHump"});
+
         if (json.contains("roundHump"))
         {
             nlohmann::json const& jsonHump = json.at("roundHump");
+            checkParameters(jsonHump, "roundHump", {"h", "r", "sigma2"});
 
             return std::make_shared<RoundHump const>(
                 jsonHump.at("h").get<double>(),
@@ -77,6 +82,7 @@ namespace
                 jsonHump.at("sigma2").get<double>());
         } else if (json.contains("azimuthalHump")) {
             nlohmann::json const& jsonHump = json.at("azimuthalHump");
+            checkParameters(jsonHump, "azimuthalHump", {"h", "r", "sigma2", "sigma2azimuthal"});
 
             return std::make_shared<AzimuthalHump const>(
                 jsonHump.at("h").get<double>(),
@@ -91,6 +97,8 @@ namespace
 
     IMatterCPtr parseSafierWind(const nlohmann::json& json)
     {
+        checkParameters(json, "safierWind", {"hump", "model", "mOut", "mStar", "h0", "rMin", "rMax"});
+
         IDiskHumpCPtr const hump{
             json.contains("hump") ? parseDiskHump(json.at("hump")) : nullptr
         };
@@ -108,6 +116,11 @@ namespace
 
     IMatterCPtr parseFlaredDisk(const nlohmann::json& json)
     {
+        checkParameters(
+            json,
+            "flaredDisk",
+            {"safierWind", "translation", "hump", "rInner", "rOuter", "rho0", "h0", "r0", "alpha", "beta"});
+
         IMatterCPtr const wind{
             json.contains("safierWind") ? parseSafierWind(json.at("safierWind")) : nullptr
         };
@@ -136,6 +149,8 @@ namespace
 
     IMatterCPtr parseSphereEnvelope(const nlohmann::json& json)
     {
+        checkParameters(json, "sphereEnvelope", {"translation", "rInner", "rOuter", "rho0", "r0", "alpha"});
+
         MatterTranslationCPtr const translation{
             json.contains("translation") ? parseTranslation(json.at("translation")) : nullptr
         };
@@ -152,6 +167,8 @@ namespace
 
     IMatterCPtr parseFractalCloud(const nlohmann::json& json)
     {
+        checkParameters(json, "fractalCloud", {"n", "max", "dCube", "rho0", "dotsN", "seed"});
+
         return std::make_shared<FractalCloud const>(
             json.at("n").get<std::uint32_t>(),
             json.at("max").get<double>(),
@@ -167,6 +184,8 @@ namespace
         DATA_ASSERT(
             json.size() == 1,
             "geometry section of the json must contain exactly one top level element");
+
+        checkParameters(json, "geometry", {"flaredDisk", "sphereEnvelope", "fractalCloud", "max", "sum"});
 
         if (json.contains("flaredDisk"))
         {
@@ -219,7 +238,7 @@ namespace
 
     DustCPtr parseDust(const nlohmann::json& json)
     {
-        checkParameters(json, "Dust", {"kappa", "albedo", "hgg", "pl", "pc", "sc"});
+        checkParameters(json, "dust", {"kappa", "albedo", "hgg", "pl", "pc", "sc"});
 
         return std::make_shared<Dust>(
             json.at("albedo").get<double>(),
@@ -232,6 +251,8 @@ namespace
 
     IGridCPtr parseCartesianGrid(const nlohmann::json& json, double const kappa, IMatterCPtr matter)
     {
+        checkParameters(json, "cartesian", {"xmax", "ymax", "zmax", "nx", "ny", "nz"});
+
         return std::make_shared<CartesianGrid const>(
             json.at("xmax").get<double>(),
             json.at("ymax").get<double>(),
@@ -246,6 +267,8 @@ namespace
 
     IGridCPtr parseTetrahedralGrid(const nlohmann::json& json, double const kappa, IMatterCPtr matter)
     {
+        checkParameters(json, "tetrahedral", {"nodesFile", "elementsFile", "gridBinFile", "max"});
+
         if (json.contains("nodesFile") && json.contains("elementsFile"))
         {
             return std::make_shared<TetrahedralGrid const>(
@@ -267,6 +290,8 @@ namespace
 
     IGridCPtr parseGrid(const nlohmann::json& json, double const kappa, IMatterCPtr matter)
     {
+        checkParameters(json, "grid", {"cartesian", "tetrahedral"});
+
         DATA_ASSERT(
             json.size() == 1,
             "grid section of the json must contain exactly one top level element");
@@ -284,6 +309,8 @@ namespace
 
     void parseObservers(std::vector<Observer>* observers, nlohmann::json const& json)
     {
+        checkParameters(json, "observers", {"rimage", "manual", "parallel", "meridian"});
+
         auto const rimage = json.at("rimage").get<double>();
 
         if (json.contains("manual"))
@@ -292,6 +319,8 @@ namespace
             observers->reserve(manualJson.size());
             for (const auto& observer : manualJson)
             {
+                checkParameters(observer, "observers::manual", {"phi", "theta"});
+
                 observers->emplace_back(
                     radians(observer.at("phi").get<double>()),
                     radians(observer.at("theta").get<double>()),
@@ -302,6 +331,7 @@ namespace
         if (json.contains("parallel"))
         {
             nlohmann::json const& parallellJson = json.at("parallel");
+            checkParameters(parallellJson, "observers::parallel", {"numberOfObservers", "theta"});
             const auto numberOfObservers = parallellJson.at("numberOfObservers").get<int>();
             const auto viewTheta = parallellJson.at("theta").get<double>();
             observers->reserve(observers->size() + numberOfObservers);
@@ -315,6 +345,7 @@ namespace
         if (json.contains("meridian"))
         {
             nlohmann::json const& medianJson = json.at("meridian");
+            checkParameters(medianJson, "observers::meridian", {"numberOfObservers", "phi"});
             const auto numberOfObservers = medianJson.at("numberOfObservers").get<int>();
             const auto viewPhi = medianJson.at("phi").get<double>();
             observers->reserve(observers->size() + numberOfObservers);
@@ -330,13 +361,15 @@ namespace
             "observers section of the json must contain at least one observer");
     }
 
-    SourcesPtr parseSources(nlohmann::json const& json, SourceParameters const& sourceParameters, IGridCPtr grid)
+    SourcesPtr parseSources(nlohmann::json const& json, SourceParameters const& sourceParameters, IGridCRef grid)
     {
         std::vector<PointSource> pointSources;
         pointSources.reserve(json.size());
 
         for (auto const &star : json)
         {
+            checkParameters(star, "sources", {"x", "y", "z", "l"});
+
             Vector3d const position{
                 star.at("x").get<double>(),
                 star.at("y").get<double>(),
