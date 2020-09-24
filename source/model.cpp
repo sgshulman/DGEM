@@ -46,18 +46,67 @@ namespace
         }
     }
 
+    double get_double(const nlohmann::json& json, char const* const section, char const* const name)
+    {
+        if (!json.contains(name))
+        {
+            std::stringstream ss;
+            ss << "Section " << section << " should contain a float type item " << name << ".";
+
+            throw std::invalid_argument(ss.str());
+        }
+        const auto item = json.at(name);
+
+        if (!item.is_number_float() && !item.is_number_integer())
+        {
+            std::stringstream ss;
+            ss << "Item " << name << " from section " << section << " should be float.";
+
+            throw std::invalid_argument(ss.str());
+        }
+
+        return item.get<double>();
+    }
+
+
+    double get_optional_double(
+        const nlohmann::json& json,
+        char const* const section,
+        char const* const name,
+        double defaultValue)
+    {
+        if (!json.contains(name))
+        {
+            return defaultValue;
+        }
+
+        const auto item = json.at(name);
+
+        if (!item.is_number_float() && !item.is_number_integer())
+        {
+            std::stringstream ss;
+            ss << "Item " << name << " from section " << section << " should be float.";
+
+            throw std::invalid_argument(ss.str());
+        }
+
+        return item.get<double>();
+    }
+
+
     MatterTranslationCPtr parseTranslation(const nlohmann::json& json)
     {
-        checkParameters(json, "translation", {"precession", "nutation", "intrinsicRotation", "x", "y", "z"});
+        const char transition[] = "translation";
+        checkParameters(json, transition, {"precession", "nutation", "intrinsicRotation", "x", "y", "z"});
 
         return std::make_shared<MatterTranslation const>(
-            json.contains("precession") ? radians(json.at("precession").get<double>()) : 0.0,
-            json.contains("nutation") ? radians(json.at("nutation").get<double>()) : 0.0,
-            json.contains("intrinsicRotation") ? radians(json.at("intrinsicRotation").get<double>()) : 0.0,
+            get_optional_double(json, transition, "precession", 0.0),
+            get_optional_double(json, transition, "nutation", 0.0),
+            get_optional_double(json, transition, "intrinsicRotation", 0.0),
             Vector3d{
-                json.contains("x") ? json.at("x").get<double>() : 0.0,
-                json.contains("y") ? json.at("y").get<double>() : 0.0,
-                json.contains("z") ? json.at("z").get<double>() : 0.0});
+                get_optional_double(json, transition, "x", 0.0),
+                get_optional_double(json, transition, "y", 0.0),
+                get_optional_double(json, transition, "z", 0.0)});
     }
 
     IDiskHumpCPtr parseDiskHump(const nlohmann::json& json)
@@ -69,26 +118,28 @@ namespace
 
         DATA_ASSERT(json.size() == 1, "only one hump for the element is allowed");
 
-        checkParameters(json, "hump", {"roundHump", "azimuthalHump"});
+        char const roundHump[] = "roundHump";
+        char const azimuthalHump[] = "azimuthalHump";
+        checkParameters(json, "hump", {roundHump, azimuthalHump});
 
         if (json.contains("roundHump"))
         {
-            nlohmann::json const& jsonHump = json.at("roundHump");
-            checkParameters(jsonHump, "roundHump", {"h", "r", "sigma2"});
+            nlohmann::json const& jsonHump = json.at(roundHump);
+            checkParameters(jsonHump, roundHump, {"h", "r", "sigma2"});
 
             return std::make_shared<RoundHump const>(
-                jsonHump.at("h").get<double>(),
-                jsonHump.at("r").get<double>(),
-                jsonHump.at("sigma2").get<double>());
+                get_double(jsonHump, roundHump, "h"),
+                get_double(jsonHump, roundHump, "r"),
+                get_double(jsonHump, roundHump, "sigma2"));
         } else if (json.contains("azimuthalHump")) {
-            nlohmann::json const& jsonHump = json.at("azimuthalHump");
-            checkParameters(jsonHump, "azimuthalHump", {"h", "r", "sigma2", "sigma2azimuthal"});
+            nlohmann::json const& jsonHump = json.at(azimuthalHump);
+            checkParameters(jsonHump, azimuthalHump, {"h", "r", "sigma2", "sigma2azimuthal"});
 
             return std::make_shared<AzimuthalHump const>(
-                jsonHump.at("h").get<double>(),
-                jsonHump.at("r").get<double>(),
-                jsonHump.at("sigma2").get<double>(),
-                jsonHump.at("sigma2azimuthal").get<double>());
+                get_double(jsonHump, azimuthalHump, "h"),
+                get_double(jsonHump, azimuthalHump, "r"),
+                get_double(jsonHump, azimuthalHump, "sigma2"),
+                get_double(jsonHump, azimuthalHump, "sigma2azimuthal"));
         }
 
         return nullptr;
@@ -97,7 +148,8 @@ namespace
 
     IMatterCPtr parseSafierWind(const nlohmann::json& json)
     {
-        checkParameters(json, "safierWind", {"hump", "model", "mOut", "mStar", "h0", "rMin", "rMax"});
+        char const safierWind[] = "safierWind";
+        checkParameters(json, safierWind, {"hump", "model", "mOut", "mStar", "h0", "rMin", "rMax"});
 
         IDiskHumpCPtr const hump{
             json.contains("hump") ? parseDiskHump(json.at("hump")) : nullptr
@@ -105,20 +157,22 @@ namespace
 
         return std::make_shared<SafierWind const>(
             json.at("model").get<std::string>().at(0),
-            json.at("mOut").get<double>(),
-            json.at("mStar").get<double>(),
-            json.at("h0").get<double>(),
-            json.at("rMin").get<double>(),
-            json.at("rMax").get<double>(),
+            get_double(json, safierWind, "mOut"),
+            get_double(json, safierWind, "mStar"),
+            get_double(json, safierWind, "h0"),
+            get_double(json, safierWind, "rMin"),
+            get_double(json, safierWind, "rMax"),
             hump);
     }
 
 
     IMatterCPtr parseFlaredDisk(const nlohmann::json& json)
     {
+        char const flaredDisk[] = "flaredDisk";
+
         checkParameters(
             json,
-            "flaredDisk",
+            flaredDisk,
             {"safierWind", "translation", "hump", "rInner", "rOuter", "rho0", "h0", "r0", "alpha", "beta"});
 
         IMatterCPtr const wind{
@@ -134,13 +188,13 @@ namespace
         };
 
         return std::make_shared<FlaredDisk const>(
-            json.at("rInner").get<double>(),
-            json.at("rOuter").get<double>(),
-            json.at("rho0").get<double>(),
-            json.at("h0").get<double>(),
-            json.at("r0").get<double>(),
-            json.at("alpha").get<double>(),
-            json.at("beta").get<double>(),
+            get_double(json, flaredDisk, "rInner"),
+            get_double(json, flaredDisk, "rOuter"),
+            get_double(json, flaredDisk, "rho0"),
+            get_double(json, flaredDisk, "h0"),
+            get_double(json, flaredDisk, "r0"),
+            get_double(json, flaredDisk, "alpha"),
+            get_double(json, flaredDisk, "beta"),
             wind,
             translation,
             hump);
@@ -149,31 +203,33 @@ namespace
 
     IMatterCPtr parseSphereEnvelope(const nlohmann::json& json)
     {
-        checkParameters(json, "sphereEnvelope", {"translation", "rInner", "rOuter", "rho0", "r0", "alpha"});
+        char const sphereEnvelope[] = "sphereEnvelope";
+        checkParameters(json, sphereEnvelope, {"translation", "rInner", "rOuter", "rho0", "r0", "alpha"});
 
         MatterTranslationCPtr const translation{
             json.contains("translation") ? parseTranslation(json.at("translation")) : nullptr
         };
 
         return std::make_shared<SphereEnvelope const>(
-            json.at("rInner").get<double>(),
-            json.at("rOuter").get<double>(),
-            json.at("rho0").get<double>(),
-            json.at("r0").get<double>(),
-            json.at("alpha").get<double>(),
+            get_double(json, sphereEnvelope, "rInner"),
+            get_double(json, sphereEnvelope, "rOuter"),
+            get_double(json, sphereEnvelope, "rho0"),
+            get_double(json, sphereEnvelope, "r0"),
+            get_double(json, sphereEnvelope, "alpha"),
             translation);
     }
 
 
     IMatterCPtr parseFractalCloud(const nlohmann::json& json)
     {
-        checkParameters(json, "fractalCloud", {"n", "max", "dCube", "rho0", "dotsN", "seed"});
+        char const fractalCloud[] = "fractalCloud";
+        checkParameters(json, fractalCloud, {"n", "max", "dCube", "rho0", "dotsN", "seed"});
 
         return std::make_shared<FractalCloud const>(
             json.at("n").get<std::uint32_t>(),
-            json.at("max").get<double>(),
-            json.at("dCube").get<double>(),
-            json.at("rho0").get<double>(),
+            get_double(json, fractalCloud, "max"),
+            get_double(json, fractalCloud, "dCube"),
+            get_double(json, fractalCloud, "rho0"),
             json.at("dotsN").get<std::uint32_t>(),
             json.at("seed").get<int32_t>());
     }
@@ -238,25 +294,27 @@ namespace
 
     DustCPtr parseDust(const nlohmann::json& json)
     {
-        checkParameters(json, "dust", {"kappa", "albedo", "hgg", "pl", "pc", "sc"});
+        char const dust[] = "dust";
+        checkParameters(json, dust, {"kappa", "albedo", "hgg", "pl", "pc", "sc"});
 
         return std::make_shared<Dust>(
-            json.at("albedo").get<double>(),
-            json.at("hgg").get<double>(),
-            json.at("pl").get<double>(),
-            json.at("pc").get<double>(),
-            json.at("sc").get<double>());
+            get_double(json, dust, "albedo"),
+            get_double(json, dust, "hgg"),
+            get_double(json, dust, "pl"),
+            get_double(json, dust, "pc"),
+            get_double(json, dust, "sc"));
     }
 
 
     IGridCPtr parseCartesianGrid(const nlohmann::json& json, double const kappa, IMatterCPtr matter)
     {
-        checkParameters(json, "cartesian", {"xmax", "ymax", "zmax", "nx", "ny", "nz"});
+        char const cartesian[] = "grid::cartesian";
+        checkParameters(json, cartesian, {"xmax", "ymax", "zmax", "nx", "ny", "nz"});
 
         return std::make_shared<CartesianGrid const>(
-            json.at("xmax").get<double>(),
-            json.at("ymax").get<double>(),
-            json.at("zmax").get<double>(),
+            get_double(json, cartesian, "xmax"),
+            get_double(json, cartesian, "ymax"),
+            get_double(json, cartesian, "zmax"),
             kappa,
             json.at("nx").get<std::uint32_t>(),
             json.at("ny").get<std::uint32_t>(),
@@ -267,6 +325,7 @@ namespace
 
     IGridCPtr parseTetrahedralGrid(const nlohmann::json& json, double const kappa, IMatterCPtr matter)
     {
+        char const tetrahedral[] = "grid::tetrahedral";
         checkParameters(json, "tetrahedral", {"nodesFile", "elementsFile", "gridBinFile", "max"});
 
         if (json.contains("nodesFile") && json.contains("elementsFile"))
@@ -275,14 +334,14 @@ namespace
                 json.at("nodesFile").get<std::string>(),
                 json.at("elementsFile").get<std::string>(),
                 json.contains("gridBinFile") ? json.at("gridBinFile").get<std::string>() : "",
-                json.at("max").get<double>(),
+                get_double(json, tetrahedral, "max"),
                 kappa,
                 std::move(matter));
         }
 
         return std::make_shared<TetrahedralGrid const>(
             json.at("gridBinFile").get<std::string>(),
-            json.at("max").get<double>(),
+            get_double(json, tetrahedral, "max"),
             kappa,
             std::move(matter));
     }
@@ -309,21 +368,23 @@ namespace
 
     void parseObservers(std::vector<Observer>* observers, nlohmann::json const& json)
     {
-        checkParameters(json, "observers", {"rimage", "manual", "parallel", "meridian"});
+        char const name[] = "observers";
+        checkParameters(json, name, {"rimage", "manual", "parallel", "meridian"});
 
-        auto const rimage = json.at("rimage").get<double>();
+        auto const rimage = get_double(json, name, "rimage");
 
         if (json.contains("manual"))
         {
             nlohmann::json const& manualJson = json.at("manual");
             observers->reserve(manualJson.size());
+            char const observersManual[] = "observers::manual";
             for (const auto& observer : manualJson)
             {
-                checkParameters(observer, "observers::manual", {"phi", "theta"});
+                checkParameters(observer, observersManual, {"phi", "theta"});
 
                 observers->emplace_back(
-                    radians(observer.at("phi").get<double>()),
-                    radians(observer.at("theta").get<double>()),
+                    radians(get_double(observer, observersManual, "phi")),
+                    radians(get_double(observer, observersManual, "theta")),
                     rimage);
             }
         }
@@ -331,9 +392,10 @@ namespace
         if (json.contains("parallel"))
         {
             nlohmann::json const& parallellJson = json.at("parallel");
-            checkParameters(parallellJson, "observers::parallel", {"numberOfObservers", "theta"});
+            char const observersParallel[] = "observers::parallel";
+            checkParameters(parallellJson, observersParallel, {"numberOfObservers", "theta"});
             const auto numberOfObservers = parallellJson.at("numberOfObservers").get<int>();
-            const auto viewTheta = parallellJson.at("theta").get<double>();
+            const auto viewTheta = get_double(parallellJson, observersParallel, "theta");
             observers->reserve(observers->size() + numberOfObservers);
 
             for (int i=0; i!=numberOfObservers; ++i)
@@ -345,9 +407,10 @@ namespace
         if (json.contains("meridian"))
         {
             nlohmann::json const& medianJson = json.at("meridian");
-            checkParameters(medianJson, "observers::meridian", {"numberOfObservers", "phi"});
+            char const observersMeridian[] = "observers::meridian";
+            checkParameters(medianJson, observersMeridian, {"numberOfObservers", "phi"});
             const auto numberOfObservers = medianJson.at("numberOfObservers").get<int>();
-            const auto viewPhi = medianJson.at("phi").get<double>();
+            const auto viewPhi = get_double(medianJson, observersMeridian, "phi");
             observers->reserve(observers->size() + numberOfObservers);
 
             for (int i=0; i!=numberOfObservers; ++i)
@@ -365,20 +428,21 @@ namespace
     {
         std::vector<PointSource> pointSources;
         pointSources.reserve(json.size());
+        char const sources[] = "sources";
 
         for (auto const &star : json)
         {
-            checkParameters(star, "sources", {"x", "y", "z", "l"});
+            checkParameters(star, sources, {"x", "y", "z", "l"});
 
             Vector3d const position{
-                star.at("x").get<double>(),
-                star.at("y").get<double>(),
-                star.at("z").get<double>()};
+                get_double(star, sources, "x"),
+                get_double(star, sources, "y"),
+                get_double(star, sources, "z")};
 
             pointSources.emplace_back(
                 position,
                 grid->cellId(position),
-                star.at("l").get<double>());
+                get_double(star, sources, "l"));
         }
 
         return std::make_shared<Sources>(sourceParameters, std::move(pointSources));
@@ -401,11 +465,12 @@ Model::Model(std::vector<Observer>* observers)
         {"method parameters", "dust", "geometry", "grid", "stars", "observers"});
 
     SourceParameters sourceParameters{};
-    nlohmann::json const& methodJson = j.at("method parameters");
+    char const methodParameters[] = "method parameters";
+    nlohmann::json const& methodJson = j.at(methodParameters);
 
     checkParameters(
         methodJson,
-        "method parameters",
+        methodParameters,
         {"fMonteCarlo", "nphotons", "PrimaryDirectionsLevel", "iseed", "taumin", "nscat",
          "SecondaryDirectionsLevel", "NumOfPrimaryScatterings", "NumOfSecondaryScatterings", "MonteCarloStart"});
 
@@ -415,17 +480,18 @@ Model::Model(std::vector<Observer>* observers)
     iseed_ = methodJson.at("iseed").get<int32_t>();
 
     fMonteCarlo_ = sourceParameters.useMonteCarlo_;
-    taumin_ = methodJson.at("taumin").get<double>();
+    taumin_ = get_double(methodJson, methodParameters, "taumin");
     nscat_ = methodJson.at("nscat").get<std::uint32_t>();
     SecondaryDirectionsLevel_ = methodJson.at("SecondaryDirectionsLevel").get<std::uint32_t>();
     NumOfPrimaryScatterings_ = methodJson.at("NumOfPrimaryScatterings").get<std::uint32_t>();
     NumOfSecondaryScatterings_ = methodJson.at("NumOfSecondaryScatterings").get<std::uint32_t>();
     MonteCarloStart_ = methodJson.at("MonteCarloStart").get<std::uint32_t>();
 
-    nlohmann::json const& dustJson = j.at("dust");
+    char const dust[] = "dust";
+    nlohmann::json const& dustJson = j.at(dust);
     dust_ = parseDust(dustJson);
     IMatterCPtr geometry = parseGeometry(j.at("geometry"));
-    grid_ = parseGrid(j.at("grid"), dustJson.at("kappa").get<double>(), geometry);
+    grid_ = parseGrid(j.at("grid"), get_double(dustJson, dust, "kappa"), geometry);
     sources_ = parseSources(j.at("stars"), sourceParameters, grid_);
     parseObservers(observers, j.at("observers"));
 }
