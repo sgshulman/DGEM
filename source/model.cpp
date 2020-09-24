@@ -395,8 +395,20 @@ Model::Model(std::vector<Observer>* observers)
     nlohmann::json j;
     configurationFile >> j;
 
+    checkParameters(
+        j,
+        "parameters.json",
+        {"method parameters", "dust", "geometry", "grid", "stars", "observers"});
+
     SourceParameters sourceParameters{};
     nlohmann::json const& methodJson = j.at("method parameters");
+
+    checkParameters(
+        methodJson,
+        "method parameters",
+        {"fMonteCarlo", "nphotons", "PrimaryDirectionsLevel", "iseed", "taumin", "nscat",
+         "SecondaryDirectionsLevel", "NumOfPrimaryScatterings", "NumOfSecondaryScatterings", "MonteCarloStart"});
+
     sourceParameters.useMonteCarlo_ = methodJson.at("fMonteCarlo").get<bool>();
     sourceParameters.num_photons_ = methodJson.at("nphotons").get<std::uint64_t>();
     sourceParameters.PrimaryDirectionsLevel_ = methodJson.at("PrimaryDirectionsLevel").get<std::uint32_t>();
