@@ -56,51 +56,32 @@ namespace
         }
     }
 
+
+    double extract_double(const nlohmann::json& json, char const* const section, char const* const name)
+    {
+        if (!json.is_number_float() && !json.is_number_integer())
+        {
+            throw std::invalid_argument(std::string("Item ") + name + " from section " + section + " should be float.");
+        }
+
+        return json.get<double>();
+    }
+
+
     double get_double(const nlohmann::json& json, char const* const section, char const* const name)
     {
         if (!json.contains(name))
         {
-            std::stringstream ss;
-            ss << "Section " << section << " should contain a float type item " << name << ".";
-
-            throw std::invalid_argument(ss.str());
-        }
-        const auto item = json.at(name);
-
-        if (!item.is_number_float() && !item.is_number_integer())
-        {
-            std::stringstream ss;
-            ss << "Item " << name << " from section " << section << " should be float.";
-
-            throw std::invalid_argument(ss.str());
+            throw std::invalid_argument(std::string("Section ") + section + " should contain float item " + name + ".");
         }
 
-        return item.get<double>();
+        return extract_double(json.at(name), section, name);
     }
 
 
-    double get_optional_double(
-        const nlohmann::json& json,
-        char const* const section,
-        char const* const name,
-        double defaultValue)
+    double get_optional_double(const nlohmann::json& json, char const* section, char const* name, double defaultValue)
     {
-        if (!json.contains(name))
-        {
-            return defaultValue;
-        }
-
-        const auto item = json.at(name);
-
-        if (!item.is_number_float() && !item.is_number_integer())
-        {
-            std::stringstream ss;
-            ss << "Item " << name << " from section " << section << " should be float.";
-
-            throw std::invalid_argument(ss.str());
-        }
-
-        return item.get<double>();
+        return json.contains(name) ? extract_double(json.at(name), section, name) : defaultValue;
     }
 
 
@@ -117,6 +98,7 @@ namespace
                 get_optional_double(json, sTranslation, "y", 0.0),
                 get_optional_double(json, sTranslation, "z", 0.0)});
     }
+
 
     IDiskHumpCPtr parseDiskHump(const nlohmann::json& json)
     {
