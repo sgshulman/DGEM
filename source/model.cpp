@@ -22,6 +22,16 @@
 
 namespace
 {
+    char const sDust[] = "dust";
+    char const sGeometry[] = "geometry";
+    char const sGrid[] = "grid";
+    char const sStars[] = "stars";
+    char const sObservers[] = "observers";
+    char const sFlaredDisk[] = "flaredDisk";
+    char const sTranslation[] = "translation";
+    char const sSphereEnvelope[] = "sphereEnvelope";
+    char const sFractalCloud[] = "fractalCloud";
+
     void checkParameters(
         const nlohmann::json& json,
         char const* const section,
@@ -96,17 +106,16 @@ namespace
 
     MatterTranslationCPtr parseTranslation(const nlohmann::json& json)
     {
-        const char transition[] = "translation";
-        checkParameters(json, transition, {"precession", "nutation", "intrinsicRotation", "x", "y", "z"});
+        checkParameters(json, sTranslation, {"precession", "nutation", "intrinsicRotation", "x", "y", "z"});
 
         return std::make_shared<MatterTranslation const>(
-            get_optional_double(json, transition, "precession", 0.0),
-            get_optional_double(json, transition, "nutation", 0.0),
-            get_optional_double(json, transition, "intrinsicRotation", 0.0),
+            get_optional_double(json, sTranslation, "precession", 0.0),
+            get_optional_double(json, sTranslation, "nutation", 0.0),
+            get_optional_double(json, sTranslation, "intrinsicRotation", 0.0),
             Vector3d{
-                get_optional_double(json, transition, "x", 0.0),
-                get_optional_double(json, transition, "y", 0.0),
-                get_optional_double(json, transition, "z", 0.0)});
+                get_optional_double(json, sTranslation, "x", 0.0),
+                get_optional_double(json, sTranslation, "y", 0.0),
+                get_optional_double(json, sTranslation, "z", 0.0)});
     }
 
     IDiskHumpCPtr parseDiskHump(const nlohmann::json& json)
@@ -168,19 +177,17 @@ namespace
 
     IMatterCPtr parseFlaredDisk(const nlohmann::json& json)
     {
-        char const flaredDisk[] = "flaredDisk";
-
         checkParameters(
             json,
-            flaredDisk,
-            {"safierWind", "translation", "hump", "rInner", "rOuter", "rho0", "h0", "r0", "alpha", "beta"});
+            sFlaredDisk,
+            {"safierWind", sTranslation, "hump", "rInner", "rOuter", "rho0", "h0", "r0", "alpha", "beta"});
 
         IMatterCPtr const wind{
             json.contains("safierWind") ? parseSafierWind(json.at("safierWind")) : nullptr
         };
 
         MatterTranslationCPtr const translation{
-            json.contains("translation") ? parseTranslation(json.at("translation")) : nullptr
+            json.contains(sTranslation) ? parseTranslation(json.at(sTranslation)) : nullptr
         };
 
         IDiskHumpCPtr const hump{
@@ -188,13 +195,13 @@ namespace
         };
 
         return std::make_shared<FlaredDisk const>(
-            get_double(json, flaredDisk, "rInner"),
-            get_double(json, flaredDisk, "rOuter"),
-            get_double(json, flaredDisk, "rho0"),
-            get_double(json, flaredDisk, "h0"),
-            get_double(json, flaredDisk, "r0"),
-            get_double(json, flaredDisk, "alpha"),
-            get_double(json, flaredDisk, "beta"),
+            get_double(json, sFlaredDisk, "rInner"),
+            get_double(json, sFlaredDisk, "rOuter"),
+            get_double(json, sFlaredDisk, "rho0"),
+            get_double(json, sFlaredDisk, "h0"),
+            get_double(json, sFlaredDisk, "r0"),
+            get_double(json, sFlaredDisk, "alpha"),
+            get_double(json, sFlaredDisk, "beta"),
             wind,
             translation,
             hump);
@@ -203,33 +210,31 @@ namespace
 
     IMatterCPtr parseSphereEnvelope(const nlohmann::json& json)
     {
-        char const sphereEnvelope[] = "sphereEnvelope";
-        checkParameters(json, sphereEnvelope, {"translation", "rInner", "rOuter", "rho0", "r0", "alpha"});
+        checkParameters(json, sSphereEnvelope, {sTranslation, "rInner", "rOuter", "rho0", "r0", "alpha"});
 
         MatterTranslationCPtr const translation{
-            json.contains("translation") ? parseTranslation(json.at("translation")) : nullptr
+            json.contains(sTranslation) ? parseTranslation(json.at(sTranslation)) : nullptr
         };
 
         return std::make_shared<SphereEnvelope const>(
-            get_double(json, sphereEnvelope, "rInner"),
-            get_double(json, sphereEnvelope, "rOuter"),
-            get_double(json, sphereEnvelope, "rho0"),
-            get_double(json, sphereEnvelope, "r0"),
-            get_double(json, sphereEnvelope, "alpha"),
+            get_double(json, sSphereEnvelope, "rInner"),
+            get_double(json, sSphereEnvelope, "rOuter"),
+            get_double(json, sSphereEnvelope, "rho0"),
+            get_double(json, sSphereEnvelope, "r0"),
+            get_double(json, sSphereEnvelope, "alpha"),
             translation);
     }
 
 
     IMatterCPtr parseFractalCloud(const nlohmann::json& json)
     {
-        char const fractalCloud[] = "fractalCloud";
-        checkParameters(json, fractalCloud, {"n", "max", "dCube", "rho0", "dotsN", "seed"});
+        checkParameters(json, sFractalCloud, {"n", "max", "dCube", "rho0", "dotsN", "seed"});
 
         return std::make_shared<FractalCloud const>(
             json.at("n").get<std::uint32_t>(),
-            get_double(json, fractalCloud, "max"),
-            get_double(json, fractalCloud, "dCube"),
-            get_double(json, fractalCloud, "rho0"),
+            get_double(json, sFractalCloud, "max"),
+            get_double(json, sFractalCloud, "dCube"),
+            get_double(json, sFractalCloud, "rho0"),
             json.at("dotsN").get<std::uint32_t>(),
             json.at("seed").get<int32_t>());
     }
@@ -241,15 +246,15 @@ namespace
             json.size() == 1,
             "geometry section of the json must contain exactly one top level element");
 
-        checkParameters(json, "geometry", {"flaredDisk", "sphereEnvelope", "fractalCloud", "max", "sum"});
+        checkParameters(json, sGeometry, {sFlaredDisk, sSphereEnvelope, sFractalCloud, "max", "sum"});
 
-        if (json.contains("flaredDisk"))
+        if (json.contains(sFlaredDisk))
         {
-            return parseFlaredDisk(json.at("flaredDisk"));
-        } else if (json.contains("sphereEnvelope")) {
-            return parseSphereEnvelope(json.at("sphereEnvelope"));
-        } else if (json.contains("fractalCloud")) {
-            return parseFractalCloud(json.at("fractalCloud"));
+            return parseFlaredDisk(json.at(sFlaredDisk));
+        } else if (json.contains(sSphereEnvelope)) {
+            return parseSphereEnvelope(json.at(sSphereEnvelope));
+        } else if (json.contains(sFractalCloud)) {
+            return parseFractalCloud(json.at(sFractalCloud));
         } else if (json.contains("max")) {
             nlohmann::json const& jsonList = json.at("max");
 
@@ -294,15 +299,14 @@ namespace
 
     DustCPtr parseDust(const nlohmann::json& json)
     {
-        char const dust[] = "dust";
-        checkParameters(json, dust, {"kappa", "albedo", "hgg", "pl", "pc", "sc"});
+        checkParameters(json, sDust, {"kappa", "albedo", "hgg", "pl", "pc", "sc"});
 
         return std::make_shared<Dust>(
-            get_double(json, dust, "albedo"),
-            get_double(json, dust, "hgg"),
-            get_double(json, dust, "pl"),
-            get_double(json, dust, "pc"),
-            get_double(json, dust, "sc"));
+            get_double(json, sDust, "albedo"),
+            get_double(json, sDust, "hgg"),
+            get_double(json, sDust, "pl"),
+            get_double(json, sDust, "pc"),
+            get_double(json, sDust, "sc"));
     }
 
 
@@ -349,7 +353,7 @@ namespace
 
     IGridCPtr parseGrid(const nlohmann::json& json, double const kappa, IMatterCPtr matter)
     {
-        checkParameters(json, "grid", {"cartesian", "tetrahedral"});
+        checkParameters(json, sGrid, {"cartesian", "tetrahedral"});
 
         DATA_ASSERT(
             json.size() == 1,
@@ -368,10 +372,9 @@ namespace
 
     void parseObservers(std::vector<Observer>* observers, nlohmann::json const& json)
     {
-        char const name[] = "observers";
-        checkParameters(json, name, {"rimage", "manual", "parallel", "meridian"});
+        checkParameters(json, sObservers, {"rimage", "manual", "parallel", "meridian"});
 
-        auto const rimage = get_double(json, name, "rimage");
+        auto const rimage = get_double(json, sObservers, "rimage");
 
         if (json.contains("manual"))
         {
@@ -428,21 +431,20 @@ namespace
     {
         std::vector<PointSource> pointSources;
         pointSources.reserve(json.size());
-        char const sources[] = "sources";
 
         for (auto const &star : json)
         {
-            checkParameters(star, sources, {"x", "y", "z", "l"});
+            checkParameters(star, sStars, {"x", "y", "z", "l"});
 
             Vector3d const position{
-                get_double(star, sources, "x"),
-                get_double(star, sources, "y"),
-                get_double(star, sources, "z")};
+                get_double(star, sStars, "x"),
+                get_double(star, sStars, "y"),
+                get_double(star, sStars, "z")};
 
             pointSources.emplace_back(
                 position,
                 grid->cellId(position),
-                get_double(star, sources, "l"));
+                get_double(star, sStars, "l"));
         }
 
         return std::make_shared<Sources>(sourceParameters, std::move(pointSources));
@@ -462,7 +464,7 @@ Model::Model(std::vector<Observer>* observers)
     checkParameters(
         j,
         "parameters.json",
-        {"method parameters", "dust", "geometry", "grid", "stars", "observers"});
+        {"method parameters", sDust, sGeometry, sGrid, sStars, sObservers});
 
     SourceParameters sourceParameters{};
     char const methodParameters[] = "method parameters";
@@ -487,11 +489,10 @@ Model::Model(std::vector<Observer>* observers)
     NumOfSecondaryScatterings_ = methodJson.at("NumOfSecondaryScatterings").get<std::uint32_t>();
     MonteCarloStart_ = methodJson.at("MonteCarloStart").get<std::uint32_t>();
 
-    char const dust[] = "dust";
-    nlohmann::json const& dustJson = j.at(dust);
+    nlohmann::json const& dustJson = j.at(sDust);
     dust_ = parseDust(dustJson);
-    IMatterCPtr geometry = parseGeometry(j.at("geometry"));
-    grid_ = parseGrid(j.at("grid"), get_double(dustJson, dust, "kappa"), geometry);
-    sources_ = parseSources(j.at("stars"), sourceParameters, grid_);
-    parseObservers(observers, j.at("observers"));
+    IMatterCPtr geometry = parseGeometry(j.at(sGeometry));
+    grid_ = parseGrid(j.at(sGrid), get_double(dustJson, sDust, "kappa"), geometry);
+    sources_ = parseSources(j.at(sStars), sourceParameters, grid_);
+    parseObservers(observers, j.at(sObservers));
 }
