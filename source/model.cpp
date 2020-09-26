@@ -57,6 +57,34 @@ namespace
     }
 
 
+    std::string extract_string(const nlohmann::json& json, char const* const section, char const* const name)
+    {
+        if (!json.is_string())
+        {
+            throw std::invalid_argument(std::string("Item ") + name + " from section " + section + " should be string.");
+        }
+
+        return json.get<std::string>();
+    }
+
+
+    std::string get_string(const nlohmann::json& json, char const* const section, char const* const name)
+    {
+        if (!json.contains(name))
+        {
+            throw std::invalid_argument(std::string("Section ") + section + " should contain string item " + name + ".");
+        }
+
+        return extract_string(json.at(name), section, name);
+    }
+
+
+    std::string get_optional_string(const nlohmann::json& json, char const* section, char const* name, std::string const& defaultValue)
+    {
+        return json.contains(name) ? extract_string(json.at(name), section, name) : defaultValue;
+    }
+
+
     double extract_double(const nlohmann::json& json, char const* const section, char const* const name)
     {
         if (!json.is_number_float() && !json.is_number_integer())
@@ -136,6 +164,23 @@ namespace
     }
 
 
+    std::uint64_t get_bool(const nlohmann::json& json, char const* const section, char const* const name)
+    {
+        if (!json.contains(name))
+        {
+            throw std::invalid_argument(std::string("Section ") + section + " should contain boolean item " + name + ".");
+        }
+
+        auto const& item = json.at(name);
+        if (!item.is_boolean())
+        {
+            throw std::invalid_argument(std::string("Item ") + name + " from section " + section + " should be boolean.");
+        }
+
+        return item.get<bool>();
+    }
+
+
     MatterTranslationCPtr parseTranslation(const nlohmann::json& json)
     {
         checkParameters(json, sTranslation, {"precession", "nutation", "intrinsicRotation", "x", "y", "z"});
@@ -197,8 +242,11 @@ namespace
             json.contains("hump") ? parseDiskHump(json.at("hump")) : nullptr
         };
 
+        std::string const windModel = get_string(json, safierWind, "model");
+        DATA_ASSERT(windModel.size() == 1, "Safier wind model should contain one letter.");
+
         return std::make_shared<SafierWind const>(
-            json.at("model").get<std::string>().at(0),
+            windModel.at(0),
             get_double(json, safierWind, "mOut"),
             get_double(json, safierWind, "mStar"),
             get_double(json, safierWind, "h0"),
@@ -365,19 +413,23 @@ namespace
         char const tetrahedral[] = "grid::tetrahedral";
         checkParameters(json, "tetrahedral", {"nodesFile", "elementsFile", "gridBinFile", "max"});
 
+        DATA_ASSERT(
+            json.contains("nodesFile") == json.contains("elementsFile"),
+            "Grid::tetrahedral should contain both files nodesFile and elementsFile or none of them");
+
         if (json.contains("nodesFile") && json.contains("elementsFile"))
         {
             return std::make_shared<TetrahedralGrid const>(
-                json.at("nodesFile").get<std::string>(),
-                json.at("elementsFile").get<std::string>(),
-                json.contains("gridBinFile") ? json.at("gridBinFile").get<std::string>() : "",
+                get_string(json, tetrahedral, "nodesFile"),
+                get_string(json, tetrahedral, "elementsFile"),
+                get_optional_string(json, tetrahedral, "gridBinFile", ""),
                 get_double(json, tetrahedral, "max"),
                 kappa,
                 std::move(matter));
         }
 
         return std::make_shared<TetrahedralGrid const>(
-            json.at("gridBinFile").get<std::string>(),
+            get_string(json, tetrahedral, "gridBinFile"),
             get_double(json, tetrahedral, "max"),
             kappa,
             std::move(matter));
@@ -509,7 +561,7 @@ Model::Model(std::vector<Observer>* observers)
         {"fMonteCarlo", "nphotons", "PrimaryDirectionsLevel", "iseed", "taumin", "nscat",
          "SecondaryDirectionsLevel", "NumOfPrimaryScatterings", "NumOfSecondaryScatterings", "MonteCarloStart"});
 
-    sourceParameters.useMonteCarlo_ = methodJson.at("fMonteCarlo").get<bool>();
+    sourceParameters.useMonteCarlo_ = get_bool(methodJson, methodParameters, "fMonteCarlo");
     sourceParameters.num_photons_ = get_uint64(methodJson, methodParameters, "nphotons");
     sourceParameters.PrimaryDirectionsLevel_ = get_uint32(methodJson, methodParameters, "PrimaryDirectionsLevel");
     iseed_ = get_int32(methodJson, methodParameters, "iseed");
