@@ -85,6 +85,57 @@ namespace
     }
 
 
+    std::int32_t get_int32(const nlohmann::json& json, char const* const section, char const* const name)
+    {
+        if (!json.contains(name))
+        {
+            throw std::invalid_argument(std::string("Section ") + section + " should contain integer item " + name + ".");
+        }
+
+        auto const& item = json.at(name);
+        if (!item.is_number_integer())
+        {
+            throw std::invalid_argument(std::string("Item ") + name + " from section " + section + " should be integer.");
+        }
+
+        return item.get<std::int32_t>();
+    }
+
+
+    std::uint32_t get_uint32(const nlohmann::json& json, char const* const section, char const* const name)
+    {
+        if (!json.contains(name))
+        {
+            throw std::invalid_argument(std::string("Section ") + section + " should contain unsigned integer item " + name + ".");
+        }
+
+        auto const& item = json.at(name);
+        if (!item.is_number_unsigned() && !(item.is_number_integer() && item.get<int64_t>() >= 0))
+        {
+            throw std::invalid_argument(std::string("Item ") + name + " from section " + section + " should be unsigned integer.");
+        }
+
+        return item.get<std::uint32_t>();
+    }
+
+
+    std::uint64_t get_uint64(const nlohmann::json& json, char const* const section, char const* const name)
+    {
+        if (!json.contains(name))
+        {
+            throw std::invalid_argument(std::string("Section ") + section + " should contain unsigned integer item " + name + ".");
+        }
+
+        auto const& item = json.at(name);
+        if (!item.is_number_unsigned() && !(item.is_number_integer() && item.get<int64_t>() >= 0))
+        {
+            throw std::invalid_argument(std::string("Item ") + name + " from section " + section + " should be unsigned integer.");
+        }
+
+        return item.get<std::uint64_t>();
+    }
+
+
     MatterTranslationCPtr parseTranslation(const nlohmann::json& json)
     {
         checkParameters(json, sTranslation, {"precession", "nutation", "intrinsicRotation", "x", "y", "z"});
@@ -213,12 +264,12 @@ namespace
         checkParameters(json, sFractalCloud, {"n", "max", "dCube", "rho0", "dotsN", "seed"});
 
         return std::make_shared<FractalCloud const>(
-            json.at("n").get<std::uint32_t>(),
+            get_uint32(json, sFractalCloud, "n"),
             get_double(json, sFractalCloud, "max"),
             get_double(json, sFractalCloud, "dCube"),
             get_double(json, sFractalCloud, "rho0"),
-            json.at("dotsN").get<std::uint32_t>(),
-            json.at("seed").get<int32_t>());
+            get_uint32(json, sFractalCloud, "dotsN"),
+            get_int32(json, sFractalCloud, "seed"));
     }
 
 
@@ -302,9 +353,9 @@ namespace
             get_double(json, cartesian, "ymax"),
             get_double(json, cartesian, "zmax"),
             kappa,
-            json.at("nx").get<std::uint32_t>(),
-            json.at("ny").get<std::uint32_t>(),
-            json.at("nz").get<std::uint32_t>(),
+            get_uint32(json, cartesian, "nx"),
+            get_uint32(json, cartesian, "ny"),
+            get_uint32(json, cartesian, "nz"),
             std::move(matter));
     }
 
@@ -379,11 +430,11 @@ namespace
             nlohmann::json const& parallellJson = json.at("parallel");
             char const observersParallel[] = "observers::parallel";
             checkParameters(parallellJson, observersParallel, {"numberOfObservers", "theta"});
-            const auto numberOfObservers = parallellJson.at("numberOfObservers").get<int>();
+            std::uint32_t const numberOfObservers = get_uint32(parallellJson, observersParallel, "numberOfObservers");
             const auto viewTheta = get_double(parallellJson, observersParallel, "theta");
             observers->reserve(observers->size() + numberOfObservers);
 
-            for (int i=0; i!=numberOfObservers; ++i)
+            for (std::uint32_t i=0; i!=numberOfObservers; ++i)
             {
                 observers->emplace_back(2*PI/numberOfObservers*i, radians(viewTheta), rimage);
             }
@@ -394,11 +445,11 @@ namespace
             nlohmann::json const& medianJson = json.at("meridian");
             char const observersMeridian[] = "observers::meridian";
             checkParameters(medianJson, observersMeridian, {"numberOfObservers", "phi"});
-            const auto numberOfObservers = medianJson.at("numberOfObservers").get<int>();
+            std::uint32_t const numberOfObservers = get_uint32(medianJson, observersMeridian, "numberOfObservers");
             const auto viewPhi = get_double(medianJson, observersMeridian, "phi");
             observers->reserve(observers->size() + numberOfObservers);
 
-            for (int i=0; i!=numberOfObservers; ++i)
+            for (std::uint32_t i=0; i!=numberOfObservers; ++i)
             {
                 observers->emplace_back(radians(viewPhi), PI/numberOfObservers*(i + 0.5), rimage);
             }
@@ -459,17 +510,17 @@ Model::Model(std::vector<Observer>* observers)
          "SecondaryDirectionsLevel", "NumOfPrimaryScatterings", "NumOfSecondaryScatterings", "MonteCarloStart"});
 
     sourceParameters.useMonteCarlo_ = methodJson.at("fMonteCarlo").get<bool>();
-    sourceParameters.num_photons_ = methodJson.at("nphotons").get<std::uint64_t>();
-    sourceParameters.PrimaryDirectionsLevel_ = methodJson.at("PrimaryDirectionsLevel").get<std::uint32_t>();
-    iseed_ = methodJson.at("iseed").get<int32_t>();
+    sourceParameters.num_photons_ = get_uint64(methodJson, methodParameters, "nphotons");
+    sourceParameters.PrimaryDirectionsLevel_ = get_uint32(methodJson, methodParameters, "PrimaryDirectionsLevel");
+    iseed_ = get_int32(methodJson, methodParameters, "iseed");
 
     fMonteCarlo_ = sourceParameters.useMonteCarlo_;
     taumin_ = get_double(methodJson, methodParameters, "taumin");
-    nscat_ = methodJson.at("nscat").get<std::uint32_t>();
-    SecondaryDirectionsLevel_ = methodJson.at("SecondaryDirectionsLevel").get<std::uint32_t>();
-    NumOfPrimaryScatterings_ = methodJson.at("NumOfPrimaryScatterings").get<std::uint32_t>();
-    NumOfSecondaryScatterings_ = methodJson.at("NumOfSecondaryScatterings").get<std::uint32_t>();
-    MonteCarloStart_ = methodJson.at("MonteCarloStart").get<std::uint32_t>();
+    nscat_ = get_uint32(methodJson, methodParameters, "nscat");
+    SecondaryDirectionsLevel_ = get_uint32(methodJson, methodParameters, "SecondaryDirectionsLevel");
+    NumOfPrimaryScatterings_ = get_uint32(methodJson, methodParameters, "NumOfPrimaryScatterings");
+    NumOfSecondaryScatterings_ = get_uint32(methodJson, methodParameters, "NumOfSecondaryScatterings");
+    MonteCarloStart_ = get_uint32(methodJson, methodParameters, "MonteCarloStart");
 
     nlohmann::json const& dustJson = j.at(sDust);
     dust_ = parseDust(dustJson);
