@@ -73,7 +73,7 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
             Photon ph(pointSources_[is].pos(), pointSources_[is].cellId(), (*observers)[io].direction(), 1.0, 0);
 
             // Find optical depth, tau1, to edge of grid along viewing direction
-            double tau1 = grid->calculateRealTau((*observers)[io].direction().vector());
+            double tau1 = grid->findRealOpticalDepth(pointSources_[is].pos(), (*observers)[io].direction().vector());
 
             // direct photon weight is exp(-tau1)/4pi
             ph.weight() = nph * std::exp(-tau1) / 4.0 / PI;
@@ -101,7 +101,7 @@ void Sources::writeObserversOpticalDepths(IGridCRef grid, std::vector<Observer>*
 
             // Find optical depths to edge of the grid along the line of sight
             double const tau = grid->findOpticalDepth(ph);
-            double const realTau = grid->calculateRealTau(obs.direction().vector());
+            double const realTau = grid->findRealOpticalDepth(pointSources_[is].pos(), obs.direction().vector());
 
             std::cout << "Observer #" << io << " (" << degrees(obs.phi()) << ", "
                 << degrees(obs.theta()) << ")\t" << tau << "\t" << realTau << std::endl;

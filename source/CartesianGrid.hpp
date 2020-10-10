@@ -18,7 +18,7 @@ class CartesianGrid : public IGrid
             delete[] rhokappa_;
         }
 
-        double calculateRealTau(const Vector3d& v) const override;
+        double findRealOpticalDepth(Vector3d const& position, Vector3d const& direction) const override;
         double findOpticalDepth(Photon ph) const override;
         int movePhotonAtDepth(Photon& ph, double tau, double tauold) const override;
         int movePhotonAtRandomDepth(Photon& ph, Random *ran) const override;

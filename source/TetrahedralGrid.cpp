@@ -182,15 +182,18 @@ private:
 };
 
 
-double TetrahedralGrid::calculateRealTau(const Vector3d& v) const
+double TetrahedralGrid::findRealOpticalDepth(Vector3d const& position, Vector3d const& direction) const
 {
-    double tau=0.0;
-    for (double x = 0.0, y = 0.0, z=0.0;
-         x <= max_ && y <= max_ && z <= max_;
-         x+=0.001*v.x(), y+=0.001*v.y(), z+=0.001*v.z())
+    double tau{ 0.0 };
+    Vector3d pos{ position };
+    double const step{0.001 * std::min(1., max_)};
+
+    while (std::abs(pos.x()) <= max_ && std::abs(pos.y()) <= max_ && std::abs(pos.z()) <= max_)
     {
-        tau += 0.001*matter_->density({x,y,z})*kappa_*1.5e13;
+        tau += step * matter_->density(pos) * kappa_ * 1.5e13;
+        pos = pos + step * direction;
     }
+
     return tau;
 }
 

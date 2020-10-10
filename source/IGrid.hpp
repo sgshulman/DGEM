@@ -12,7 +12,7 @@ class IGrid
         IGrid(IGrid const&) = delete;
         IGrid& operator=(IGrid const&) = delete;
 
-        virtual double calculateRealTau(const Vector3d& v) const = 0;
+        virtual double findRealOpticalDepth(Vector3d const& position, Vector3d const& direction) const = 0;
         virtual double findOpticalDepth(Photon ph) const = 0;
         virtual int movePhotonAtDepth(Photon& ph, double tau, double tauold) const = 0;
         virtual int movePhotonAtRandomDepth(Photon& ph, Random *ran) const = 0;
