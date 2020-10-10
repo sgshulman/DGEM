@@ -22,6 +22,7 @@ int main()
     Random ran(model.iseed());
 
     std::cout << "Matter mass:\t" << grid->computeMatterMass() << "\t Solar Masses" << std::endl;
+    sources->writeObserversOpticalDepths(grid, &observers);
 
     // Scattered photon loop
     if (model.fMonteCarlo())

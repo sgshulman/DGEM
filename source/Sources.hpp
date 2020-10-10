@@ -84,6 +84,7 @@ public:
 
     Photon emitPhoton(Random* ran);
     void directPhotons(IGridCRef grid, std::vector<Observer>* observers);
+    void writeObserversOpticalDepths(IGridCRef grid, std::vector<Observer>* observers);
 
     std::uint64_t num_photons() const
     {   return parameters_.num_photons_; }

@@ -84,3 +84,27 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
         }
     }
 }
+
+
+void Sources::writeObserversOpticalDepths(IGridCRef grid, std::vector<Observer>* observers)
+{
+    for (std::uint64_t is=0; is!=pointSources_.size(); ++is)
+    {
+        std::cout << "Optical depths from the pointSource #" << is << "." << std::endl;
+
+        for (std::uint64_t io=0; io!=observers->size(); ++io)
+        {
+            Observer const& obs = (*observers)[io];
+
+            // Set photon location, grid cell, and direction of observation
+            Photon const ph(pointSources_[is].pos(), pointSources_[is].cellId(), obs.direction(), 1.0, 0);
+
+            // Find optical depths to edge of the grid along the line of sight
+            double const tau = grid->findOpticalDepth(ph);
+            double const realTau = grid->calculateRealTau(obs.direction().vector());
+
+            std::cout << "Observer #" << io << " (" << degrees(obs.phi()) << ", "
+                << degrees(obs.theta()) << ")\t" << tau << "\t" << realTau << std::endl;
+        }
+    }
+}
