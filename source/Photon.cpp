@@ -4,7 +4,7 @@
 #include "Photon.hpp"
 #include "Random.hpp"
 #include "Directions.hpp"
-#include "Dust.hpp"
+#include "IDust.hpp"
 
 Photon::Photon( Vector3d const& pos, std::uint64_t cellId, Direction3d const& dir, double weight, std::uint32_t nscat, double fi, double fq, double fu, double fv )
     : pos_{ pos }
@@ -19,7 +19,7 @@ Photon::Photon( Vector3d const& pos, std::uint64_t cellId, Direction3d const& di
 {}
 
 
-double Photon::Scatt(DustCRef dust, Direction3d const& dir, Random* ran)
+double Photon::Scatt(IDustCRef dust, Direction3d const& dir, Random* ran)
 {
     // cos(Theta), where Theta is angle between incident
     // and outgoing (i.e., observed) photon direction
@@ -113,7 +113,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std:
 
 // Stokes vector changes
 // spherical trigonometry is used
-void Photon::Stokes(DustCRef dust, Direction3d const &dir, double calpha, bool fDir, Random* ran)
+void Photon::Stokes(IDustCRef dust, Direction3d const &dir, double calpha, bool fDir, Random* ran)
 {
     double a11,a12,a13,a21,a22,a23,a24,a31,a32,a33,a34;
         double a42,a43,a44;

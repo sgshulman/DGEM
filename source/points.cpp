@@ -7,7 +7,7 @@
 #include "Photon.hpp"
 #include "Random.hpp"
 #include "Directions.hpp"
-#include "Dust.hpp"
+#include "IDust.hpp"
 #include "Sources.hpp"
 
 
@@ -16,7 +16,7 @@ int main()
     std::vector<Observer> observers;
 
     // read the model parameters
-    Model & model = Model::instance(&observers);
+    Model& model = Model::instance(&observers);
     IGridCPtr grid = model.grid();
     SourcesPtr sources = model.sources();
     Random ran(model.iseed());

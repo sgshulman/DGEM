@@ -34,7 +34,7 @@ class Model
 		{	return NumOfSecondaryScatterings_;	}
         IGridCPtr grid() const
         {   return grid_; }
-		DustCPtr dust() const
+		IDustCPtr dust() const
         {   return dust_; }
         SourcesPtr sources()
         {   return sources_; }
@@ -49,7 +49,7 @@ class Model
         std::uint32_t NumOfPrimaryScatterings_;
 		std::uint32_t NumOfSecondaryScatterings_;
 
-		DustCPtr dust_;
+		IDustCPtr dust_;
         IGridCPtr grid_;
         SourcesPtr sources_;
 

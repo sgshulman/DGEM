@@ -1,8 +1,8 @@
 #include <cmath>
-#include "Dust.hpp"
+#include "WhiteDust.hpp"
 #include "MathUtils.hpp"
 
-void Dust::scatteringMatrixElements(
+void WhiteDust::scatteringMatrixElements(
     double &p1, double &p2, double &p3, double &p4, double cosTheta) const
 {
     // Calculate the elements of the phase matrix for a
@@ -26,13 +26,13 @@ void Dust::scatteringMatrixElements(
 }
 
 
-double Dust::fraction(double const cosTheta) const
+double WhiteDust::fraction(double const cosTheta) const
 {
     return (1.0 - hgg2_) / std::pow(1.0 + hgg2_ - 2. * hgg_ * cosTheta, 1.5);
 }
 
 
-double Dust::cosRandomTheta(double const v) const
+double WhiteDust::cosRandomTheta(double const v) const
 {
     double const fraction = (1. - hgg2_) / (1. - hgg_ + 2 * hgg_ * v);
     return (1. + hgg2_ - fraction * fraction) / (2. * hgg_);

@@ -13,9 +13,9 @@ class Photon
     public:
         Photon(Vector3d const &position, std::uint64_t cellId, Direction3d const &dir, double weight, std::uint32_t nscat, double fi=1.0, double fq=0.0, double fu=0.0, double fv=0.0);
         // photon scattering
-        double Scatt(DustCRef dust, Direction3d const & dir, Random* ran);
+        double Scatt(IDustCRef dust, Direction3d const & dir, Random* ran);
         void Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std::vector<Observer>& observers, Random* ran);
-        void Stokes(DustCRef dust, Direction3d const &dir, double calpha, bool fDir, Random* ran);
+        void Stokes(IDustCRef dust, Direction3d const &dir, double calpha, bool fDir, Random* ran);
 
         void Move(double t, std::uint64_t cellId)
         {

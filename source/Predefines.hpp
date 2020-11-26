@@ -29,8 +29,8 @@ class IGrid;
 using IGridCPtr = std::shared_ptr<IGrid const>;
 using IGridCRef = IGridCPtr const &;
 
-class Dust;
-using DustCPtr = std::shared_ptr<Dust const>;
-using DustCRef = DustCPtr const &;
+class IDust;
+using IDustCPtr = std::shared_ptr<IDust const>;
+using IDustCRef = IDustCPtr const &;
 
 #endif

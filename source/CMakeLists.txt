@@ -13,13 +13,12 @@ set(SOURCES
         Directions.cpp
         Directions.hpp
         Direction3d.hpp
-        Dust.cpp
-        Dust.hpp
         FlaredDisk.cpp
         FlaredDisk.hpp
         FractalCloud.cpp
         FractalCloud.hpp
         IDiskHump.hpp
+        IDust.hpp
         IGrid.hpp
         IMatter.hpp
         observers.hpp
@@ -45,6 +44,8 @@ set(SOURCES
         TetrahedralGrid.cpp
         TetrahedralGrid.hpp
         Vector3d.hpp
+        WhiteDust.cpp
+        WhiteDust.hpp
         third-party/nlohmann/json.hpp)
 
 add_executable(dgem points.cpp ${SOURCES})

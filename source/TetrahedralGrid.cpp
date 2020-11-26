@@ -684,7 +684,7 @@ std::uint64_t TetrahedralGrid::cellId(const Vector3d &position) const
     return static_cast<std::uint64_t>(elements_.size());
 }
 
-void TetrahedralGrid::peeloff(Photon ph, Observer &observer, const DustCPtr &dust) const
+void TetrahedralGrid::peeloff(Photon ph, Observer &observer, const IDustCPtr &dust) const
 {
     double const hgfac = ph.Scatt(dust, observer.direction(), nullptr);
     double const tau = findOpticalDepth(ph);

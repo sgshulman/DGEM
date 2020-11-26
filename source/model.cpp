@@ -6,7 +6,7 @@
 #include "AzimuthalHump.hpp"
 #include "CartesianGrid.hpp"
 #include "DebugUtils.hpp"
-#include "Dust.hpp"
+#include "WhiteDust.hpp"
 #include "FlaredDisk.hpp"
 #include "FractalCloud.hpp"
 #include "MathUtils.hpp"
@@ -378,11 +378,11 @@ namespace
     }
 
 
-    DustCPtr parseDust(const nlohmann::json& json)
+    IDustCPtr parseDust(const nlohmann::json& json)
     {
         checkParameters(json, sDust, {"kappa", "albedo", "hgg", "pl", "pc", "sc"});
 
-        return std::make_shared<Dust>(
+        return std::make_shared<WhiteDust>(
             get_double(json, sDust, "albedo"),
             get_double(json, sDust, "hgg"),
             get_double(json, sDust, "pl"),

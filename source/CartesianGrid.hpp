@@ -22,7 +22,7 @@ class CartesianGrid : public IGrid
         double findOpticalDepth(Photon ph) const override;
         int movePhotonAtDepth(Photon& ph, double tau, double tauold) const override;
         int movePhotonAtRandomDepth(Photon& ph, Random *ran) const override;
-        void peeloff(Photon ph, Observer& observer, DustCRef dust) const override;
+        void peeloff(Photon ph, Observer& observer, IDustCRef dust) const override;
         double computeMatterMass() const override;
         std::uint64_t cellId(const Vector3d& position) const override;
 
