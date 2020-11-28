@@ -70,6 +70,7 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
         tests/SphereEnvelopeTests.cpp
         tests/TestUtils.hpp
         tests/Vector3dTests.cpp
+        tests/WhiteDust.cpp
         third-party/catch2/catch.hpp)
 
     add_executable(unittests ${UNITTEST_SOURCES} ${SOURCES})
