@@ -27,6 +27,8 @@ set(SOURCES
         MatterArray.hpp
         MatterTranslation.cpp
         MatterTranslation.hpp
+        MieDust.cpp
+        MieDust.hpp
         model.cpp
         model.hpp
         Photon.cpp

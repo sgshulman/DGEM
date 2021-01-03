@@ -12,6 +12,7 @@
 #include "MathUtils.hpp"
 #include "MatterArray.hpp"
 #include "MatterTranslation.hpp"
+#include "MieDust.hpp"
 #include "RoundHump.hpp"
 #include "SafierWind.hpp"
 #include "Sources.hpp"
@@ -378,16 +379,45 @@ namespace
     }
 
 
-    IDustCPtr parseDust(const nlohmann::json& json)
+    IDustCPtr parseWhiteDust(const nlohmann::json& json)
     {
-        checkParameters(json, sDust, {"kappa", "albedo", "hgg", "pl", "pc", "sc"});
+        char const white[] = "dust::white";
+        checkParameters(json, white, {"albedo", "hgg", "pl", "pc", "sc"});
 
         return std::make_shared<WhiteDust>(
-            get_double(json, sDust, "albedo"),
-            get_double(json, sDust, "hgg"),
-            get_double(json, sDust, "pl"),
-            get_double(json, sDust, "pc"),
-            get_double(json, sDust, "sc"));
+            get_double(json, white, "albedo"),
+            get_double(json, white, "hgg"),
+            get_double(json, white, "pl"),
+            get_double(json, white, "pc"),
+            get_double(json, white, "sc"));
+    }
+
+
+    IDustCPtr parseMieDust(const nlohmann::json& json)
+    {
+        char const mie[] = "dust::mie";
+        checkParameters(json, mie, {"tableFile"});
+
+        return std::make_shared<MieDust>(get_string(json, mie, "tableFile"));
+    }
+
+
+    IDustCPtr parseDust(const nlohmann::json& json)
+    {
+        checkParameters(json, sDust, {"kappa", "white", "mie"});
+
+        DATA_ASSERT(
+            json.size() == 2,
+            "grid section of the json must contain exactly two top level elements");
+
+        if (json.contains("white"))
+        {
+            return parseWhiteDust(json.at("white"));
+        } else if (json.contains("mie")) {
+            return parseMieDust(json.at("mie"));
+        }
+
+        return nullptr;
     }
 
 

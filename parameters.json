@@ -13,11 +13,13 @@
   },
   "dust": {
     "kappa": 66.0,
-    "albedo": 0.4,
-    "hgg": 0.41,
-    "pl": 0.51,
-    "pc": 0.0,
-    "sc": 1.0
+    "white": {
+      "albedo": 0.4,
+      "hgg": 0.41,
+      "pl": 0.51,
+      "pc": 0.0,
+      "sc": 1.0
+    }
   },
   "grid": {
     "cartesian": {
