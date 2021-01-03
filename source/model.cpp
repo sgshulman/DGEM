@@ -396,9 +396,11 @@ namespace
     IDustCPtr parseMieDust(const nlohmann::json& json)
     {
         char const mie[] = "dust::mie";
-        checkParameters(json, mie, {"tableFile"});
+        checkParameters(json, mie, {"albedo", "tableFile"});
 
-        return std::make_shared<MieDust>(get_string(json, mie, "tableFile"));
+        return std::make_shared<MieDust>(
+            get_double(json, mie, "albedo"),
+            get_string(json, mie, "tableFile"));
     }
 
 

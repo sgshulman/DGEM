@@ -13,7 +13,7 @@ void WhiteDust::scatteringMatrixElements(
 
     double const cos2Theta = cosTheta * cosTheta;
 
-    p1 = (1. - hgg2_) / std::pow((1. + hgg2_ - 2 * hgg_ * cosTheta), 1.5);
+    p1 = (1. - hgg2_) / std::pow(1. + hgg2_ - 2. * hgg_ * cosTheta, 1.5);
     p2 = -pl_ * p1 * (1. - cos2Theta)/(1. + cos2Theta);
     p3 = 2. * p1 * cosTheta / (1. + cos2Theta);
 
@@ -28,7 +28,7 @@ void WhiteDust::scatteringMatrixElements(
 
 double WhiteDust::fraction(double const cosTheta) const
 {
-    return (1.0 - hgg2_) / std::pow(1.0 + hgg2_ - 2. * hgg_ * cosTheta, 1.5);
+    return (1. - hgg2_) / std::pow(1. + hgg2_ - 2. * hgg_ * cosTheta, 1.5);
 }
 
 
