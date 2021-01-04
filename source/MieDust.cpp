@@ -8,15 +8,15 @@ MieDust::MieDust(double const albedo, std::string const& tableFile)
     : albedo_{ albedo }
 {
     std::ifstream table(tableFile);
-    std::string tableTitle;
-    table >> tableTitle;
 
     Data entry{};
-    double theta, intensity, polarization;
+    double theta, p1, p2;
 
-    while (table >> theta >> entry.p1 >> entry.p2 >> entry.p3 >> entry.p4 >> intensity >> entry.iRelative >> polarization)
+    while (table >> theta >> p1 >> p2 >> entry.p3 >> entry.p4)
     {
         entry.cosTheta = cos(radians(theta));
+        entry.p1 = 0.5 * (p1 + p2);
+        entry.p2 = 0.5 * (p1 - p2);
         table_.push_back(entry);
     }
 }
@@ -55,7 +55,7 @@ double MieDust::fraction(double const cosTheta) const
 
     if (it == table_.begin())
     {
-        return it->iRelative;
+        return it->p1;
     }
 
     auto const prev = it - 1;
@@ -63,7 +63,7 @@ double MieDust::fraction(double const cosTheta) const
     double const wIt = (cosTheta - prev->cosTheta) / delta;
     double const wPrev = (it->cosTheta - cosTheta) / delta;
 
-    return it->iRelative * wIt + prev->iRelative * wPrev;
+    return it->p1 * wIt + prev->p1 * wPrev;
 }
 
 

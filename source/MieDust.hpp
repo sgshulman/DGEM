@@ -33,7 +33,6 @@ private:
         double p2;
         double p3;
         double p4;
-        double iRelative;
 
         bool operator<(double cosineTheta) const
         {
