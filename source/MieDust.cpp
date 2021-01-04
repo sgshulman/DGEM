@@ -19,6 +19,27 @@ MieDust::MieDust(double const albedo, std::string const& tableFile)
         entry.p2 = 0.5 * (p1 - p2);
         table_.push_back(entry);
     }
+
+    // Normalize coefficients
+    double lastH = 1.;
+    double normFactor = 0.;
+
+    for (std::size_t i = 0; i != table_.size()-1; ++i)
+    {
+        double const newH = 0.5 * (table_.at(i + 1).cosTheta + table_.at(i).cosTheta);
+        normFactor += 2 * PI * (lastH - newH) * table_.at(i).p1;
+        lastH = newH;
+    }
+
+    normFactor += 2 * PI * (lastH + 1.0);
+
+    for (std::size_t i = 0; i != table_.size(); ++i)
+    {
+        table_.at(i).p1 /= normFactor;
+        table_.at(i).p2 /= normFactor;
+        table_.at(i).p3 /= normFactor;
+        table_.at(i).p4 /= normFactor;
+    }
 }
 
 
