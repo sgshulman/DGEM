@@ -12,9 +12,9 @@ TEST_CASE("Mie Dust", "[dust]")
     {
         std::stringstream data;
 
-        for (std::size_t i = 0; i <= 180; i+=2)
+        for (std::size_t i = 0; i <= 180; i += 2)
         {
-            double const theta = i;
+            auto const theta = static_cast<double>(i);
             double const cosTheta = std::cos(radians(theta));
             data << theta << "\t" << 1.5 * cosTheta * cosTheta << "\t" << 1.5 << "\t";
             data << 1.5 * cosTheta << "\t" << 0.0 << "\n";
