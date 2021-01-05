@@ -42,6 +42,7 @@ private:
 
     double const albedo_;
     std::vector<Data> table_;
+    std::vector<double> accumulated_;
 };
 
 #endif

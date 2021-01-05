@@ -21,17 +21,14 @@ MieDust::MieDust(double const albedo, std::string const& tableFile)
     }
 
     // Normalize coefficients
-    double lastH = 1.;
     double normFactor = 0.;
 
     for (std::size_t i = 0; i != table_.size()-1; ++i)
     {
-        double const newH = 0.5 * (table_.at(i + 1).cosTheta + table_.at(i).cosTheta);
-        normFactor += 2 * PI * (lastH - newH) * table_.at(i).p1;
-        lastH = newH;
+        double const prevH = table_.at(i).cosTheta;
+        double const nextH = table_.at(i + 1).cosTheta;
+        normFactor += PI * (prevH - nextH) * (table_.at(i + 1).p1 + table_.at(i).p1);
     }
-
-    normFactor += 2 * PI * (lastH + 1.0);
 
     for (std::size_t i = 0; i != table_.size(); ++i)
     {
@@ -39,6 +36,17 @@ MieDust::MieDust(double const albedo, std::string const& tableFile)
         table_.at(i).p2 /= normFactor;
         table_.at(i).p3 /= normFactor;
         table_.at(i).p4 /= normFactor;
+    }
+
+    // accumulated queue
+    accumulated_.at(0) = 0.;
+    for (std::size_t i = 0; i != table_.size() - 1; ++i)
+    {
+        double const prevH = table_.at(i).cosTheta;
+        double const nextH = table_.at(i + 1).cosTheta;
+
+        accumulated_.at(i + 1) =
+            accumulated_.at(i) + PI * (prevH - nextH) * (table_.at(i + 1).p1 + table_.at(i).p1);
     }
 }
 
@@ -90,7 +98,23 @@ double MieDust::fraction(double const cosTheta) const
 
 double MieDust::cosRandomTheta(double const v) const
 {
-    (void)v;
-    return 0.0;
+    auto const it = std::lower_bound(accumulated_.begin(), accumulated_.end(), 2*v - 1.);
+
+    if (it == accumulated_.begin())
+    {
+        return 1.0;
+    }
+
+    if (it == accumulated_.end() || it == accumulated_.end() - 1)
+    {
+        return -1.0;
+    }
+
+    auto const idx = std::distance(it, accumulated_.begin());
+    double const delta = accumulated_.at(idx) - accumulated_.at(idx + 1);
+    double const wPrev = (accumulated_.at(idx+1) - v) / delta;
+    double const wNext = (v - accumulated_.at(idx)) / delta;
+
+    return table_.at(idx).cosTheta * wPrev + table_.at(idx + 1).cosTheta * wNext;
 }
 
