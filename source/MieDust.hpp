@@ -41,7 +41,8 @@ private:
 
         bool operator<(double cosineTheta) const
         {
-            return cosTheta < cosineTheta;
+            // we use descending order of cosines
+            return cosTheta > cosineTheta;
         }
     };
 

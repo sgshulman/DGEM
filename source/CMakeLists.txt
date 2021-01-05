@@ -67,6 +67,7 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
         tests/MathUtilsTests.cpp
         tests/MatterArrayTests.cpp
         tests/MatterTranslationTests.cpp
+        tests/MieDustTests.cpp
         tests/ModelTests.inl
         tests/RoundHumpTests.cpp
         tests/SphereEnvelopeTests.cpp

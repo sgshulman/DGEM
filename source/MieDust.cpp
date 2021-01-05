@@ -17,7 +17,7 @@ MieDust::MieDust(double albedo, std::istream&& stream)
 
     while (stream >> theta >> p1 >> p2 >> entry.p3 >> entry.p4)
     {
-        entry.cosTheta = cos(radians(theta));
+        entry.cosTheta = std::cos(radians(theta));
         entry.p1 = 0.5 * (p1 + p2);
         entry.p2 = 0.5 * (p1 - p2);
         table_.push_back(entry);
@@ -36,7 +36,7 @@ void MieDust::normalize()
     {
         double const prevH = table_.at(i).cosTheta;
         double const nextH = table_.at(i + 1).cosTheta;
-        normFactor += PI * (prevH - nextH) * (table_.at(i + 1).p1 + table_.at(i).p1);
+        normFactor += 0.25 * (prevH - nextH) * (table_.at(i + 1).p1 + table_.at(i).p1);
     }
 
     for (std::size_t i = 0; i != table_.size(); ++i)
@@ -51,6 +51,7 @@ void MieDust::normalize()
 
 void MieDust::computeAccumulatedFractions()
 {
+    accumulated_.resize(table_.size());
     accumulated_.at(0) = 0.;
 
     for (std::size_t i = 0; i != table_.size() - 1; ++i)
