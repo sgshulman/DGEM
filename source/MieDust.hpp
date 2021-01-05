@@ -2,6 +2,7 @@
 #define MIE_DUST_HPP_
 
 #include "IDust.hpp"
+#include <istream>
 #include <string>
 #include <vector>
 
@@ -11,6 +12,7 @@ class MieDust: public IDust
 {
 public:
     MieDust(double albedo, std::string const& tableFile);
+    MieDust(double albedo, std::istream&& stream);
 
     void scatteringMatrixElements(
         double &p1,
@@ -26,6 +28,9 @@ public:
     {	return albedo_;	}
 
 private:
+    void normalize();
+    void computeAccumulatedFractions();
+
     struct Data
     {
         double cosTheta;

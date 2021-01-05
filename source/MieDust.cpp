@@ -5,14 +5,17 @@
 #include "MathUtils.hpp"
 
 MieDust::MieDust(double const albedo, std::string const& tableFile)
+    : MieDust(albedo, std::ifstream(tableFile))
+{}
+
+
+MieDust::MieDust(double albedo, std::istream&& stream)
     : albedo_{ albedo }
 {
-    std::ifstream table(tableFile);
-
     Data entry{};
     double theta, p1, p2;
 
-    while (table >> theta >> p1 >> p2 >> entry.p3 >> entry.p4)
+    while (stream >> theta >> p1 >> p2 >> entry.p3 >> entry.p4)
     {
         entry.cosTheta = cos(radians(theta));
         entry.p1 = 0.5 * (p1 + p2);
@@ -20,10 +23,16 @@ MieDust::MieDust(double const albedo, std::string const& tableFile)
         table_.push_back(entry);
     }
 
-    // Normalize coefficients
+    normalize();
+    computeAccumulatedFractions();
+}
+
+
+void MieDust::normalize()
+{
     double normFactor = 0.;
 
-    for (std::size_t i = 0; i != table_.size()-1; ++i)
+    for (std::size_t i = 0; i != table_.size() - 1; ++i)
     {
         double const prevH = table_.at(i).cosTheta;
         double const nextH = table_.at(i + 1).cosTheta;
@@ -37,9 +46,13 @@ MieDust::MieDust(double const albedo, std::string const& tableFile)
         table_.at(i).p3 /= normFactor;
         table_.at(i).p4 /= normFactor;
     }
+}
 
-    // accumulated queue
+
+void MieDust::computeAccumulatedFractions()
+{
     accumulated_.at(0) = 0.;
+
     for (std::size_t i = 0; i != table_.size() - 1; ++i)
     {
         double const prevH = table_.at(i).cosTheta;
