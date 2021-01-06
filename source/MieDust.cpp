@@ -76,13 +76,17 @@ void MieDust::scatteringMatrixElements(
         p2 = it->p2;
         p3 = it->p3;
         p4 = it->p4;
-    }
-    else
-    {
+    } else if (it == table_.end()) {
+        auto const& back = table_.back();
+        p1 = back.p1;
+        p2 = back.p2;
+        p3 = back.p3;
+        p4 = back.p4;
+    } else {
         auto const prev = it - 1;
         double const delta = prev->cosTheta - it->cosTheta;
-        double const wIt = (cosTheta - prev->cosTheta) / delta;
-        double const wPrev = (it->cosTheta - cosTheta) / delta;
+        double const wIt = (prev->cosTheta - cosTheta) / delta;
+        double const wPrev = (cosTheta - it->cosTheta) / delta;
 
         p1 = it->p1 * wIt + prev->p1 * wPrev;
         p2 = it->p2 * wIt + prev->p2 * wPrev;
@@ -101,10 +105,15 @@ double MieDust::fraction(double const cosTheta) const
         return it->p1;
     }
 
+    if (it == table_.end())
+    {
+        return table_.back().p1;
+    }
+
     auto const prev = it - 1;
     double const delta = prev->cosTheta - it->cosTheta;
-    double const wIt = (cosTheta - prev->cosTheta) / delta;
-    double const wPrev = (it->cosTheta - cosTheta) / delta;
+    double const wIt = (prev->cosTheta - cosTheta) / delta;
+    double const wPrev = (cosTheta - it->cosTheta) / delta;
 
     return it->p1 * wIt + prev->p1 * wPrev;
 }
