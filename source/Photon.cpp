@@ -24,10 +24,10 @@ double Photon::Scatt(IDustCRef dust, Direction3d const& dir, Random* ran)
     // cos(Theta), where Theta is angle between incident
     // and outgoing (i.e., observed) photon direction
     double const cosTheta = dir_.vector() * dir.vector();
-    double const hgfrac = dust->fraction(cosTheta) / 4. / PI;
+    double const fraction = dust->fraction(cosTheta) / 4. / PI;
        
     Stokes(dust, dir, cosTheta, true, ran);
-    return hgfrac;
+    return fraction;
 }
 
 
@@ -58,7 +58,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std:
         }
     } else {
         double calpha;
-        double hgfrac;
+        double fraction;
         // normalizing
         double sum=0;
         for (std::uint64_t j=0; j!=dirs.number(); ++j)
@@ -71,8 +71,8 @@ void Photon::Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std:
         {
             // Release photon from point source
             calpha = dir_.vector() * dirs.direction(j);
-            hgfrac = m.dust()->fraction(calpha);
-            Photon ph0(pos_, cellId_, dir_, weight_ * dirs.w( j )*hgfrac/sum, nscat_+1, fi_, fq_, fu_, fv_ );
+            fraction = m.dust()->fraction(calpha);
+            Photon ph0(pos_, cellId_, dir_, weight_ * dirs.w( j )*fraction/sum, nscat_+1, fi_, fq_, fu_, fv_ );
             ph0.Stokes(m.dust(), dirs.direction(j), calpha, true, ran);
 
             double w = 1.0 / m.NumOfSecondaryScatterings() ;
