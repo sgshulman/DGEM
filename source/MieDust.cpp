@@ -121,7 +121,7 @@ double MieDust::fraction(double const cosTheta) const
 
 double MieDust::cosRandomTheta(double const v) const
 {
-    auto const it = std::lower_bound(accumulated_.begin(), accumulated_.end(), v);
+    auto const it = std::lower_bound(accumulated_.begin(), accumulated_.end(), 1. - v);
 
     if (it == accumulated_.begin())
     {
@@ -135,8 +135,8 @@ double MieDust::cosRandomTheta(double const v) const
 
     auto const idx = std::distance(accumulated_.begin(), it);
     double const delta = accumulated_.at(idx) - accumulated_.at(idx - 1);
-    double const wPrev = (accumulated_.at(idx) - v) / delta;
-    double const wCurr = (v - accumulated_.at(idx - 1)) / delta;
+    double const wPrev = (accumulated_.at(idx) - 1. + v) / delta;
+    double const wCurr = (1. - v - accumulated_.at(idx - 1)) / delta;
 
     return table_.at(idx).cosTheta * wCurr + table_.at(idx - 1).cosTheta * wPrev;
 }
