@@ -51,12 +51,26 @@ DGEM parameters
                             method is used instead of DGEM (1 is recommended)
 
 ### Dust
-- kappa &mdash; The extinction opacity
+
+DGEM supports two types of dust now.
+- kappa &mdash; The extinction opacity. It is the common dust parameter.
+
+The second Dust description part is "white" or "mie" section.
+
+"white" section corresponds to the dust with [Henyey and Greenstein (1941)](#henyey1941) phase function and
+[White (1979)](#white1979) approximation for polarization functions.
+It is described by the following parameters:
 - albedo &mdash; Single scattering albedo
 - hgg &mdash; Henyey-Greenstein phase function anisotropy
 - pl &mdash; Peak linear polarization
 - pc &mdash; Peak circular polarization
 - sc &mdash; Skew Factor
+
+"mie" section describes the dust with tabulated scattering matrix coefficients.
+They are usually calculated based on Mie theory.
+There are two parameters:
+- albedo &mdash; Single scattering albedo
+- tableFile &mdash; the path of a file with elements of scattering matrix for Stokes vector (I_r, I_l, U, V). Each line of the file contains a scattering angle in degrees and four coefficients: p1, p2, p3, and p4.
 
 ### Geometry
 
@@ -303,7 +317,8 @@ The JSON configuration may be specified in the following way:
 
 1. <a name="elmegreen1997"></a>Elmegreen, B.G., 1997. Intercloud structure in a turbulent fractal interstellar medium. Astrophys. J. **477**, 196–203.
 2. <a name="geuzaine2009"></a>Geuzaine, C. and  Remacle, J.-F., 2009. Gmsh: a three-dimensional finite element mesh generator with built-in pre- and post-processing facilities. International Journal for Numerical Methods in Engineering, **79**(11), 1309-1331.
-3. <a name="safier1993a"></a>Safier, P. N., 1993a. Centrifugally Driven Winds from Protostellar Disks. I. Wind Model and Thermal Structure. Astrophys. J. **408**, 115.
-4. <a name="safier1993b"></a>Safier, P. N., 1993b. Centrifugally Driven Winds from Protostellar Disks. II. Forbidden-Line Emission in T Tauri Stars. Astrophys. J. **408**, 148.
-5. <a name="shulman2018"></a>Shulman, S.G., 2018. Three-dimensional heuristic radiation transfer method based on enumeration using the directions grid. Astronomy and Computing **24** 104–116.
- 
+3. <a name="henyey1941"></a>Henyey, L.~G. and Greenstein, J.~L., 1941. Diffuse radiation in the Galaxy. Astrophys. J. **93**, 70-83.  
+4. <a name="safier1993a"></a>Safier, P. N., 1993a. Centrifugally Driven Winds from Protostellar Disks. I. Wind Model and Thermal Structure. Astrophys. J. **408**, 115.
+5. <a name="safier1993b"></a>Safier, P. N., 1993b. Centrifugally Driven Winds from Protostellar Disks. II. Forbidden-Line Emission in T Tauri Stars. Astrophys. J. **408**, 148.
+6. <a name="shulman2018"></a>Shulman, S.G., 2018. Three-dimensional heuristic radiation transfer method based on enumeration using the directions grid. Astronomy and Computing **24**, 104–116.
+7. <a name="white1979"></a>White, R.L., 1979. Polarization in reflection nebulae. I. Scattering properties of interstellar grains. Astrophys. J. **229**, 954-961.
