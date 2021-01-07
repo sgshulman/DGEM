@@ -317,7 +317,7 @@ The JSON configuration may be specified in the following way:
 
 1. <a name="elmegreen1997"></a>Elmegreen, B.G., 1997. Intercloud structure in a turbulent fractal interstellar medium. Astrophys. J. **477**, 196–203.
 2. <a name="geuzaine2009"></a>Geuzaine, C. and  Remacle, J.-F., 2009. Gmsh: a three-dimensional finite element mesh generator with built-in pre- and post-processing facilities. International Journal for Numerical Methods in Engineering, **79**(11), 1309-1331.
-3. <a name="henyey1941"></a>Henyey, L.~G. and Greenstein, J.~L., 1941. Diffuse radiation in the Galaxy. Astrophys. J. **93**, 70-83.  
+3. <a name="henyey1941"></a>Henyey, L.G. and Greenstein, J.L., 1941. Diffuse radiation in the Galaxy. Astrophys. J. **93**, 70-83.  
 4. <a name="safier1993a"></a>Safier, P. N., 1993a. Centrifugally Driven Winds from Protostellar Disks. I. Wind Model and Thermal Structure. Astrophys. J. **408**, 115.
 5. <a name="safier1993b"></a>Safier, P. N., 1993b. Centrifugally Driven Winds from Protostellar Disks. II. Forbidden-Line Emission in T Tauri Stars. Astrophys. J. **408**, 148.
 6. <a name="shulman2018"></a>Shulman, S.G., 2018. Three-dimensional heuristic radiation transfer method based on enumeration using the directions grid. Astronomy and Computing **24**, 104–116.
