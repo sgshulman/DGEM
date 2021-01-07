@@ -1,7 +1,9 @@
+#include <algorithm>
 #include <cmath>
 #include <fstream>
 
 #include "MieDust.hpp"
+#include "DebugUtils.hpp"
 #include "MathUtils.hpp"
 
 MieDust::MieDust(double const albedo, std::string const& tableFile)
@@ -22,6 +24,21 @@ MieDust::MieDust(double albedo, std::istream&& stream)
         entry.p2 = 0.5 * (p1 - p2);
         table_.push_back(entry);
     }
+
+    DATA_ASSERT(
+        std::abs(table_.front().cosTheta - 1.) < std::numeric_limits<float>::epsilon(),
+        "First cosine in dust table should be equal to 1.");
+
+    DATA_ASSERT(
+        std::abs(table_.back().cosTheta + 1.) < std::numeric_limits<float>::epsilon(),
+        "Last cosine in dust table should be equal to -1.");
+
+    DATA_ASSERT(
+        std::is_sorted(
+            table_.begin(),
+            table_.end(),
+            [](Data const& left, Data const& right){ return left.cosTheta > right.cosTheta;}),
+        "Cosines of dust table entries should be sorted");
 
     normalize();
     computeAccumulatedFractions();

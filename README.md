@@ -70,7 +70,7 @@ It is described by the following parameters:
 They are usually calculated based on Mie theory.
 There are two parameters:
 - albedo &mdash; Single scattering albedo
-- tableFile &mdash; the path of a file with elements of scattering matrix for Stokes vector (I_r, I_l, U, V). Each line of the file contains a scattering angle in degrees and four coefficients: p1, p2, p3, and p4.
+- tableFile &mdash; the path of a file with elements of scattering matrix for Stokes vector (I_r, I_l, U, V). Each line of the file contains a scattering angle in degrees and four coefficients: p1, p2, p3, and p4. Scattering angles from 0 to 180 degrees should be listed in the table in increasing order.
 
 ### Geometry
 
