@@ -6,6 +6,21 @@
 #include <cstdio>
 #include "Photon.hpp"
 
+inline void formatAngle(char* str, int const length, double const angleDeg)
+{
+    long const angleMilliDeg = std::lround(degrees(angleDeg) * 1000);
+    long const degrees = angleMilliDeg / 1000 % 360;
+    long const milliDegrees = angleMilliDeg % 1000;
+
+    if (milliDegrees == 0)
+    {
+        snprintf(str, length, "%2.2li", degrees);
+    } else {
+        snprintf(str, length, "%2.2li-%3.3li", degrees, milliDegrees);
+    }
+}
+
+
 // pictures 
 class Pictures
 {
@@ -75,37 +90,48 @@ class Pictures
 
         void write(double const phi, double const theta, int const key) const
         {
-            int const FILENAME_LENGTH{ 30 };
-            char fname[FILENAME_LENGTH];
-            long const iPhi = std::lround(degrees(phi));
-            long const iTheta = std::lround(degrees(theta));
+            int const FILENAME_LENGTH{ 40 };
+            int const ANGLE_LENGTH{ 10 };
 
-            snprintf(fname, FILENAME_LENGTH, "fimage%2.2li_%2.2li_%2.2i.dat", iPhi, iTheta, key);
+            char fname[FILENAME_LENGTH];
+            char phiStr[ANGLE_LENGTH];
+            char thetaStr[ANGLE_LENGTH];
+
+            formatAngle(phiStr, ANGLE_LENGTH, phi);
+            formatAngle(thetaStr, ANGLE_LENGTH, theta);
+
+            snprintf(fname, FILENAME_LENGTH, "fimage%s_%s_%2.2i.dat", phiStr, thetaStr, key);
             std::ofstream f(fname);
             for (std::uint64_t y=0; y != ny_; ++y)
             {
                 for (std::uint64_t x=0; x!=nx_; ++x)
-                    f << f_[x+y*nx_] << "\t";
+                {
+                    f << f_[x + y * nx_] << "\t";
+                }
                 f << "\n";
             }
             f.close();
 
-            snprintf(fname, FILENAME_LENGTH, "qimage%2.2li_%2.2li_%2.2i.dat", iPhi, iTheta, key);
+            snprintf(fname, FILENAME_LENGTH, "qimage%s_%s_%2.2i.dat", phiStr, thetaStr, key);
             std::ofstream q(fname);
             for (std::uint64_t y=0; y != ny_; ++y)
             {
                 for (std::uint64_t x=0; x!=nx_; ++x)
-                    q << q_[x+y*nx_] << "\t";
+                {
+                    q << q_[x + y * nx_] << "\t";
+                }
                 q << "\n";
             }
             q.close();
 
-            snprintf(fname, FILENAME_LENGTH, "uimage%2.2li_%2.2li_%2.2i.dat", iPhi, iTheta, key);
+            snprintf(fname, FILENAME_LENGTH, "uimage%s_%s_%2.2i.dat", phiStr, thetaStr, key);
             std::ofstream u(fname);
             for (std::uint64_t y=0; y != ny_; ++y)
             {
                 for (std::uint64_t x=0; x!=nx_; ++x)
-                    u << u_[x+y*nx_] << "\t";
+                {
+                    u << u_[x + y * nx_] << "\t";
+                }
                 u << "\n";
             }
             u.close();
