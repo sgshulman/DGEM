@@ -21,6 +21,8 @@ set(SOURCES
         IDust.hpp
         IGrid.hpp
         IMatter.hpp
+        KurosawaWind.cpp
+        KurosawaWind.hpp
         observers.hpp
         MathUtils.hpp
         MatterArray.cpp
