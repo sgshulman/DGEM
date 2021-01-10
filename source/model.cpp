@@ -9,6 +9,7 @@
 #include "WhiteDust.hpp"
 #include "FlaredDisk.hpp"
 #include "FractalCloud.hpp"
+#include "KurosawaWind.hpp"
 #include "MathUtils.hpp"
 #include "MatterArray.hpp"
 #include "MatterTranslation.hpp"
@@ -30,6 +31,8 @@ namespace
     char const sStars[] = "stars";
     char const sObservers[] = "observers";
     char const sFlaredDisk[] = "flaredDisk";
+    char const sSafierWind[] = "safierWind";
+    char const sKurosawaWind[] = "kurosawaWind";
     char const sTranslation[] = "translation";
     char const sSphereEnvelope[] = "sphereEnvelope";
     char const sFractalCloud[] = "fractalCloud";
@@ -237,24 +240,44 @@ namespace
 
     IMatterCPtr parseSafierWind(const nlohmann::json& json)
     {
-        char const safierWind[] = "safierWind";
-        checkParameters(json, safierWind, {"hump", "model", "mOut", "mStar", "h0", "rMin", "rMax"});
+        checkParameters(json, sSafierWind, {"hump", "model", "mOut", "mStar", "h0", "rMin", "rMax"});
 
         IDiskHumpCPtr const hump{
             json.contains("hump") ? parseDiskHump(json.at("hump")) : nullptr
         };
 
-        std::string const windModel = get_string(json, safierWind, "model");
+        std::string const windModel = get_string(json, sSafierWind, "model");
         DATA_ASSERT(windModel.size() == 1, "Safier wind model should contain one letter.");
 
         return std::make_shared<SafierWind const>(
             windModel.at(0),
-            get_double(json, safierWind, "mOut"),
-            get_double(json, safierWind, "mStar"),
-            get_double(json, safierWind, "h0"),
-            get_double(json, safierWind, "rMin"),
-            get_double(json, safierWind, "rMax"),
+            get_double(json, sSafierWind, "mOut"),
+            get_double(json, sSafierWind, "mStar"),
+            get_double(json, sSafierWind, "h0"),
+            get_double(json, sSafierWind, "rMin"),
+            get_double(json, sSafierWind, "rMax"),
             hump);
+    }
+
+
+    IMatterCPtr parseKurosawaWind(const nlohmann::json& json)
+    {
+        checkParameters(
+            json,
+            sKurosawaWind,
+            {"d", "p", "mOut", "mStar", "rInner", "rOuter", "rScale", "windAccelerationRate", "terminalV", "soundSpeed"});
+
+        return std::make_shared<KurosawaWind const>(
+            get_double(json, sKurosawaWind, "d"),
+            get_double(json, sKurosawaWind, "p"),
+            get_double(json, sKurosawaWind, "mOut"),
+            get_double(json, sKurosawaWind, "mStar"),
+            get_double(json, sKurosawaWind, "rInner"),
+            get_double(json, sKurosawaWind, "rOuter"),
+            get_double(json, sKurosawaWind, "rScale"),
+            get_double(json, sKurosawaWind, "windAccelerationRate"),
+            get_double(json, sKurosawaWind, "terminalV"),
+            get_double(json, sKurosawaWind, "soundSpeed"));
     }
 
 
@@ -263,11 +286,24 @@ namespace
         checkParameters(
             json,
             sFlaredDisk,
-            {"safierWind", sTranslation, "hump", "rInner", "rOuter", "rho0", "h0", "r0", "alpha", "beta"});
+            {sSafierWind, sKurosawaWind, sTranslation, "hump", "rInner", "rOuter", "rho0", "h0", "r0", "alpha", "beta"});
 
-        IMatterCPtr const wind{
-            json.contains("safierWind") ? parseSafierWind(json.at("safierWind")) : nullptr
-        };
+        IMatterCPtr const safierWind = json.contains(sSafierWind) ? parseSafierWind(json.at(sSafierWind)) : nullptr;
+        IMatterCPtr const kurosawaWind = json.contains(sKurosawaWind) ? parseKurosawaWind(json.at(sKurosawaWind)) : nullptr;
+
+        IMatterCPtr wind;
+
+        if (safierWind && kurosawaWind)
+        {
+            wind = std::make_shared<MatterArray const>(
+                std::vector<IMatterCPtr>{safierWind, kurosawaWind},
+                MatterArray::max);
+
+        } else if (safierWind) {
+            wind = safierWind;
+        } else if (kurosawaWind) {
+            wind = kurosawaWind;
+        }
 
         MatterTranslationCPtr const translation{
             json.contains(sTranslation) ? parseTranslation(json.at(sTranslation)) : nullptr

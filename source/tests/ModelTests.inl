@@ -229,7 +229,7 @@ TEST_CASE("Parse Geometry", "[model]")
         REQUIRE(hump);
     }
 
-    SECTION("Flared Disk with the wind and translation")
+    SECTION("Flared Disk with Safier wind and translation")
     {
         nlohmann::json flaredDiskJson = R"({
             "flaredDisk": {
@@ -261,6 +261,36 @@ TEST_CASE("Parse Geometry", "[model]")
                 "nutation" : 15,
                 "x" : 1,
                 "y" : 0.5
+              }
+            }}
+            )"_json;
+
+        const auto disk = parseGeometry(flaredDiskJson);
+        REQUIRE(disk);
+    }
+
+    SECTION("Flared Disk with Kurosawa wind")
+    {
+        nlohmann::json flaredDiskJson = R"({
+            "flaredDisk": {
+              "rInner": 0.1,
+              "rOuter": 26,
+              "rho0": 11.945e-8,
+              "h0": 0.035,
+              "r0": 1,
+              "alpha": 3.04,
+              "beta": 1.25,
+              "kurosawaWind" : {
+                "d" : 0.3,
+                "p" : -3.5,
+                "mOut" : 1e-8,
+                "mStar" : 0.5,
+                "rInner" : 0.028,
+                "rOuter" : 1.0,
+                "rScale" : 0.28,
+                "windAccelerationRate" : 1.0,
+                "terminalV" : 160,
+                "soundSpeed" : 0.03
               }
             }}
             )"_json;
