@@ -24,6 +24,7 @@ public:
 
 private:
     double d_;
+    double p_;
     double mStar_;
     double cosInner_;
     double cosOuter_;
