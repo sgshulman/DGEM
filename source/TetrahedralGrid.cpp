@@ -1,11 +1,11 @@
 #include "TetrahedralGrid.hpp"
+#include "DebugUtils.hpp"
 #include "IMatter.hpp"
 #include "observers.hpp"
 #include "Photon.hpp"
 #include "Random.hpp"
 
 #include <algorithm>
-#include <fstream>
 #include <map>
 #include <iostream>
 
@@ -202,6 +202,8 @@ void TetrahedralGrid::readNodes(std::string const& file)
 {
     std::uint32_t NumberOfDots;
     std::ifstream nodes(file);
+    DATA_ASSERT(nodes.is_open(), file + " should exist.");
+
     nodes >> NumberOfDots;
     dots_.reserve(NumberOfDots);
     for (std::uint32_t cnt=0; cnt != NumberOfDots; ++cnt)
@@ -223,17 +225,19 @@ void TetrahedralGrid::calculateNodesRhoKappa(double const kappa)
 }
 
 // Elements of the grid
-void TetrahedralGrid::readElements(std::string const & file)
+void TetrahedralGrid::readElements(std::string const& file)
 {
     std::uint32_t NumberOfElements;
-    std::ifstream nodes(file);
-    nodes >> NumberOfElements;
+    std::ifstream elements(file);
+    DATA_ASSERT(elements.is_open(), file + " should exist.");
+
+    elements >> NumberOfElements;
     elements_.reserve(NumberOfElements);
 
     for (std::uint32_t cnt=0; cnt != NumberOfElements; ++cnt)
     {
         std::uint32_t dot[4];
-        nodes >> dot[0] >> dot[1] >> dot[2] >> dot[3];
+        elements >> dot[0] >> dot[1] >> dot[2] >> dot[3];
         std::sort(dot, dot + 4);
         elements_.emplace_back(Tetrahedron(--dot[0], --dot[1], --dot[2], --dot[3]));
     }
@@ -417,6 +421,7 @@ TetrahedralGrid::TetrahedralGrid(
     , matter_{ std::move(matter) }
 {
     std::ifstream gridBin(binary_file, std::ios::binary);
+    DATA_ASSERT(gridBin.is_open(), binary_file + " should exist.");
 
     std::uint32_t dotsSize{0};
     gridBin.read((char *)&dotsSize, 4);
