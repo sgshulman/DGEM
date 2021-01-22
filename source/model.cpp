@@ -23,6 +23,7 @@
 
 namespace
 {
+    char const sDensitySlice[] = "densitySlice";
     char const sDust[] = "dust";
     char const sGeometry[] = "geometry";
     char const sGrid[] = "grid";
@@ -566,6 +567,40 @@ namespace
 
         return std::make_shared<Sources>(sourceParameters, std::move(pointSources));
     }
+
+    void densitySlice(nlohmann::json const& json, IMatterCPtr const& matter)
+    {
+        checkParameters(json, sDensitySlice, {"filename", "phi", "radiusMax", "heightMax"});
+
+        std::string const filename = get_string(json, sDensitySlice, "filename");
+        double const phi = radians(get_double(json, sDensitySlice, "phi"));
+        double const radiusMax = get_double(json, sDensitySlice, "radiusMax");
+        double const heightMax = get_double(json, sDensitySlice, "heightMax");
+        std::int32_t radiusN{ 200 };
+        std::int32_t heightN{ 150 };
+
+        double const dRadius = radiusMax / (radiusN - 1);
+        double const dHeight = heightMax / (heightN - 1);
+        double const cosPhi = std::cos(phi);
+        double const sinPhi = std::sin(phi);
+
+        std::ofstream file(filename);
+
+        for (std::int32_t i = 0; i != radiusN; ++i)
+        {
+            double const r = i * dRadius;
+            double const x = r * cosPhi;
+            double const y = r * sinPhi;
+
+            for (std::int32_t j = 0; j != heightN; ++j)
+            {
+                double const z = j * dHeight;
+
+                std::cout << matter->density({x, y, z}) << "\t";
+            }
+            std::cout << std::endl;
+        }
+    }
 }
 
 #ifdef ENABLE_UNIT_TESTS
@@ -581,7 +616,7 @@ Model::Model(std::vector<Observer>* observers)
     checkParameters(
         j,
         "parameters.json",
-        {"method parameters", sDust, sGeometry, sGrid, sStars, sObservers});
+        {"method parameters", sDensitySlice, sDust, sGeometry, sGrid, sStars, sObservers});
 
     SourceParameters sourceParameters{};
     char const methodParameters[] = "method parameters";
@@ -609,6 +644,12 @@ Model::Model(std::vector<Observer>* observers)
     nlohmann::json const& dustJson = j.at(sDust);
     dust_ = parseDust(dustJson);
     IMatterCPtr geometry = parseGeometry(j.at(sGeometry));
+
+    if (j.contains(sDensitySlice))
+    {
+        densitySlice(j.at(sDensitySlice), geometry);
+    }
+
     grid_ = parseGrid(j.at(sGrid), get_double(dustJson, sDust, "kappa"), geometry);
     sources_ = parseSources(j.at(sStars), sourceParameters, grid_);
     parseObservers(observers, j.at(sObservers));
