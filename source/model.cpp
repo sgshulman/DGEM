@@ -576,8 +576,8 @@ namespace
         double const phi = radians(get_double(json, sDensitySlice, "phi"));
         double const radiusMax = get_double(json, sDensitySlice, "radiusMax");
         double const heightMax = get_double(json, sDensitySlice, "heightMax");
-        std::int32_t radiusN{ 200 };
-        std::int32_t heightN{ 150 };
+        std::int32_t radiusN{ 400 };
+        std::int32_t heightN{ 300 };
 
         double const dRadius = radiusMax / (radiusN - 1);
         double const dHeight = heightMax / (heightN - 1);
@@ -586,19 +586,19 @@ namespace
 
         std::ofstream file(filename);
 
-        for (std::int32_t i = 0; i != radiusN; ++i)
+        for (std::int32_t i = 0; i != heightN; ++i)
         {
-            double const r = i * dRadius;
-            double const x = r * cosPhi;
-            double const y = r * sinPhi;
+            double const z = i * dHeight;
 
-            for (std::int32_t j = 0; j != heightN; ++j)
+            for (std::int32_t j = 0; j != radiusN; ++j)
             {
-                double const z = j * dHeight;
+                double const r = j * dRadius;
+                double const x = r * cosPhi;
+                double const y = r * sinPhi;
 
-                std::cout << matter->density({x, y, z}) << "\t";
+                file << matter->density({x, y, z}) << "\t";
             }
-            std::cout << std::endl;
+            file << std::endl;
         }
     }
 }
