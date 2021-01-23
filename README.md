@@ -14,6 +14,7 @@ The method was described in [Shulman (2018)](#shulman2018).
   - [Grid](#grid)
   - [Stars](#stars)
   - [Observers](#observers)
+  - [Density Slice](#density-slice)
 - [Used third-party libraries](#used-third-party-libraries)
 - [References](#references)
 
@@ -307,6 +308,17 @@ The JSON configuration may be specified in the following way:
     }
   }
 ```
+
+### Density Slice
+
+It may be important to check that the scattering matter has the geometry you expect in some cases.
+For this purpose, the configuration file contains **densitySlice** optional section.
+It allows dumping a slice of the scattering medium along the z-axis into a file.
+The slice parameters are:
+- filename &mdash; the output file name
+- phi &mdash; longitude of the slice in degrees
+- radiusMax &mdash; the maximum radius value. The radius varies from 0 to _radiusMax_.
+- heightMax &mdash; the maximum height value. The height varies from 0 to _heightMax_.
 
 ## Used third-party libraries
 
