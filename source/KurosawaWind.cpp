@@ -35,9 +35,9 @@ KurosawaWind::KurosawaWind(
 double KurosawaWind::density(Vector3d const& position) const
 {
     Vector3d const rs{0, 0, position.z() > 0. ? -d_ : d_};
-    Vector3d const sPos = rs - position;
+    Vector3d const sPos = position - rs;
     double const D = sPos.norm();
-    double cosDelta = -(rs * sPos) / (d_ * D);
+    double const cosDelta = -(rs * sPos) / (d_ * D);
 
     if (cosDelta > cosInner_ || cosDelta < cosOuter_)
     {
@@ -49,7 +49,8 @@ double KurosawaWind::density(Vector3d const& position) const
 
     double const vCirc = 4.740571715 * std::sqrt(mStar_ / w); // km s-1
     double const vSound = soundSpeed_ * vCirc;
-    double const vPoloidal = 1e5 * (vSound + (terminalV_ - vSound) * std::pow(1. - rScale_ / (D - d_ / cosDelta), windAccelerationRate_)); // sm s-1
+    double const l = D - d_ / cosDelta;
+    double const vPoloidal = 1e5 * (vSound + (terminalV_ - vSound) * std::pow(1. - rScale_ / (l + rScale_), windAccelerationRate_)); // sm s-1
 
     double const right = d_ / (D * cosDelta);
     return mOut / (vPoloidal * std::abs(cosDelta)) * right * right;
