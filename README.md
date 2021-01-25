@@ -104,8 +104,7 @@ The model parameters are:
 
 ##### Safier Wind
 
-One can add the disk wind to the flared disk.
-The wind model was suggested by Safier ([1993a](#safier1993a), [1993b](#safier1993b)).
+One can add the disk wind suggested by Safier ([1993a](#safier1993a), [1993b](#safier1993b)) to the flared disk.
 The density of the disk with the wind is the maximum of the wind and disk densities.
 The density of the Safier wind is
  
@@ -114,7 +113,7 @@ The density of the Safier wind is
 where _&chi; = z / r_ is the dimensionless height above the disk plane and _&rho;<sub>0</sub>_ is the wind density on
 the disk surface at distance 1 AU from the star.
 
-![safier wind](./docs_src/images/safier_wind_rho0.svg)
+![safier wind rho0](./docs_src/images/safier_wind_rho0.svg)
 
 The function _&eta;(&chi;)_ can be obtained by solving the gas-dynamic equations.
 _&xi;'<sub>0</sub>_ and _&psi;<sub>0</sub>_ are wind model parameters, which are defined in Safier papers ([1993a](#safier1993a), [1993b](#safier1993b)) for a list of models.
@@ -126,6 +125,49 @@ The parameters of the wind are:
 - h0 &mdash; the dimensionless height from which the wind begins
 - rMin &mdash; the inner radius of the wind formation region
 - rMax &mdash; the outer radius of the wind formation region
+
+##### Kurosawa Wind
+
+The conical disk wind ([Kurosawa, 2006](#kurosawa2006)) may be added to the disk.
+the wind density is described depending on _(&omega;, l)_ coordinates.
+Here _&omega;_ is the distance from the star to a wind streamline on the equatorial plane,
+and _l_ is the distance from the equatorial plane to the point along the streamline.
+The wind density is described by the equation:
+
+![kurosawa wind](./docs_src/images/kurosawa_wind.svg)
+
+The relationship between Cartesian coordinates _(x, y, z)_ and wind parameters (_&omega;_, _l_ and others)
+is expressed by the following relations:
+
+![kurosawa wind coordinates](./docs_src/images/kurosawa_wind_coordinates.svg)
+
+Here _D_ is the distance from the wind 'source' point to a point with coordinates _(x, y, z)_.
+_&delta;_ is an angle between z axis and a streamline.
+The local mass outflow rate for _&omega;_ is obtained based on the dependency
+![kurosawa wind mass outflow rate](./docs_src/images/kurosawa_wind_mout.svg)
+
+and the total mass outflow rate for the wind.
+
+The wind poloidal velocity is expressed by the equation
+
+![kurosawa wind poloidal velocity](./docs_src/images/kurosawa_wind_poloidal_velocity.svg)
+
+Here _R<sub>s</sub>_ is the wind scale length, _&beta;_ is the wind acceleration rate,
+_c<sub>s</sub>_ is the sound speed in the local disk circular velocity units,
+_v<sub>circ</sub>_ is the disk circular velocity at radius &omega;,
+_v<sub>terminal</sub>_ is the wind terminal velocity.
+
+In sum, the wind parameters are:
+- d &mdash; the distance from the star to a wind 'source' point
+- p &mdash; the mass outflow rate on radius dependency power
+- mOut &mdash; the mass-loss rate in solar masses per year
+- mStar &mdash; the stellar mass in solar masses
+- rInner &mdash; the inner radius of the wind formation region in AU
+- rOuter &mdash; the outer radius of the wind formation region in AU
+- rScale &mdash; the wind scale length in AU
+- windAccelerationRate &mdash; the wind acceleration rate
+- terminalV &mdash; the wind terminal velocity in km/s
+- soundSpeed &mdash; the sound speed at the wind launching point on the disc in the disk circular velocity units
 
 ##### Disk Humps
 
@@ -327,10 +369,11 @@ The slice parameters are:
 
 ## References
 
-1. <a name="elmegreen1997"></a>Elmegreen, B.G., 1997. Intercloud structure in a turbulent fractal interstellar medium. Astrophys. J. **477**, 196–203.
-2. <a name="geuzaine2009"></a>Geuzaine, C. and  Remacle, J.-F., 2009. Gmsh: a three-dimensional finite element mesh generator with built-in pre- and post-processing facilities. International Journal for Numerical Methods in Engineering, **79**(11), 1309-1331.
-3. <a name="henyey1941"></a>Henyey, L.G. and Greenstein, J.L., 1941. Diffuse radiation in the Galaxy. Astrophys. J. **93**, 70-83.  
-4. <a name="safier1993a"></a>Safier, P. N., 1993a. Centrifugally Driven Winds from Protostellar Disks. I. Wind Model and Thermal Structure. Astrophys. J. **408**, 115.
-5. <a name="safier1993b"></a>Safier, P. N., 1993b. Centrifugally Driven Winds from Protostellar Disks. II. Forbidden-Line Emission in T Tauri Stars. Astrophys. J. **408**, 148.
-6. <a name="shulman2018"></a>Shulman, S.G., 2018. Three-dimensional heuristic radiation transfer method based on enumeration using the directions grid. Astronomy and Computing **24**, 104–116.
-7. <a name="white1979"></a>White, R.L., 1979. Polarization in reflection nebulae. I. Scattering properties of interstellar grains. Astrophys. J. **229**, 954-961.
+1. <a name="elmegreen1997"></a>Elmegreen B.G., 1997. Intercloud structure in a turbulent fractal interstellar medium. Astrophys. J. **477**, 196–203.
+1. <a name="geuzaine2009"></a>Geuzaine C. and  Remacle J.-F., 2009. Gmsh: a three-dimensional finite element mesh generator with built-in pre- and post-processing facilities. International Journal for Numerical Methods in Engineering, **79**(11), 1309-1331.
+1. <a name="henyey1941"></a>Henyey L.G. and Greenstein J.L., 1941. Diffuse radiation in the Galaxy. Astrophys. J. **93**, 70-83.  
+1. <a name="kurosawa2006"></a> Kurosawa R., Harries T. J., and Symington N. H., 2006. On the formation of Hα line emission around classical T Tauri stars. MNRAS **370**, 580-596.
+1. <a name="safier1993a"></a>Safier P. N., 1993a. Centrifugally Driven Winds from Protostellar Disks. I. Wind Model and Thermal Structure. Astrophys. J. **408**, 115.
+1. <a name="safier1993b"></a>Safier P. N., 1993b. Centrifugally Driven Winds from Protostellar Disks. II. Forbidden-Line Emission in T Tauri Stars. Astrophys. J. **408**, 148.
+1. <a name="shulman2018"></a>Shulman S.G., 2018. Three-dimensional heuristic radiation transfer method based on enumeration using the directions grid. Astronomy and Computing **24**, 104–116.
+1. <a name="white1979"></a>White R.L., 1979. Polarization in reflection nebulae. I. Scattering properties of interstellar grains. Astrophys. J. **229**, 954-961.
