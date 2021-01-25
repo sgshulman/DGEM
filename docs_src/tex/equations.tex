@@ -1,35 +1,64 @@
 \documentclass[a4paper,14pt]{extarticle}
 \usepackage[active,tightpage]{preview}
+%pdf2svg equations.pdf output-page%3.3d.svg all
 \usepackage{amsmath}
 \PreviewEnvironment{equation*}
 \PreviewBorder=2pt\relax
 
 \begin{document}
+% flared disk
 \begin{equation*}
 \rho(\mathit{x},\mathit{y},\mathit{z}) = \begin{cases}
                \mathrm{rho0} \left(\frac{\mathrm{r0}}{r}\right)^\mathrm{alpha} \exp\left[-\frac{1}{2}\left(\frac{ \mathit{z}}{h(r)}\right)^2\right],       &  \mathrm{rInner} \le \mathrm{r} \le  \mathrm{rOuter}, \\
                0,& \text{otherwise},          \end{cases}
 \end{equation*}
 
+% flared disk height
 \begin{equation*}
  h(r)=\mathrm{h0}\left(\frac{r}{\mathrm{r0}}\right)^\mathrm{beta}
 \end{equation*}
 
+% flared disk radius
 \begin{equation*}
  r=\sqrt{\mathit{x}^2+\mathit{y}^2}
 \end{equation*}
 
-
+% Safier wind
 \begin{equation*}
  \rho(\mathit{x},\mathit{y},\mathit{z}) = \rho_0 \cdot r^{-3/2}\eta(\chi)
 \end{equation*}
 
+% Safier wind rho0
 \begin{equation*}\begin{split}
   &\qquad \rho_0= 1.064 \times 10^{-15}\left( \frac{\mathrm{mOut}}{10^{-7}M_\odot yr^{-1}}\right)\\
  \times&\left(  \frac{\mathrm{mStar}}{0.5M_\odot}\right)^{-0.5} \frac{1}{\ln (\mathrm{rMax}/\mathrm{rMin}) \psi_0 (1 - \mathrm{h0}\cdot\xi'_0)}
 \end{split}\end{equation*}
 
+% Kurosawa wind
+\begin{equation*}
+  \rho(\omega, l)= \begin{cases} \frac{\dot{m}(\omega)}{v_p(\omega, l) |\cos \delta|}\left[ \frac{d}{D(\omega, l) \cos\delta}\right]^2,       &  \mathrm{rInner} \le \omega \le  \mathrm{rOuter}, \\
+               0,& \text{otherwise},          \end{cases}
+\end{equation*}
 
+% Kurosawa wind coordinates
+\begin{equation*}\begin{split}
+  D &=  \sqrt{x^2+y^2+(|z| + d)^2},\\
+  \cos\delta &= \frac{|z| + d}{D},\\
+  \omega &= \frac{d}{|z| + d}(x^2 + y^2),\\  
+  l &= D - \frac{d}{\cos\delta}.
+\end{split}\end{equation*}
+
+% Kurosawa wind mout
+\begin{equation*}
+    \dot{m}(\omega) \propto \omega^p
+\end{equation*}
+
+% Kurosawa wind poloidal velocity
+\begin{equation*}
+    v_p(\omega, l) = c_s \cdot v_{circ} + \left[ v_{terminal} - c_s \cdot v_{circ}\right]\left(1 - \frac{R_s}{l + R_s} \right)^\beta
+\end{equation*}
+
+% round hump
 \begin{equation*}
 v_{\mathrm{hump}}(\mathit{x},\mathit{y},\mathit{z}) = 
 v \cdot \left[1 + \mathrm{h} \cdot \exp\left(
@@ -38,6 +67,7 @@ v \cdot \left[1 + \mathrm{h} \cdot \exp\left(
         \right) \right]
 \end{equation*}
 
+% azimuthal hump
 \begin{equation*}\begin{aligned}
      v_{\mathrm{hump}}(\mathit{x},\mathit{y},\mathit{z}) = &
      v \cdot\Biggl[1 + \mathrm{h} \cdot \exp\left(
@@ -46,12 +76,14 @@ v \cdot \left[1 + \mathrm{h} \cdot \exp\left(
         -\frac{\arctan(y, x)^2}{2 \cdot \mathrm{sigma2azimuthal}} \right)\Biggr]             
 \end{aligned}\end{equation*}
 
+% sphere envelope
 \begin{equation*}
 \rho(\mathit{x},\mathit{y},\mathit{z}) = \begin{cases}
                \mathrm{rho0} \left(\frac{\mathrm{r0}}{r}\right)^\mathrm{alpha},       &  \mathrm{rInner} \le \mathrm{r} \le  \mathrm{rOuter}, \\
                0,& \text{otherwise},          \end{cases}
 \end{equation*}
 
+% flared disk radius
 \begin{equation*}
  r=\sqrt{\mathit{x}^2+\mathit{y}^2+\mathit{z}^2}
 \end{equation*}
