@@ -132,8 +132,8 @@ SafierWind::SafierWind(
 
 double SafierWind::density(Vector3d const& position) const
 {
-    double r = sqrt(position.x()*position.x() + position.y()*position.y());
-    double chi = position.z()/r;
+    double const r = std::sqrt(position.x()*position.x() + position.y()*position.y());
+    double const chi = std::abs(position.z()/r);
 
     if (chi < h0_ || rho0_ == 0.0)
     {
