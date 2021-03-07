@@ -73,12 +73,14 @@ double CartesianGrid::findRealOpticalDepth(Vector3d const& position, Vector3d co
 {
     double tau{ 0.0 };
     Vector3d pos{ position };
+    Vector3d dirNormalized{ direction.normalized() };
+
     double const step{0.001 * std::min({1., xmax_, ymax_, zmax_})};
 
     while (std::abs(pos.x()) <= xmax_ && std::abs(pos.y()) <= ymax_ && std::abs(pos.z()) <= zmax_)
     {
-        tau += step * matter_->density(pos) * kappa_ * 1.5e13;
-        pos = pos + step * direction;
+        tau += step * matter_->density(pos) * kappa_ * AU_Cm;
+        pos = pos + step * dirNormalized;
     }
 
     return tau;

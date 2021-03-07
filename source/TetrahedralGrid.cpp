@@ -186,12 +186,13 @@ double TetrahedralGrid::findRealOpticalDepth(Vector3d const& position, Vector3d 
 {
     double tau{ 0.0 };
     Vector3d pos{ position };
+    Vector3d dirNormalized{ direction.normalized() };
     double const step{0.001 * std::min(1., max_)};
 
     while (std::abs(pos.x()) <= max_ && std::abs(pos.y()) <= max_ && std::abs(pos.z()) <= max_)
     {
         tau += step * matter_->density(pos) * kappa_ * 1.5e13;
-        pos = pos + step * direction;
+        pos = pos + step * dirNormalized;
     }
 
     return tau;
