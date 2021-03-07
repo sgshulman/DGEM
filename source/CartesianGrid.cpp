@@ -6,6 +6,7 @@
 #include "observers.hpp"
 #include "Photon.hpp"
 #include "Random.hpp"
+#include "Units.hpp"
 
 namespace
 {
@@ -59,7 +60,7 @@ CartesianGrid::CartesianGrid(
             {
                 double const z=(cntz*2.0+1) * zmax_/nz_ - zmax_;
                 std::uint64_t const idx = cntx+cnty*nx+cntz*ny*nx;
-                rhokappa_[idx] = matter_->density({x, y, z}) * kappa * 1.5e13; // rho*kappa*R,
+                rhokappa_[idx] = matter_->density({x, y, z}) * kappa * AU_Cm; // rho*kappa*R,
                 if (minrho_ > rhokappa_[idx] && rhokappa_[idx] > 0)
                     minrho_ = rhokappa_[idx];
             }
@@ -285,7 +286,7 @@ double CartesianGrid::computeMatterMass() const
         }
     }
 
-    return density * 8. * xmax_ / nx_ * ymax_ / ny_ * zmax_ / nz_ * 1683294;
+    return density * GPerCm3_MSunPerAU3 * 8. * xmax_ / nx_ * ymax_ / ny_ * zmax_ / nz_;
 }
 
 
