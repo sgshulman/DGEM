@@ -66,6 +66,7 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
     set(UNITTEST_SOURCES
         tests/unittests.cpp
         tests/AzimuthalHumpTests.cpp
+        tests/CartesianGridTests.cpp
         tests/Direction3dTests.cpp
         tests/MathUtilsTests.cpp
         tests/MatterArrayTests.cpp
