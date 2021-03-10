@@ -53,30 +53,30 @@ TEST_CASE("Cartezian Grid", "[grid]")
         REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0, 0, -1}))) == 100.);
 
         double const depth2{ std::sqrt(2.) * 100. };
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1,  1, 0}))).epsilon(0.0001) == depth2);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, -1, 0}))).epsilon(0.0001) == depth2);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1,  1, 0}))).epsilon(0.0001) == depth2);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, -1, 0}))).epsilon(0.0001) == depth2);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1,  1, 0}))) == depth2);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, -1, 0}))) == depth2);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1,  1, 0}))) == depth2);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, -1, 0}))) == depth2);
 
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, 0,  1}))).epsilon(0.0001) == depth2);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, 0, -1}))).epsilon(0.0001) == depth2);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, 0,  1}))).epsilon(0.0001) == depth2);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, 0, -1}))).epsilon(0.0001) == depth2);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, 0,  1}))) == depth2);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, 0, -1}))) == depth2);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, 0,  1}))) == depth2);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, 0, -1}))) == depth2);
 
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0,  1,  1}))).epsilon(0.0001) == depth2);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0,  1, -1}))).epsilon(0.0001) == depth2);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0, -1,  1}))).epsilon(0.0001) == depth2);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0, -1, -1}))).epsilon(0.0001) == depth2);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0,  1,  1}))) == depth2);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0,  1, -1}))) == depth2);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0, -1,  1}))) == depth2);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0, -1, -1}))) == depth2);
 
         double const depth3{ std::sqrt(3.) * 100. };
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1,  1,  1}))).epsilon(0.0001) == depth3);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1,  1, -1}))).epsilon(0.0001) == depth3);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, -1,  1}))).epsilon(0.0001) == depth3);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, -1, -1}))).epsilon(0.0001) == depth3);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1,  1,  1}))).epsilon(0.0001) == depth3);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1,  1, -1}))).epsilon(0.0001) == depth3);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, -1,  1}))).epsilon(0.0001) == depth3);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, -1, -1}))).epsilon(0.0001) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1,  1,  1}))) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1,  1, -1}))) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, -1,  1}))) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, -1, -1}))) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1,  1,  1}))) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1,  1, -1}))) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, -1,  1}))) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, -1, -1}))) == depth3);
     }
 
     SECTION("Polynomial dust density")
@@ -95,33 +95,33 @@ TEST_CASE("Cartezian Grid", "[grid]")
         REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0, 0, -1}))) == 70.);
 
         double const depth2xy{ std::sqrt(2.) * 80. };
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1,  1, 0}))).epsilon(0.1) == depth2xy);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, -1, 0}))).epsilon(0.1) == depth2xy);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1,  1, 0}))).epsilon(0.1) == depth2xy);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, -1, 0}))).epsilon(0.1) == depth2xy);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1,  1, 0}))).epsilon(0.0001) == depth2xy);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, -1, 0}))).epsilon(0.0001) == depth2xy);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1,  1, 0}))).epsilon(0.0001) == depth2xy);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, -1, 0}))).epsilon(0.0001) == depth2xy);
 
         double const depth2xz{ std::sqrt(2.) * 65. };
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, 0,  1}))).epsilon(0.2) == depth2xz);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, 0, -1}))).epsilon(0.2) == depth2xz);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, 0,  1}))).epsilon(0.2) == depth2xz);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, 0, -1}))).epsilon(0.2) == depth2xz);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, 0,  1}))).epsilon(0.0001) == depth2xz);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, 0, -1}))).epsilon(0.0001) == depth2xz);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, 0,  1}))).epsilon(0.0001) == depth2xz);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, 0, -1}))).epsilon(0.0001) == depth2xz);
 
         double const depth2yz{ std::sqrt(2.) * 55. };
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0,  1,  1}))).epsilon(0.2) == depth2yz);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0,  1, -1}))).epsilon(0.2) == depth2yz);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0, -1,  1}))).epsilon(0.2) == depth2yz);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0, -1, -1}))).epsilon(0.2) == depth2yz);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0,  1,  1}))).epsilon(0.0001) == depth2yz);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0,  1, -1}))).epsilon(0.0001) == depth2yz);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0, -1,  1}))).epsilon(0.0001) == depth2yz);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0, -1, -1}))).epsilon(0.0001) == depth2yz);
 
         double const depth3{ std::sqrt(3.) * 50. };
-        REQUIRE(Approx(grid.findRealOpticalDepth(position, Vector3d{ 1,  1,  1})).epsilon(0.25) == depth3);
+        REQUIRE(Approx(grid.findRealOpticalDepth(position, Vector3d{ 1,  1,  1})) == depth3);
 
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1,  1,  1}))).epsilon(0.25) == depth3);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1,  1, -1}))).epsilon(0.25) == depth3);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, -1,  1}))).epsilon(0.25) == depth3);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, -1, -1}))).epsilon(0.25) == depth3);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1,  1,  1}))).epsilon(0.25) == depth3);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1,  1, -1}))).epsilon(0.25) == depth3);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, -1,  1}))).epsilon(0.25) == depth3);
-        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, -1, -1}))).epsilon(0.25) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1,  1,  1}))).epsilon(0.0001) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1,  1, -1}))).epsilon(0.0001) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, -1,  1}))).epsilon(0.0001) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, -1, -1}))).epsilon(0.0001) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1,  1,  1}))).epsilon(0.0001) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1,  1, -1}))).epsilon(0.0001) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, -1,  1}))).epsilon(0.0001) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, -1, -1}))).epsilon(0.0001) == depth3);
     }
 }

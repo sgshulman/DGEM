@@ -100,7 +100,7 @@ double CartesianGrid::maxDistance(Photon const& ph) const
 // find distance to next x, y, and z cell walls.  
 // note that dx is not the x-distance, but the actual distance along 
 // the direction of travel to the next x-face, and likewise for dy and dz.
-std::pair<double, std::uint64_t> CartesianGrid::cellDistance(Photon& ph, double delta, Vector3d const& phDirInv) const
+std::pair<double, std::uint64_t> CartesianGrid::cellDistance(const Photon& ph, Vector3d const& phDirInv) const
 {
     double dx=200.0*xmax_, dy=200.0*ymax_, dz=200.0*zmax_;
     std::uint64_t newCellX=0, newCellY=0, newCellZ=0;
@@ -112,63 +112,27 @@ std::pair<double, std::uint64_t> CartesianGrid::cellDistance(Photon& ph, double 
     if(ph.dir().x() > 0.0)
     {
         dx = ((x + 1.0) * xCellSize_ - xmax_ - ph.pos().x()) * phDirInv.x();
-        if (dx < delta)
-        {
-            dx = xCellSize_ * phDirInv.x();
-            ph.pos().x() = (x + 1.0) * xCellSize_ - xmax_ + delta;
-            ph.cellId() += 1u;
-        }
         newCellX = ph.cellId() + 1u;
     } else if (ph.dir().x() < 0.0) {
         dx = (x * xCellSize_ - xmax_ - ph.pos().x()) * phDirInv.x();
-        if (dx < delta)
-        {
-            dx = -xCellSize_ * phDirInv.x();
-            ph.pos().x() = x * xCellSize_ - xmax_ - delta;
-            ph.cellId() -= 1u;
-        }
         newCellX = ph.cellId() - 1u;
     }
 
     if(ph.dir().y() > 0.0)
     {
         dy = ((y + 1.0) * yCellSize_ - ymax_ - ph.pos().y()) * phDirInv.y();
-        if (dy < delta)
-        {
-            dy = yCellSize_ * phDirInv.y();
-            ph.pos().y() = (y + 1.0 ) * yCellSize_ - ymax_+ delta;
-            ph.cellId() += 0x000000010000u;
-        }
         newCellY = ph.cellId() + 0x000000010000u;
     } else if (ph.dir().y() < 0.0) {
         dy = (y * yCellSize_ - ymax_ - ph.pos().y()) * phDirInv.y();
-        if (dy < delta)
-        {
-            dy = -yCellSize_ * phDirInv.y();
-            ph.pos().y() = y * yCellSize_ - ymax_ - delta;
-            ph.cellId() -= 0x000000010000u;
-        }
         newCellY = ph.cellId() - 0x000000010000u;
     }
 
     if(ph.dir().z() > 0.0)
     {
         dz = ((z + 1.0) * zCellSize_ - zmax_ - ph.pos().z()) * phDirInv.z();
-        if (dz < delta)
-        {
-            dz = zCellSize_  * phDirInv.z();
-            ph.pos().z() = (z + 1.0) * zCellSize_ - zmax_ + delta;
-            ph.cellId() += 0x000100000000u;
-        }
         newCellZ = ph.cellId() + 0x000100000000u;
     } else if (ph.dir().z() < 0.0) {
         dz = (z * zCellSize_- zmax_ - ph.pos().z()) * phDirInv.z();
-        if (dz < delta)
-        {
-            dz = -zCellSize_ * phDirInv.z();
-            ph.pos().z() = z * zCellSize_ - zmax_ - delta;
-            ph.cellId() -= 0x000100000000u;
-        }
         newCellZ = ph.cellId() - 0x000100000000u;
     }
 
@@ -181,11 +145,9 @@ std::pair<double, std::uint64_t> CartesianGrid::cellDistance(Photon& ph, double 
 double CartesianGrid::findOpticalDepth(Photon ph) const
 {
     double taurun=0.0, d=0.0;
-
-    double const delta=0.0001 * xCellSize_;
     double const smax = maxDistance(ph);
 
-    if(smax < delta)
+    if(smax < 0.0001 * xCellSize_)
     {
         return 0.0;
     }
@@ -194,7 +156,7 @@ double CartesianGrid::findOpticalDepth(Photon ph) const
 
     while (d < 0.999*smax)
     {
-        std::pair<double, std::uint64_t> const dcell = cellDistance(ph, delta, phDirInv);
+        std::pair<double, std::uint64_t> const dcell = cellDistance(ph, phDirInv);
 
         auto const x = static_cast<std::uint32_t>( ph.cellId() & 0x00000000FFFFu);
         auto const y = static_cast<std::uint32_t>((ph.cellId() & 0x0000FFFF0000u) >> 16u);
@@ -212,14 +174,13 @@ int CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold) con
 {
     double taurun=tauold, d=0.0;
 
-    double const delta=0.0001 * xCellSize_;
     double const smax = maxDistance(ph);
     Vector3d const phDirInv = ph.dir().vector().inverse();
 
     // integrate through grid
     while (taurun < tau && d < (0.9999*smax))
     {
-        std::pair<double, std::uint64_t> const dcell = cellDistance(ph, delta, phDirInv);
+        std::pair<double, std::uint64_t> const dcell = cellDistance(ph, phDirInv);
 
         auto const x = static_cast<std::uint32_t>( ph.cellId() & 0x00000000FFFFu);
         auto const y = static_cast<std::uint32_t>((ph.cellId() & 0x0000FFFF0000u) >> 16u);

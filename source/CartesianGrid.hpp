@@ -28,7 +28,7 @@ class CartesianGrid : public IGrid
 
     private:
         double maxDistance(Photon const& ph) const;
-        std::pair<double, std::uint64_t> cellDistance(Photon& ph, double delta, Vector3d const& phDirInv) const;
+        std::pair<double, std::uint64_t> cellDistance(const Photon& ph, Vector3d const& phDirInv) const;
 
         std::uint32_t nx_, ny_, nz_;
         double *rhokappa_{ nullptr };
