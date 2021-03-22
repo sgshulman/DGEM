@@ -21,11 +21,13 @@
 #include "TetrahedralGrid.hpp"
 #include "observers.hpp"
 #include "third-party/nlohmann/json.hpp"
+#include "Units.hpp"
 
 namespace
 {
     char const sDensitySlice[] = "densitySlice";
     char const sDust[] = "dust";
+    char const sEffectiveHeight[] = "effectiveHeight";
     char const sGeometry[] = "geometry";
     char const sGrid[] = "grid";
     char const sStars[] = "stars";
@@ -637,6 +639,49 @@ namespace
             file << std::endl;
         }
     }
+
+    void effectiveHeight(nlohmann::json const& json, IMatterCPtr const& matter, double const kappa)
+    {
+        checkParameters(json, sEffectiveHeight, {"filename", "radiusMax", "heightMax", "dHeight", "dRadius"});
+
+        std::string const filename = get_string(json, sEffectiveHeight, "filename");
+        double const radiusMax = get_double(json, sEffectiveHeight, "radiusMax");
+        double const heightMax = get_double(json, sEffectiveHeight, "heightMax");
+        double const dHeight = get_double(json, sEffectiveHeight, "dHeight");
+        double const dRadius = get_double(json, sEffectiveHeight, "dRadius");
+
+        std::int32_t radiusN{ static_cast<int32_t>(2 * radiusMax / dRadius) + 1};
+        std::int32_t heightN{ static_cast<int32_t>(heightMax / dHeight) + 1};
+
+        std::ofstream file(filename);
+
+        for (std::int32_t i = 0; i != radiusN; ++i)
+        {
+            double const x = -radiusMax + i * dRadius;
+
+            for (std::int32_t j = 0; j != radiusN; ++j)
+            {
+                double const y = -radiusMax + j * dRadius;
+
+                double z{ heightMax };
+                double tau{ 0. };
+                for (std::int32_t k = 0; k != heightN; ++k)
+                {
+                    tau += dHeight * matter->density({x, y, z}) * kappa * AU_Cm;
+
+                    if (tau > 0.0)
+                    {
+                        break;
+                    }
+
+                    z -= dHeight;
+                }
+
+                file << z << "\t";
+            }
+            file << std::endl;
+        }
+    }
 }
 
 #ifdef ENABLE_UNIT_TESTS
@@ -652,7 +697,7 @@ Model::Model(std::vector<Observer>* observers)
     checkParameters(
         j,
         "parameters.json",
-        {"method parameters", sDensitySlice, sDust, sGeometry, sGrid, sStars, sObservers});
+        {"method parameters", sDensitySlice, sDust, sEffectiveHeight, sGeometry, sGrid, sStars, sObservers});
 
     SourceParameters sourceParameters{};
     char const methodParameters[] = "method parameters";
@@ -687,6 +732,12 @@ Model::Model(std::vector<Observer>* observers)
     }
 
     grid_ = parseGrid(j.at(sGrid), get_double(dustJson, sDust, "kappa"), geometry);
+
+    if (j.contains(sEffectiveHeight))
+    {
+        effectiveHeight(j.at(sEffectiveHeight), geometry, get_double(dustJson, sDust, "kappa"));
+    }
+
     sources_ = parseSources(j.at(sStars), sourceParameters, grid_);
     parseObservers(observers, j.at(sObservers));
 }
