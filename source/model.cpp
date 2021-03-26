@@ -171,22 +171,30 @@ namespace
     }
 
 
-    std::uint64_t get_bool(const nlohmann::json& json, char const* const section, char const* const name)
+    bool extract_bool(const nlohmann::json& json, char const* const section, char const* const name)
+    {
+        if (!json.is_boolean())
+        {
+            throw std::invalid_argument(std::string("Item ") + name + " from section " + section + " should be boolean.");
+        }
+
+        return json.get<bool>();
+    }
+
+    bool get_bool(const nlohmann::json& json, char const* const section, char const* const name)
     {
         if (!json.contains(name))
         {
             throw std::invalid_argument(std::string("Section ") + section + " should contain boolean item " + name + ".");
         }
 
-        auto const& item = json.at(name);
-        if (!item.is_boolean())
-        {
-            throw std::invalid_argument(std::string("Item ") + name + " from section " + section + " should be boolean.");
-        }
-
-        return item.get<bool>();
+        return extract_bool(json.at(name), section, name);
     }
 
+    bool get_optional_bool(const nlohmann::json& json, char const* section, char const* name, bool defaultValue)
+    {
+        return json.contains(name) ? extract_bool(json.at(name), section, name) : defaultValue;
+    }
 
     MatterTranslationCPtr parseTranslation(const nlohmann::json& json)
     {
@@ -642,13 +650,14 @@ namespace
 
     void effectiveHeight(nlohmann::json const& json, IMatterCPtr const& matter, double const kappa)
     {
-        checkParameters(json, sEffectiveHeight, {"filename", "radiusMax", "heightMax", "dHeight", "dRadius"});
+        checkParameters(json, sEffectiveHeight, {"filename", "radiusMax", "heightMax", "dHeight", "dRadius", "printCoordinates"});
 
         std::string const filename = get_string(json, sEffectiveHeight, "filename");
         double const radiusMax = get_double(json, sEffectiveHeight, "radiusMax");
         double const heightMax = get_double(json, sEffectiveHeight, "heightMax");
         double const dHeight = get_double(json, sEffectiveHeight, "dHeight");
         double const dRadius = get_double(json, sEffectiveHeight, "dRadius");
+        bool const printCoordinates = get_optional_bool(json, sEffectiveHeight, "printCoordinates", false);
 
         std::int32_t radiusN{ static_cast<int32_t>(2 * radiusMax / dRadius) + 1};
         std::int32_t heightN{ static_cast<int32_t>(heightMax / dHeight) + 1};
@@ -669,7 +678,7 @@ namespace
                 {
                     tau += dHeight * matter->density({x, y, z}) * kappa * AU_Cm;
 
-                    if (tau > 0.0)
+                    if (tau > 1.0)
                     {
                         break;
                     }
@@ -677,7 +686,12 @@ namespace
                     z -= dHeight;
                 }
 
-                file << z << "\t";
+                if (printCoordinates)
+                {
+                    file << x << "\t" << y << "\t" << z << "\n";
+                } else {
+                    file << z << "\t";
+                }
             }
             file << std::endl;
         }
