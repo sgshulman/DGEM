@@ -244,6 +244,8 @@ The Flared Disk and the Sphere Envelope may contain additional Translation secti
 It describes a rotation and a translation of the shape in the global coordinate system.
 We use the Euler angles for rotation.
 So there are six parameters: intrinsicRotation, nutation, precession, x, y, z.
+Intrinsic rotation, nutation and precession are measured in degrees.
+x, y, z are in AU.
 All transformations are applied in the global coordinate system, thus the order of operations is:
 1. Intrinsic Rotation (rotation around _z_-axis)
 2. Nutation (rotation around _x_-axis)

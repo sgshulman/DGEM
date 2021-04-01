@@ -201,9 +201,9 @@ namespace
         checkParameters(json, sTranslation, {"precession", "nutation", "intrinsicRotation", "x", "y", "z"});
 
         return std::make_shared<MatterTranslation const>(
-            get_optional_double(json, sTranslation, "precession", 0.0),
-            get_optional_double(json, sTranslation, "nutation", 0.0),
-            get_optional_double(json, sTranslation, "intrinsicRotation", 0.0),
+            radians(get_optional_double(json, sTranslation, "precession", 0.0)),
+            radians(get_optional_double(json, sTranslation, "nutation", 0.0)),
+            radians(get_optional_double(json, sTranslation, "intrinsicRotation", 0.0)),
             Vector3d{
                 get_optional_double(json, sTranslation, "x", 0.0),
                 get_optional_double(json, sTranslation, "y", 0.0),
