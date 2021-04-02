@@ -9,16 +9,8 @@ jobs:
 
     strategy:
       matrix:
-        compiler_name: [build_gcc7, build_gcc8, build_gcc9, build_gcc10, build_clang8, build_clang9, build_clang10]
+        compiler_name: [build_gcc9, build_gcc10, build_clang9, build_clang10, build_clang11]
         include:
-          - compiler_name: build_gcc7
-            c_compiler: gcc-7
-            cxx_compiler: g++-7
-
-          - compiler_name: build_gcc8
-            c_compiler: gcc-8
-            cxx_compiler: g++-8
-
           - compiler_name: build_gcc9
             c_compiler: gcc-9
             cxx_compiler: g++-9
@@ -26,10 +18,6 @@ jobs:
           - compiler_name: build_gcc10
             c_compiler: gcc-10
             cxx_compiler: g++-10
-
-          - compiler_name: build_clang8
-            c_compiler: clang-8
-            cxx_compiler: clang++-8
 
           - compiler_name: build_clang9
             c_compiler: clang-9
@@ -39,6 +27,9 @@ jobs:
             c_compiler: clang-10
             cxx_compiler: clang++-10
 
+          - compiler_name: build_clang11
+            c_compiler: clang-11
+            cxx_compiler: clang++-11
     steps:
       - uses: actions/checkout@v2
 
