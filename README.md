@@ -15,6 +15,7 @@ The method was described in [Shulman (2018)](#shulman2018).
   - [Stars](#stars)
   - [Observers](#observers)
   - [Density Slice](#density-slice)
+  - [Effective Height](#effective-height)
 - [Used third-party libraries](#used-third-party-libraries)
 - [References](#references)
 
@@ -363,6 +364,20 @@ The slice parameters are:
 - phi &mdash; longitude of the slice in degrees
 - radiusMax &mdash; the maximum radius value. The radius varies from 0 to _radiusMax_.
 - heightMax &mdash; the maximum height value. The height varies from 0 to _heightMax_.
+
+### Effective Height
+
+The effective height is the height (_z_ value) at which the optical thickness of the matter,
+when moving downward along the _z_-axis from the infinity, reaches 1.
+This value is convenient for understanding the geometric shape of the scattering matter.
+This debug output is described in **effectiveHeight** optional section.
+The effective height parameters are:
+- filename &mdash; the output file name
+- radiusMax &mdash; the maximum module of _x_ and _y_ coordinates
+- heightMax &mdash; the maximum height value. Integration along the _z_ axis starts from this height
+- dRadius &mdash; the step along _x_ and _y_ axes
+- dHeight &mdash; the step for integration along the _z_ axis
+- printCoordinates &mdash; boolean flag. If it is _true_ each output line contains three values: _x_, _y_ and _z_. Otherwise, only the _z_ values are displayed in the table form.
 
 ## Used third-party libraries
 
