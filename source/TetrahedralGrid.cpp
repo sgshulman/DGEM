@@ -4,6 +4,7 @@
 #include "observers.hpp"
 #include "Photon.hpp"
 #include "Random.hpp"
+#include "Units.hpp"
 
 #include <algorithm>
 #include <map>
@@ -191,7 +192,7 @@ double TetrahedralGrid::findRealOpticalDepth(Vector3d const& position, Vector3d 
 
     while (std::abs(pos.x()) <= max_ && std::abs(pos.y()) <= max_ && std::abs(pos.z()) <= max_)
     {
-        tau += step * matter_->density(pos) * kappa_ * 1.5e13;
+        tau += step * matter_->density(pos) * kappa_ * AU_Cm;
         pos = pos + step * dirNormalized;
     }
 
@@ -199,11 +200,9 @@ double TetrahedralGrid::findRealOpticalDepth(Vector3d const& position, Vector3d 
 }
 
 // Nodes for the grid
-void TetrahedralGrid::readNodes(std::string const& file)
+void TetrahedralGrid::readNodes(std::istream& nodes)
 {
     std::uint32_t NumberOfDots;
-    std::ifstream nodes(file);
-    DATA_ASSERT(nodes.is_open(), file + " should exist.");
 
     nodes >> NumberOfDots;
     dots_.reserve(NumberOfDots);
@@ -220,17 +219,15 @@ void TetrahedralGrid::calculateNodesRhoKappa(double const kappa)
 {
     for (std::uint32_t cnt=0; cnt != dots_.size(); ++cnt)
     {
-        double rhoKappa = matter_->density(dots_[cnt].pos())*kappa*1.5e13;
+        double rhoKappa = matter_->density(dots_[cnt].pos())*kappa * AU_Cm;
         dots_[cnt].setRhoKappa(rhoKappa);
     }
 }
 
 // Elements of the grid
-void TetrahedralGrid::readElements(std::string const& file)
+void TetrahedralGrid::readElements(std::istream& elements)
 {
     std::uint32_t NumberOfElements;
-    std::ifstream elements(file);
-    DATA_ASSERT(elements.is_open(), file + " should exist.");
 
     elements >> NumberOfElements;
     elements_.reserve(NumberOfElements);
@@ -389,6 +386,24 @@ void TetrahedralGrid::findElementsNeighbours()
 
 
 TetrahedralGrid::TetrahedralGrid(
+    std::istream& nodes_stream,
+    std::istream& elements_stream,
+    double const max,
+    double const kappa,
+    IMatterCPtr matter)
+    : max_{ max }
+    , kappa_{ kappa }
+    , matter_{ std::move(matter) }
+{
+    readNodes(nodes_stream);
+    calculateNodesRhoKappa(kappa);
+    readElements(elements_stream);
+    calculateElementSizes();
+    findElementsNeighbours();
+}
+
+
+TetrahedralGrid::TetrahedralGrid(
     std::string const& nodes_file,
     std::string const& elements_file,
     std::string const& binary_file,
@@ -399,9 +414,15 @@ TetrahedralGrid::TetrahedralGrid(
     , kappa_{ kappa }
     , matter_{ std::move(matter) }
 {
-    readNodes(nodes_file);
+    std::ifstream nodes(nodes_file);
+    DATA_ASSERT(nodes.is_open(), nodes_file + " should exist.");
+    readNodes(nodes);
     calculateNodesRhoKappa(kappa);
-    readElements(elements_file);
+
+    std::ifstream elements(elements_file);
+    DATA_ASSERT(elements.is_open(), elements_file + " should exist.");
+
+    readElements(elements);
     calculateElementSizes();
     findElementsNeighbours();
 

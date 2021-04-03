@@ -11,6 +11,13 @@ class TetrahedralGrid : public IGrid
 {
 public:
     TetrahedralGrid(
+        std::istream& nodes_stream,
+        std::istream& elements_stream,
+        double max,
+        double kappa,
+        IMatterCPtr matter);
+
+    TetrahedralGrid(
         std::string const& nodes_file,
         std::string const& elements_file,
         std::string const& binary_file,
@@ -46,9 +53,9 @@ private:
     IMatterCPtr matter_;
 
     double maxDistance(Photon const &ph) const;
-    void readNodes(std::string const & file);
+    void readNodes(std::istream& nodes);
     void calculateNodesRhoKappa(double kappa);
-    void readElements(std::string const & file);
+    void readElements(std::istream& elements);
     void calculateElementSizes();
     void findElementsNeighbours();
     void saveGridToBinaryFile(std::string const & file);
