@@ -76,6 +76,7 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
         tests/RoundHumpTests.cpp
         tests/SphereEnvelopeTests.cpp
         tests/TestUtils.hpp
+        tests/TetrahedralGridTests.cpp
         tests/Vector3dTests.cpp
         tests/WhiteDustTests.cpp
         third-party/catch2/catch.hpp)
