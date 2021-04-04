@@ -132,4 +132,54 @@ TEST_CASE("Tetrahedral Grid", "[grid]")
         REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, -1,  1}))).epsilon(0.06) == depth3);
         REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, -1, -1}))).epsilon(0.06) == depth3);
     }
+
+    SECTION("Polynomial dust density")
+    {
+        std::stringstream nodes;
+        std::stringstream elements;
+        createGrid(&nodes, &elements, 10, 100.);
+
+        IMatterCPtr matter = std::make_shared<PolynomialMatter>(1., -0.001, -0.003, -0.006);
+        TetrahedralGrid grid(nodes, elements, 100., 1. / AU_Cm, matter);
+
+        REQUIRE(Approx(4e6 * GPerCm3_MSunPerAU3).epsilon(0.01) == grid.computeMatterMass());
+
+        Vector3d position;
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, 0, 0}))).epsilon(0.03) == 95.);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, 0, 0}))).epsilon(0.03) == 95.);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0,  1, 0}))).epsilon(0.03) == 85.);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0, -1, 0}))).epsilon(0.03) == 85.);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0, 0,  1}))).epsilon(0.03) == 70.);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0, 0, -1}))).epsilon(0.03) == 70.);
+
+        double const depth2xy{ std::sqrt(2.) * 80. };
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1,  1, 0}))).epsilon(0.04) == depth2xy);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, -1, 0}))).epsilon(0.04) == depth2xy);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1,  1, 0}))).epsilon(0.04) == depth2xy);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, -1, 0}))).epsilon(0.04) == depth2xy);
+
+        double const depth2xz{ std::sqrt(2.) * 65. };
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, 0,  1}))).epsilon(0.04) == depth2xz);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, 0, -1}))).epsilon(0.04) == depth2xz);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, 0,  1}))).epsilon(0.04) == depth2xz);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, 0, -1}))).epsilon(0.04) == depth2xz);
+
+        double const depth2yz{ std::sqrt(2.) * 55. };
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0,  1,  1}))).epsilon(0.04) == depth2yz);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0,  1, -1}))).epsilon(0.04) == depth2yz);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0, -1,  1}))).epsilon(0.04) == depth2yz);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {0, -1, -1}))).epsilon(0.04) == depth2yz);
+
+        double const depth3{ std::sqrt(3.) * 50. };
+        REQUIRE(Approx(grid.findRealOpticalDepth(position, Vector3d{ 1,  1,  1})) == depth3);
+
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1,  1,  1}))).epsilon(0.04) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1,  1, -1}))).epsilon(0.04) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, -1,  1}))).epsilon(0.04) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, -1, -1}))).epsilon(0.04) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1,  1,  1}))).epsilon(0.04) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1,  1, -1}))).epsilon(0.04) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, -1,  1}))).epsilon(0.04) == depth3);
+        REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, -1, -1}))).epsilon(0.04) == depth3);
+    }
 }
