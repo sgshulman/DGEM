@@ -675,7 +675,7 @@ double TetrahedralGrid::computeMatterMass() const
             m += V * matter_->density({middle.x(), middle.y(), middle.z()});
         }
     }
-    return m*3.34792898e+6/2;
+    return m * GPerCm3_MSunPerAU3;
 }
 
 

@@ -96,7 +96,7 @@ TEST_CASE("Tetrahedral Grid", "[grid]")
         IMatterCPtr matter = std::make_shared<PolynomialMatter>(1., 0., 0., 0.);
         TetrahedralGrid grid(nodes, elements, 100., 1. / AU_Cm, matter);
 
-        REQUIRE(Approx(8e6 * GPerCm3_MSunPerAU3).epsilon(0.01) == grid.computeMatterMass());
+        REQUIRE(Approx(8e6 * GPerCm3_MSunPerAU3) == grid.computeMatterMass());
 
         Vector3d position;
         REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, 0, 0}))).epsilon(0.02) == 100.);
@@ -142,7 +142,7 @@ TEST_CASE("Tetrahedral Grid", "[grid]")
         IMatterCPtr matter = std::make_shared<PolynomialMatter>(1., -0.001, -0.003, -0.006);
         TetrahedralGrid grid(nodes, elements, 100., 1. / AU_Cm, matter);
 
-        REQUIRE(Approx(4e6 * GPerCm3_MSunPerAU3).epsilon(0.01) == grid.computeMatterMass());
+        REQUIRE(Approx(4e6 * GPerCm3_MSunPerAU3) == grid.computeMatterMass());
 
         Vector3d position;
         REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, { 1, 0, 0}))).epsilon(0.03) == 95.);
