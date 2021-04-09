@@ -12,11 +12,12 @@
 
 namespace
 {
+    // distance to plane in plane normal length units
     inline double distanceToPlane(Vector3d const &dot, Vector3d const &dot1, Vector3d const &dot2, Vector3d const &dot3)
     {
         Vector3d const norm = vectorProduct(dot2 - dot1, dot3 - dot1);
         Vector3d const v = dot1 - dot;
-        return (1. / norm.norm()) * norm * v;
+        return norm * v;
     }
 
 
