@@ -549,14 +549,12 @@ double TetrahedralGrid::rhoInDot(const Vector3d& dot, const Tetrahedron& el) con
 double TetrahedralGrid::findOpticalDepth(Photon ph) const
 {
     if (ph.cellId() >= elements_.size()) return 0.0;
-    double taurun=0.0, taucell, d=0.0;
+    double taurun=0.0, d=0.0;
     double const delta=0.001*(elements_[ph.cellId()].size());
     double smax = maxDistance(ph);
 
     if(smax < delta) return 0.0;
-    while (ph.pos().x() < max_ && ph.pos().y() < max_ && ph.pos().z() < max_
-           && -max_ < ph.pos().x() && -max_ < ph.pos().y() && -max_ < ph.pos().z()
-           && ph.cellId() < elements_.size())
+    while (ph.cellId() < elements_.size())
     {
         const auto& rawElement = elements_[ph.cellId()];
 
@@ -573,8 +571,7 @@ double TetrahedralGrid::findOpticalDepth(Photon ph) const
         {
             rho = element.rhoInDot(ph.pos() + 0.5 * dcell.first * ph.dir().vector());
         }
-        taucell=dcell.first * rho;
-        taurun+=std::max(taucell, 0.0);
+        taurun += dcell.first * rho;
         ph.Move( dcell.first, dcell.second );
         d += dcell.first;
     }
@@ -590,9 +587,7 @@ int TetrahedralGrid::movePhotonAtDepth(Photon& ph, double tau, double tauold) co
     double smax = maxDistance(ph);
     if(smax < delta) return 1;
     // integrate through grid
-    while ( taurun < tau && (ph.pos().x() < max_ && ph.pos().y() < max_ && ph.pos().z() < max_)
-            && (-max_ < ph.pos().x() && -max_ < ph.pos().y() && -max_ < ph.pos().z())
-            && ph.cellId() < elements_.size())
+    while (taurun < tau && ph.cellId() < elements_.size())
     {
         const auto& rawElement = elements_[ph.cellId()];
 
