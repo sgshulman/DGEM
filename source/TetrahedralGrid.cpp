@@ -150,15 +150,15 @@ public:
         v = (1.0/v.norm())*v;
         ph.pos() = ph.pos() + 11*delta*v;
 
-        // поиск расстояния
-        std::pair<double, std::uint64_t> d[4];
+        // select the closest plane
+        double const t1 = timeToPlane(dot2.pos(), dot3.pos(), dot4.pos(), ph);
+        double const t2 = timeToPlane(dot1.pos(), dot3.pos(), dot4.pos(), ph);
+        double const t3 = timeToPlane(dot1.pos(), dot2.pos(), dot4.pos(), ph);
+        double const t4 = timeToPlane(dot1.pos(), dot2.pos(), dot3.pos(), ph);
 
-        d[0] = std::make_pair(timeToPlane(dot2.pos(), dot3.pos(), dot4.pos(), ph), neighbor1);
-        d[1] = std::make_pair(timeToPlane(dot1.pos(), dot3.pos(), dot4.pos(), ph), neighbor2);
-        d[2] = std::make_pair(timeToPlane(dot1.pos(), dot2.pos(), dot4.pos(), ph), neighbor3);
-        d[3] = std::make_pair(timeToPlane(dot1.pos(), dot2.pos(), dot3.pos(), ph), neighbor4);
-
-        return *std::min_element(d, d+4);
+        std::pair<double, std::uint32_t> d = (t1 < t2) ? std::make_pair(t1, neighbor1) : std::make_pair(t2, neighbor2);
+        if (d.first > t3) d = std::make_pair(t3, neighbor3);
+        return (d.first < t4) ? d : std::make_pair(t4, neighbor4);
     }
 
 
