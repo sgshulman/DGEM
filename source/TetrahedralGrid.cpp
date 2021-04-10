@@ -21,16 +21,14 @@ namespace
     }
 
 
-    inline double timeToPlane(Vector3d const &dot1, Vector3d const &dot2, Vector3d const &dot3, Photon const &ph)
+    inline double timeToPlane(Vector3d const &dot1, Vector3d const &dot2, Vector3d const &dot3, Photon const &ph, double const d)
     {
         Vector3d const norm = vectorProduct(dot2 - dot1, dot3 - dot1);
         Vector3d const v = dot1 - ph.pos();
-        double const d = norm * v;
+        double const dist = norm * v;
         double const e = norm * ph.dir().vector();
-        double t = std::numeric_limits<double>::max();
-        if (e != 0.0) t = d / e;
-        if (t <= 0.0) t = std::numeric_limits<double>::max();
-        return t;
+
+        return (e * d > 0.0) ? dist / e : std::numeric_limits<double>::max();
     }
 }
 
@@ -143,18 +141,11 @@ public:
 
     std::pair<double, std::uint64_t> cellDistance(Photon& ph) const
     {
-        double const delta=0.001*size_;
-
-        // сдвиг к центру элемента (изначально должны быть на границе)
-        Vector3d v = 0.25*(dot1.pos()+dot2.pos()+dot3.pos()+dot4.pos())-ph.pos();
-        v = (1.0/v.norm())*v;
-        ph.pos() = ph.pos() + 11*delta*v;
-
         // select the closest plane
-        double const t1 = timeToPlane(dot2.pos(), dot3.pos(), dot4.pos(), ph);
-        double const t2 = timeToPlane(dot1.pos(), dot3.pos(), dot4.pos(), ph);
-        double const t3 = timeToPlane(dot1.pos(), dot2.pos(), dot4.pos(), ph);
-        double const t4 = timeToPlane(dot1.pos(), dot2.pos(), dot3.pos(), ph);
+        double const t1 = timeToPlane(dot2.pos(), dot3.pos(), dot4.pos(), ph, d1);
+        double const t2 = timeToPlane(dot1.pos(), dot3.pos(), dot4.pos(), ph, d2);
+        double const t3 = timeToPlane(dot1.pos(), dot2.pos(), dot4.pos(), ph, d3);
+        double const t4 = timeToPlane(dot1.pos(), dot2.pos(), dot3.pos(), ph, d1*d2*d3);
 
         std::pair<double, std::uint32_t> d = (t1 < t2) ? std::make_pair(t1, neighbor1) : std::make_pair(t2, neighbor2);
         if (d.first > t3) d = std::make_pair(t3, neighbor3);
