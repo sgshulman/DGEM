@@ -32,7 +32,7 @@ namespace
     }
 }
 
-class TetrahedralGrid::Node
+class alignas(32) TetrahedralGrid::Node
 {
 public:
     explicit Node(Vector3d v)
@@ -76,7 +76,7 @@ private:
 };
 
 
-class TetrahedralGrid::Tetrahedron
+class alignas(64) TetrahedralGrid::Tetrahedron
 {
 public:
     Tetrahedron(
@@ -87,7 +87,7 @@ public:
         : dot1(dot_1), dot2(dot_2), dot3(dot_3), dot4(dot_4)
         , neighbor1(0), neighbor2(0), neighbor3(0), neighbor4(0)
         , d1(0.0), d2(0.0), d3(0.0)
-        , fEmpty(false), size_(0)
+        , fEmpty(false)
     {}
 
     Tetrahedron(
@@ -101,26 +101,17 @@ public:
         std::uint32_t neighbor4,
         double d1,
         double d2,
-        double d3,
-        double size)
+        double d3)
         : dot1(dot_1), dot2(dot_2), dot3(dot_3), dot4(dot_4)
         , neighbor1(neighbor1), neighbor2(neighbor2), neighbor3(neighbor3), neighbor4(neighbor4)
         , d1(d1), d2(d2), d3(d3)
-        , fEmpty(false), size_(size)
+        , fEmpty(false)
     {}
-
-    void setSize(double size)
-    {   size_ = size;   }
-
-    double size() const
-    {   return size_;        }
 
     std::uint32_t dot1, dot2, dot3, dot4; // must be sorted
     std::uint32_t neighbor1, neighbor2, neighbor3, neighbor4;
     double d1, d2, d3;
     bool fEmpty;
-private:
-    double size_;
 };
 
 
@@ -136,7 +127,7 @@ public:
         : dot1(node1), dot2(node2), dot3(node3), dot4(node4)
         , neighbor1(element.neighbor1), neighbor2(element.neighbor2), neighbor3(element.neighbor3), neighbor4(element.neighbor4)
         , d1(element.d1), d2(element.d2), d3(element.d3)
-        , size_(element.size()), fEmpty_(element.fEmpty)
+        , fEmpty_(element.fEmpty)
     {}
 
     std::pair<double, std::uint64_t> cellDistance(Photon& ph) const
@@ -170,7 +161,6 @@ private:
     TetrahedralGrid::Node dot1, dot2, dot3, dot4;
     std::uint32_t neighbor1, neighbor2, neighbor3, neighbor4;
     double d1, d2, d3;
-    double size_;
     bool fEmpty_;
 };
 
@@ -238,14 +228,6 @@ void TetrahedralGrid::calculateElementSizes()
 {
     for (std::uint32_t i = 0; i != elements_.size(); ++i)
     {
-        double size = (dots_[elements_[i].dot1].pos() - dots_[elements_[i].dot2].pos()).norm();
-        size = std::min(size, (dots_[elements_[i].dot2].pos() - dots_[elements_[i].dot3].pos()).norm());
-        size = std::min(size, (dots_[elements_[i].dot1].pos() - dots_[elements_[i].dot3].pos()).norm());
-        size = std::min(size, (dots_[elements_[i].dot1].pos() - dots_[elements_[i].dot4].pos()).norm());
-        size = std::min(size, (dots_[elements_[i].dot2].pos() - dots_[elements_[i].dot4].pos()).norm());
-        size = std::min(size, (dots_[elements_[i].dot3].pos() - dots_[elements_[i].dot4].pos()).norm());
-        elements_[i].setSize(size);
-
         elements_[i].d1 = 1. / distanceToPlane(dots_[elements_[i].dot1].pos(), dots_[elements_[i].dot2].pos(), dots_[elements_[i].dot3].pos(), dots_[elements_[i].dot4].pos());
         elements_[i].d2 = 1. / distanceToPlane(dots_[elements_[i].dot2].pos(), dots_[elements_[i].dot1].pos(), dots_[elements_[i].dot3].pos(), dots_[elements_[i].dot4].pos());
         elements_[i].d3 = 1. / distanceToPlane(dots_[elements_[i].dot3].pos(), dots_[elements_[i].dot1].pos(), dots_[elements_[i].dot2].pos(), dots_[elements_[i].dot4].pos());
@@ -460,7 +442,6 @@ TetrahedralGrid::TetrahedralGrid(
         std::uint32_t dot[4];
         std::uint32_t neighbors[4];
         double d[3];
-        double size;
 
         gridBin.read((char *)&dot[0], 4);
         gridBin.read((char *)&dot[1], 4);
@@ -476,11 +457,9 @@ TetrahedralGrid::TetrahedralGrid(
         gridBin.read((char *)&d[1], sizeof(double));
         gridBin.read((char *)&d[2], sizeof(double));
 
-        gridBin.read((char *)&size, sizeof(double));
-
         elements_.emplace_back(dot[0], dot[1], dot[2], dot[3],
             neighbors[0], neighbors[1], neighbors[2], neighbors[3],
-            d[0], d[1], d[2], size);
+            d[0], d[1], d[2]);
 
         Vector3d middle = 0.25*(dots_[elements_[i].dot1].pos()+dots_[elements_[i].dot2].pos()+dots_[elements_[i].dot3].pos()+dots_[elements_[i].dot4].pos());
         elements_[i].fEmpty = matter_->density({middle.x(), middle.y(), middle.z()}) == 0.0;
@@ -541,10 +520,7 @@ double TetrahedralGrid::findOpticalDepth(Photon ph) const
 {
     if (ph.cellId() >= elements_.size()) return 0.0;
     double taurun=0.0, d=0.0;
-    double const delta=0.001*(elements_[ph.cellId()].size());
-    double smax = maxDistance(ph);
 
-    if(smax < delta) return 0.0;
     while (ph.cellId() < elements_.size())
     {
         const auto& rawElement = elements_[ph.cellId()];
@@ -574,9 +550,8 @@ int TetrahedralGrid::movePhotonAtDepth(Photon& ph, double tau, double tauold) co
 {
     if (ph.cellId() >= elements_.size()) return 1;
     double taurun=tauold, taucell, d=0.0;
-    double const delta=0.0001*(elements_[ph.cellId()].size());
-    double smax = maxDistance(ph);
-    if(smax < delta) return 1;
+    double const smax = maxDistance(ph);
+
     // integrate through grid
     while (taurun < tau && ph.cellId() < elements_.size())
     {
@@ -750,8 +725,5 @@ void TetrahedralGrid::saveGridToBinaryFile(const std::string &file)
         gridBin.write((char *)&element.d1, sizeof(double));
         gridBin.write((char *)&element.d2, sizeof(double));
         gridBin.write((char *)&element.d3, sizeof(double));
-
-        auto z = element.size();
-        gridBin.write((char *)&z, sizeof(double));
     }
 }
