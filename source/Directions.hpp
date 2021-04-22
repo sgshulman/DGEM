@@ -7,6 +7,7 @@
 class Directions {
     public:
         explicit Directions(std::uint32_t NumOfDirectionsLevels);
+        Directions(std::uint32_t Nside, bool);
 
         ~Directions()
         {
