@@ -284,7 +284,7 @@ Directions::Directions(std::uint32_t NumOfDirectionsLevels)
     w_	  = mesh.weights();
     directionsNumber_ = mesh.directionsNumber();
 }
-#include "iostream"
+
 
 // directions
 Directions::Directions(std::uint32_t Nside, bool)
@@ -300,13 +300,13 @@ Directions::Directions(std::uint32_t Nside, bool)
         std::uint32_t i = std::sqrt(ph - std::sqrt(std::floor(ph))) + 1;
         std::uint32_t j = p + 1 - 2*i*(i-1);
 
-        //    std::cout << ph << "\t" << std::sqrt(ph) << "\t" << ph - std::sqrt(std::floor(ph)) << "\t" << std::sqrt(ph - std::sqrt(std::floor(ph))) + 1 << "\t" << i << "\t" << j << std::endl;
         assert(1 <= i && i < Nside);
         assert(1 <= j && j <= 4 * i);
 
         double z = 1 - (i*i) / (3. * Nside * Nside);
         double phi = PI / (2 * i) * (j - 0.5);
         points_[p] = Vector3d(phi, std::acos(z));
+        points_[12 * Nside * Nside - 1 - p] = Vector3d(-phi, std::acos(-z));
     }
 
     // North equatorial belt
@@ -323,14 +323,10 @@ Directions::Directions(std::uint32_t Nside, bool)
         double s = (i - Nside + 1) % 2;
         double phi = PI / (2 * Nside) * (j - 0.5 * s);
         points_[p] = Vector3d(phi, std::acos(z));
+        points_[12 * Nside * Nside - 1 - p] = Vector3d(-phi, std::acos(-z));
     }
 
-    for (p = 0 ; p!= 6 * Nside * Nside; ++p)
-    {
-        std::cout << points_[p].x() << " " << points_[p].y() << " " << points_[p].z() << "\n";
-    }
-
-    w_	  = new double[directionsNumber_]{};
+    w_ = new double[directionsNumber_]{};
 
     for (std::uint32_t i=0; i!=directionsNumber_; ++i)
     {
