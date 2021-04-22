@@ -287,49 +287,50 @@ Directions::Directions(std::uint32_t NumOfDirectionsLevels)
 
 
 // directions
-Directions::Directions(std::uint32_t Nside, bool)
+Directions::Directions(std::uint32_t const Nside, bool)
 {
     directionsNumber_ = 12 * Nside * Nside;
     points_ = new Vector3d[directionsNumber_]{};
 
     std::uint32_t p = 0;
-    // North polar cap
+
+    // Polar caps
     for (; p!= 2 * Nside * (Nside - 1); ++p)
     {
-        double ph = (p + 1.) / 2;
-        std::uint32_t i = std::sqrt(ph - std::sqrt(std::floor(ph))) + 1;
-        std::uint32_t j = p + 1 - 2*i*(i-1);
+        double const ph = (p + 1.) / 2;
+        auto const i = static_cast<std::uint32_t>(std::sqrt(ph - std::sqrt(std::floor(ph))) + 1);
+        std::uint32_t const j = p + 1 - 2*i*(i-1);
 
         assert(1 <= i && i < Nside);
         assert(1 <= j && j <= 4 * i);
 
-        double z = 1 - (i*i) / (3. * Nside * Nside);
-        double phi = PI / (2 * i) * (j - 0.5);
+        double const z = 1 - (i*i) / (3. * Nside * Nside);
+        double const phi = PI / (2 * i) * (j - 0.5);
         points_[p] = Vector3d(phi, std::acos(z));
-        points_[12 * Nside * Nside - 1 - p] = Vector3d(-phi, std::acos(-z));
+        points_[directionsNumber_ - 1 - p] = Vector3d(-phi, std::acos(-z));
     }
 
-    // North equatorial belt
+    // Equatorial belts
     for (; p!= 6 * Nside * Nside; ++p)
     {
-        std::uint32_t pp = p - 2 * Nside * (Nside - 1);
-        std::uint32_t i = pp / (4 * Nside) + Nside;
-        std::uint32_t j = pp % (4 * Nside) + 1;
+        std::uint32_t const pp = p - 2 * Nside * (Nside - 1);
+        std::uint32_t const i = pp / (4 * Nside) + Nside;
+        std::uint32_t const j = pp % (4 * Nside) + 1;
 
         assert(Nside <= i && i <= 2 * Nside);
         assert(1 <= j && j <= 4 * Nside);
 
-        double z = 4. / 3 - (2 * i) / (3. * Nside);
-        double s = (i - Nside + 1) % 2;
-        double phi = PI / (2 * Nside) * (j - 0.5 * s);
+        double const z = 4.0 / 3 - (2 * i) / (3. * Nside);
+        std::uint32_t const s = (i - Nside + 1) % 2;
+        double const phi = PI / (2 * Nside) * (j - 0.5 * s);
         points_[p] = Vector3d(phi, std::acos(z));
-        points_[12 * Nside * Nside - 1 - p] = Vector3d(-phi, std::acos(-z));
+        points_[directionsNumber_ - 1 - p] = Vector3d(-phi, std::acos(-z));
     }
 
     w_ = new double[directionsNumber_]{};
 
     for (std::uint32_t i=0; i!=directionsNumber_; ++i)
     {
-        w_[i] = 1.;
+        w_[i] = 1.0;
     }
 }
