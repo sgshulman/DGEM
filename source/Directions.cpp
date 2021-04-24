@@ -277,60 +277,59 @@ namespace
 
 
 // directions
-Directions::Directions(std::uint32_t NumOfDirectionsLevels)
+Directions::Directions(std::uint32_t const NumOfDirectionsLevels, bool const useHEALPixGrid)
 {
-    IcosahedronMesh mesh(NumOfDirectionsLevels);
-    points_ = mesh.points();
-    w_	  = mesh.weights();
-    directionsNumber_ = mesh.directionsNumber();
-}
-
-
-// directions
-Directions::Directions(std::uint32_t const Nside, bool)
-{
-    directionsNumber_ = 12 * Nside * Nside;
-    points_ = new Vector3d[directionsNumber_]{};
-
-    std::uint32_t p = 0;
-
-    // Polar caps
-    for (; p!= 2 * Nside * (Nside - 1); ++p)
+    if (useHEALPixGrid)
     {
-        double const ph = (p + 1.) / 2;
-        auto const i = static_cast<std::uint32_t>(std::sqrt(ph - std::sqrt(std::floor(ph))) + 1);
-        std::uint32_t const j = p + 1 - 2*i*(i-1);
+        std::uint32_t const Nside = NumOfDirectionsLevels;
+        directionsNumber_ = 12 * Nside * Nside;
+        points_ = new Vector3d[directionsNumber_]{};
 
-        assert(1 <= i && i < Nside);
-        assert(1 <= j && j <= 4 * i);
+        std::uint32_t p = 0;
 
-        double const z = 1 - (i*i) / (3. * Nside * Nside);
-        double const phi = PI / (2 * i) * (j - 0.5);
-        points_[p] = Vector3d(phi, std::acos(z));
-        points_[directionsNumber_ - 1 - p] = Vector3d(-phi, std::acos(-z));
-    }
+        // Polar caps
+        for (; p!= 2 * Nside * (Nside - 1); ++p)
+        {
+            double const ph = (p + 1.) / 2;
+            auto const i = static_cast<std::uint32_t>(std::sqrt(ph - std::sqrt(std::floor(ph))) + 1);
+            std::uint32_t const j = p + 1 - 2*i*(i-1);
 
-    // Equatorial belts
-    for (; p!= 6 * Nside * Nside; ++p)
-    {
-        std::uint32_t const pp = p - 2 * Nside * (Nside - 1);
-        std::uint32_t const i = pp / (4 * Nside) + Nside;
-        std::uint32_t const j = pp % (4 * Nside) + 1;
+            assert(1 <= i && i < Nside);
+            assert(1 <= j && j <= 4 * i);
 
-        assert(Nside <= i && i <= 2 * Nside);
-        assert(1 <= j && j <= 4 * Nside);
+            double const z = 1 - (i*i) / (3. * Nside * Nside);
+            double const phi = PI / (2 * i) * (j - 0.5);
+            points_[p] = Vector3d(phi, std::acos(z));
+            points_[directionsNumber_ - 1 - p] = Vector3d(-phi, std::acos(-z));
+        }
 
-        double const z = 4.0 / 3 - (2 * i) / (3. * Nside);
-        std::uint32_t const s = (i - Nside + 1) % 2;
-        double const phi = PI / (2 * Nside) * (j - 0.5 * s);
-        points_[p] = Vector3d(phi, std::acos(z));
-        points_[directionsNumber_ - 1 - p] = Vector3d(-phi, std::acos(-z));
-    }
+        // Equatorial belts
+        for (; p!= 6 * Nside * Nside; ++p)
+        {
+            std::uint32_t const pp = p - 2 * Nside * (Nside - 1);
+            std::uint32_t const i = pp / (4 * Nside) + Nside;
+            std::uint32_t const j = pp % (4 * Nside) + 1;
 
-    w_ = new double[directionsNumber_]{};
+            assert(Nside <= i && i <= 2 * Nside);
+            assert(1 <= j && j <= 4 * Nside);
 
-    for (std::uint32_t i=0; i!=directionsNumber_; ++i)
-    {
-        w_[i] = 1.0;
+            double const z = 4.0 / 3 - (2 * i) / (3. * Nside);
+            std::uint32_t const s = (i - Nside + 1) % 2;
+            double const phi = PI / (2 * Nside) * (j - 0.5 * s);
+            points_[p] = Vector3d(phi, std::acos(z));
+            points_[directionsNumber_ - 1 - p] = Vector3d(-phi, std::acos(-z));
+        }
+
+        w_ = new double[directionsNumber_]{};
+
+        for (std::uint32_t i=0; i!=directionsNumber_; ++i)
+        {
+            w_[i] = 1.0;
+        }
+    } else {
+        IcosahedronMesh mesh(NumOfDirectionsLevels);
+        points_ = mesh.points();
+        w_ = mesh.weights();
+        directionsNumber_ = mesh.directionsNumber();
     }
 }

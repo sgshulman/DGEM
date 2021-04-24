@@ -46,6 +46,7 @@ private:
 struct SourceParameters
 {
     bool useMonteCarlo_;
+    bool useHEALPixGrid_;
     std::uint64_t num_photons_;
     std::uint32_t PrimaryDirectionsLevel_;
 };
@@ -58,7 +59,7 @@ public:
         : parameters_{ parameters}
         , pointSources_{ std::move(pointSources) }
         , totlum_{ 0. }
-        , primaryDir_{ parameters_.useMonteCarlo_ ? 1 : parameters_.PrimaryDirectionsLevel_ }
+        , primaryDir_{ parameters_.useMonteCarlo_ ? 1 : parameters_.PrimaryDirectionsLevel_, parameters_.useHEALPixGrid_ }
         , currentSource_{ 0 }
         , photonId_{ 0 }
     {

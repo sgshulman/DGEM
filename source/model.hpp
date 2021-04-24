@@ -17,7 +17,8 @@ class Model
 		}
 		bool fMonteCarlo() const
 		{	return fMonteCarlo_;	}
-
+        bool useHEALPixGrid() const
+        {   return useHEALPixGrid_; }
 		double taumin() const
 		{	return taumin_;	}
 		std::uint32_t nscat() const
@@ -40,6 +41,7 @@ class Model
         {   return sources_; }
 	private:
 		bool fMonteCarlo_;
+		bool useHEALPixGrid_;
 		double taumin_;
 		int32_t iseed_;
 

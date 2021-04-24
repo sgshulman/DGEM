@@ -708,24 +708,26 @@ Model::Model(std::vector<Observer>* observers)
     nlohmann::json j;
     configurationFile >> j;
 
+    char const methodParameters[] = "method parameters";
+
     checkParameters(
         j,
         "parameters.json",
-        {"method parameters", sDensitySlice, sDust, sEffectiveHeight, sGeometry, sGrid, sStars, sObservers});
+        {methodParameters, sDensitySlice, sDust, sEffectiveHeight, sGeometry, sGrid, sStars, sObservers});
 
     SourceParameters sourceParameters{};
-    char const methodParameters[] = "method parameters";
     nlohmann::json const& methodJson = j.at(methodParameters);
 
     checkParameters(
         methodJson,
         methodParameters,
         {"fMonteCarlo", "nphotons", "PrimaryDirectionsLevel", "iseed", "taumin", "nscat",
-         "SecondaryDirectionsLevel", "NumOfPrimaryScatterings", "NumOfSecondaryScatterings", "MonteCarloStart"});
+         "SecondaryDirectionsLevel", "NumOfPrimaryScatterings", "NumOfSecondaryScatterings", "MonteCarloStart", "useHEALPixGrid"});
 
     sourceParameters.useMonteCarlo_ = get_bool(methodJson, methodParameters, "fMonteCarlo");
     sourceParameters.num_photons_ = get_uint64(methodJson, methodParameters, "nphotons");
     sourceParameters.PrimaryDirectionsLevel_ = get_uint32(methodJson, methodParameters, "PrimaryDirectionsLevel");
+    sourceParameters.useHEALPixGrid_ = get_optional_bool(methodJson, methodParameters, "fUseHEALPixGrid", false);
     iseed_ = get_int32(methodJson, methodParameters, "iseed");
 
     fMonteCarlo_ = sourceParameters.useMonteCarlo_;
@@ -735,6 +737,7 @@ Model::Model(std::vector<Observer>* observers)
     NumOfPrimaryScatterings_ = get_uint32(methodJson, methodParameters, "NumOfPrimaryScatterings");
     NumOfSecondaryScatterings_ = get_uint32(methodJson, methodParameters, "NumOfSecondaryScatterings");
     MonteCarloStart_ = get_uint32(methodJson, methodParameters, "MonteCarloStart");
+    useHEALPixGrid_ = sourceParameters.useHEALPixGrid_;
 
     nlohmann::json const& dustJson = j.at(sDust);
     dust_ = parseDust(dustJson);

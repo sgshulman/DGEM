@@ -5,6 +5,7 @@
     "nscat": 1,
     "nphotons": 250000000,
     "iseed": -1556,
+    "fUseHEALPixGrid": false,
     "PrimaryDirectionsLevel": 10,
     "SecondaryDirectionsLevel": 1,
     "NumOfPrimaryScatterings": 100,

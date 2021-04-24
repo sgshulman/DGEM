@@ -73,7 +73,7 @@ int main()
         }
     } else {
         // Set up directions grid
-        Directions sdir( model.SecondaryDirectionsLevel() );
+        Directions sdir( model.SecondaryDirectionsLevel(), model.useHEALPixGrid() );
 
         for (;;)
         {
