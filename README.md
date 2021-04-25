@@ -45,8 +45,10 @@ Monte Carlo parameters
 - iseed &mdash; initialization parameter for random number generator in Monte Carlo method
 
 DGEM parameters
-- PrimaryDirectionsLevel &mdash; primary directions number is 5 * 4 ^ PrimaryDirectionsLevel
-- SecondaryDirectionsLevel &mdash; primary directions number is 5 * 4 ^ SecondaryDirectionsLevel
+- fUseHEALPixGrid &mdash; defines the sphere grid type. Set True to use HEALPix grid ([Gorski et. al. 2005](#gorski2005)).
+  Otherwise, a grid based on a partition of a regular icosahedron is used
+- PrimaryDirectionsLevel &mdash; the primary directions grid parameter. If *fUseHEALPixGrid* is True the primary directions number is 20 * PrimaryDirectionsLevel ^ 2. Otherwise, it is 5 * 4 ^ PrimaryDirectionsLevel 
+- SecondaryDirectionsLevel &mdash; the secondary directions grid parameter. If *fUseHEALPixGrid* is True the primary directions number is 20 * SecondaryDirectionsLevel ^ 2. Otherwise, it is  primary directions number is 5 * 4 ^ SecondaryDirectionsLevel
 - NumOfPrimaryScatterings &mdash; number of scatterings in every direction in the primary grid
 - NumOfSecondaryScatterings &mdash; number of scatterings in every direction in secondary grid
 - MonteCarloStart &mdash; number of scatterings of the photon package after which Monte Carlo
@@ -388,6 +390,7 @@ The effective height parameters are:
 
 1. <a name="elmegreen1997"></a>Elmegreen B.G., 1997. Intercloud structure in a turbulent fractal interstellar medium. Astrophys. J. **477**, 196–203.
 1. <a name="geuzaine2009"></a>Geuzaine C. and  Remacle J.-F., 2009. Gmsh: a three-dimensional finite element mesh generator with built-in pre- and post-processing facilities. International Journal for Numerical Methods in Engineering, **79**(11), 1309-1331.
+1. <a name="gorski2005"></a> Gorski K.M., Hivon E., Banday A.J., Wandelt B.D., Hansen F.K., Reinecke M., and Bartelmann M., 2005. HEALPix: A Framework for High-Resolution Discretization and Fast Analysis of Data Distributed on the Sphere, Astrophys. J., **622**, 759-771.
 1. <a name="henyey1941"></a>Henyey L.G. and Greenstein J.L., 1941. Diffuse radiation in the Galaxy. Astrophys. J. **93**, 70-83.  
 1. <a name="kurosawa2006"></a> Kurosawa R., Harries T. J., and Symington N. H., 2006. On the formation of Hα line emission around classical T Tauri stars. MNRAS **370**, 580-596.
 1. <a name="safier1993a"></a>Safier P. N., 1993a. Centrifugally Driven Winds from Protostellar Disks. I. Wind Model and Thermal Structure. Astrophys. J. **408**, 115.
