@@ -67,6 +67,7 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
         tests/unittests.cpp
         tests/AzimuthalHumpTests.cpp
         tests/CartesianGridTests.cpp
+        tests/DirectionsTests.cpp
         tests/Direction3dTests.cpp
         tests/MathUtilsTests.cpp
         tests/MatterArrayTests.cpp
@@ -84,7 +85,7 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
     add_executable(unittests ${UNITTEST_SOURCES} ${SOURCES})
 
     set_target_properties(unittests PROPERTIES
-            CXX_STANDARD 14
+            CXX_STANDARD 17
             CXX_STANDARD_REQUIRED YES
             CXX_EXTENSIONS NO
             COMPILE_DEFINITIONS "ENABLE_UNIT_TESTS")
