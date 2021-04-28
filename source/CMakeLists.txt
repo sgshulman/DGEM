@@ -67,7 +67,6 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
         tests/unittests.cpp
         tests/AzimuthalHumpTests.cpp
         tests/CartesianGridTests.cpp
-        tests/DirectionsTests.cpp
         tests/Direction3dTests.cpp
         tests/MathUtilsTests.cpp
         tests/MatterArrayTests.cpp
@@ -81,6 +80,11 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
         tests/Vector3dTests.cpp
         tests/WhiteDustTests.cpp
         third-party/catch2/catch.hpp)
+
+    # MacOs 11 Catalina has problems with cmath
+    if (NOT (APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang"))
+        set(UNITTEST_SOURCES ${UNITTEST_SOURCES} tests/DirectionsTests.cpp)
+    endif()
 
     add_executable(unittests ${UNITTEST_SOURCES} ${SOURCES})
 
