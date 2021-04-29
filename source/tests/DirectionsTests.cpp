@@ -160,4 +160,134 @@ TEST_CASE("Directions", "[sphere integration]")
         REQUIRE(Approx(integrate(d, 6, -5)).epsilon(7e-5) == 1.);
         REQUIRE(Approx(integrate(d, 6, -6)) == 1.);
     }
+
+    SECTION("HEALPix 2")
+    {
+        Directions d(2, true);
+        REQUIRE(Approx(integrate(d, 0, 0)) == 1.);
+
+        REQUIRE(Approx(integrate(d, 1, 1)).epsilon(0.02) == 1.);
+        REQUIRE(Approx(integrate(d, 1, 0)).epsilon(0.03) == 1.);
+        REQUIRE(Approx(integrate(d, 1, -1)).epsilon(0.02) == 1.);
+
+        REQUIRE(Approx(integrate(d, 2, 2)).epsilon(0.001)  == 1.);
+        REQUIRE(Approx(integrate(d, 2, 1)).epsilon(0.04) == 1.);
+        REQUIRE(Approx(integrate(d, 2, 0)).epsilon(0.09) == 1.);
+        REQUIRE(Approx(integrate(d, 2, -1)).epsilon(0.04) == 1.);
+        REQUIRE(Approx(integrate(d, 2, -2)).epsilon(0.02) == 1.);
+
+        REQUIRE(Approx(integrate(d, 3, 3)).epsilon(0.004) == 1.);
+        REQUIRE(Approx(integrate(d, 3, 2)).epsilon(0.02) == 1.);
+        REQUIRE(Approx(integrate(d, 3, 1)).epsilon(0.02) == 1.);
+        REQUIRE(Approx(integrate(d, 3, 0)).epsilon(0.12) == 1.);
+        REQUIRE(Approx(integrate(d, 3, -1)).epsilon(0.02) == 1.);
+        REQUIRE(Approx(integrate(d, 3, -2)).epsilon(0.08) == 1.);
+        REQUIRE(Approx(integrate(d, 3, -3)).epsilon(0.004) == 1.);
+    }
+
+    SECTION("HEALPix 20")
+    {
+        Directions d(20, true);
+        REQUIRE(Approx(integrate(d, 0, 0)) == 1.);
+
+        REQUIRE(Approx(integrate(d, 1, 1)).epsilon(2e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 1, 0)).epsilon(3e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 1, -1)).epsilon(2e-4) == 1.);
+
+        REQUIRE(Approx(integrate(d, 2, 2)).epsilon(1e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 2, 1)).epsilon(3e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 2, 0)).epsilon(7e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 2, -1)).epsilon(3e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 2, -2)).epsilon(1e-4) == 1.);
+
+        REQUIRE(Approx(integrate(d, 3, 3)).epsilon(6e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 3, 2)).epsilon(3e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 3, 1)).epsilon(2e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 3, 0)).epsilon(1e-3) == 1.);
+        REQUIRE(Approx(integrate(d, 3, -1)).epsilon(2e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 3, -2)).epsilon(3e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 3, -3)).epsilon(6e-5) == 1.);
+
+        REQUIRE(Approx(integrate(d, 4, 4)).epsilon(4e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 4, 3)).epsilon(3e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 4, 2)).epsilon(3e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 4, 1)) == 1.);
+        REQUIRE(Approx(integrate(d, 4, 0)).epsilon(2e-3) == 1.);
+        REQUIRE(Approx(integrate(d, 4, -1)) == 1.);
+        REQUIRE(Approx(integrate(d, 4, -2)).epsilon(3e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 4, -3)).epsilon(3e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 4, -4)).epsilon(4e-5) == 1.);
+
+        REQUIRE(Approx(integrate(d, 5, 5)).epsilon(2e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 5, 4)).epsilon(2e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 5, 3)).epsilon(4e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 5, 2)).epsilon(8e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 5, 1)).epsilon(2e-4)  == 1.);
+        REQUIRE(Approx(integrate(d, 5, 0)).epsilon(2e-3)  == 1.);
+        REQUIRE(Approx(integrate(d, 5, -1)).epsilon(2e-4)  == 1.);
+        REQUIRE(Approx(integrate(d, 5, -2)).epsilon(8e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 5, -3)).epsilon(4e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 5, -4)).epsilon(2e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 5, -5)).epsilon(2e-5) == 1.);
+    }
+
+    SECTION("HEALPix 80")
+    {
+        Directions d(80, true);
+        REQUIRE(Approx(integrate(d, 0, 0)) == 1.);
+
+        REQUIRE(Approx(integrate(d, 1, 1)) == 1.);
+        REQUIRE(Approx(integrate(d, 1, 0)).epsilon(2e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 1, -1)) == 1.);
+
+        REQUIRE(Approx(integrate(d, 2, 2)) == 1.);
+        REQUIRE(Approx(integrate(d, 2, 1)).epsilon(2e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 2, 0)).epsilon(5e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 2, -1)).epsilon(2e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 2, -2)) == 1.);
+
+        REQUIRE(Approx(integrate(d, 3, 3)) == 1.);
+        REQUIRE(Approx(integrate(d, 3, 2)).epsilon(2e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 3, 1)) == 1.);
+        REQUIRE(Approx(integrate(d, 3, 0)).epsilon(6e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 3, -1)) == 1.);
+        REQUIRE(Approx(integrate(d, 3, -2)).epsilon(2e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 3, -3)) == 1.);
+
+        REQUIRE(Approx(integrate(d, 4, 4)) == 1.);
+        REQUIRE(Approx(integrate(d, 4, 3)).epsilon(2e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 4, 2)).epsilon(2e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 4, 1)) == 1.);
+        REQUIRE(Approx(integrate(d, 4, 0)).epsilon(7e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 4, -1)) == 1.);
+        REQUIRE(Approx(integrate(d, 4, -2)).epsilon(2e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 4, -3)).epsilon(2e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 4, -4)) == 1.);
+
+        REQUIRE(Approx(integrate(d, 5, 5)) == 1.);
+        REQUIRE(Approx(integrate(d, 5, 4)) == 1.);
+        REQUIRE(Approx(integrate(d, 5, 3)).epsilon(3e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 5, 2)) == 1.);
+        REQUIRE(Approx(integrate(d, 5, 1)) == 1.);
+        REQUIRE(Approx(integrate(d, 5, 0)).epsilon(1e-4)  == 1.);
+        REQUIRE(Approx(integrate(d, 5, -1)) == 1.);
+        REQUIRE(Approx(integrate(d, 5, -2)) == 1.);
+        REQUIRE(Approx(integrate(d, 5, -3)).epsilon(3e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 5, -4)) == 1.);
+        REQUIRE(Approx(integrate(d, 5, -5)) == 1.);
+
+        REQUIRE(Approx(integrate(d, 6, 6)).epsilon(3e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 6, 5)) == 1.);
+        REQUIRE(Approx(integrate(d, 6, 4)).epsilon(3e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 6, 3)).epsilon(2e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 6, 2)) == 1.);
+        REQUIRE(Approx(integrate(d, 6, 1)).epsilon(2e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 6, 0)).epsilon(2e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 6, -1)).epsilon(2e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 6, -2)) == 1.);
+        REQUIRE(Approx(integrate(d, 6, -3)).epsilon(2e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 6, -4)).epsilon(3e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 6, -5)) == 1.);
+        REQUIRE(Approx(integrate(d, 6, -6)) == 1.);
+    }
 }
