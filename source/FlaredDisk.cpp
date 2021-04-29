@@ -47,7 +47,16 @@ double FlaredDisk::density(Vector3d const& position) const
     // Disk Geometry
     if(( r >= rInner_ ) && ( r <= rOuter_ ))
     {
-        double h = h0_ * std::pow(r/r0_, beta_);
+        double h = 0;
+        if (r < 5)
+        {
+            h = h0_ * std::pow(r/r0_, beta_);
+        }
+        else
+        {
+            double h5 = h0_ * std::pow(5./r0_, beta_);
+            h = h5 * r/5.;
+        }
 
         if (hump_)
         {
