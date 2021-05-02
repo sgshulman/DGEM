@@ -43,6 +43,8 @@ Common settings
 Monte Carlo parameters
 - nphotons &mdash; total number of photon packets for Monte Carlo method
 - iseed &mdash; initialization parameter for random number generator in Monte Carlo method
+- inputRandomFile &mdash; a file with the initial state of the random number generator. If it is provided, *iseed* option is ignored.
+- outputRandomFile &mdash; a file to store final state of the random number generator
 
 DGEM parameters
 - fUseHEALPixGrid &mdash; defines the sphere grid type. Set True to use HEALPix grid ([Gorski et. al. 2005](#gorski2005)).
