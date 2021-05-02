@@ -763,7 +763,7 @@ Model::Model(std::vector<Observer>* observers)
     parseObservers(observers, j.at(sObservers));
 }
 
-Random&& Model::createRandomGenerator() const
+Random Model::createRandomGenerator() const
 {
     Random rand(iseed_);
 
