@@ -8,45 +8,60 @@
 class Random
 {
 public:
-    explicit Random (int32_t iseed=-1556) : iseed_(iseed) { } ;
+    explicit Random (std::int32_t iseed)
+        : iseed_(iseed)
+    {};
+
     double Get()
     {
-        int32_t IM1,IM2,IMM1,IA1,IA2,IQ1,IQ2,IR1,IR2,NTAB,NDIV,j,k;
-        double ran2,AM,EPS,RNMX;
-        IM1=2147483563;IM2=2147483399;AM=1./IM1;IMM1=IM1-1;
-        IA1=40014;IA2=40692;IQ1=53668;IQ2=52774;IR1=12211;IR2=3791;
-        NTAB=32;NDIV=1+IMM1/NTAB;EPS=1.2e-7;RNMX=1.-EPS;
-        static int32_t idum2=123456789,iy=0;
-        static int32_t iv[32]={0};
+        std::int32_t const IM1{ 2147483563 };
+        std::int32_t const IM2{ 2147483399 };
+        std::int32_t const IMM1{ IM1 - 1 };
+        std::int32_t const IA1{ 40014 };
+        std::int32_t const IA2{ 40692 };
+        std::int32_t const IQ1{ 53668 };
+        std::int32_t const IQ2{ 52774 };
+        std::int32_t const IR1{ 12211 };
+        std::int32_t const IR2{ 3791 };
+        std::int32_t const NTAB{ 32 };
+        std::int32_t const NDIV{ 1 + IMM1 / NTAB };
+        double const EPS{ 1.2e-7 };
+        double const AM{ 1. / IM1 };
+        double const RNMX{ 1. - EPS};
+
+        std::int32_t j, k;
 
         if (iseed_ <= 0)
         {
-            iseed_=(-iseed_ > 1) ? -iseed_ : 1;
-            idum2=iseed_;
+            iseed_ = (-iseed_ > 1) ? -iseed_ : 1;
+            idum2 = iseed_;
             for (j=NTAB+7; j>=0;--j)
             {
-                k=iseed_/IQ1;
-                iseed_=IA1*(iseed_-k*IQ1)-k*IR1;
-                if (iseed_ < 0) iseed_=iseed_+IM1;
-                if (j < NTAB) iv[j]=iseed_;
+                k = iseed_/IQ1;
+                iseed_ = IA1*(iseed_-k*IQ1)-k*IR1;
+                if (iseed_ < 0) iseed_ = iseed_+IM1;
+                if (j < NTAB) iv[j] = iseed_;
             }
             iy=iv[0];
         }
-        k=iseed_/IQ1;
-        iseed_=IA1*(iseed_-k*IQ1)-k*IR1;
+        k = iseed_/IQ1;
+        iseed_ = IA1*(iseed_-k*IQ1)-k*IR1;
         if (iseed_ < 0) iseed_=iseed_+IM1;
-        k=idum2/IQ2;
-        idum2=IA2*(idum2-k*IQ2)-k*IR2;
-        if (idum2 < 0) idum2=idum2+IM2;
-        j=iy/NDIV;
-        iy=iv[j]-idum2;
-        iv[j]=iseed_;
-        if(iy < 1)iy=iy+IMM1;
-        ran2=(AM*iy < RNMX) ? AM*iy : RNMX;
-        return (double)ran2;
+        k = idum2/IQ2;
+        idum2 = IA2*(idum2-k*IQ2)-k*IR2;
+        if (idum2 < 0) idum2 = idum2+IM2;
+        j = iy/NDIV;
+        iy = iv[j]-idum2;
+        iv[j] = iseed_;
+        if(iy < 1) iy = iy+IMM1;
+
+        return (AM*iy < RNMX) ? AM*iy : RNMX;
     }
 private:
-    int iseed_;
+    std::int32_t iseed_;
+    std::int32_t idum2{ 123456789 };
+    std::int32_t iy{ 0 };
+    std::int32_t iv[32] = {0};
 };
 
 #endif
