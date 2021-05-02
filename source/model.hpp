@@ -2,6 +2,7 @@
 #define MODEL_HPP_
 
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include "Predefines.hpp"
@@ -23,8 +24,9 @@ class Model
 		{	return taumin_;	}
 		std::uint32_t nscat() const
 		{	return nscat_;	}
-		int32_t iseed() const
-		{	return iseed_;	}
+
+		Random&& createRandomGenerator() const;
+
 		std::uint32_t SecondaryDirectionsLevel() const
 		{	return SecondaryDirectionsLevel_;	}
 		std::uint32_t MonteCarloStart() const
@@ -43,7 +45,11 @@ class Model
 		bool fMonteCarlo_;
 		bool useHEALPixGrid_;
 		double taumin_;
+
+		// Random generator parameters
 		int32_t iseed_;
+		std::string inputRandomFile_;
+        std::string outputRandomFile_;
 
         std::uint32_t nscat_;
 		std::uint32_t MonteCarloStart_;

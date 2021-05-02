@@ -19,7 +19,7 @@ int main()
     Model& model = Model::instance(&observers);
     IGridCPtr grid = model.grid();
     SourcesPtr sources = model.sources();
-    Random ran(model.iseed());
+    Random ran{ model.createRandomGenerator() };
 
     std::cout << "Matter mass:\t" << grid->computeMatterMass() << "\t Solar Masses" << std::endl;
     sources->writeObserversOpticalDepths(grid, &observers);
@@ -148,6 +148,8 @@ int main()
         observers[cnt].write(observersResultFile);
     }
     observersResultFile.close();
+
+    ran.save();
 
     return 0;
 }

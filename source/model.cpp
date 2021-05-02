@@ -14,6 +14,7 @@
 #include "MatterArray.hpp"
 #include "MatterTranslation.hpp"
 #include "MieDust.hpp"
+#include "Random.hpp"
 #include "RoundHump.hpp"
 #include "SafierWind.hpp"
 #include "Sources.hpp"
@@ -721,14 +722,17 @@ Model::Model(std::vector<Observer>* observers)
     checkParameters(
         methodJson,
         methodParameters,
-        {"fMonteCarlo", "nphotons", "PrimaryDirectionsLevel", "iseed", "taumin", "nscat",
+        {"fMonteCarlo", "nphotons", "PrimaryDirectionsLevel", "iseed", "inputRandomFile", "outputRandomFile", "taumin", "nscat",
          "SecondaryDirectionsLevel", "NumOfPrimaryScatterings", "NumOfSecondaryScatterings", "MonteCarloStart", "fUseHEALPixGrid"});
 
     sourceParameters.useMonteCarlo_ = get_bool(methodJson, methodParameters, "fMonteCarlo");
     sourceParameters.num_photons_ = get_uint64(methodJson, methodParameters, "nphotons");
     sourceParameters.PrimaryDirectionsLevel_ = get_uint32(methodJson, methodParameters, "PrimaryDirectionsLevel");
     sourceParameters.useHEALPixGrid_ = get_optional_bool(methodJson, methodParameters, "fUseHEALPixGrid", false);
+
     iseed_ = get_int32(methodJson, methodParameters, "iseed");
+    inputRandomFile_ = get_optional_string(methodJson, methodParameters, "inputRandomFile", "");
+    outputRandomFile_ = get_optional_string(methodJson, methodParameters, "outputRandomFile", "");
 
     fMonteCarlo_ = sourceParameters.useMonteCarlo_;
     taumin_ = get_double(methodJson, methodParameters, "taumin");
@@ -757,4 +761,17 @@ Model::Model(std::vector<Observer>* observers)
 
     sources_ = parseSources(j.at(sStars), sourceParameters, grid_);
     parseObservers(observers, j.at(sObservers));
+}
+
+Random&& Model::createRandomGenerator() const
+{
+    Random rand(iseed_);
+
+    if (!inputRandomFile_.empty())
+    {
+        rand.load(inputRandomFile_);
+    }
+
+    rand.setOutputFile(outputRandomFile_);
+    return std::move(rand);
 }
