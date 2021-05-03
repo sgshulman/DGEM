@@ -102,6 +102,8 @@ class Pictures
 
             snprintf(fname, FILENAME_LENGTH, "fimage%s_%s_%2.2i.dat", phiStr, thetaStr, key);
             std::ofstream f(fname);
+            f.precision(14);
+
             for (std::uint64_t y=0; y != ny_; ++y)
             {
                 for (std::uint64_t x=0; x!=nx_; ++x)
@@ -114,6 +116,8 @@ class Pictures
 
             snprintf(fname, FILENAME_LENGTH, "qimage%s_%s_%2.2i.dat", phiStr, thetaStr, key);
             std::ofstream q(fname);
+            q.precision(14);
+
             for (std::uint64_t y=0; y != ny_; ++y)
             {
                 for (std::uint64_t x=0; x!=nx_; ++x)
@@ -126,6 +130,8 @@ class Pictures
 
             snprintf(fname, FILENAME_LENGTH, "uimage%s_%s_%2.2i.dat", phiStr, thetaStr, key);
             std::ofstream u(fname);
+            u.precision(14);
+
             for (std::uint64_t y=0; y != ny_; ++y)
             {
                 for (std::uint64_t x=0; x!=nx_; ++x)
