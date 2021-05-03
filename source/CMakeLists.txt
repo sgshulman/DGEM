@@ -74,6 +74,7 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
         tests/MatterTranslationTests.cpp
         tests/MieDustTests.cpp
         tests/ModelTests.inl
+        tests/RandomTests.cpp
         tests/RoundHumpTests.cpp
         tests/SphereEnvelopeTests.cpp
         tests/TestUtils.hpp
