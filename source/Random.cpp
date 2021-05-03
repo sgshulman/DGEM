@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 
+#include "DebugUtils.hpp"
 #include "Random.hpp"
 
 Random::Random(std::int32_t const iseed)
@@ -32,6 +33,7 @@ void Random::save(std::ostream& stream) const
 void Random::load(std::string const& filename)
 {
     std::ifstream stream(filename);
+    DATA_ASSERT(stream.is_open(), filename + " should exist.");
     load(stream);
 }
 
