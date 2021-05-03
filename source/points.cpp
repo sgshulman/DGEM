@@ -1,3 +1,4 @@
+#include <chrono>
 #include <cmath>
 #include <iostream>
 #include <vector>
@@ -13,6 +14,8 @@
 
 int main(int argc, char *argv[])
 {
+    auto const initTime = std::chrono::high_resolution_clock::now();
+
     std::vector<Observer> observers;
 
     // read the model parameters
@@ -23,6 +26,8 @@ int main(int argc, char *argv[])
 
     std::cout << "Matter mass:\t" << grid->computeMatterMass() << "\t Solar Masses" << std::endl;
     sources->writeObserversOpticalDepths(grid, &observers);
+
+    auto startTime = std::chrono::high_resolution_clock::now();
 
     // Scattered photon loop
     if (model.fMonteCarlo())
@@ -74,6 +79,7 @@ int main(int argc, char *argv[])
     } else {
         // Set up directions grid
         Directions sdir( model.SecondaryDirectionsLevel(), model.useHEALPixGrid() );
+        startTime = std::chrono::high_resolution_clock::now();
 
         for (;;)
         {
@@ -150,6 +156,11 @@ int main(int argc, char *argv[])
     observersResultFile.close();
 
     ran.save();
+
+    auto const endTime = std::chrono::high_resolution_clock::now();
+    std::cout.precision(4);
+    std::cout << "Initialization time:\t" << std::chrono::duration_cast<std::chrono::milliseconds>(startTime - initTime).count() * 0.001 << "s\n"
+              << "Computation time:\t" << std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count() * 0.001 << "s" << std::endl;
 
     return 0;
 }
