@@ -773,5 +773,5 @@ Random Model::createRandomGenerator() const
     }
 
     rand.setOutputFile(outputRandomFile_);
-    return std::move(rand);
+    return rand;
 }

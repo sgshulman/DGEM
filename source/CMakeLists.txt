@@ -36,6 +36,7 @@ set(SOURCES
         Photon.cpp
         Photon.hpp
         Predefines.hpp
+        Random.cpp
         Random.hpp
         RoundHump.cpp
         RoundHump.hpp
