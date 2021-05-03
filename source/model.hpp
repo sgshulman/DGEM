@@ -11,10 +11,10 @@
 class Model
 {
 	public:
-		static Model& instance (std::vector<Observer> *observers)
+		static Model& instance(std::vector<Observer> *observers, std::string const& parametersFile)
 		{
-			static Model mod(observers) ;
-			return mod ;
+			static Model mod(observers, parametersFile) ;
+			return mod;
 		}
 		bool fMonteCarlo() const
 		{	return fMonteCarlo_;	}
@@ -61,7 +61,7 @@ class Model
         IGridCPtr grid_;
         SourcesPtr sources_;
 
-		Model(std::vector<Observer> *observers);
+		Model(std::vector<Observer> *observers, std::string const& parametersFile);
 		Model(Model const &);
 		Model& operator=( Model const &);
 };

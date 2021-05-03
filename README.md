@@ -31,7 +31,9 @@ PLOT3.plt is a gnuplot script for plotting the resulting images.
 A utility for results comparison is differ. It is in a directory differ. Compiled differ utility requires two filenames as command arguments. The difference is called "refsum".
 
 ## DGEM configuration
-The program use parameters.json configuration file with following sections:
+The first program argument is a configuration file.
+If the argument is not provided, the program use parameters.json file.
+The configuration file has following sections:
 
 ### Method Parameters
 

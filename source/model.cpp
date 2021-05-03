@@ -703,9 +703,10 @@ namespace
 #include "tests/ModelTests.inl"
 #endif
 
-Model::Model(std::vector<Observer>* observers)
+Model::Model(std::vector<Observer>* observers, std::string const& parametersFile)
 {
-    std::ifstream configurationFile("parameters.json");
+    std::ifstream configurationFile(parametersFile);
+    DATA_ASSERT(configurationFile.is_open(), parametersFile + " should exist.");
     nlohmann::json j;
     configurationFile >> j;
 

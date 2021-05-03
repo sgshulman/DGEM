@@ -11,12 +11,12 @@
 #include "Sources.hpp"
 
 
-int main()
+int main(int argc, char *argv[])
 {
     std::vector<Observer> observers;
 
     // read the model parameters
-    Model& model = Model::instance(&observers);
+    Model& model = Model::instance(&observers, argc == 2 ? argv[1] : "parameters.json");
     IGridCPtr grid = model.grid();
     SourcesPtr sources = model.sources();
     Random ran{ model.createRandomGenerator() };
