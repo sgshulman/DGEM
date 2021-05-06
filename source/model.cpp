@@ -20,7 +20,7 @@
 #include "Sources.hpp"
 #include "SphereEnvelope.hpp"
 #include "TetrahedralGrid.hpp"
-#include "observers.hpp"
+#include "Observer.hpp"
 #include "third-party/nlohmann/json.hpp"
 #include "Units.hpp"
 

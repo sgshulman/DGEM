@@ -1,7 +1,7 @@
 #include "TetrahedralGrid.hpp"
 #include "DebugUtils.hpp"
 #include "IMatter.hpp"
-#include "observers.hpp"
+#include "Observer.hpp"
 #include "Photon.hpp"
 #include "Random.hpp"
 #include "Units.hpp"

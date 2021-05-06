@@ -4,7 +4,7 @@
 #include <vector>
 #include "model.hpp"
 #include "CartesianGrid.hpp"
-#include "observers.hpp"
+#include "Observer.hpp"
 #include "Photon.hpp"
 #include "Random.hpp"
 #include "Directions.hpp"

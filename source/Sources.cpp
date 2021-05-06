@@ -1,7 +1,7 @@
 #include "Sources.hpp"
 
 #include <iostream>
-#include "observers.hpp"
+#include "Observer.hpp"
 #include "CartesianGrid.hpp"
 #include "MathUtils.hpp"
 #include "Random.hpp"

@@ -23,7 +23,8 @@ set(SOURCES
         IMatter.hpp
         KurosawaWind.cpp
         KurosawaWind.hpp
-        observers.hpp
+        Observer.cpp
+        Observer.hpp
         MathUtils.hpp
         MatterArray.cpp
         MatterArray.hpp

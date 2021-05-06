@@ -1,6 +1,6 @@
 #include <cmath>
 #include "CartesianGrid.hpp"
-#include "observers.hpp"
+#include "Observer.hpp"
 #include "Photon.hpp"
 #include "Random.hpp"
 #include "Directions.hpp"
