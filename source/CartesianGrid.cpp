@@ -211,6 +211,11 @@ int CartesianGrid::movePhotonAtRandomDepth(Photon &ph, Random *ran) const
 
 void CartesianGrid::peeloff(Photon ph, Observer& observer, IDustCRef dust) const
 {
+    if (!observer.inFov(ph))
+    {
+        return;
+    }
+
     double const hgfac = ph.Scatt(dust, observer.direction(), nullptr);
     double const tau = findOpticalDepth(ph);
 

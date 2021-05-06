@@ -198,6 +198,19 @@ void Observer::write(std::ofstream& file)
     file << "\n";
 }
 
+bool Observer::inFov(const Photon &photon) const
+{
+    double const yimage = rimage_ + photon.pos().z() * direction_.sinTheta() -
+                          direction_.cosTheta() * (photon.pos().y()*sinp_ + photon.pos().x()*cosp_);
+
+    double const ximage = rimage_ + photon.pos().y()*cosp_ - photon.pos().x()*sinp_;
+
+    auto const xl = static_cast<int64_t>(nx_ * ximage / (2.0 * rimage_));
+    auto const yl = static_cast<int64_t>(ny_ * yimage / (2.0 * rimage_));
+
+    return (xl>=0) && (yl >= 0) && ((std::uint32_t)xl < nx_) && ((std::uint32_t)yl < ny_);
+}
+
 void Observer::bin(Photon const& photon)
 {
     double const yimage = rimage_ + photon.pos().z() * direction_.sinTheta() -

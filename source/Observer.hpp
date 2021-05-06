@@ -41,6 +41,7 @@ public:
     void normalize(std::uint64_t numPhotons);
     void writeToMapFiles(bool fWriteSingleAndDoubleScatterings);
     void write(std::ofstream& file);
+    bool inFov(Photon const& photon) const;
     void bin(Photon const& photon);
 
     double phi() const
