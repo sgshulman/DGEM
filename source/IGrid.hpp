@@ -15,6 +15,7 @@ class IGrid
 
         virtual double findRealOpticalDepth(Vector3d const& position, Vector3d const& direction) const = 0;
         virtual double findOpticalDepth(Photon ph) const = 0;
+        virtual double movePhotonAtDistance(Photon& ph, double distance) const = 0;
         virtual int movePhotonAtDepth(Photon& ph, double tau, double tauold) const = 0;
         virtual int movePhotonAtRandomDepth(Photon& ph, Random *ran) const = 0;
         virtual void peeloff(Photon ph, Observer& observer, IDustCRef dust) const = 0;

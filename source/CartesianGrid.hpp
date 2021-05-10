@@ -20,6 +20,7 @@ class CartesianGrid : public IGrid
 
         double findRealOpticalDepth(Vector3d const& position, Vector3d const& direction) const override;
         double findOpticalDepth(Photon ph) const override;
+        double movePhotonAtDistance(Photon& ph, double distance) const override;
         int movePhotonAtDepth(Photon& ph, double tau, double tauold) const override;
         int movePhotonAtRandomDepth(Photon& ph, Random *ran) const override;
         void peeloff(Photon ph, Observer& observer, IDustCRef dust) const override;

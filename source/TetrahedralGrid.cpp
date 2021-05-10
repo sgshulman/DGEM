@@ -545,6 +545,52 @@ double TetrahedralGrid::findOpticalDepth(Photon ph) const
     return taurun;
 }
 
+
+double TetrahedralGrid::movePhotonAtDistance(Photon &ph, double distance) const
+{
+    if (ph.cellId() >= elements_.size()) return 0.0;
+    double taurun=0.0, d=0.0;
+
+    // integrate through grid
+    while (d < distance && ph.cellId() < elements_.size())
+    {
+        const auto& rawElement = elements_[ph.cellId()];
+
+        PlaneTetrahedron const element{
+            dots_[rawElement.dot1],
+            dots_[rawElement.dot2],
+            dots_[rawElement.dot3],
+            dots_[rawElement.dot4],
+            rawElement};
+
+        std::pair<double, std::uint64_t> const dcell = element.cellDistance(ph);
+
+        double rho1=0.0, rho2=0.0;
+        if (!element.fEmpty())
+        {
+            rho1 = element.rhoInDot(ph.pos());
+            rho2 = element.rhoInDot(ph.pos() + dcell.first * ph.dir().vector());
+        }
+
+        if( d + dcell.first >= distance)
+        {
+            double d1 = distance - dcell.first;
+            double rho3 = rho1 + (rho2 - rho1) * d1 / dcell.first;
+            d = distance;
+            taurun += d1 * (rho1 + rho3) * 0.5;
+
+            ph.Move( d1, ph.cellId() );
+            break;
+        } else {
+            d += dcell.first;
+            taurun += dcell.first * (rho1 + rho2) * 0.5;
+            ph.Move( dcell.first, dcell.second );
+        }
+    }
+    return taurun;
+}
+
+
 // NEED TO BE REDONE
 int TetrahedralGrid::movePhotonAtDepth(Photon& ph, double tau, double tauold) const
 {

@@ -155,6 +155,47 @@ double CartesianGrid::findOpticalDepth(Photon ph) const
 }
 
 
+double CartesianGrid::movePhotonAtDistance(Photon &ph, double distance) const
+{
+    double taurun=0.0, d=0.0;
+
+    Vector3d const phDirInv = ph.dir().vector().inverse();
+
+    Vector3d const phDirPos(
+        ph.dir().x() > 0.0 ? 1. : ph.dir().x() < 0.0 ? 0. : std::numeric_limits<double>::infinity(),
+        ph.dir().y() > 0.0 ? 1. : ph.dir().y() < 0.0 ? 0. : std::numeric_limits<double>::infinity(),
+        ph.dir().z() > 0.0 ? 1. : ph.dir().z() < 0.0 ? 0. : std::numeric_limits<double>::infinity());
+
+    std::int64_t const dCellX = ph.dir().x() > 0.0 ? 1 : ph.dir().x() < 0.0 ? -1 : 0;
+    std::int64_t const dCellY = ph.dir().y() > 0.0 ? 0x000000010000 : ph.dir().y() < 0.0 ? -0x000000010000 : 0;
+    std::int64_t const dCellZ = ph.dir().z() > 0.0 ? 0x000100000000 : ph.dir().z() < 0.0 ? -0x000100000000 : 0;
+
+    // integrate through grid
+    while (d < distance)
+    {
+        std::pair<double, std::uint64_t> const dcell = cellDistance(ph, phDirInv, phDirPos, dCellX, dCellY, dCellZ);
+
+        auto const x = static_cast<std::uint32_t>( ph.cellId() & 0x00000000FFFFu);
+        auto const y = static_cast<std::uint32_t>((ph.cellId() & 0x0000FFFF0000u) >> 16u);
+        auto const z = static_cast<std::uint32_t>((ph.cellId() & 0xFFFF00000000u) >> 32u);
+
+        if(d + dcell.first >= distance)
+        {
+            double const d1 = distance - d;
+            taurun += d1 * rhokappa_[ x+y*nx_+z*ny_*nx_ ];
+            ph.Move(d1, ph.cellId());
+            break;
+        } else {
+            d += dcell.first;
+            taurun += dcell.first * rhokappa_[ x+y*nx_+z*ny_*nx_ ];
+            ph.Move(dcell.first, dcell.second);
+        }
+    }
+
+    return taurun;
+}
+
+
 int CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold) const
 {
     double taurun=tauold, d=0.0;
