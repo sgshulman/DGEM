@@ -300,3 +300,11 @@ std::uint64_t CartesianGrid::cellId(const Vector3d& position) const
     auto const z = static_cast<std::uint32_t>((position.z()+zmax_)*zCellSizeInv_);
     return x + y*0x000000010000u + z*0x000100000000u;
 }
+
+
+bool CartesianGrid::inside(const Vector3d& position) const
+{
+    return -xmax_ < position.x() && position.x() < xmax_
+        && -ymax_ < position.y() && position.y() < ymax_
+        && -zmax_ < position.z() && position.z() < zmax_;
+}

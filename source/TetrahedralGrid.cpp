@@ -778,3 +778,11 @@ void TetrahedralGrid::saveGridToBinaryFile(const std::string &file)
         gridBin.write((char *)&element.d3, sizeof(double));
     }
 }
+
+
+bool TetrahedralGrid::inside(const Vector3d& position) const
+{
+    return -max_ < position.x() && position.x() < max_
+           && -max_ < position.y() && position.y() < max_
+           && -max_ < position.z() && position.z() < max_;
+}

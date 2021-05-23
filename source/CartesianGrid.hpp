@@ -26,6 +26,7 @@ class CartesianGrid : public IGrid
         void peeloff(Photon ph, Observer& observer, IDustCRef dust) const override;
         double computeMatterMass() const override;
         std::uint64_t cellId(const Vector3d& position) const override;
+        bool inside(const Vector3d& position) const override;
 
     private:
         double maxDistance(Photon const& ph) const;
