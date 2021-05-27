@@ -97,36 +97,82 @@ int main(int argc, char *argv[])
                 continue;
             }
 
-            double const w = (1.0-exp(-tau1)) / model.NumOfPrimaryScatterings() ;
-            double tauold = 0.0, tau = 0.0;
-            Vector3d spos = ph0.pos();
-            std::uint64_t sCellId = ph0.cellId();
+            double const w = (1.0-exp(-tau1)) / model.NumOfPrimaryScatterings();
 
             // Loop over scattering dots
-            for (std::uint64_t s=0; s!=model.NumOfPrimaryScatterings(); ++s)
+            if (model.NumOfPrimaryScatterings() > 0)
             {
-                Photon ph( spos, sCellId, ph0.dir(), ph0.weight() * w, 1 );
-                // Force photon to scatter at optical depth tau before edge of grid
-                tauold = tau;
-                tau=-log( 1.0-0.5*w*(2*s+1) );
+                double tauold = 0.0, tau = 0.0;
+                Vector3d spos = ph0.pos();
+                std::uint64_t sCellId = ph0.cellId();
 
-                // Find scattering location of tau
-                grid->movePhotonAtDepth(ph, tau, tauold);
-                spos = ph.pos();
-                sCellId = ph.cellId();
-
-                // Photon scatters in grid until it exits (tflag=1) or number
-                // of scatterings exceeds a set value (nscatt)
-
-                // Photons scattering
-                ph.weight() *= model.dust()->albedo();
-
-                for (Observer& observer : observers)
+                for (std::uint64_t s = 0; s != model.NumOfPrimaryScatterings(); ++s)
                 {
-                    grid->peeloff(ph, observer, model.dust());
-                }
+                    Photon ph(spos, sCellId, ph0.dir(), ph0.weight() * w, 1);
+                    // Force photon to scatter at optical depth tau before edge of grid
+                    tauold = tau;
+                    tau = -log(1.0 - 0.5 * w * (2 * s + 1));
 
-                if (ph.nscat() < model.nscat()) ph.Scatt(model, sdir, grid, observers, &ran);
+                    // Find scattering location of tau
+                    grid->movePhotonAtDepth(ph, tau, tauold);
+                    spos = ph.pos();
+                    sCellId = ph.cellId();
+
+                    // Photon scatters in grid until it exits (tflag=1) or number
+                    // of scatterings exceeds a set value (nscatt)
+
+                    // Photons scattering
+                    ph.weight() *= model.dust()->albedo();
+
+                    for (Observer &observer : observers)
+                    {
+                        grid->peeloff(ph, observer, model.dust());
+                    }
+
+                    if (ph.nscat() < model.nscat()) ph.Scatt(model, sdir, grid, observers, &ran);
+                }
+            }
+            else
+            {
+                double const sqrtPiN = std::sqrt(PI / sources->num_photons());
+                double const base = 1. + 2. * sqrtPiN / (1 - sqrtPiN);
+                double const scatLocMultiplier = 1. / (1 - sqrtPiN);
+                double const nScatteringsRev = std::log(base) / std::log(250);
+                double r = 1.;
+                double oldR = 0.;
+
+                Vector3d spos = ph0.pos();
+                std::uint64_t sCellId = ph0.cellId();
+
+                while (grid->inside(spos) && ph0.weight() > 1e-10)
+                {
+                    // use middle rectangles in the future
+                    Photon ph(spos, sCellId, ph0.dir(), ph0.weight(), 1);
+
+                    double const rScatter = r * scatLocMultiplier;
+
+                    // Find scattering location of tau
+                    double const tau = grid->movePhotonAtDistance(ph, rScatter - oldR);
+                    spos = ph.pos();
+                    sCellId = ph.cellId();
+
+                    // Photons scattering
+                    ph0.weight() *= std::exp(-tau);
+
+                    if (tau > model.taumin() * nScatteringsRev)
+                    {
+                        ph.weight() *= model.dust()->albedo() * (1.0 - std::exp(-tau));
+
+                        for (Observer &observer : observers)
+                        {
+                            grid->peeloff(ph, observer, model.dust());
+                        }
+
+                        if (ph.nscat() < model.nscat()) ph.Scatt(model, sdir, grid, observers, &ran);
+                    }
+                    oldR = rScatter;
+                    r *= base;
+                }
             }
         }
     }

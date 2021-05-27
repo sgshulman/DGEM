@@ -138,7 +138,7 @@ double CartesianGrid::findOpticalDepth(Photon ph) const
     std::int64_t const dCellY = ph.dir().y() > 0.0 ? 0x000000010000 : ph.dir().y() < 0.0 ? -0x000000010000 : 0;
     std::int64_t const dCellZ = ph.dir().z() > 0.0 ? 0x000100000000 : ph.dir().z() < 0.0 ? -0x000100000000 : 0;
 
-    while (d < 0.999*smax)
+    while (inside(ph.pos()))
     {
         std::pair<double, std::uint64_t> const dcell = cellDistance(ph, phDirInv, phDirPos, dCellX, dCellY, dCellZ);
 
@@ -171,7 +171,7 @@ double CartesianGrid::movePhotonAtDistance(Photon &ph, double distance) const
     std::int64_t const dCellZ = ph.dir().z() > 0.0 ? 0x000100000000 : ph.dir().z() < 0.0 ? -0x000100000000 : 0;
 
     // integrate through grid
-    while (d < distance)
+    while (d < distance && inside(ph.pos()))
     {
         std::pair<double, std::uint64_t> const dcell = cellDistance(ph, phDirInv, phDirPos, dCellX, dCellY, dCellZ);
 
