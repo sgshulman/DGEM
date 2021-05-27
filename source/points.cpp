@@ -81,26 +81,26 @@ int main(int argc, char *argv[])
         Directions sdir( model.SecondaryDirectionsLevel(), model.useHEALPixGrid() );
         startTime = std::chrono::high_resolution_clock::now();
 
-        for (;;)
+        // Loop over scattering dots
+        if (model.NumOfPrimaryScatterings() > 0)
         {
-            Photon ph0{ sources->emitPhoton(&ran) };
-
-            if (ph0.termination())
+            for (;;)
             {
-                break;
-            }
+                Photon ph0{sources->emitPhoton(&ran)};
 
-            // Loop over scattering dots
-            if (model.NumOfPrimaryScatterings() > 0)
-            {
+                if (ph0.termination())
+                {
+                    break;
+                }
+
                 // Find optical depth, tau1, to edge of grid
                 double tau1 = grid->findOpticalDepth(ph0);
-                if ( tau1 < model.taumin() )
+                if (tau1 < model.taumin())
                 {
                     continue;
                 }
 
-                double const w = (1.0-exp(-tau1)) / model.NumOfPrimaryScatterings();
+                double const w = (1.0 - exp(-tau1)) / model.NumOfPrimaryScatterings();
 
                 double tauold = 0.0, tau = 0.0;
                 Vector3d spos = ph0.pos();
@@ -132,23 +132,36 @@ int main(int argc, char *argv[])
                     if (ph.nscat() < model.nscat()) ph.Scatt(model, sdir, grid, observers, &ran);
                 }
             }
-            else
+        }
+        else
+        {
+            double const sqrtPiN = std::sqrt(PI / sources->num_photons());
+            double const base = 1. + 2. * sqrtPiN / (1 - sqrtPiN);
+            double const scatLocMultiplier = 1. / (1 - sqrtPiN);
+            // pessimistic estimation of scattering number, as we use it only for minimal optical depth estimation
+            double const nScatteringsRev = std::log(base) / std::log(std::sqrt(3.) * grid->max());
+            double const minWeight = 1. - std::exp(-model.taumin() * nScatteringsRev);
+            std::cout << minWeight << std::endl;
+
+            for (;;)
             {
-                double const sqrtPiN = std::sqrt(PI / sources->num_photons());
-                double const base = 1. + 2. * sqrtPiN / (1 - sqrtPiN);
-                double const scatLocMultiplier = 1. / (1 - sqrtPiN);
+                Photon ph0{sources->emitPhoton(&ran)};
+
+                if (ph0.termination())
+                {
+                    break;
+                }
 
                 Vector3d spos = ph0.pos();
 
                 // skip empty inner regions
                 grid->movePhotonAtDepth(ph0, std::numeric_limits<double>::epsilon(), 0.0);
                 double r = std::max(1., (spos - ph0.pos()).norm());
-                double const nScatteringsRev = std::log(base) / std::log((std::sqrt(3.) * grid->max()) / r);
                 double oldR = r;
                 spos = ph0.pos();
                 std::uint64_t sCellId = ph0.cellId();
 
-                while (grid->inside(spos) && ph0.weight() > 1e-10)
+                while (grid->inside(spos) && ph0.weight() > minWeight)
                 {
                     // use middle rectangles in the future
                     Photon ph(spos, sCellId, ph0.dir(), ph0.weight(), 1);
