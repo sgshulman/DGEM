@@ -2,6 +2,7 @@
 #define I_GRID_HPP_
 
 #include "Predefines.hpp"
+#include <cstdint>
 
 class IGrid
 {
