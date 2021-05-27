@@ -25,6 +25,7 @@ class CartesianGrid : public IGrid
         int movePhotonAtRandomDepth(Photon& ph, Random *ran) const override;
         void peeloff(Photon ph, Observer& observer, IDustCRef dust) const override;
         double computeMatterMass() const override;
+        double max() const override;
         std::uint64_t cellId(const Vector3d& position) const override;
         bool inside(const Vector3d& position) const override;
 

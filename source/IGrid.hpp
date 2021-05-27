@@ -20,6 +20,7 @@ class IGrid
         virtual int movePhotonAtRandomDepth(Photon& ph, Random *ran) const = 0;
         virtual void peeloff(Photon ph, Observer& observer, IDustCRef dust) const = 0;
         virtual double computeMatterMass() const = 0;
+        virtual double max() const = 0;
         virtual std::uint64_t cellId(const Vector3d& position) const = 0;
         virtual bool inside(const Vector3d& position) const = 0;
 };

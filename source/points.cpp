@@ -90,18 +90,18 @@ int main(int argc, char *argv[])
                 break;
             }
 
-            // Find optical depth, tau1, to edge of grid
-            double tau1 = grid->findOpticalDepth(ph0);
-            if ( tau1 < model.taumin() )
-            {
-                continue;
-            }
-
-            double const w = (1.0-exp(-tau1)) / model.NumOfPrimaryScatterings();
-
             // Loop over scattering dots
             if (model.NumOfPrimaryScatterings() > 0)
             {
+                // Find optical depth, tau1, to edge of grid
+                double tau1 = grid->findOpticalDepth(ph0);
+                if ( tau1 < model.taumin() )
+                {
+                    continue;
+                }
+
+                double const w = (1.0-exp(-tau1)) / model.NumOfPrimaryScatterings();
+
                 double tauold = 0.0, tau = 0.0;
                 Vector3d spos = ph0.pos();
                 std::uint64_t sCellId = ph0.cellId();
@@ -137,12 +137,16 @@ int main(int argc, char *argv[])
                 double const sqrtPiN = std::sqrt(PI / sources->num_photons());
                 double const base = 1. + 2. * sqrtPiN / (1 - sqrtPiN);
                 double const scatLocMultiplier = 1. / (1 - sqrtPiN);
-                double const nScatteringsRev = std::log(base) / std::log(250);
-                double r = 1.;
-                double oldR = 0.;
 
                 Vector3d spos = ph0.pos();
                 std::uint64_t sCellId = ph0.cellId();
+
+                // skip empty inner regions
+                grid->movePhotonAtDepth(ph0, std::numeric_limits<double>::epsilon(), 0.0);
+                double r = std::max(1., (spos - ph0.pos()).norm());
+                double const nScatteringsRev = std::log(base) / std::log(grid->max() / r);
+                double oldR = 0.;
+                spos = ph0.pos();
 
                 while (grid->inside(spos) && ph0.weight() > 1e-10)
                 {

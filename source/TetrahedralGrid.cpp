@@ -687,6 +687,12 @@ double TetrahedralGrid::computeMatterMass() const
 }
 
 
+double TetrahedralGrid::max() const
+{
+    return max_;
+}
+
+
 std::uint64_t TetrahedralGrid::cellId(const Vector3d &position) const
 {
     for (std::uint64_t i = 0; i != elements_.size(); ++i)

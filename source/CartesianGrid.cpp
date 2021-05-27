@@ -293,6 +293,12 @@ double CartesianGrid::computeMatterMass() const
 }
 
 
+double CartesianGrid::max() const
+{
+    return std::max({xmax_, ymax_, zmax_});
+}
+
+
 std::uint64_t CartesianGrid::cellId(const Vector3d& position) const
 {
     auto const x = static_cast<std::uint32_t>((position.x()+xmax_)*xCellSizeInv_);
