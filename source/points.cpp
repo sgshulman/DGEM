@@ -139,14 +139,14 @@ int main(int argc, char *argv[])
                 double const scatLocMultiplier = 1. / (1 - sqrtPiN);
 
                 Vector3d spos = ph0.pos();
-                std::uint64_t sCellId = ph0.cellId();
 
                 // skip empty inner regions
                 grid->movePhotonAtDepth(ph0, std::numeric_limits<double>::epsilon(), 0.0);
                 double r = std::max(1., (spos - ph0.pos()).norm());
-                double const nScatteringsRev = std::log(base) / std::log(grid->max() / r);
-                double oldR = 0.;
+                double const nScatteringsRev = std::log(base) / std::log((std::sqrt(3.) * grid->max()) / r);
+                double oldR = r;
                 spos = ph0.pos();
+                std::uint64_t sCellId = ph0.cellId();
 
                 while (grid->inside(spos) && ph0.weight() > 1e-10)
                 {
