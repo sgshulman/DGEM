@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cmath>
 #include <fstream>
+#include <limits>
 
 #include "MieDust.hpp"
 #include "DebugUtils.hpp"
