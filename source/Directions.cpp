@@ -300,7 +300,7 @@ Directions::Directions(std::uint32_t const NumOfDirectionsLevels, bool const use
             double const z = 1 - (i*i) / (3. * Nside * Nside);
             double const phi = PI / (2 * i) * (j - 0.5);
             points_[p] = Vector3d(phi, std::acos(z));
-            points_[directionsNumber_ - 1 - p] = Vector3d(-phi, std::acos(-z));
+            points_[directionsNumber_ - 1 - p] = Vector3d(PI + phi, std::acos(-z));
         }
 
         // Equatorial belts
@@ -317,7 +317,7 @@ Directions::Directions(std::uint32_t const NumOfDirectionsLevels, bool const use
             std::uint32_t const s = (i - Nside + 1) % 2;
             double const phi = PI / (2 * Nside) * (j - 0.5 * s);
             points_[p] = Vector3d(phi, std::acos(z));
-            points_[directionsNumber_ - 1 - p] = Vector3d(-phi, std::acos(-z));
+            points_[directionsNumber_ - 1 - p] = Vector3d(PI + phi, std::acos(-z));
         }
 
         w_ = new double[directionsNumber_]{};
