@@ -183,6 +183,46 @@ TEST_CASE("Directions", "[sphere integration]")
         REQUIRE(Approx(integrate(d, 3, -1)).epsilon(0.02) == 1.);
         REQUIRE(Approx(integrate(d, 3, -2)).epsilon(0.08) == 1.);
         REQUIRE(Approx(integrate(d, 3, -3)).epsilon(0.004) == 1.);
+
+        SECTION("Symmetry")
+        {
+            for (std::uint64_t i=0; i!=d.number() / 2; ++i)
+            {
+                REQUIRE(Approx(d.direction(i) * d.direction(d.number() - 1 - i)) == -1.);
+            }
+        }
+    }
+
+    SECTION("HEALPix 3")
+    {
+        Directions d(3, true);
+        REQUIRE(Approx(integrate(d, 0, 0)) == 1.);
+
+        REQUIRE(Approx(integrate(d, 1, 1)).epsilon(0.006) == 1.);
+        REQUIRE(Approx(integrate(d, 1, 0)).epsilon(0.02) == 1.);
+        REQUIRE(Approx(integrate(d, 1, -1)).epsilon(0.006) == 1.);
+
+        REQUIRE(Approx(integrate(d, 2, 2)).epsilon(0.003)  == 1.);
+        REQUIRE(Approx(integrate(d, 2, 1)).epsilon(0.02) == 1.);
+        REQUIRE(Approx(integrate(d, 2, 0)).epsilon(0.04) == 1.);
+        REQUIRE(Approx(integrate(d, 2, -1)).epsilon(0.02) == 1.);
+        REQUIRE(Approx(integrate(d, 2, -2)).epsilon(0.005) == 1.);
+
+        REQUIRE(Approx(integrate(d, 3, 3)).epsilon(0.002) == 1.);
+        REQUIRE(Approx(integrate(d, 3, 2)).epsilon(0.008) == 1.);
+        REQUIRE(Approx(integrate(d, 3, 1)).epsilon(0.008) == 1.);
+        REQUIRE(Approx(integrate(d, 3, 0)).epsilon(0.05) == 1.);
+        REQUIRE(Approx(integrate(d, 3, -1)).epsilon(0.008) == 1.);
+        REQUIRE(Approx(integrate(d, 3, -2)).epsilon(0.02) == 1.);
+        REQUIRE(Approx(integrate(d, 3, -3)).epsilon(0.002) == 1.);
+
+        SECTION("Symmetry")
+        {
+            for (std::uint64_t i=0; i!=d.number() / 2; ++i)
+            {
+                REQUIRE(Approx(d.direction(i) * d.direction(d.number() - 1 - i)) == -1.);
+            }
+        }
     }
 
     SECTION("HEALPix 20")
@@ -229,6 +269,14 @@ TEST_CASE("Directions", "[sphere integration]")
         REQUIRE(Approx(integrate(d, 5, -3)).epsilon(4e-4) == 1.);
         REQUIRE(Approx(integrate(d, 5, -4)).epsilon(2e-4) == 1.);
         REQUIRE(Approx(integrate(d, 5, -5)).epsilon(2e-5) == 1.);
+
+        SECTION("Symmetry")
+        {
+            for (std::uint64_t i=0; i!=d.number() / 2; ++i)
+            {
+                REQUIRE(Approx(d.direction(i) * d.direction(d.number() - 1 - i)) == -1.);
+            }
+        }
     }
 
     SECTION("HEALPix 80")
@@ -289,5 +337,13 @@ TEST_CASE("Directions", "[sphere integration]")
         REQUIRE(Approx(integrate(d, 6, -4)).epsilon(3e-5) == 1.);
         REQUIRE(Approx(integrate(d, 6, -5)) == 1.);
         REQUIRE(Approx(integrate(d, 6, -6)) == 1.);
+
+        SECTION("Symmetry")
+        {
+            for (std::uint64_t i=0; i!=d.number() / 2; ++i)
+            {
+                REQUIRE(Approx(d.direction(i) * d.direction(d.number() - 1 - i)) == -1.);
+            }
+        }
     }
 }
