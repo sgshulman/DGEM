@@ -6,7 +6,11 @@
 
 class Directions {
     public:
+        // Directions grid for photon directions
         explicit Directions(std::uint32_t NumOfDirectionsLevels, bool useHEALPixGrid);
+
+        // Direction grid for sphere source
+        explicit Directions(std::uint32_t NumOfDirectionsLevels);
 
         ~Directions()
         {

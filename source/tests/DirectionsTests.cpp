@@ -30,7 +30,7 @@ namespace
     }
 }
 
-TEST_CASE("Directions", "[sphere integration]")
+TEST_CASE("Icosahedron Directions", "[sphere integration]")
 {
     SECTION("Icosahedron 1")
     {
@@ -138,9 +138,9 @@ TEST_CASE("Directions", "[sphere integration]")
         REQUIRE(Approx(integrate(d, 5, 4)) == 1.);
         REQUIRE(Approx(integrate(d, 5, 3)) == 1.);
         REQUIRE(Approx(integrate(d, 5, 2)).epsilon(2e-5) == 1.);
-        REQUIRE(Approx(integrate(d, 5, 1)).epsilon(3e-5)  == 1.);
-        REQUIRE(Approx(integrate(d, 5, 0)).epsilon(4e-5)  == 1.);
-        REQUIRE(Approx(integrate(d, 5, -1)).epsilon(3e-5)  == 1.);
+        REQUIRE(Approx(integrate(d, 5, 1)).epsilon(3e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 5, 0)).epsilon(4e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 5, -1)).epsilon(3e-5) == 1.);
         REQUIRE(Approx(integrate(d, 5, -2)).epsilon(2e-5) == 1.);
         REQUIRE(Approx(integrate(d, 5, -3)) == 1.);
         REQUIRE(Approx(integrate(d, 5, -4)) == 1.);
@@ -160,7 +160,10 @@ TEST_CASE("Directions", "[sphere integration]")
         REQUIRE(Approx(integrate(d, 6, -5)).epsilon(7e-5) == 1.);
         REQUIRE(Approx(integrate(d, 6, -6)) == 1.);
     }
+}
 
+TEST_CASE("HEALPix Directions", "[sphere integration]")
+{
     SECTION("HEALPix 2")
     {
         Directions d(2, true);
@@ -337,6 +340,44 @@ TEST_CASE("Directions", "[sphere integration]")
         REQUIRE(Approx(integrate(d, 6, -4)).epsilon(3e-5) == 1.);
         REQUIRE(Approx(integrate(d, 6, -5)) == 1.);
         REQUIRE(Approx(integrate(d, 6, -6)) == 1.);
+
+        SECTION("Symmetry")
+        {
+            for (std::uint64_t i=0; i!=d.number() / 2; ++i)
+            {
+                REQUIRE(Approx(d.direction(i) * d.direction(d.number() - 1 - i)) == -1.);
+            }
+        }
+    }
+}
+
+
+TEST_CASE("Isolatitude 3-6 Directions", "[sphere integration]")
+{
+    SECTION("Sphere 2")
+    {
+        Directions d(2);
+        REQUIRE(Approx(integrate(d, 0, 0)) == 1.);
+
+        REQUIRE(Approx(integrate(d, 0, 0)) == 1.);
+
+        REQUIRE(Approx(integrate(d, 1, 1)).epsilon(0.02) == 1.);
+        REQUIRE(Approx(integrate(d, 1, 0)).epsilon(0.03) == 1.);
+        REQUIRE(Approx(integrate(d, 1, -1)).epsilon(0.02) == 1.);
+
+        REQUIRE(Approx(integrate(d, 2, 2)).epsilon(0.008)  == 1.);
+        REQUIRE(Approx(integrate(d, 2, 1)).epsilon(0.04) == 1.);
+        REQUIRE(Approx(integrate(d, 2, 0)).epsilon(0.09) == 1.);
+        REQUIRE(Approx(integrate(d, 2, -1)).epsilon(0.04) == 1.);
+        REQUIRE(Approx(integrate(d, 2, -2)).epsilon(0.008) == 1.);
+
+        REQUIRE(Approx(integrate(d, 3, 3)).epsilon(0.002) == 1.);
+        REQUIRE(Approx(integrate(d, 3, 2)).epsilon(0.04) == 1.);
+        REQUIRE(Approx(integrate(d, 3, 1)).epsilon(0.02) == 1.);
+        REQUIRE(Approx(integrate(d, 3, 0)).epsilon(0.12) == 1.);
+        REQUIRE(Approx(integrate(d, 3, -1)).epsilon(0.02) == 1.);
+        REQUIRE(Approx(integrate(d, 3, -2)).epsilon(0.04) == 1.);
+        REQUIRE(Approx(integrate(d, 3, -3)).epsilon(0.005) == 1.);
 
         SECTION("Symmetry")
         {
