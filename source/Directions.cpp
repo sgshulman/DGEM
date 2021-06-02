@@ -333,3 +333,55 @@ Directions::Directions(std::uint32_t const NumOfDirectionsLevels, bool const use
         directionsNumber_ = mesh.directionsNumber();
     }
 }
+
+// HEALPix like equal-area isolatitude tessellations of the sphere with N_theta = 2 and N_phi = 4
+Directions::Directions(std::uint32_t const NumOfDirectionsLevels)
+{
+    assert(NumOfDirectionsLevels > 1);
+
+    std::uint32_t const Nside = NumOfDirectionsLevels;
+    directionsNumber_ = 18 * Nside * Nside;
+    points_ = new Vector3d[directionsNumber_]{};
+
+    std::uint32_t p = 0;
+
+    // Polar caps
+    for (; p!= 3 * Nside * (Nside - 1); ++p)
+    {
+        double const ph = (p + 1.) / 3;
+        auto const i = static_cast<std::uint32_t>(std::sqrt(ph - std::sqrt(std::floor(ph))) + 1);
+        std::uint32_t const j = p + 1 - 2*i*(i-1);
+
+        assert(1 <= i && i < Nside);
+        assert(1 <= j && j <= 6 * i);
+
+        double const z = 1 - (i*i) / (3. * Nside * Nside);
+        double const phi = PI / (3 * i) * (j - 0.5);
+        points_[p] = Vector3d(phi, std::acos(z));
+        points_[directionsNumber_ - 1 - p] = Vector3d(PI + phi, std::acos(-z));
+    }
+
+    // Equatorial belts
+    for (; p!= 9 * Nside * Nside; ++p)
+    {
+        std::uint32_t const pp = p - 3 * Nside * (Nside - 1);
+        std::uint32_t const i = pp / (6 * Nside) + Nside;
+        std::uint32_t const j = pp % (6 * Nside) + 1;
+
+        assert(Nside <= i && i <= 2 * Nside);
+        assert(1 <= j && j <= 6 * Nside);
+
+        double const z = 4.0 / 3 - (2 * i) / (3. * Nside);
+        std::uint32_t const s = (i - Nside + 1) % 2;
+        double const phi = PI / (3 * Nside) * (j - 0.5 * s);
+        points_[p] = Vector3d(phi, std::acos(z));
+        points_[directionsNumber_ - 1 - p] = Vector3d(PI + phi, std::acos(-z));
+    }
+
+    w_ = new double[directionsNumber_]{};
+
+    for (std::uint32_t i=0; i!=directionsNumber_; ++i)
+    {
+        w_[i] = 1.0;
+    }
+}
