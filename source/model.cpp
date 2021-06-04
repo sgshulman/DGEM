@@ -666,24 +666,36 @@ namespace
     SourcesPtr parseSources(nlohmann::json const& json, SourceParameters const& sourceParameters, IGridCRef grid)
     {
         std::vector<PointSource> pointSources;
+        std::vector<SphereSource> sphereSources;
         pointSources.reserve(json.size());
 
         for (auto const &star : json)
         {
-            checkParameters(star, sStars, {"x", "y", "z", "l"});
+            checkParameters(star, sStars, {"x", "y", "z", "l", "r"});
 
             Vector3d const position{
                 get_double(star, sStars, "x"),
                 get_double(star, sStars, "y"),
                 get_double(star, sStars, "z")};
 
-            pointSources.emplace_back(
-                position,
-                grid->cellId(position),
-                get_double(star, sStars, "l"));
+            double const radius = get_optional_double(star, sStars, "r", 0.0);
+
+            if (radius < std::numeric_limits<float>::epsilon())
+            {
+                pointSources.emplace_back(
+                    position,
+                    grid->cellId(position),
+                    get_double(star, sStars, "l"));
+            } else {
+                sphereSources.emplace_back(
+                    position,
+                    grid->cellId(position),
+                    get_double(star, sStars, "l"),
+                    radius);
+            }
         }
 
-        return std::make_shared<Sources>(sourceParameters, std::move(pointSources));
+        return std::make_shared<Sources>(sourceParameters, std::move(pointSources), std::move(sphereSources));
     }
 
     void densitySlice(nlohmann::json const& json, IMatterCPtr const& matter)
