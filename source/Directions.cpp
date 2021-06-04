@@ -281,51 +281,7 @@ Directions::Directions(std::uint32_t const NumOfDirectionsLevels, bool const use
 {
     if (useHEALPixGrid)
     {
-        std::uint32_t const Nside = NumOfDirectionsLevels;
-        directionsNumber_ = 12 * Nside * Nside;
-        points_ = new Vector3d[directionsNumber_]{};
-
-        std::uint32_t p = 0;
-
-        // Polar caps
-        for (; p!= 2 * Nside * (Nside - 1); ++p)
-        {
-            double const ph = (p + 1.) / 2;
-            auto const i = static_cast<std::uint32_t>(std::sqrt(ph - std::sqrt(std::floor(ph))) + 1);
-            std::uint32_t const j = p + 1 - 2*i*(i-1);
-
-            assert(1 <= i && i < Nside);
-            assert(1 <= j && j <= 4 * i);
-
-            double const z = 1 - (i*i) / (3. * Nside * Nside);
-            double const phi = PI / (2 * i) * (j - 0.5);
-            points_[p] = Vector3d(phi, std::acos(z));
-            points_[directionsNumber_ - 1 - p] = Vector3d(PI + phi, std::acos(-z));
-        }
-
-        // Equatorial belts
-        for (; p!= 6 * Nside * Nside; ++p)
-        {
-            std::uint32_t const pp = p - 2 * Nside * (Nside - 1);
-            std::uint32_t const i = pp / (4 * Nside) + Nside;
-            std::uint32_t const j = pp % (4 * Nside) + 1;
-
-            assert(Nside <= i && i <= 2 * Nside);
-            assert(1 <= j && j <= 4 * Nside);
-
-            double const z = 4.0 / 3 - (2 * i) / (3. * Nside);
-            std::uint32_t const s = (i - Nside + 1) % 2;
-            double const phi = PI / (2 * Nside) * (j - 0.5 * s);
-            points_[p] = Vector3d(phi, std::acos(z));
-            points_[directionsNumber_ - 1 - p] = Vector3d(PI + phi, std::acos(-z));
-        }
-
-        w_ = new double[directionsNumber_]{};
-
-        for (std::uint32_t i=0; i!=directionsNumber_; ++i)
-        {
-            w_[i] = 1.0;
-        }
+        isolatitudeGrid(4, NumOfDirectionsLevels);
     } else {
         IcosahedronMesh mesh(NumOfDirectionsLevels);
         points_ = mesh.points();
@@ -334,46 +290,51 @@ Directions::Directions(std::uint32_t const NumOfDirectionsLevels, bool const use
     }
 }
 
-// HEALPix like equal-area isolatitude tessellations of the sphere with N_theta = 2 and N_phi = 4
+// HEALPix like equal-area isolatitude tessellations of the sphere with N_theta = 3 and N_phi = 6
 Directions::Directions(std::uint32_t const NumOfDirectionsLevels)
 {
-    assert(NumOfDirectionsLevels > 1);
+    isolatitudeGrid(6, NumOfDirectionsLevels);
+}
 
-    std::uint32_t const Nside = NumOfDirectionsLevels;
-    directionsNumber_ = 18 * Nside * Nside;
+
+void Directions::isolatitudeGrid(std::uint32_t Nphi, std::uint32_t const Nside)
+{
+    assert(Nphi % 2 == 0);
+
+    directionsNumber_ = 3 * Nphi * Nside * Nside;
     points_ = new Vector3d[directionsNumber_]{};
 
     std::uint32_t p = 0;
 
     // Polar caps
-    for (; p!= 3 * Nside * (Nside - 1); ++p)
+    for (; p!= Nphi * Nside * (Nside - 1) / 2; ++p)
     {
-        double const ph = (p + 1.) / 3;
+        double const ph = (p + 1.) * 2 / Nphi;
         auto const i = static_cast<std::uint32_t>(std::sqrt(ph - std::sqrt(std::floor(ph))) + 1);
         std::uint32_t const j = p + 1 - 2*i*(i-1);
 
         assert(1 <= i && i < Nside);
-        assert(1 <= j && j <= 6 * i);
+        assert(1 <= j && j <= Nphi * i);
 
         double const z = 1 - (i*i) / (3. * Nside * Nside);
-        double const phi = PI / (3 * i) * (j - 0.5);
+        double const phi = 2 * PI / (Nphi * i) * (j - 0.5);
         points_[p] = Vector3d(phi, std::acos(z));
         points_[directionsNumber_ - 1 - p] = Vector3d(PI + phi, std::acos(-z));
     }
 
     // Equatorial belts
-    for (; p!= 9 * Nside * Nside; ++p)
+    for (; p!= 3 * Nphi * Nside * Nside / 2; ++p)
     {
-        std::uint32_t const pp = p - 3 * Nside * (Nside - 1);
-        std::uint32_t const i = pp / (6 * Nside) + Nside;
-        std::uint32_t const j = pp % (6 * Nside) + 1;
+        std::uint32_t const pp = p - Nphi * Nside * (Nside - 1) / 2;
+        std::uint32_t const i = pp / (Nphi * Nside) + Nside;
+        std::uint32_t const j = pp % (Nphi * Nside) + 1;
 
         assert(Nside <= i && i <= 2 * Nside);
-        assert(1 <= j && j <= 6 * Nside);
+        assert(1 <= j && j <= Nphi * Nside);
 
         double const z = 4.0 / 3 - (2 * i) / (3. * Nside);
         std::uint32_t const s = (i - Nside + 1) % 2;
-        double const phi = PI / (3 * Nside) * (j - 0.5 * s);
+        double const phi = 2 * PI / (Nphi * Nside) * (j - 0.5 * s);
         points_[p] = Vector3d(phi, std::acos(z));
         points_[directionsNumber_ - 1 - p] = Vector3d(PI + phi, std::acos(-z));
     }

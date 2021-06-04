@@ -33,6 +33,9 @@ class Directions {
         {	return w_[index];	}
 
     private:
+        // Isolatitude sphere tessalation with N_theta = 3, Nphi must be even
+        void isolatitudeGrid(std::uint32_t Nphi, std::uint32_t Nside);
+
         Vector3d *points_{ nullptr };
         double   *w_{ nullptr };
         std::uint64_t directionsNumber_{ 0 };
