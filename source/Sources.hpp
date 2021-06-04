@@ -43,6 +43,45 @@ private:
     double		   lum_;
 };
 
+// sphere source of photons
+class SphereSource
+{
+public:
+    SphereSource()
+        : cellId_{}
+        , lum_{}
+        , radius_{}
+    {}
+
+    SphereSource(Vector3d const& pos, std::uint64_t cellId, double lum, double radius)
+        : pos_(pos)
+        , cellId_{ cellId }
+        , lum_(lum)
+        , radius_(radius)
+    {};
+
+    SphereSource(SphereSource const& other) = delete;
+    SphereSource& operator=(SphereSource const& other) = delete;
+
+    SphereSource(SphereSource&& other) = default;
+    SphereSource& operator=(SphereSource&& other) = default;
+
+    Vector3d const& pos() const
+    {	return pos_; }
+
+    double luminosity() const
+    {	return lum_; }
+
+    std::uint64_t cellId() const
+    {   return cellId_; }
+
+private:
+    Vector3d	   pos_;
+    std::uint64_t  cellId_;
+    double		   lum_;
+    double         radius_;
+};
+
 struct SourceParameters
 {
     std::uint64_t num_photons_;
@@ -55,9 +94,10 @@ struct SourceParameters
 class Sources
 {
 public:
-    Sources(SourceParameters parameters, std::vector<PointSource> pointSources)
+    Sources(SourceParameters parameters, std::vector<PointSource> pointSources, std::vector<SphereSource> sphereSources)
         : parameters_{ parameters}
         , pointSources_{ std::move(pointSources) }
+        , sphereSources_{ std::move(sphereSources) }
         , totlum_{ 0. }
         , primaryDir_{ parameters_.useMonteCarlo_ ? 1 : parameters_.PrimaryDirectionsLevel_, parameters_.useHEALPixGrid_ }
         , currentSource_{ 0 }
@@ -93,6 +133,7 @@ public:
 private:
     SourceParameters parameters_;
     std::vector<PointSource> const pointSources_;
+    std::vector<SphereSource> const sphereSources_;
     double	 totlum_;
 
     Directions primaryDir_;
