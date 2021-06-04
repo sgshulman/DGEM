@@ -83,6 +83,40 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
             (*observers)[io].bin(ph);
         }
     }
+
+    // Direct photon loop. Loop over sphere sources and over points on them,
+    // weight photons by W=ph*exp(-tau1)/2pi/number_of_directions
+    for (std::uint64_t is=0; is!=sphereSources_.size(); ++is)
+    {
+        auto const nph = std::uint64_t(parameters_.num_photons_ * pointSources_[is].luminosity() / totlum_);
+
+        for (std::uint64_t ip=0; ip!=sphereDir_.number(); ++ip)
+        {
+            // compute point location
+            Photon innerPh(sphereSources_[is].pos(), sphereSources_[is].cellId(), sphereDir_.direction(ip), 1.0, 0);
+            grid->movePhotonAtDistance(innerPh, sphereSources_[is].radius());
+
+            for (std::uint64_t io = 0; io != observers->size(); ++io)
+            {
+                if (sphereDir_.direction(ip) * (*observers)[io].direction().vector() >= 0)
+                {
+                    // Set photon location, grid cell, and direction of observation
+                    Photon ph(innerPh.pos(), innerPh.cellId(), (*observers)[io].direction(), 1.0, 0);
+
+                    // Find optical depth, tau1, to edge of grid along viewing direction
+                    double tau1 = grid->findRealOpticalDepth(pointSources_[is].pos(),
+                                                             (*observers)[io].direction().vector());
+
+                    // direct photon weight is exp(-tau1)/2pi/number_of_directions
+                    ph.weight() = nph * std::exp(-tau1) / 2.0 / PI / sphereDir_.number();
+
+                    // bin the photon into the image according to its position and
+                    // direction of travel.
+                    (*observers)[io].bin(ph);
+                }
+            }
+        }
+    }
 }
 
 
