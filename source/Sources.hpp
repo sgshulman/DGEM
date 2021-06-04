@@ -44,6 +44,7 @@ private:
 };
 
 // sphere source of photons
+// Limb darkening is ignored
 class SphereSource
 {
 public:
@@ -71,6 +72,9 @@ public:
 
     double luminosity() const
     {	return lum_; }
+
+    double radius() const
+    {   return radius_; }
 
     std::uint64_t cellId() const
     {   return cellId_; }
@@ -100,6 +104,7 @@ public:
         , sphereSources_{ std::move(sphereSources) }
         , totlum_{ 0. }
         , primaryDir_{ parameters_.useMonteCarlo_ ? 1 : parameters_.PrimaryDirectionsLevel_, parameters_.useHEALPixGrid_ }
+        , sphereDir_{ 1 }
         , currentSource_{ 0 }
         , photonId_{ 0 }
     {
@@ -137,6 +142,7 @@ private:
     double	 totlum_;
 
     Directions primaryDir_;
+    Directions sphereDir_;
     std::uint32_t currentSource_;
     std::uint64_t photonId_;
     std::uint64_t photonsNumber_;
