@@ -307,14 +307,16 @@ void Directions::isolatitudeGrid(std::uint32_t Nphi, std::uint32_t const Nside)
     std::uint32_t p = 0;
 
     // Polar caps
-    for (; p!= Nphi * Nside * (Nside - 1) / 2; ++p)
+    for (std::uint32_t i = 1, j = 1; p!= Nphi * Nside * (Nside - 1) / 2; ++j, ++p)
     {
-        double const ph = (p + 1.) * 2 / Nphi;
-        auto const i = static_cast<std::uint32_t>(std::sqrt(ph - std::sqrt(std::floor(ph))) + 1);
-        std::uint32_t const j = p + 1 - 2*i*(i-1);
+        if (j > Nphi * i)
+        {
+            j = 1;
+            ++i;
+        }
 
         assert(1 <= i && i < Nside);
-        assert(1 <= j && j <= Nphi * i);
+        assert(1 <= j && j <= i * Nphi);
 
         double const z = 1 - (i*i) / (3. * Nside * Nside);
         double const phi = 2 * PI / (Nphi * i) * (j - 0.5);
