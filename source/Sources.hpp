@@ -118,9 +118,18 @@ public:
             totlum_ += pointSource.luminosity();
         }
 
+        for (const auto& sphereSource : sphereSources_)
+        {
+            totlum_ += sphereSource.luminosity();
+        }
+
+        double const firstLuminosity = pointSources_.empty()
+            ? sphereSources_.at(0).luminosity()
+            : pointSources_.at(0).luminosity();
+
         photonsNumber_ = parameters_.useMonteCarlo_
-                         ? (std::uint64_t) (parameters_.num_photons_ * pointSources_.at(0).luminosity() / totlum_)
-                         : primaryDir_.number();
+            ? (std::uint64_t) (parameters_.num_photons_ * firstLuminosity / totlum_)
+            : primaryDir_.number();
     }
 
     ~Sources() = default;
@@ -128,7 +137,7 @@ public:
     Sources(Sources const &) = delete;
     Sources& operator=(Sources const&) = delete;
 
-    Photon emitPhoton(IRandomGenerator* ran);
+    Photon emitPhoton(IGridCRef grid, IRandomGenerator* ran);
     void directPhotons(IGridCRef grid, std::vector<Observer>* observers);
     void writeObserversOpticalDepths(IGridCRef grid, std::vector<Observer>* observers);
 
