@@ -57,7 +57,7 @@ Photon Sources::emitPhoton(IGridCRef grid, IRandomGenerator* ran)
                 1};
         }
 
-        std::uint32_t const sphereSourceId = sourceId - pointSources_.size();
+        std::uint32_t const sphereSourceId = sourceId - static_cast<std::uint32_t>(pointSources_.size());
 
         // compute point location
         double const v = ran->Get();
