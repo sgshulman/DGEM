@@ -6,6 +6,27 @@
 #include "MathUtils.hpp"
 #include "Random.hpp"
 
+namespace
+{
+    inline std::pair<Vector3d, std::uint64_t> starSurface(
+        SphereSource const& source,
+        Direction3d const& direction,
+        IGridCRef grid)
+    {
+        Photon innerPh(source.pos(), source.cellId(), direction,1.0,0);
+        grid->movePhotonAtDistance(innerPh, source.radius());
+        return { innerPh.pos(), innerPh.cellId() };
+    }
+
+    inline Direction3d randomDirection(Random* ran)
+    {
+        double const v = ran->Get();
+        double const u = ran->Get();
+        return { 2.0 * PI * u, std::acos(2 * v - 1.0) };
+    }
+}
+
+
 Photon Sources::emitRandomPhoton(IGridCRef grid, Random* ran)
 {
     if (currentSource_ == pointSources_.size() + sphereSources_.size())
@@ -37,13 +58,10 @@ Photon Sources::emitRandomPhoton(IGridCRef grid, Random* ran)
 
     if (sourceId < pointSources_.size())
     {
-        double const v = ran->Get();
-        double const u = ran->Get();
-
         return {
             pointSources_[sourceId].pos(),
             pointSources_[sourceId].cellId(),
-            Direction3d(2.0 * PI * u, std::acos(2 * v - 1.0)),
+            randomDirection(ran),
             1.0,
             1};
     }
@@ -51,28 +69,10 @@ Photon Sources::emitRandomPhoton(IGridCRef grid, Random* ran)
     std::uint32_t const sphereSourceId = sourceId - static_cast<std::uint32_t>(pointSources_.size());
 
     // compute point location
-    double const v = ran->Get();
-    double const u = ran->Get();
-
-    Photon innerPh(
-        sphereSources_[sphereSourceId].pos(),
-        sphereSources_[sphereSourceId].cellId(),
-        Direction3d(2.0 * PI * u, std::acos(2 * v - 1.0)),
-        1.0,
-        0);
-
-    grid->movePhotonAtDistance(innerPh, sphereSources_[sphereSourceId].radius());
-
-    double const v1 = ran->Get();
-    double const u1 = ran->Get();
+    auto const position = starSurface(sphereSources_[sphereSourceId], randomDirection(ran), grid);
 
     // TODO: add check for half-sphere
-    return {
-        innerPh.pos(),
-        innerPh.cellId(),
-        Direction3d(2.0 * PI * u1, std::acos(2 * v1 - 1.0)),
-        1.0,
-        1};
+    return { position.first, position.second, randomDirection(ran), 1.0, 1};
 }
 
 
@@ -116,17 +116,10 @@ Photon Sources::emitDgemPhoton(IGridCRef grid)
     // TODO: add real logic
     if (photonId % sphereSources_.size() == 0)
     {
-        Photon innerPh(
-            sphereSources_[sphereSourceId].pos(),
-            sphereSources_[sphereSourceId].cellId(),
-            primaryDir_.direction(photonId),
-            1.0,
-            0);
-
-        grid->movePhotonAtDistance(innerPh, sphereSources_[sphereSourceId].radius());
-
-        pointPosition_ = innerPh.pos();
-        pointCellId_ = innerPh.cellId();
+        auto const position = starSurface(sphereSources_[sphereSourceId], sphereDir_.direction(pointId_), grid);
+        pointPosition_ = position.first;
+        pointCellId_ = position.second;
+        ++pointId_;
     }
 
     // TODO: add check for half-sphere
@@ -172,16 +165,14 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
 
         for (std::uint64_t ip=0; ip!=sphereDir_.number(); ++ip)
         {
-            // compute point location
-            Photon innerPh(sphereSources_[is].pos(), sphereSources_[is].cellId(), sphereDir_.direction(ip), 1.0, 0);
-            grid->movePhotonAtDistance(innerPh, sphereSources_[is].radius());
+            auto const position = starSurface(sphereSources_[is], sphereDir_.direction(ip), grid);
 
             for (std::uint64_t io = 0; io != observers->size(); ++io)
             {
                 if (sphereDir_.direction(ip) * (*observers)[io].direction().vector() >= 0)
                 {
                     // Set photon location, grid cell, and direction of observation
-                    Photon ph(innerPh.pos(), innerPh.cellId(), (*observers)[io].direction(), 1.0, 0);
+                    Photon ph(position.first, position.second, (*observers)[io].direction(), 1.0, 0);
 
                     // Find optical depth, tau1, to edge of grid along viewing direction
                     double tau1 = grid->findRealOpticalDepth(pointSources_[is].pos(),
