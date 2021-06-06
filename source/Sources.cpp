@@ -212,4 +212,24 @@ void Sources::writeObserversOpticalDepths(IGridCRef grid, std::vector<Observer>*
                 << degrees(obs.theta()) << ")\t" << tau << "\t" << realTau << std::endl;
         }
     }
+
+    for (std::uint64_t is=0; is!=sphereSources_.size(); ++is)
+    {
+        std::cout << "Optical depths from the sphereSource center #" << is << "." << std::endl;
+
+        for (std::uint64_t io=0; io!=observers->size(); ++io)
+        {
+            Observer const& obs = (*observers)[io];
+
+            // Set photon location, grid cell, and direction of observation
+            Photon const ph(sphereSources_[is].pos(), sphereSources_[is].cellId(), obs.direction(), 1.0, 0);
+
+            // Find optical depths to edge of the grid along the line of sight
+            double const tau = grid->findOpticalDepth(ph);
+            double const realTau = grid->findRealOpticalDepth(sphereSources_[is].pos(), obs.direction().vector());
+
+            std::cout << "Observer #" << io << " (" << degrees(obs.phi()) << ", "
+                      << degrees(obs.theta()) << ")\t" << tau << "\t" << realTau << std::endl;
+        }
+    }
 }
