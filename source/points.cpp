@@ -34,7 +34,7 @@ int run(int argc, char *argv[])
     {
         for (;;)
         {
-            Photon ph{ sources->emitPhoton(grid, ran) };
+            Photon ph{ sources->emitRandomPhoton(grid, ran) };
 
             if (ph.termination())
             {
@@ -92,7 +92,7 @@ int run(int argc, char *argv[])
         {
             for (;;)
             {
-                Photon ph0{sources->emitPhoton(grid, ran)};
+                Photon ph0{sources->emitDgemPhoton(grid)};
 
                 if (ph0.termination())
                 {
@@ -147,7 +147,7 @@ int run(int argc, char *argv[])
 
             for (;;)
             {
-                Photon ph0{sources->emitPhoton(grid, ran)};
+                Photon ph0{sources->emitDgemPhoton(grid)};
 
                 if (ph0.termination())
                 {
