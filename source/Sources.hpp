@@ -155,6 +155,11 @@ private:
     std::uint32_t currentSource_;
     std::uint64_t photonId_;
     std::uint64_t photonsNumber_;
+
+    // dgem for sphere source
+    std::uint64_t pointId_{0};
+    Vector3d pointPosition_;
+    std::uint64_t pointCellId_;
 };
 
 #endif

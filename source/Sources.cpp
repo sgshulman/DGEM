@@ -75,6 +75,7 @@ Photon Sources::emitPhoton(IGridCRef grid, IRandomGenerator* ran)
         double const v1 = ran->Get();
         double const u1 = ran->Get();
 
+        // TODO: add check for half-sphere
         return {
             innerPh.pos(),
             innerPh.cellId(),
@@ -83,12 +84,41 @@ Photon Sources::emitPhoton(IGridCRef grid, IRandomGenerator* ran)
             1};
     }
 
+    if (sourceId < pointSources_.size())
+    {
+        return {
+            pointSources_[sourceId].pos(),
+            pointSources_[sourceId].cellId(),
+            primaryDir_.direction(photonId),
+            primaryDir_.w(photonId) * pointSources_[sourceId].luminosity() / totlum_,
+            1};
+    }
+
+    std::uint32_t const sphereSourceId = sourceId - static_cast<std::uint32_t>(pointSources_.size());
+
+    // TODO: add real logic
+    if (photonId % sphereSources_.size() == 0)
+    {
+        Photon innerPh(
+            sphereSources_[sphereSourceId].pos(),
+            sphereSources_[sphereSourceId].cellId(),
+            primaryDir_.direction(photonId),
+            1.0,
+            0);
+
+        grid->movePhotonAtDistance(innerPh, sphereSources_[sphereSourceId].radius());
+
+        pointPosition_ = innerPh.pos();
+        pointCellId_ = innerPh.cellId();
+    }
+
+    // TODO: add check for half-sphere
     return {
-        pointSources_[sourceId].pos(),
-        pointSources_[sourceId].cellId(),
+        pointPosition_,
+        pointCellId_,
         primaryDir_.direction(photonId),
-        primaryDir_.w(photonId) * pointSources_[sourceId].luminosity() / totlum_,
-        1 };
+        primaryDir_.w(photonId) * sphereSources_[sphereSourceId].luminosity() / totlum_,
+        1};
 }
 
 
