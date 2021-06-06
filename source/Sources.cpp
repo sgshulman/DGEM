@@ -6,7 +6,77 @@
 #include "MathUtils.hpp"
 #include "Random.hpp"
 
-Photon Sources::emitPhoton(IGridCRef grid, Random* ran)
+Photon Sources::emitRandomPhoton(IGridCRef grid, Random* ran)
+{
+    if (currentSource_ == pointSources_.size() + sphereSources_.size())
+    {
+        return {Vector3d{}, 0, Direction3d{}, 0.0, std::numeric_limits<std::uint32_t>::max()};
+    }
+
+    std::uint32_t const sourceId{ currentSource_ };
+    std::uint64_t const photonId{ photonId_ };
+    ++photonId_;
+
+    if(photonId % 10000 == 0)
+    {
+        std::cout << "Sources: " << sourceId + 1 << "/" << pointSources_.size() + sphereSources_.size() <<
+                  ". Photons: " << photonId << "/" << photonsNumber_ << std::endl;
+    }
+
+    if (photonId_ == photonsNumber_)
+    {
+        ++currentSource_;
+        photonId_ = 0;
+
+        double const nextLuminosity = currentSource_ < pointSources_.size()
+                                      ? pointSources_[currentSource_].luminosity()
+                                      : sphereSources_[currentSource_ - pointSources_.size()].luminosity();
+
+        photonsNumber_ = (std::uint64_t) (parameters_.num_photons_ * nextLuminosity / totlum_);
+    }
+
+    if (sourceId < pointSources_.size())
+    {
+        double const v = ran->Get();
+        double const u = ran->Get();
+
+        return {
+            pointSources_[sourceId].pos(),
+            pointSources_[sourceId].cellId(),
+            Direction3d(2.0 * PI * u, std::acos(2 * v - 1.0)),
+            1.0,
+            1};
+    }
+
+    std::uint32_t const sphereSourceId = sourceId - static_cast<std::uint32_t>(pointSources_.size());
+
+    // compute point location
+    double const v = ran->Get();
+    double const u = ran->Get();
+
+    Photon innerPh(
+        sphereSources_[sphereSourceId].pos(),
+        sphereSources_[sphereSourceId].cellId(),
+        Direction3d(2.0 * PI * u, std::acos(2 * v - 1.0)),
+        1.0,
+        0);
+
+    grid->movePhotonAtDistance(innerPh, sphereSources_[sphereSourceId].radius());
+
+    double const v1 = ran->Get();
+    double const u1 = ran->Get();
+
+    // TODO: add check for half-sphere
+    return {
+        innerPh.pos(),
+        innerPh.cellId(),
+        Direction3d(2.0 * PI * u1, std::acos(2 * v1 - 1.0)),
+        1.0,
+        1};
+}
+
+
+Photon Sources::emitDgemPhoton(IGridCRef grid)
 {
     if (currentSource_ == pointSources_.size() + sphereSources_.size())
     {
@@ -18,9 +88,7 @@ Photon Sources::emitPhoton(IGridCRef grid, Random* ran)
 
     ++photonId_;
 
-    std::uint64_t const period = parameters_.useMonteCarlo_ ? 10000 : 1000;
-
-    if(photonId % period == 0)
+    if(photonId % 1000 == 0)
     {
         std::cout << "Sources: " << sourceId + 1 << "/" << pointSources_.size() + sphereSources_.size() <<
                   ". Photons: " << photonId << "/" << photonsNumber_ << std::endl;
@@ -29,58 +97,8 @@ Photon Sources::emitPhoton(IGridCRef grid, Random* ran)
     if (photonId_ == photonsNumber_)
     {
         ++currentSource_;
-
-        double const nextLuminosity = currentSource_ < pointSources_.size()
-            ? pointSources_[currentSource_].luminosity()
-            : sphereSources_[currentSource_ - pointSources_.size()].luminosity();
-
-        photonsNumber_ = parameters_.useMonteCarlo_
-                        ? (std::uint64_t) (parameters_.num_photons_ * nextLuminosity / totlum_)
-                        : primaryDir_.number();
-
+        photonsNumber_ = primaryDir_.number();
         photonId_ = 0;
-    }
-
-    if (parameters_.useMonteCarlo_)
-    {
-        if (sourceId < pointSources_.size())
-        {
-            double const v = ran->Get();
-            double const u = ran->Get();
-
-            return {
-                pointSources_[sourceId].pos(),
-                pointSources_[sourceId].cellId(),
-                Direction3d(2.0 * PI * u, std::acos(2 * v - 1.0)),
-                1.0,
-                1};
-        }
-
-        std::uint32_t const sphereSourceId = sourceId - static_cast<std::uint32_t>(pointSources_.size());
-
-        // compute point location
-        double const v = ran->Get();
-        double const u = ran->Get();
-
-        Photon innerPh(
-            sphereSources_[sphereSourceId].pos(),
-            sphereSources_[sphereSourceId].cellId(),
-            Direction3d(2.0 * PI * u, std::acos(2 * v - 1.0)),
-            1.0,
-            0);
-
-        grid->movePhotonAtDistance(innerPh, sphereSources_[sphereSourceId].radius());
-
-        double const v1 = ran->Get();
-        double const u1 = ran->Get();
-
-        // TODO: add check for half-sphere
-        return {
-            innerPh.pos(),
-            innerPh.cellId(),
-            Direction3d(2.0 * PI * u1, std::acos(2 * v1 - 1.0)),
-            1.0,
-            1};
     }
 
     if (sourceId < pointSources_.size())
