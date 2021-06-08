@@ -51,7 +51,8 @@ Photon Sources::emitRandomPhoton(IGridCRef grid, Random* ran)
 
         double const nextLuminosity = currentSource_ < pointSources_.size()
                                       ? pointSources_[currentSource_].luminosity()
-                                      : sphereSources_[currentSource_ - pointSources_.size()].luminosity();
+                                      : currentSource_ - pointSources_.size() < sphereSources_.size()
+                                      ? sphereSources_[currentSource_ - pointSources_.size()].luminosity() : 0;
 
         photonsNumber_ = (std::uint64_t) (parameters_.num_photons_ * nextLuminosity / totlum_);
     }
