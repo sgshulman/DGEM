@@ -83,6 +83,7 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
         tests/ObserverTests.cpp
         tests/RoundHumpTests.cpp
         tests/SobolTests.cpp
+        tests/SourcesTests.cpp
         tests/SphereEnvelopeTests.cpp
         tests/TestUtils.hpp
         tests/TetrahedralGridTests.cpp
