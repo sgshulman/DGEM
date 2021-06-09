@@ -16,6 +16,16 @@ namespace
 
 Direction3d Direction3d::rotate(Direction3d const& other) const
 {
+    // Other.theta is 0 or 180, we rotate around z-axis then result phi = this.phi + other.phi
+    if(std::abs(other.sinTheta()) < std::numeric_limits<double>::epsilon())
+    {
+        if (other.cosTheta() > 0)
+        {
+            return {phi() + other.phi(), sinTheta(), cosTheta()};
+        }
+        return {phi() + other.phi(), sinTheta(), -cosTheta()};
+    }
+
     // We consider a spherical triangle with corner angles (A,B,C) and side angles (a,b,c).
     // a is other theta angle (lies on the great circles passing through the z-axis)
     // b is this theta angle
@@ -66,6 +76,17 @@ Direction3d Direction3d::rotate(Direction3d const& other) const
     } else {
         cosc = cosa * cosb + sina * sinb * cosC;
         sinc = sin2cos(cosc);
+    }
+
+    // result theta is 0 or 180, the result is along the z-axis. phi is undefined
+    if(std::abs(sinc) < std::numeric_limits<double>::epsilon())
+    {
+        if (cosc > 0.)
+        {
+            return {0., 0.};
+        }
+
+        return {0., PI};
     }
 
     double const cosB = (cosb - cosa * cosc) / (sina * sinc);
