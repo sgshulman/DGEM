@@ -70,10 +70,14 @@ Photon Sources::emitRandomPhoton(IGridCRef grid, Random* ran)
     std::uint32_t const sphereSourceId = sourceId - static_cast<std::uint32_t>(pointSources_.size());
 
     // compute point location
-    auto const position = starSurface(sphereSources_[sphereSourceId], randomDirection(ran), grid);
+    Direction3d const positionDirection{ randomDirection(ran) };
+    auto const position = starSurface(sphereSources_[sphereSourceId], positionDirection, grid);
 
-    // TODO: add check for half-sphere
-    return { position.first, position.second, randomDirection(ran), 1.0, 1};
+    double const v = ran->Get();
+    double const u = ran->Get();
+    Direction3d localDirection{ 2.0 * PI * u, std::sqrt(v) };
+
+    return { position.first, position.second, localDirection.rotate(positionDirection), 1.0, 1};
 }
 
 
