@@ -22,6 +22,13 @@ public:
         vector_ = {sinTheta_ * std::cos(phi_), sinTheta_ * std::sin(phi_), std::cos(theta) };
     }
 
+    Direction3d(double const phi, double const sinTheta, double const cosTheta)
+        : phi_{ normAngle(phi) }
+        , sinTheta_{ sinTheta }
+    {
+        vector_ = {sinTheta_ * std::cos(phi_), sinTheta_ * std::sin(phi_), cosTheta };
+    }
+
     inline Vector3d vector() const
     {   return vector_; }
     inline double x() const
@@ -36,6 +43,10 @@ public:
     {	return vector_.z();	}
     inline double sinTheta() const
     {	return sinTheta_;	}
+
+    // Rotate this angle on other angle
+    // (Add this angle to other angle)
+    Direction3d rotate(Direction3d const& other) const;
 
 private:
     Vector3d vector_;

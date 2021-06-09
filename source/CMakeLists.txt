@@ -12,6 +12,7 @@ set(SOURCES
         DebugUtils.hpp
         Directions.cpp
         Directions.hpp
+        Direction3d.cpp
         Direction3d.hpp
         FlaredDisk.cpp
         FlaredDisk.hpp
