@@ -44,6 +44,10 @@ public:
     inline double sinTheta() const
     {	return sinTheta_;	}
 
+    // Rotate this angle on other angle
+    // (Add this angle to other angle)
+    Direction3d rotate(Direction3d const& other) const;
+
 private:
     Vector3d vector_;
     double phi_{ 0. };
