@@ -166,7 +166,7 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
     // weight photons by W=ph*exp(-tau1)/2pi/number_of_directions
     for (std::uint64_t is=0; is!=sphereSources_.size(); ++is)
     {
-        auto const nph = std::uint64_t(parameters_.num_photons_ * pointSources_[is].luminosity() / totlum_);
+        auto const nph = std::uint64_t(parameters_.num_photons_ * sphereSources_[is].luminosity() / totlum_);
 
         for (std::uint64_t ip=0; ip!=sphereDir_.number(); ++ip)
         {
@@ -180,7 +180,7 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
                     Photon ph(position.first, position.second, (*observers)[io].direction(), 1.0, 0);
 
                     // Find optical depth, tau1, to edge of grid along viewing direction
-                    double tau1 = grid->findRealOpticalDepth(pointSources_[is].pos(),
+                    double tau1 = grid->findRealOpticalDepth(sphereSources_[is].pos(),
                                                              (*observers)[io].direction().vector());
 
                     // direct photon weight is exp(-tau1)/2pi/number_of_directions
