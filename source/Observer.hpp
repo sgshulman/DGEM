@@ -1,7 +1,7 @@
 #ifndef OBSERVERS_HPP_
 #define OBSERVERS_HPP_
 
-#include <fstream>
+#include <ostream>
 #include <cstdio>
 #include "Photon.hpp"
 
@@ -23,7 +23,7 @@ class Pictures
         void normalize(std::uint64_t numPhotons);
 
         void write(double phi, double theta, int key) const;
-        void sum(std::ofstream& file);
+        void sum(std::ostream& stream);
 
     private:
         std::uint32_t nx_, ny_;
@@ -40,7 +40,7 @@ public:
 
     void normalize(std::uint64_t numPhotons);
     void writeToMapFiles(bool fWriteSingleAndDoubleScatterings, std::uint32_t numberOfScatterings);
-    void write(std::ofstream& file);
+    void write(std::ostream& file);
     bool inFov(Photon const& photon) const;
     void bin(Photon const& photon);
     void bin(Photon const& photon, const Vector3d &pos1, const Vector3d &pos2);

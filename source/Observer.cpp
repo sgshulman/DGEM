@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <fstream>
 #include "Observer.hpp"
 
 namespace
@@ -135,7 +136,7 @@ void Pictures::write(double const phi, double const theta, int const key) const
     u.close();
 }
 
-void Pictures::sum(std::ofstream& file)
+void Pictures::sum(std::ostream& stream)
 {
     double fsum=0, qsum=0, usum=0;
     for (std::uint64_t x=0; x!=nx_; ++x)
@@ -147,7 +148,7 @@ void Pictures::sum(std::ofstream& file)
             usum += u_[y + x * ny_];
         }
     }
-    file << "\tF= " << fsum << "\tQ= " << qsum << "\tU= " << usum
+    stream << "\tF= " << fsum << "\tQ= " << qsum << "\tU= " << usum
          << "\tp= " << std::sqrt(qsum*qsum + usum*usum)/fsum
          << "\tphi= " << 90 * std::atan2(usum, qsum)/PI;
 }
@@ -192,14 +193,14 @@ void Observer::writeToMapFiles(bool const fWriteSingleAndDoubleScatterings, std:
     }
 }
 
-void Observer::write(std::ofstream& file)
+void Observer::write(std::ostream& stream)
 {
-    file << "phi= " << degrees(direction_.phi()) << "\ttheta= " << degrees(theta_);
-    result_.sum(file);
-    result0_.sum(file);
-    result1_.sum(file);
-    result2_.sum(file);
-    file << "\n";
+    stream << "phi= " << degrees(direction_.phi()) << "\ttheta= " << degrees(theta_);
+    result_.sum(stream);
+    result0_.sum(stream);
+    result1_.sum(stream);
+    result2_.sum(stream);
+    stream << "\n";
 }
 
 bool Observer::inFov(const Photon &photon) const

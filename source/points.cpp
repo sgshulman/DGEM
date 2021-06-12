@@ -1,5 +1,6 @@
 #include <chrono>
 #include <cmath>
+#include <fstream>
 #include <iostream>
 #include <vector>
 #include "model.hpp"
