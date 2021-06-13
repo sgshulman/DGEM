@@ -174,7 +174,9 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
 
             for (std::uint64_t io = 0; io != observers->size(); ++io)
             {
-                if (sphereDir_.direction(ip) * (*observers)[io].direction().vector() >= 0)
+                double cosTheta = sphereDir_.direction(ip) * (*observers)[io].direction().vector();
+
+                if (cosTheta >= 0)
                 {
                     // Set photon location, grid cell, and direction of observation
                     Photon ph(position.first, position.second, (*observers)[io].direction(), 1.0, 0);
@@ -184,7 +186,7 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
                                                              (*observers)[io].direction().vector());
 
                     // direct photon weight is exp(-tau1)/2pi/number_of_directions
-                    ph.weight() = nph * std::exp(-tau1) / 2.0 / PI / sphereDir_.number();
+                    ph.weight() = nph * std::exp(-tau1) / 2.0 / PI / sphereDir_.number() * cosTheta;
 
                     // bin the photon into the image according to its position and
                     // direction of travel.
