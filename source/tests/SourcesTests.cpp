@@ -79,9 +79,9 @@ namespace
         return f;
     }
 
-    double sourceLuminosity(std::uint64_t num_photons, double radius)
+    double sourceLuminosity(std::uint64_t num_photons, double radius, std::uint32_t diskLevel)
     {
-        SourceParameters const sourceParameters{num_photons, 1, true, false};
+        SourceParameters const sourceParameters{num_photons, 1, diskLevel, true, false};
 
         std::vector<SphereSource> sphereSources;
         std::vector<PointSource> pointSources;
@@ -116,7 +116,7 @@ TEST_CASE("Sphere source. Random", "[sources]")
     std::vector<SphereSource> sphereSources;
     sphereSources.emplace_back(Vector3d{0.,0.,0.}, 0, 1., 1.);
 
-    SourceParameters const sourceParameters{10, 1, true, false};
+    SourceParameters const sourceParameters{10, 1, 100, true, false};
     Sources sources(sourceParameters, std::move(pointSources), std::move(sphereSources));
 
     IGridCPtr grid = std::make_shared<TestGrid>();
@@ -132,22 +132,24 @@ TEST_CASE("Sphere source. Random", "[sources]")
 
 TEST_CASE("Source Luminosity", "[sources]")
 {
-    double const sphereSourceLuminosity10 = sourceLuminosity(10, 1.);
-    double const sphereSourceLuminosity100 = sourceLuminosity(100, 1.);
-    double const sphereSourceLuminositySmall = sourceLuminosity(100, 0.1);
-    double const pointSourceLuminosity10 = sourceLuminosity(10, 0.);
-    double const pointSourceLuminosity100 = sourceLuminosity(100, 0.);
+    double const sphereSourceLuminosity10 = sourceLuminosity(10, 1., 100);
+    double const sphereSourceLuminosity100 = sourceLuminosity(100, 1., 100);
+    double const sphereSourceLuminositySmall = sourceLuminosity(100, 0.1, 100);
+    double const sphereSourceLuminosityLowLevel = sourceLuminosity(100, 1., 10);
+    double const pointSourceLuminosity10 = sourceLuminosity(10, 0., 1);
+    double const pointSourceLuminosity100 = sourceLuminosity(100, 0., 1);
 
     REQUIRE(Approx(pointSourceLuminosity10) == sphereSourceLuminosity10);
     REQUIRE(Approx(pointSourceLuminosity10) == pointSourceLuminosity100);
     REQUIRE(Approx(sphereSourceLuminosity10) == sphereSourceLuminosity100);
     REQUIRE(Approx(sphereSourceLuminosity10) == sphereSourceLuminositySmall);
+    REQUIRE(Approx(sphereSourceLuminosity10) == sphereSourceLuminosityLowLevel);
 }
 
 
 TEST_CASE("Star disc", "[sources]")
 {
-    SourceParameters const sourceParameters{10, 1, true, false};
+    SourceParameters const sourceParameters{10, 1, 100, true, false};
 
     std::vector<SphereSource> sphereSources;
     sphereSources.emplace_back(Vector3d{0.,0.,0.}, 0, 1., 1.);

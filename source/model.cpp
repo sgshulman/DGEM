@@ -827,11 +827,12 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
         methodParameters,
         {"fMonteCarlo", "nphotons", "PrimaryDirectionsLevel", "generatorType", "iseed", "SobolVectorPerScattering", "dgemBinType", "inputRandomFile",
          "outputRandomFile", "taumin", "nscat", "SecondaryDirectionsLevel", "NumOfPrimaryScatterings",
-         "NumOfSecondaryScatterings", "MonteCarloStart", "fUseHEALPixGrid", "defaultStarRadius", "fWriteScatterings"});
+         "NumOfSecondaryScatterings", "MonteCarloStart", "fUseHEALPixGrid", "SphereSourceDirectionsLevel", "defaultStarRadius", "fWriteScatterings"});
 
     sourceParameters.useMonteCarlo_ = get_bool(methodJson, methodParameters, "fMonteCarlo");
     sourceParameters.num_photons_ = get_uint64(methodJson, methodParameters, "nphotons");
     sourceParameters.PrimaryDirectionsLevel_ = get_uint32(methodJson, methodParameters, "PrimaryDirectionsLevel");
+    sourceParameters.SphereSourceDirectionsLevel_ = get_optional_uint32(methodJson, methodParameters, "SphereSourceDirectionsLevel", 1);
     sourceParameters.useHEALPixGrid_ = get_optional_bool(methodJson, methodParameters, "fUseHEALPixGrid", false);
 
     generatorType_ = get_optional_enum(methodJson, methodParameters, "generatorType", {"LEcuyer", "Sobol"}, RandomGeneratorType::LECUYER);
