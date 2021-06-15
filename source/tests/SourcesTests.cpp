@@ -4,6 +4,8 @@
 #include "../IGrid.hpp"
 #include "../LEcuyer.hpp"
 
+#include <sstream>
+
 namespace
 {
     class TestGrid : public IGrid
@@ -63,6 +65,48 @@ namespace
             return true;
         }
     };
+
+    double parseTotalLuminosity(std::stringstream& log)
+    {
+        std::string phiStr;
+        double phi;
+        std::string thetaStr;
+        double theta;
+        std::string fStr;
+        double f;
+
+        log >> phiStr >> phi >> thetaStr >> theta >> fStr >> f;
+        return f;
+    }
+
+    double sourceLuminosity(std::uint64_t num_photons, double radius)
+    {
+        SourceParameters const sourceParameters{num_photons, 1, true, false};
+
+        std::vector<SphereSource> sphereSources;
+        std::vector<PointSource> pointSources;
+
+        if (radius < std::numeric_limits<double>::epsilon())
+        {
+            sphereSources.emplace_back(Vector3d{0., 0., 0.}, 0, 1., radius);
+        } else {
+            pointSources.emplace_back(Vector3d{0., 0., 0.}, 0, 1.);
+        }
+
+        Sources sources(sourceParameters, std::move(pointSources), std::move(sphereSources));
+        IGridCPtr grid = std::make_shared<TestGrid>();
+
+        std::vector<Observer> observers;
+        observers.emplace_back(0, 0, 100., 0., 200, 200, 1);
+
+        sources.directPhotons(grid, &observers);
+
+        std::stringstream log;
+        observers[0].normalize(num_photons);
+        observers[0].write(log);
+
+        return parseTotalLuminosity(log);
+    }
 }
 
 
@@ -83,6 +127,21 @@ TEST_CASE("Sphere source. Random", "[sources]")
         Photon ph = sources.emitRandomPhoton(grid, &rand);
         REQUIRE(ph.pos() * ph.dir().vector() >= 0.);
     }
+}
+
+
+TEST_CASE("Source Luminosity", "[sources]")
+{
+    double const sphereSourceLuminosity10 = sourceLuminosity(10, 1.);
+    double const sphereSourceLuminosity100 = sourceLuminosity(100, 1.);
+    double const sphereSourceLuminositySmall = sourceLuminosity(100, 0.1);
+    double const pointSourceLuminosity10 = sourceLuminosity(10, 0.);
+    double const pointSourceLuminosity100 = sourceLuminosity(100, 0.);
+
+    REQUIRE(Approx(pointSourceLuminosity10) == sphereSourceLuminosity10);
+    REQUIRE(Approx(pointSourceLuminosity10) == pointSourceLuminosity100);
+    REQUIRE(Approx(sphereSourceLuminosity10) == sphereSourceLuminosity100);
+    REQUIRE(Approx(sphereSourceLuminosity10) == sphereSourceLuminositySmall);
 }
 
 
