@@ -140,6 +140,17 @@ namespace
     }
 
 
+    std::uint32_t extract_uint32(const nlohmann::json& json, char const* const section, char const* const name)
+    {
+        if (!json.is_number_unsigned() && !(json.is_number_integer() && json.get<int64_t>() >= 0))
+        {
+            throw std::invalid_argument(std::string("Item ") + name + " from section " + section + " should be unsigned integer.");
+        }
+
+        return json.get<std::uint32_t>();
+    }
+
+
     std::uint32_t get_uint32(const nlohmann::json& json, char const* const section, char const* const name)
     {
         if (!json.contains(name))
@@ -147,13 +158,13 @@ namespace
             throw std::invalid_argument(std::string("Section ") + section + " should contain unsigned integer item " + name + ".");
         }
 
-        auto const& item = json.at(name);
-        if (!item.is_number_unsigned() && !(item.is_number_integer() && item.get<int64_t>() >= 0))
-        {
-            throw std::invalid_argument(std::string("Item ") + name + " from section " + section + " should be unsigned integer.");
-        }
+        return extract_uint32(json.at(name), section, name);
+    }
 
-        return item.get<std::uint32_t>();
+
+    std::uint32_t get_optional_uint32(const nlohmann::json& json, char const* section, char const* name, std::uint32_t defaultValue)
+    {
+        return json.contains(name) ? extract_uint32(json.at(name), section, name) : defaultValue;
     }
 
 
@@ -758,11 +769,12 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
         methodParameters,
         {"fMonteCarlo", "nphotons", "PrimaryDirectionsLevel", "iseed", "inputRandomFile", "outputRandomFile", "taumin", "nscat",
          "SecondaryDirectionsLevel", "NumOfPrimaryScatterings", "NumOfSecondaryScatterings", "MonteCarloStart", "fUseHEALPixGrid",
-         "defaultStarRadius", "fWriteScatterings"});
+         "SphereSourceDirectionsLevel", "defaultStarRadius", "fWriteScatterings"});
 
     sourceParameters.useMonteCarlo_ = get_bool(methodJson, methodParameters, "fMonteCarlo");
     sourceParameters.num_photons_ = get_uint64(methodJson, methodParameters, "nphotons");
     sourceParameters.PrimaryDirectionsLevel_ = get_uint32(methodJson, methodParameters, "PrimaryDirectionsLevel");
+    sourceParameters.SphereSourceDirectionsLevel_ = get_optional_uint32(methodJson, methodParameters, "SphereSourceDirectionsLevel", 1);
     sourceParameters.useHEALPixGrid_ = get_optional_bool(methodJson, methodParameters, "fUseHEALPixGrid", false);
 
     iseed_ = get_int32(methodJson, methodParameters, "iseed");
