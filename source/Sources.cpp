@@ -168,12 +168,23 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
     {
         auto const nph = std::uint64_t(parameters_.num_photons_ * sphereSources_[is].luminosity() / totlum_);
 
-        for (std::uint64_t ip=0; ip!=sphereDir_.number(); ++ip)
+        for (std::uint64_t io = 0; io != observers->size(); ++io)
         {
-            auto const position = starSurface(sphereSources_[is], sphereDir_.direction(ip), grid);
-
-            for (std::uint64_t io = 0; io != observers->size(); ++io)
+            // compute normalization factor
+            double cosineSum{ 0. };
+            for (std::uint64_t ip=0; ip!=sphereDir_.number(); ++ip)
             {
+                double cosTheta = sphereDir_.direction(ip) * (*observers)[io].direction().vector();
+
+                if (cosTheta >= 0)
+                {
+                    cosineSum += cosTheta;
+                }
+            }
+
+            for (std::uint64_t ip=0; ip!=sphereDir_.number(); ++ip)
+            {
+                auto const position = starSurface(sphereSources_[is], sphereDir_.direction(ip), grid);
                 double cosTheta = sphereDir_.direction(ip) * (*observers)[io].direction().vector();
 
                 if (cosTheta >= 0)
@@ -185,8 +196,8 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
                     double tau1 = grid->findRealOpticalDepth(sphereSources_[is].pos(),
                                                              (*observers)[io].direction().vector());
 
-                    // direct photon weight is exp(-tau1)/2pi/number_of_directions
-                    ph.weight() = nph * std::exp(-tau1) / 2.0 / PI / sphereDir_.number() * cosTheta;
+                    // direct photon weight is exp(-tau1)/4pi/number_of_directions
+                    ph.weight() = nph * std::exp(-tau1) / 4.0 / PI * cosTheta / cosineSum;
 
                     // bin the photon into the image according to its position and
                     // direction of travel.
