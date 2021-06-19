@@ -158,36 +158,31 @@ int main(int argc, char *argv[])
                 grid->movePhotonAtDepth(ph0, std::numeric_limits<double>::epsilon(), 0.0);
                 double r = std::max(1., (spos - ph0.pos()).norm());
                 double oldR = r;
-                spos = ph0.pos();
-                std::uint64_t sCellId = ph0.cellId();
 
-                while (grid->inside(spos) && ph0.weight() > minWeight)
+                while (grid->inside(ph0.pos()) && ph0.weight() > minWeight)
                 {
-                    Photon ph(spos, sCellId, ph0.dir(), ph0.weight(), 1);
-                    Photon scatteringCopy{ ph };
+                    Photon ph{ ph0 };
 
                     // estimate tau
                     double const rScatter = r * scatLocMultiplier;
-                    double const tau = grid->movePhotonAtDistance(ph, rScatter - oldR);
-                    spos = ph.pos();
-                    sCellId = ph.cellId();
+                    double const tau = grid->movePhotonAtDistance(ph0, rScatter - oldR);
                     ph0.weight() *= std::exp(-tau);
-
-                    // Find scattering location of tau
-                    double const tauScattering = -log(0.5 + 0.5 * exp(-tau));
-                    grid->movePhotonAtDepth(scatteringCopy, tauScattering, 0.0);
 
                     // Photons scattering
                     if (tau > model.taumin() * nScatteringsRev)
                     {
-                        scatteringCopy.weight() *= model.dust()->albedo() * (1.0 - std::exp(-tau));
+                        // Find scattering location of tau
+                        double const tauScattering = -log(0.5 + 0.5 * exp(-tau));
+                        grid->movePhotonAtDepth(ph, tauScattering, 0.0);
+
+                        ph.weight() *= model.dust()->albedo() * (1.0 - std::exp(-tau));
 
                         for (Observer &observer : observers)
                         {
-                            grid->peeloff(scatteringCopy, observer, model.dust());
+                            grid->peeloff(ph, observer, model.dust());
                         }
 
-                        if (scatteringCopy.nscat() < model.nscat()) scatteringCopy.Scatt(model, sdir, grid, observers, &ran);
+                        if (ph.nscat() < model.nscat()) ph.Scatt(model, sdir, grid, observers, &ran);
                     }
                     oldR = rScatter;
                     r *= base;
