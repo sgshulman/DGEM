@@ -163,29 +163,31 @@ int main(int argc, char *argv[])
 
                 while (grid->inside(spos) && ph0.weight() > minWeight)
                 {
-                    // use middle rectangles in the future
                     Photon ph(spos, sCellId, ph0.dir(), ph0.weight(), 1);
+                    Photon scatteringCopy{ ph };
 
+                    // estimate tau
                     double const rScatter = r * scatLocMultiplier;
-
-                    // Find scattering location of tau
                     double const tau = grid->movePhotonAtDistance(ph, rScatter - oldR);
                     spos = ph.pos();
                     sCellId = ph.cellId();
-
-                    // Photons scattering
                     ph0.weight() *= std::exp(-tau);
 
+                    // Find scattering location of tau
+                    double const tauScattering = -log(0.5 + 0.5 * exp(-tau));
+                    grid->movePhotonAtDepth(scatteringCopy, tauScattering, 0.0);
+
+                    // Photons scattering
                     if (tau > model.taumin() * nScatteringsRev)
                     {
-                        ph.weight() *= model.dust()->albedo() * (1.0 - std::exp(-tau));
+                        scatteringCopy.weight() *= model.dust()->albedo() * (1.0 - std::exp(-tau));
 
                         for (Observer &observer : observers)
                         {
-                            grid->peeloff(ph, observer, model.dust());
+                            grid->peeloff(scatteringCopy, observer, model.dust());
                         }
 
-                        if (ph.nscat() < model.nscat()) ph.Scatt(model, sdir, grid, observers, &ran);
+                        if (scatteringCopy.nscat() < model.nscat()) scatteringCopy.Scatt(model, sdir, grid, observers, &ran);
                     }
                     oldR = rScatter;
                     r *= base;
