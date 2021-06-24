@@ -137,7 +137,6 @@ int main(int argc, char *argv[])
         {
             double const sqrtPiN = std::sqrt(PI / sources->num_photons());
             double const base = 1. + 2. * sqrtPiN / (1 - sqrtPiN);
-            double const scatLocMultiplier = 1. / (1 - sqrtPiN);
             // pessimistic estimation of scattering number, as we use it only for minimal optical depth estimation
             double const nScatteringsRev = std::log(base) / std::log(std::sqrt(3.) * grid->max());
             double const minWeight = 1. - std::exp(-model.taumin() * nScatteringsRev);
@@ -156,16 +155,15 @@ int main(int argc, char *argv[])
 
                 // skip empty inner regions
                 grid->movePhotonAtDepth(ph0, std::numeric_limits<double>::epsilon(), 0.0);
-                double r = std::max(1., (spos - ph0.pos()).norm());
-                double oldR = r;
+                double oldR = std::max(1., (spos - ph0.pos()).norm());
 
                 while (grid->inside(ph0.pos()) && ph0.weight() > minWeight)
                 {
                     Photon ph{ ph0 };
 
                     // estimate tau
-                    double const rScatter = r * scatLocMultiplier;
-                    double const tau = grid->movePhotonAtDistance(ph0, rScatter - oldR);
+                    double const r = oldR * base;
+                    double const tau = grid->movePhotonAtDistance(ph0, r - oldR);
                     ph0.weight() *= std::exp(-tau);
 
                     // Photons scattering
@@ -184,8 +182,7 @@ int main(int argc, char *argv[])
 
                         if (ph.nscat() < model.nscat()) ph.Scatt(model, sdir, grid, observers, &ran);
                     }
-                    oldR = rScatter;
-                    r *= base;
+                    oldR = r;
                 }
             }
         }
