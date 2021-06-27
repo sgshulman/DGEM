@@ -202,7 +202,7 @@ int main(int argc, char *argv[])
     // put results into output files
     for (std::uint64_t cnt = 0; cnt != observers.size(); ++cnt)
     {
-        observers[cnt].writeToMapFiles(true);
+        observers[cnt].writeToMapFiles(true, model.nscat());
     }
 
     // put general information into file

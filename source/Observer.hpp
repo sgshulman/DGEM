@@ -39,7 +39,7 @@ public:
     Observer(double phi, double theta, double rimage, std::uint32_t Nx=200, std::uint32_t Ny=200);
 
     void normalize(std::uint64_t numPhotons);
-    void writeToMapFiles(bool fWriteSingleAndDoubleScatterings);
+    void writeToMapFiles(bool fWriteSingleAndDoubleScatterings, std::uint32_t numberOfScatterings);
     void write(std::ofstream& file);
     bool inFov(Photon const& photon) const;
     void bin(Photon const& photon);
