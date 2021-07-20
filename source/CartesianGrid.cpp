@@ -271,6 +271,28 @@ void CartesianGrid::peeloff(Photon ph, Observer& observer, IDustCRef dust) const
 }
 
 
+
+void CartesianGrid::peeloff(Photon ph, Observer &observer, const IDustCPtr &dust, const Vector3d &pos1, const Vector3d &pos2) const
+{
+    if (!observer.inFov(ph))
+    {
+        return;
+    }
+
+    double const hgfac = ph.Scatt(dust, observer.direction(), nullptr);
+    double const tau = findOpticalDepth(ph);
+
+    if (tau == 0.0)
+    {
+        return;
+    }
+
+    ph.weight() *= hgfac * exp(-tau);
+    // Bin the photon into the image according to its position and direction of travel.
+    observer.bin(ph, pos1, pos2);
+}
+
+
 double CartesianGrid::computeMatterMass() const
 {
     double density = 0.0;

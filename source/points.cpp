@@ -163,6 +163,7 @@ int main(int argc, char *argv[])
 
                     // estimate tau
                     double const r = oldR * base;
+                    Vector3d oldpos = ph0.pos();
                     double const tau = grid->movePhotonAtDistance(ph0, r - oldR);
                     ph0.weight() *= std::exp(-tau);
 
@@ -177,7 +178,7 @@ int main(int argc, char *argv[])
 
                         for (Observer &observer : observers)
                         {
-                            grid->peeloff(ph, observer, model.dust());
+                            grid->peeloff(ph, observer, model.dust(), oldpos, ph0.pos());
                         }
 
                         if (ph.nscat() < model.nscat()) ph.Scatt(model, sdir, grid, observers, &ran);
