@@ -59,14 +59,14 @@ Pictures& Pictures::operator=(Pictures&& other) noexcept
 }
 
 // place photon on the images
-void Pictures::bin(Photon const& ph, int64_t const xl, int64_t const yl, int64_t const id)
+void Pictures::bin(Photon const& ph, int64_t const xl, int64_t const yl, int64_t const id, double const weight)
 {
     // place weighted photon into image location
     if((id == -1 || static_cast<std::uint64_t>(id) == ph.nscat()) && (xl>=0) && (yl >= 0) && ((std::uint32_t)xl < nx_) && ((std::uint32_t)yl < ny_) )
     {
-        f_[xl+yl*nx_] += ph.weight()*ph.fi();
-        q_[xl+yl*nx_] += ph.weight()*ph.fq();
-        u_[xl+yl*nx_] += ph.weight()*ph.fu();
+        f_[xl+yl*nx_] += weight * ph.weight() * ph.fi();
+        q_[xl+yl*nx_] += weight * ph.weight() * ph.fq();
+        u_[xl+yl*nx_] += weight * ph.weight()*ph.fu();
     }
 }
 
@@ -213,15 +213,110 @@ bool Observer::inFov(const Photon &photon) const
 
 void Observer::bin(Photon const& photon)
 {
-    double const yimage = rimage_ + photon.pos().z() * direction_.sinTheta() -
-                          direction_.cosTheta() * (photon.pos().y()*sinp_ + photon.pos().x()*cosp_);
-
-    double const ximage = rimage_ + photon.pos().y()*cosp_ - photon.pos().x()*sinp_;
+    double const yimage = imageY(photon.pos());
+    double const ximage = imageX(photon.pos());
 
     auto const xl = static_cast<int64_t>(nx_ * ximage / (2.0 * rimage_));
     auto const yl = static_cast<int64_t>(ny_ * yimage / (2.0 * rimage_));
-    result_.bin(photon, xl, yl, -1);
-    result0_.bin(photon, xl, yl, 0);
-    result1_.bin(photon, xl, yl, 1);
-    result2_.bin(photon, xl, yl, 2);
+    result_.bin(photon, xl, yl, -1, 1.0);
+    result0_.bin(photon, xl, yl, 0, 1.0);
+    result1_.bin(photon, xl, yl, 1, 1.0);
+    result2_.bin(photon, xl, yl, 2, 1.0);
+}
+
+// TODO: Add tests for this method
+void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &pos2)
+{
+    double const yimage1 = imageY(pos1);
+    double const ximage1 = imageX(pos1);
+    auto const xl1 = static_cast<int64_t>(nx_ * ximage1 / (2.0 * rimage_));
+    auto const yl1 = static_cast<int64_t>(ny_ * yimage1 / (2.0 * rimage_));
+
+    double const yimage2 = imageY(pos2);
+    double const ximage2 = imageX(pos2);
+    auto const xl2 = static_cast<int64_t>(nx_ * ximage2 / (2.0 * rimage_));
+    auto const yl2 = static_cast<int64_t>(ny_ * yimage2 / (2.0 * rimage_));
+
+    if (xl1 == xl2 && yl1 == yl2)
+    {
+        bin(photon, xl2, yl2, 1.0);
+        return;
+    }
+
+    double xImageMin = std::min(ximage1, ximage2);
+    double xImageMax = std::max(ximage1, ximage2);
+    int64_t borderX = xl1;
+    int64_t lastBorderX = xl2;
+
+    if (ximage1 > ximage2)
+    {
+        xImageMin = ximage2;
+        xImageMax = ximage1;
+        borderX = xl2;
+        lastBorderX = xl1;
+    }
+
+    double yImageMin = yimage1;
+    double yImageMax = yimage2;
+    int64_t borderY = yl1;
+    int64_t lastBorderY = yl2;
+
+    if (yimage1 > yimage2)
+    {
+        yImageMin = yimage2;
+        yImageMax = yimage1;
+        borderY = yl2;
+        lastBorderY = yl1;
+    }
+
+    double const dx = xImageMax - xImageMin;
+    double const dy = yImageMax - yImageMin;
+    double const totalW = std::sqrt(dx*dx + dy*dy);
+
+    double x = xImageMin;
+    double y = yImageMax;
+
+    while (borderX <= lastBorderX && borderY <= lastBorderY)
+    {
+        double const xborder = std::min(static_cast<double>(borderX+1) * (2.0 * rimage_) / nx_, xImageMax);
+        double const yborder = std::min(static_cast<double>(borderY+1) * (2.0 * rimage_) / ny_, yImageMax);
+
+        double const xt = dx > 0 ? (xborder - x) / dx : std::numeric_limits<double>::infinity();
+        double const yt = dy > 0 ? (yborder - y) / dy : std::numeric_limits<double>::infinity();
+
+        if (xt < yt)
+        {
+            double yNew = y + xt * dy;
+            double w = std::sqrt((yNew - y)*(yNew-y) + (xborder - x)*(xborder - x));
+            bin(photon, borderX, borderY, w / totalW);
+            ++borderX;
+            y = yNew;
+            x = xborder;
+        } else {
+            double xNew = x + yt * dx;
+            double w = std::sqrt((xNew - x)*(xNew-x) + (yborder - y)*(yborder - y));
+            bin(photon, borderX, borderY, w / totalW);
+            ++borderY;
+            y = xborder;
+            x = xNew;
+        }
+    }
+}
+
+inline double Observer::imageX(Vector3d const &position) const
+{
+    return rimage_ + position.y() * cosp_ - position.x() * sinp_;
+}
+
+inline double Observer::imageY(Vector3d const &position) const
+{
+    return rimage_ + position.z() * direction_.sinTheta() - direction_.cosTheta() * (position.y()*sinp_ + position.x()*cosp_);
+}
+
+inline void Observer::bin(const Photon &photon, int64_t const x, int64_t const y, const double weight)
+{
+    result_.bin(photon, x, y, -1, weight);
+    result0_.bin(photon, x, y, 0, weight);
+    result1_.bin(photon, x, y, 1, weight);
+    result2_.bin(photon, x, y, 2, weight);
 }

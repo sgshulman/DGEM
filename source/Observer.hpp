@@ -19,7 +19,7 @@ class Pictures
         Pictures& operator=(Pictures&& other) noexcept;
 
         // place photon on the images
-        void bin(Photon const& ph, int64_t xl, int64_t yl, int64_t id);
+        void bin(Photon const& ph, int64_t xl, int64_t yl, int64_t id, double weight);
         void normalize(std::uint64_t numPhotons);
 
         void write(double phi, double theta, int key) const;
@@ -43,6 +43,7 @@ public:
     void write(std::ofstream& file);
     bool inFov(Photon const& photon) const;
     void bin(Photon const& photon);
+    void bin(Photon const& photon, const Vector3d &pos1, const Vector3d &pos2);
 
     double phi() const
     {	return direction_.phi();	}
@@ -58,6 +59,10 @@ public:
     Observer& operator=(Observer&& other) = default;
 
 private:
+    inline double imageX(Vector3d const &position) const;
+    inline double imageY(Vector3d const &position) const;
+    inline void bin(Photon const& photon, int64_t x, int64_t y, double weight);
+
     Pictures result_, result0_, result1_, result2_;
     Direction3d direction_;
     std::uint32_t nx_, ny_;
