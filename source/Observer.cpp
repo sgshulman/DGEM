@@ -274,7 +274,7 @@ void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &p
     double const totalW = std::sqrt(dx*dx + dy*dy);
 
     double x = xImageMin;
-    double y = yImageMax;
+    double y = yImageMin;
 
     while (borderX <= lastBorderX && borderY <= lastBorderY)
     {
@@ -290,15 +290,15 @@ void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &p
             double w = std::sqrt((yNew - y)*(yNew-y) + (xborder - x)*(xborder - x));
             bin(photon, borderX, borderY, w / totalW);
             ++borderX;
-            y = yNew;
             x = xborder;
+            y = yNew;
         } else {
             double xNew = x + yt * dx;
             double w = std::sqrt((xNew - x)*(xNew-x) + (yborder - y)*(yborder - y));
             bin(photon, borderX, borderY, w / totalW);
             ++borderY;
-            y = xborder;
             x = xNew;
+            y = yborder;
         }
     }
 }
