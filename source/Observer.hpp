@@ -62,6 +62,7 @@ private:
     inline double imageX(Vector3d const &position) const;
     inline double imageY(Vector3d const &position) const;
     inline void bin(Photon const& photon, int64_t x, int64_t y, double weight);
+    inline void bin(Photon const& photon, int64_t x, int64_t y, bool onXBorder, bool onYBorder, double weight);
 
     Pictures result_, result0_, result1_, result2_;
     Direction3d direction_;

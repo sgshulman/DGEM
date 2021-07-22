@@ -218,10 +218,16 @@ void Observer::bin(Photon const& photon)
 
     auto const xl = static_cast<int64_t>(nx_ * ximage / (2.0 * rimage_));
     auto const yl = static_cast<int64_t>(ny_ * yimage / (2.0 * rimage_));
-    result_.bin(photon, xl, yl, -1, 1.0);
-    result0_.bin(photon, xl, yl, 0, 1.0);
-    result1_.bin(photon, xl, yl, 1, 1.0);
-    result2_.bin(photon, xl, yl, 2, 1.0);
+
+    double const eps = std::numeric_limits<float>::epsilon();
+
+    bin(
+        photon,
+        xl,
+        yl,
+        std::abs(ximage - xl * (2.0 * rimage_) / nx_) < eps,
+        std::abs(yimage - yl * (2.0 * rimage_) / ny_) < eps,
+        1.0);
 }
 
 // TODO: Add tests for this method
@@ -237,9 +243,18 @@ void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &p
     auto const xl2 = static_cast<int64_t>(nx_ * ximage2 / (2.0 * rimage_));
     auto const yl2 = static_cast<int64_t>(ny_ * yimage2 / (2.0 * rimage_));
 
+    double const eps = std::numeric_limits<float>::epsilon();
+
     if (xl1 == xl2 && yl1 == yl2)
     {
-        bin(photon, xl2, yl2, 1.0);
+        bin(
+            photon,
+            xl2,
+            yl2,
+            std::abs(ximage2 - ximage1) < eps && std::abs(ximage2 - xl2 * (2.0 * rimage_) / nx_) < eps,
+            std::abs(yimage2 - yimage1) < eps && std::abs(yimage2 - yl2 * (2.0 * rimage_) / ny_) < eps,
+            1.0);
+
         return;
     }
 
@@ -288,14 +303,30 @@ void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &p
         {
             double yNew = y + xt * dy;
             double w = std::sqrt((yNew - y)*(yNew-y) + (xborder - x)*(xborder - x));
-            bin(photon, borderX, borderY, w / totalW);
+
+            bin(
+                photon,
+                borderX,
+                borderY,
+                false,
+                dy < eps && std::fabs(y - borderY * (2.0 * rimage_) / ny_) < eps,
+                w / totalW);
+
             ++borderX;
             x = xborder;
             y = yNew;
         } else {
             double xNew = x + yt * dx;
             double w = std::sqrt((xNew - x)*(xNew-x) + (yborder - y)*(yborder - y));
-            bin(photon, borderX, borderY, w / totalW);
+
+            bin(
+                photon,
+                borderX,
+                borderY,
+                dx < eps && std::fabs(x - borderX * (2.0 * rimage_) / nx_) < eps,
+                false,
+                w / totalW);
+
             ++borderY;
             x = xNew;
             y = yborder;
@@ -313,10 +344,24 @@ inline double Observer::imageY(Vector3d const &position) const
     return rimage_ + position.z() * direction_.sinTheta() - direction_.cosTheta() * (position.y()*sinp_ + position.x()*cosp_);
 }
 
-inline void Observer::bin(const Photon &photon, int64_t const x, int64_t const y, const double weight)
+inline void Observer::bin(Photon const& photon, int64_t const x, int64_t const y, double const weight)
 {
     result_.bin(photon, x, y, -1, weight);
     result0_.bin(photon, x, y, 0, weight);
     result1_.bin(photon, x, y, 1, weight);
     result2_.bin(photon, x, y, 2, weight);
+}
+
+inline void Observer::bin(const Photon &photon, int64_t const x, int64_t const y, bool const onXBorder, bool const onYBorder, double const weight)
+{
+    if (onXBorder && x > 0)
+    {
+        bin(photon, x, y, 0.5 * weight);
+        bin(photon, x-1, y, 0.5 * weight);
+    } else if (onYBorder && y > 0) {
+        bin(photon, x, y, 0.5 * weight);
+        bin(photon, x, y-1, 0.5 * weight);
+    } else {
+        bin(photon, x, y, weight);
+    }
 }
