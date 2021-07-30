@@ -36,6 +36,7 @@ namespace
     char const sFlaredDisk[] = "flaredDisk";
     char const sSafierWind[] = "safierWind";
     char const sKurosawaWind[] = "kurosawaWind";
+    char const sMeanOpticalDepth[] = "meanOpticalDepth";
     char const sTranslation[] = "translation";
     char const sSphereEnvelope[] = "sphereEnvelope";
     char const sFractalCloud[] = "fractalCloud";
@@ -697,6 +698,25 @@ namespace
             file << std::endl;
         }
     }
+
+    void meanOpticalDepth(nlohmann::json const& json, IGridCRef grid)
+    {
+        checkParameters(json, sMeanOpticalDepth, {"useHEALPixGrid", "directionsLevel"});
+
+        bool const useHEALPixGrid = get_optional_bool(json, sMeanOpticalDepth, "useHEALPixGrid", false);
+        std::uint32_t const directionsLevel = get_uint32(json, sMeanOpticalDepth, "directionsLevel");
+
+        Directions directions(directionsLevel, useHEALPixGrid);
+        double opticalDepth{ 0.0 };
+
+        for (std::uint64_t i=0; i!=directions.number(); ++i)
+        {
+            opticalDepth += grid->findRealOpticalDepth(Vector3d{0, 0, 0}, directions.direction(i));
+        }
+
+        opticalDepth /= directions.number();
+        std::cout << "MeanOpticalDepth: " << opticalDepth << std::endl;
+    }
 }
 
 #ifdef ENABLE_UNIT_TESTS
@@ -715,7 +735,7 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
     checkParameters(
         j,
         "parameters.json",
-        {methodParameters, sDensitySlice, sDust, sEffectiveHeight, sGeometry, sGrid, sStars, sObservers});
+        {methodParameters, sDensitySlice, sDust, sEffectiveHeight, sGeometry, sGrid, sStars, sObservers, sMeanOpticalDepth});
 
     SourceParameters sourceParameters{};
     nlohmann::json const& methodJson = j.at(methodParameters);
@@ -758,6 +778,11 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
     if (j.contains(sEffectiveHeight))
     {
         effectiveHeight(j.at(sEffectiveHeight), geometry, get_double(dustJson, sDust, "kappa"));
+    }
+
+    if (j.contains(sMeanOpticalDepth))
+    {
+        meanOpticalDepth(j.at(sMeanOpticalDepth), grid_);
     }
 
     sources_ = parseSources(j.at(sStars), sourceParameters, grid_);
