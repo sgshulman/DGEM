@@ -225,8 +225,8 @@ void Observer::bin(Photon const& photon)
         photon,
         xl,
         yl,
-        std::abs(ximage - xl * (2.0 * rimage_) / nx_) < eps,
-        std::abs(yimage - yl * (2.0 * rimage_) / ny_) < eps,
+        photon.nscat() != 0 && std::abs(ximage - xl * (2.0 * rimage_) / nx_) < eps,
+        photon.nscat() != 0 && std::abs(yimage - yl * (2.0 * rimage_) / ny_) < eps,
         1.0);
 }
 
