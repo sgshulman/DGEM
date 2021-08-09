@@ -22,6 +22,8 @@ class Model
         {   return useHEALPixGrid_; }
 		double taumin() const
 		{	return taumin_;	}
+        double defaultStarRadius() const
+        {	return defaultStarRadius_;	}
 		std::uint32_t nscat() const
 		{	return nscat_;	}
 
@@ -45,6 +47,7 @@ class Model
 		bool fMonteCarlo_;
 		bool useHEALPixGrid_;
 		double taumin_;
+        double defaultStarRadius_;
 
 		// Random generator parameters
 		int32_t iseed_;

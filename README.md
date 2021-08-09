@@ -53,10 +53,14 @@ DGEM parameters
   Otherwise, a grid based on a partition of a regular icosahedron is used
 - PrimaryDirectionsLevel &mdash; the primary directions grid parameter. If *fUseHEALPixGrid* is True the primary directions number is 20 * PrimaryDirectionsLevel ^ 2. Otherwise, it is 5 * 4 ^ PrimaryDirectionsLevel 
 - SecondaryDirectionsLevel &mdash; the secondary directions grid parameter. If *fUseHEALPixGrid* is True the primary directions number is 20 * SecondaryDirectionsLevel ^ 2. Otherwise, it is  primary directions number is 5 * 4 ^ SecondaryDirectionsLevel
-- NumOfPrimaryScatterings &mdash; number of scatterings in every direction in the primary grid
+- NumOfPrimaryScatterings &mdash; number of scatterings in every direction in the primary grid.
+                            This parameter should be zero to use optimized one-parameter DGEM.
+                            One-parameter DGEM is a recommended mode.
 - NumOfSecondaryScatterings &mdash; number of scatterings in every direction in secondary grid
 - MonteCarloStart &mdash; number of scatterings of the photon package after which Monte Carlo
                             method is used instead of DGEM (1 is recommended)
+- defaultStarRadius &mdash; a default star radius for point sourced used for the inner step computation in one-parameter DGEM method.
+                            This parameter is optional. If it is not provided, the solar radius is used.
 
 ### Dust
 

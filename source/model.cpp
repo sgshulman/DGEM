@@ -744,7 +744,8 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
         methodJson,
         methodParameters,
         {"fMonteCarlo", "nphotons", "PrimaryDirectionsLevel", "iseed", "inputRandomFile", "outputRandomFile", "taumin", "nscat",
-         "SecondaryDirectionsLevel", "NumOfPrimaryScatterings", "NumOfSecondaryScatterings", "MonteCarloStart", "fUseHEALPixGrid"});
+         "SecondaryDirectionsLevel", "NumOfPrimaryScatterings", "NumOfSecondaryScatterings", "MonteCarloStart", "fUseHEALPixGrid",
+         "defaultStarRadius"});
 
     sourceParameters.useMonteCarlo_ = get_bool(methodJson, methodParameters, "fMonteCarlo");
     sourceParameters.num_photons_ = get_uint64(methodJson, methodParameters, "nphotons");
@@ -757,6 +758,7 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
 
     fMonteCarlo_ = sourceParameters.useMonteCarlo_;
     taumin_ = get_double(methodJson, methodParameters, "taumin");
+    defaultStarRadius_ = get_optional_double(methodJson, methodParameters, "defaultStarRadius", 0.0047);
     nscat_ = get_uint32(methodJson, methodParameters, "nscat");
     SecondaryDirectionsLevel_ = get_uint32(methodJson, methodParameters, "SecondaryDirectionsLevel");
     NumOfPrimaryScatterings_ = get_uint32(methodJson, methodParameters, "NumOfPrimaryScatterings");
