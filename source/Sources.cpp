@@ -147,18 +147,22 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
 
         for (std::uint64_t io=0; io!=observers->size(); ++io)
         {
-            // Set photon location, grid cell, and direction of observation
-            Photon ph(pointSources_[is].pos(), pointSources_[is].cellId(), (*observers)[io].direction(), 1.0, 0);
+            if (!intersectSphereSource(pointSources_[is].pos(), (*observers)[io].direction().vector()))
+            {
+                // Set photon location, grid cell, and direction of observation
+                Photon ph(pointSources_[is].pos(), pointSources_[is].cellId(), (*observers)[io].direction(), 1.0, 0);
 
-            // Find optical depth, tau1, to edge of grid along viewing direction
-            double tau1 = grid->findRealOpticalDepth(pointSources_[is].pos(), (*observers)[io].direction().vector());
+                // Find optical depth, tau1, to edge of grid along viewing direction
+                double tau1 = grid->findRealOpticalDepth(pointSources_[is].pos(),
+                                                         (*observers)[io].direction().vector());
 
-            // direct photon weight is exp(-tau1)/4pi
-            ph.weight() = nph * std::exp(-tau1) / 4.0 / PI;
+                // direct photon weight is exp(-tau1)/4pi
+                ph.weight() = nph * std::exp(-tau1) / 4.0 / PI;
 
-            // bin the photon into the image according to its position and
-            // direction of travel.
-            (*observers)[io].bin(ph);
+                // bin the photon into the image according to its position and
+                // direction of travel.
+                (*observers)[io].bin(ph);
+            }
         }
     }
 
@@ -187,7 +191,7 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
                 auto const position = starSurface(sphereSources_[is], sphereDir_.direction(ip), grid);
                 double cosTheta = sphereDir_.direction(ip) * (*observers)[io].direction().vector();
 
-                if (cosTheta >= 0)
+                if (cosTheta >= 0 && !intersectSphereSource(position.first, (*observers)[io].direction().vector(), is))
                 {
                     // Set photon location, grid cell, and direction of observation
                     Photon ph(position.first, position.second, (*observers)[io].direction(), 1.0, 0);
@@ -263,6 +267,25 @@ bool Sources::intersectSphereSource(Vector3d const& position, Vector3d const& di
         if (d2 <= sphereSources_[i].radius() * sphereSources_[i].radius())
         {
             return true;
+        }
+    }
+
+    return false;
+}
+
+bool Sources::intersectSphereSource(Vector3d const& position, Vector3d const& direction, std::uint64_t ignoredSource) const
+{
+    for (std::uint64_t i=0; i!=sphereSources_.size(); ++i)
+    {
+        if (i != ignoredSource)
+        {
+            Vector3d const radius = sphereSources_[i].pos() - position;
+            double const d2 = vectorProduct(radius, direction).norm2();
+
+            if (d2 <= sphereSources_[i].radius() * sphereSources_[i].radius())
+            {
+                return true;
+            }
         }
     }
 
