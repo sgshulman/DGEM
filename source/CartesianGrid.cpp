@@ -7,6 +7,7 @@
 #include "Observer.hpp"
 #include "Photon.hpp"
 #include "Random.hpp"
+#include "Sources.hpp"
 #include "Units.hpp"
 
 CartesianGrid::CartesianGrid(
@@ -285,7 +286,7 @@ int CartesianGrid::movePhotonAtRandomDepth(Photon &ph, Random *ran) const
 
 void CartesianGrid::peeloff(Photon ph, Observer& observer, IDustCRef dust) const
 {
-    if (!observer.inFov(ph))
+    if (!observer.inFov(ph) || (sources_ && sources_->intersectSphereSource(ph.pos(), ph.dir().vector())))
     {
         return;
     }
@@ -307,7 +308,7 @@ void CartesianGrid::peeloff(Photon ph, Observer& observer, IDustCRef dust) const
 
 void CartesianGrid::peeloff(Photon ph, Observer &observer, const IDustCPtr &dust, const Vector3d &pos1, const Vector3d &pos2) const
 {
-    if (!observer.inFov(ph))
+    if (!observer.inFov(ph) || (sources_ && sources_->intersectSphereSource(ph.pos(), ph.dir().vector())))
     {
         return;
     }
@@ -377,4 +378,10 @@ bool CartesianGrid::inside(const Photon& ph) const
 bool CartesianGrid::inside_inner(std::uint64_t const cellId) const
 {
     return ((cellId ^ (cellId - maxCellId_)) & 0x100001000010000u) == 0x100001000010000u;
+}
+
+
+void CartesianGrid::registerSources(SourcesCPtr sources)
+{
+    sources_ = std::move(sources);
 }

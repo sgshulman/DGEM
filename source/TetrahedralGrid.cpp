@@ -4,6 +4,7 @@
 #include "Observer.hpp"
 #include "Photon.hpp"
 #include "Random.hpp"
+#include "Sources.hpp"
 #include "Units.hpp"
 
 #include <algorithm>
@@ -735,7 +736,7 @@ std::uint64_t TetrahedralGrid::cellId(const Vector3d &position) const
 
 void TetrahedralGrid::peeloff(Photon ph, Observer &observer, const IDustCPtr &dust) const
 {
-    if (!observer.inFov(ph))
+    if (!observer.inFov(ph) || (sources_ && sources_->intersectSphereSource(ph.pos(), ph.dir().vector())))
     {
         return;
     }
@@ -756,7 +757,7 @@ void TetrahedralGrid::peeloff(Photon ph, Observer &observer, const IDustCPtr &du
 
 void TetrahedralGrid::peeloff(Photon ph, Observer &observer, const IDustCPtr &dust, const Vector3d &pos1, const Vector3d &pos2) const
 {
-    if (!observer.inFov(ph))
+    if (!observer.inFov(ph) || (sources_ && sources_->intersectSphereSource(ph.pos(), ph.dir().vector())))
     {
         return;
     }
@@ -824,4 +825,10 @@ bool TetrahedralGrid::inside(const Photon& ph) const
 bool TetrahedralGrid::inside_inner(std::uint64_t const cellId) const
 {
     return cellId < elements_.size();
+}
+
+
+void TetrahedralGrid::registerSources(SourcesCPtr sources)
+{
+    sources_ = std::move(sources);
 }
