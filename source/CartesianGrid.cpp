@@ -7,6 +7,7 @@
 #include "IRandomGenerator.hpp"
 #include "Observer.hpp"
 #include "Photon.hpp"
+#include "Sources.hpp"
 #include "Units.hpp"
 
 CartesianGrid::CartesianGrid(
@@ -280,7 +281,7 @@ bool CartesianGrid::movePhotonAtRandomDepth(Photon &ph, IRandomGenerator *ran) c
 
 void CartesianGrid::peeloff(Photon ph, Observer& observer, IDustCRef dust) const
 {
-    if (!observer.inFov(ph.pos()))
+    if (!observer.inFov(ph.pos()) || (sources_ && sources_->intersectSphereSource(ph.pos(), ph.dir().vector())))
     {
         return;
     }
@@ -302,7 +303,7 @@ void CartesianGrid::peeloff(Photon ph, Observer& observer, IDustCRef dust) const
 
 void CartesianGrid::peeloff(Photon ph, Observer &observer, const IDustCPtr &dust, Vector3d const& pos1, Vector3d const& pos2) const
 {
-    if (!observer.inFov(ph.pos()))
+    if (!observer.inFov(ph.pos()) || (sources_ && sources_->intersectSphereSource(ph.pos(), ph.dir().vector())))
     {
         return;
     }
@@ -323,7 +324,7 @@ void CartesianGrid::peeloff(Photon ph, Observer &observer, const IDustCPtr &dust
 
 void CartesianGrid::peeloffHex(Photon ph, Observer &observer, const IDustCPtr &dust, Vector3d const& pos1, Vector3d const& pos2) const
 {
-    if (!observer.inFov(ph.pos()))
+    if (!observer.inFov(ph.pos()) || (sources_ && sources_->intersectSphereSource(ph.pos(), ph.dir().vector())))
     {
         return;
     }
@@ -393,4 +394,10 @@ bool CartesianGrid::inside(const Photon& ph) const
 bool CartesianGrid::inside_inner(std::uint64_t const cellId) const
 {
     return ((cellId ^ (cellId - maxCellId_)) & 0x100001000010000u) == 0x100001000010000u;
+}
+
+
+void CartesianGrid::registerSources(SourcesCPtr sources)
+{
+    sources_ = std::move(sources);
 }

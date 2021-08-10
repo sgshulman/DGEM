@@ -142,6 +142,7 @@ public:
     Photon emitDgemPhoton(IGridCRef grid);
     void directPhotons(IGridCRef grid, std::vector<Observer>* observers);
     void writeObserversOpticalDepths(IGridCRef grid, std::vector<Observer>* observers);
+    bool intersectSphereSource(Vector3d const& position, Vector3d const& direction) const;
 
     std::uint64_t num_photons() const
     {   return parameters_.num_photons_; }

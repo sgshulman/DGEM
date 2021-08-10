@@ -14,6 +14,7 @@ class Directions ;  // directions grid
 class Sources;
 using SourcesPtr = std::shared_ptr<Sources>;
 using SourcesRef = SourcesPtr const &;
+using SourcesCPtr = std::shared_ptr<const Sources>;
 
 class IMatter;
 using IMatterCPtr = std::shared_ptr<IMatter const>;

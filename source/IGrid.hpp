@@ -27,6 +27,7 @@ class IGrid
         virtual double max() const = 0;
         virtual std::uint64_t cellId(const Vector3d& position) const = 0;
         virtual bool inside(const Photon& ph) const = 0;
+        virtual void registerSources(SourcesCPtr /*sources*/) {};
 };
 
 #endif

@@ -254,3 +254,20 @@ void Sources::writeObserversOpticalDepths(IGridCRef grid, std::vector<Observer>*
         }
     }
 }
+
+
+bool Sources::intersectSphereSource(Vector3d const& position, Vector3d const& direction) const
+{
+    for (std::uint64_t i=0; i!=sphereSources_.size(); ++i)
+    {
+        Vector3d const radius = sphereSources_[i].pos() - position;
+        double const d2 = vectorProduct(radius, direction).norm2();
+
+        if (d2 <= sphereSources_[i].radius() * sphereSources_[i].radius())
+        {
+            return true;
+        }
+    }
+
+    return false;
+}

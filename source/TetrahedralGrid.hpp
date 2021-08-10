@@ -45,6 +45,8 @@ public:
     double max() const override;
     std::uint64_t cellId(const Vector3d& position) const override;
     bool inside(const Photon& ph) const override;
+    void registerSources(SourcesCPtr sources) override;
+
 private:
     class Node;
     class Tetrahedron;
@@ -55,6 +57,7 @@ private:
     double const max_;
     double const kappa_;
     IMatterCPtr matter_;
+    SourcesCPtr sources_{ nullptr };
 
     double maxDistance(Photon const &ph) const;
     void readNodes(std::istream& nodes);

@@ -30,6 +30,7 @@ class CartesianGrid : public IGrid
         double max() const override;
         std::uint64_t cellId(const Vector3d& position) const override;
         bool inside(const Photon& ph) const override;
+        void registerSources(SourcesCPtr sources) override;
 
     private:
         inline bool inside_inner(std::uint64_t cellId) const;
@@ -43,6 +44,7 @@ class CartesianGrid : public IGrid
         double minrho_;
         double const kappa_;
         IMatterCPtr matter_;
+        SourcesCPtr sources_{ nullptr };
 };
 
 #endif
