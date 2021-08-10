@@ -39,6 +39,9 @@ namespace
         void peeloff(Photon /*ph*/, Observer& /*observer*/, IDustCRef /*dust*/) const override
         {}
 
+        void peeloff(Photon /*ph*/, Observer& /*observer*/, IDustCRef /*dust*/, const Vector3d& /*pos1*/, const Vector3d& /*pos2*/) const override
+        {}
+
         double computeMatterMass() const override
         {
             return 0.;
