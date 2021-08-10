@@ -163,6 +163,8 @@ private:
     std::uint64_t pointId_{0};
     Vector3d pointPosition_;
     std::uint64_t pointCellId_;
+
+    bool intersectSphereSource(Vector3d const& position, Vector3d const& direction, std::uint64_t ignoredSource) const;
 };
 
 #endif

@@ -147,7 +147,8 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
 
         for (std::uint64_t io=0; io!=observers->size(); ++io)
         {
-            if ((*observers)[io].inFov(pointSources_[is].pos()))
+            if ((*observers)[io].inFov(pointSources_[is].pos())
+                && !intersectSphereSource(pointSources_[is].pos(), (*observers)[io].direction().vector()))
             {
                 // Set photon location, grid cell, and direction of observation
                 Photon ph(pointSources_[is].pos(), pointSources_[is].cellId(), (*observers)[io].direction(), 1.0, 0);
@@ -190,7 +191,8 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
                 auto const position = starSurface(sphereSources_[is], sphereDir_.direction(ip), grid);
                 double cosTheta = sphereDir_.direction(ip) * (*observers)[io].direction().vector();
 
-                if (cosTheta >= 0 && (*observers)[io].inFov(position.first))
+                if (cosTheta >= 0 && (*observers)[io].inFov(position.first)
+                    && !intersectSphereSource(position.first, (*observers)[io].direction().vector(), is))
                 {
                     // Set photon location, grid cell, and direction of observation
                     Photon ph(position.first, position.second, (*observers)[io].direction(), 1.0, 0);
@@ -266,6 +268,25 @@ bool Sources::intersectSphereSource(Vector3d const& position, Vector3d const& di
         if (d2 <= sphereSources_[i].radius() * sphereSources_[i].radius())
         {
             return true;
+        }
+    }
+
+    return false;
+}
+
+bool Sources::intersectSphereSource(Vector3d const& position, Vector3d const& direction, std::uint64_t ignoredSource) const
+{
+    for (std::uint64_t i=0; i!=sphereSources_.size(); ++i)
+    {
+        if (i != ignoredSource)
+        {
+            Vector3d const radius = sphereSources_[i].pos() - position;
+            double const d2 = vectorProduct(radius, direction).norm2();
+
+            if (d2 <= sphereSources_[i].radius() * sphereSources_[i].radius())
+            {
+                return true;
+            }
         }
     }
 
