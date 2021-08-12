@@ -39,6 +39,7 @@ The configuration file has following sections:
 
 Common settings
 - fMonteCarlo &mdash; is True or False. Set False for using DGEM or set True for using Monte Carlo method
+- fWriteScatterings &mdash; is True or False. The default value is True. Set False to avoid writing single and double scatterings to separate files.
 - taumin &mdash; is the minimum optical depth which gives scatterings
 - nscat &mdash; number of scatterings considered
 

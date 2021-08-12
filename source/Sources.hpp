@@ -45,10 +45,10 @@ private:
 
 struct SourceParameters
 {
-    bool useMonteCarlo_;
-    bool useHEALPixGrid_;
     std::uint64_t num_photons_;
     std::uint32_t PrimaryDirectionsLevel_;
+    bool useMonteCarlo_;
+    bool useHEALPixGrid_;
 };
 
 // all sources of photons

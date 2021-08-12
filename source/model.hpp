@@ -18,6 +18,8 @@ class Model
 		}
 		bool fMonteCarlo() const
 		{	return fMonteCarlo_;	}
+		bool writeScatterings() const
+        {   return writeScatterings_;   }
         bool useHEALPixGrid() const
         {   return useHEALPixGrid_; }
 		double taumin() const
@@ -46,6 +48,7 @@ class Model
 	private:
 		bool fMonteCarlo_;
 		bool useHEALPixGrid_;
+		bool writeScatterings_;
 		double taumin_;
         double defaultStarRadius_;
 
