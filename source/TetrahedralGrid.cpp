@@ -574,7 +574,7 @@ double TetrahedralGrid::movePhotonAtDistance(Photon &ph, double distance) const
 
         if( d + dcell.first >= distance)
         {
-            double d1 = distance - dcell.first;
+            double d1 = distance - d;
             double rho3 = rho1 + (rho2 - rho1) * d1 / dcell.first;
             d = distance;
             taurun += d1 * (rho1 + rho3) * 0.5;
