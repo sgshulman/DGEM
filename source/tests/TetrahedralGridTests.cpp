@@ -87,7 +87,7 @@ namespace
 
 TEST_CASE("Tetrahedral Grid", "[grid]")
 {
-    SECTION("Uniform dust")
+    SECTION("Uniform dust. findOpticalDepth")
     {
         std::stringstream nodes;
         std::stringstream elements;
@@ -133,7 +133,32 @@ TEST_CASE("Tetrahedral Grid", "[grid]")
         REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, -1, -1}))) == depth3);
     }
 
-    SECTION("Polynomial dust density")
+    SECTION("Uniform dust. movePhotonAtDistance")
+    {
+        std::stringstream nodes;
+        std::stringstream elements;
+        createGrid(&nodes, &elements, 10, 100.);
+
+        IMatterCPtr matter = std::make_shared<PolynomialMatter>(1., 0., 0., 0.);
+        TetrahedralGrid grid(nodes, elements, 100., 1. / AU_Cm, matter);
+
+        Vector3d position;
+        std::uint64_t cellId = grid.cellId(position);
+
+        Photon ph1(position, cellId, Direction3d{ {1, 0, 0} }, 1, 1);
+        REQUIRE(Approx(grid.movePhotonAtDistance(ph1, 0.1)) == 0.1);
+
+        Photon ph2(position, cellId, Direction3d{ {1, 1, 1} }, 1, 1);
+        REQUIRE(Approx(grid.movePhotonAtDistance(ph2, 1)) == 1);
+
+        Photon ph3(position, cellId, Direction3d{ {0, -1, -1} }, 1, 1);
+        REQUIRE(Approx(grid.movePhotonAtDistance(ph3, 10)) == 10);
+
+        Photon ph4(position, cellId, Direction3d{ {-1, 1, 0.5} }, 1, 1);
+        REQUIRE(Approx(grid.movePhotonAtDistance(ph4, 100)) == 100);
+    }
+
+    SECTION("Polynomial dust density. findOpticalDepth")
     {
         std::stringstream nodes;
         std::stringstream elements;
@@ -181,5 +206,31 @@ TEST_CASE("Tetrahedral Grid", "[grid]")
         REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1,  1, -1}))) == depth3);
         REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, -1,  1}))) == depth3);
         REQUIRE(Approx(grid.findOpticalDepth(photon(grid, position, {-1, -1, -1}))) == depth3);
+    }
+
+    SECTION("Polynomial dust density. movePhotonAtDistance")
+    {
+        std::stringstream nodes;
+        std::stringstream elements;
+        createGrid(&nodes, &elements, 10, 100.);
+
+        IMatterCPtr matter = std::make_shared<PolynomialMatter>(1., -0.001, -0.003, -0.006);
+        TetrahedralGrid grid(nodes, elements, 100., 1. / AU_Cm, matter);
+
+        Vector3d position;
+        std::uint64_t cellId = grid.cellId(position);
+
+        Photon ph1(position, cellId, Direction3d{ {1, 0, 0} }, 1, 1);
+        REQUIRE(Approx(grid.movePhotonAtDistance(ph1, 0.1)) == 0.5 * 0.1 * (1 + 0.9999));
+
+        Photon ph2(position, cellId, Direction3d{ {0, 1, 0} }, 1, 1);
+        REQUIRE(Approx(grid.movePhotonAtDistance(ph2, 1)) == 0.5 * (1 + 0.997));
+
+        double const sqrt2 = std::sqrt(2.0);
+        Photon ph3(position, cellId, Direction3d{ {0, -1, -1} }, 1, 1);
+        REQUIRE(Approx(grid.movePhotonAtDistance(ph3, 10 * sqrt2)) == 0.5 * 10 * sqrt2 * (1 + 0.91));
+
+        Photon ph4(position, cellId, Direction3d{ {-1, 0, 1} }, 1, 1);
+        REQUIRE(Approx(grid.movePhotonAtDistance(ph4, 100 * sqrt2)) == 0.5 * 100 * sqrt2 * (1 + 0.3));
     }
 }
