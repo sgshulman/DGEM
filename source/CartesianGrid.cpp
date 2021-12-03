@@ -138,7 +138,7 @@ double CartesianGrid::findOpticalDepth(Photon ph) const
     std::int64_t const dCellY = ph.dir().y() > 0.0 ? 0x000000010000 : ph.dir().y() < 0.0 ? -0x000000010000 : 0;
     std::int64_t const dCellZ = ph.dir().z() > 0.0 ? 0x000100000000 : ph.dir().z() < 0.0 ? -0x000100000000 : 0;
 
-    while (inside(ph.pos()))
+    while (inside_inner(ph.pos()))
     {
         std::pair<double, std::uint64_t> const dcell = cellDistance(ph, phDirInv, phDirPos, dCellX, dCellY, dCellZ);
 
@@ -171,7 +171,7 @@ double CartesianGrid::movePhotonAtDistance(Photon &ph, double distance) const
     std::int64_t const dCellZ = ph.dir().z() > 0.0 ? 0x000100000000 : ph.dir().z() < 0.0 ? -0x000100000000 : 0;
 
     // integrate through grid
-    while (d < distance && inside(ph.pos()))
+    while (d < distance && inside_inner(ph.pos()))
     {
         std::pair<double, std::uint64_t> const dcell = cellDistance(ph, phDirInv, phDirPos, dCellX, dCellY, dCellZ);
 
@@ -331,6 +331,12 @@ std::uint64_t CartesianGrid::cellId(const Vector3d& position) const
 
 
 bool CartesianGrid::inside(const Vector3d& position) const
+{
+    return inside_inner(position);
+}
+
+
+bool CartesianGrid::inside_inner(const Vector3d& position) const
 {
     return -xmax_ < position.x() && position.x() < xmax_
         && -ymax_ < position.y() && position.y() < ymax_
