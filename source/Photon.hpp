@@ -55,10 +55,10 @@ class Photon
         {   return nscat_ == std::numeric_limits<std::uint32_t>::max(); }
 
     private:
+        std::uint64_t    cellId_;
         Vector3d	pos_;	// outpoint
         Direction3d	dir_;	// vector of the direction
         std::uint32_t 	nscat_;
-        std::uint64_t    cellId_;
         double weight_;
         double fi_, fq_, fu_, fv_;
 };

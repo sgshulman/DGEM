@@ -7,10 +7,10 @@
 #include "IDust.hpp"
 
 Photon::Photon( Vector3d const& pos, std::uint64_t cellId, Direction3d const& dir, double weight, std::uint32_t nscat, double fi, double fq, double fu, double fv )
-    : pos_{ pos }
+    : cellId_{ cellId }
+    , pos_{ pos }
     , dir_{ dir }
     , nscat_{ nscat }
-    , cellId_{ cellId }
     , weight_{ weight }
     , fi_{ fi }
     , fq_{ fq }
