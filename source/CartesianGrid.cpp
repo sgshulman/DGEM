@@ -36,6 +36,7 @@ CartesianGrid::CartesianGrid(
     : nx_{ nx }
     , ny_{ ny }
     , nz_{ nz }
+    , maxCellId_{ (static_cast<std::uint64_t>(nx_) | (static_cast<std::uint64_t>(ny_) << 20u) | (static_cast<std::uint64_t>(nz_) << 40u)) }
     , xmax_{ xmax }
     , ymax_{ ymax }
     , zmax_{ zmax }
@@ -119,13 +120,7 @@ std::pair<double, std::uint64_t> CartesianGrid::cellDistance(const Photon& ph, V
 
 double CartesianGrid::findOpticalDepth(Photon ph) const
 {
-    double taurun=0.0, d=0.0;
-    double const smax = maxDistance(ph);
-
-    if(smax < 0.0001 * xCellSize_)
-    {
-        return 0.0;
-    }
+    double taurun=0.0;
 
     Vector3d const phDirInv = ph.dir().vector().inverse();
 
@@ -138,7 +133,7 @@ double CartesianGrid::findOpticalDepth(Photon ph) const
     std::int64_t const dCellY = ph.dir().y() > 0.0 ? 0x000000000100000 : ph.dir().y() < 0.0 ? -0x000000000100000 : 0;
     std::int64_t const dCellZ = ph.dir().z() > 0.0 ? 0x000010000000000 : ph.dir().z() < 0.0 ? -0x000010000000000 : 0;
 
-    while (inside_inner(ph.pos()))
+    while (inside_inner(ph.cellId()))
     {
         std::pair<double, std::uint64_t> const dcell = cellDistance(ph, phDirInv, phDirPos, dCellX, dCellY, dCellZ);
 
@@ -148,7 +143,6 @@ double CartesianGrid::findOpticalDepth(Photon ph) const
 
         taurun += dcell.first * rhokappa_[ x+y*nx_+z*ny_*nx_ ];
         ph.Move(dcell.first, dcell.second);
-        d += dcell.first;
     }
 
     return taurun;
@@ -171,7 +165,7 @@ double CartesianGrid::movePhotonAtDistance(Photon &ph, double distance) const
     std::int64_t const dCellZ = ph.dir().z() > 0.0 ? 0x000010000000000 : ph.dir().z() < 0.0 ? -0x000010000000000 : 0;
 
     // integrate through grid
-    while (d < distance && inside_inner(ph.pos()))
+    while (d < distance && inside_inner(ph.cellId()))
     {
         std::pair<double, std::uint64_t> const dcell = cellDistance(ph, phDirInv, phDirPos, dCellX, dCellY, dCellZ);
 
@@ -332,13 +326,11 @@ std::uint64_t CartesianGrid::cellId(const Vector3d& position) const
 
 bool CartesianGrid::inside(const Photon& ph) const
 {
-    return inside_inner(ph.pos());
+    return inside_inner(ph.cellId());
 }
 
 
-bool CartesianGrid::inside_inner(const Vector3d& position) const
+bool CartesianGrid::inside_inner(std::uint64_t const cellId) const
 {
-    return -xmax_ < position.x() && position.x() < xmax_
-        && -ymax_ < position.y() && position.y() < ymax_
-        && -zmax_ < position.z() && position.z() < zmax_;
+    return ((cellId ^ (cellId - maxCellId_)) & 0x100001000010000u) == 0x100001000010000u;
 }

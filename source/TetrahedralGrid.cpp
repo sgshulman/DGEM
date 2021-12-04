@@ -813,7 +813,7 @@ bool TetrahedralGrid::inside(const Photon& ph) const
 }
 
 
-bool TetrahedralGrid::inside_inner(std::uint64_t cellId) const
+bool TetrahedralGrid::inside_inner(std::uint64_t const cellId) const
 {
     return cellId < elements_.size();
 }

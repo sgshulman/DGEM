@@ -31,13 +31,14 @@ class CartesianGrid : public IGrid
         bool inside(const Photon& ph) const override;
 
     private:
-        inline bool inside_inner(const Vector3d& position) const;
+        inline bool inside_inner(std::uint64_t cellId) const;
         double maxDistance(Photon const& ph) const;
         inline std::pair<double, std::uint64_t> cellDistance(const Photon& ph, Vector3d const& phDirInv, Vector3d const& phDirPos, std::int64_t dxc, std::int64_t dyc, std::int64_t dzc) const;
 
-        std::uint32_t nx_, ny_, nz_;
+        std::uint32_t const nx_, ny_, nz_;
+        std::uint64_t const maxCellId_;
         double *rhokappa_{ nullptr };
-        double xmax_, ymax_, zmax_;
+        double const xmax_, ymax_, zmax_;
         double const xCellSize_, yCellSize_, zCellSize_;
         double const xCellSizeInv_, yCellSizeInv_, zCellSizeInv_;
         double minrho_;
