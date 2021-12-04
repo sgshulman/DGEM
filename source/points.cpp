@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
                 grid->movePhotonAtDepth(ph0, std::numeric_limits<double>::epsilon(), 0.0);
                 double oldR = std::max(model.defaultStarRadius(), (spos - ph0.pos()).norm());
 
-                while (grid->inside(ph0.pos()) && ph0.weight() > minWeight)
+                while (grid->inside(ph0) && ph0.weight() > minWeight)
                 {
                     Photon ph{ ph0 };
 

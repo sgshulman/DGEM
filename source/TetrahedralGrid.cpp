@@ -521,7 +521,7 @@ double TetrahedralGrid::findOpticalDepth(Photon ph) const
     if (ph.cellId() >= elements_.size()) return 0.0;
     double taurun=0.0, d=0.0;
 
-    while (ph.cellId() < elements_.size())
+    while (inside_inner(ph.cellId()))
     {
         const auto& rawElement = elements_[ph.cellId()];
 
@@ -552,7 +552,7 @@ double TetrahedralGrid::movePhotonAtDistance(Photon &ph, double distance) const
     double taurun=0.0, d=0.0;
 
     // integrate through grid
-    while (d < distance && ph.cellId() < elements_.size())
+    while (d < distance && inside_inner(ph.cellId()))
     {
         const auto& rawElement = elements_[ph.cellId()];
 
@@ -599,7 +599,7 @@ int TetrahedralGrid::movePhotonAtDepth(Photon& ph, double tau, double tauold) co
     double const smax = maxDistance(ph);
 
     // integrate through grid
-    while (taurun < tau && ph.cellId() < elements_.size())
+    while (taurun < tau && inside_inner(ph.cellId()))
     {
         const auto& rawElement = elements_[ph.cellId()];
 
@@ -807,9 +807,13 @@ void TetrahedralGrid::saveGridToBinaryFile(const std::string &file)
 }
 
 
-bool TetrahedralGrid::inside(const Vector3d& position) const
+bool TetrahedralGrid::inside(const Photon& ph) const
 {
-    return -max_ < position.x() && position.x() < max_
-           && -max_ < position.y() && position.y() < max_
-           && -max_ < position.z() && position.z() < max_;
+    return inside_inner(ph.cellId());
+}
+
+
+bool TetrahedralGrid::inside_inner(std::uint64_t cellId) const
+{
+    return cellId < elements_.size();
 }

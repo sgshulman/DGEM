@@ -28,7 +28,7 @@ class CartesianGrid : public IGrid
         double computeMatterMass() const override;
         double max() const override;
         std::uint64_t cellId(const Vector3d& position) const override;
-        bool inside(const Vector3d& position) const override;
+        bool inside(const Photon& ph) const override;
 
     private:
         inline bool inside_inner(const Vector3d& position) const;

@@ -330,9 +330,9 @@ std::uint64_t CartesianGrid::cellId(const Vector3d& position) const
 }
 
 
-bool CartesianGrid::inside(const Vector3d& position) const
+bool CartesianGrid::inside(const Photon& ph) const
 {
-    return inside_inner(position);
+    return inside_inner(ph.pos());
 }
 
 

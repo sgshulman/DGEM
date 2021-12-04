@@ -43,7 +43,7 @@ public:
     double computeMatterMass() const override;
     double max() const override;
     std::uint64_t cellId(const Vector3d& position) const override;
-    bool inside(const Vector3d& position) const override;
+    bool inside(const Photon& ph) const override;
 private:
     class Node;
     class Tetrahedron;
@@ -63,6 +63,7 @@ private:
     void findElementsNeighbours();
     void saveGridToBinaryFile(std::string const & file);
     double rhoInDot(const Vector3d& dot, const Tetrahedron& el) const;
+    inline bool inside_inner(std::uint64_t cellId) const;
 };
 
 #endif
