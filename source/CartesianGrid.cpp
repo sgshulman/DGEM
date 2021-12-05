@@ -89,35 +89,6 @@ double CartesianGrid::findRealOpticalDepth(Vector3d const& position, Vector3d co
 }
 
 
-// calculate smax -- maximum distance photon can travel *******
-double CartesianGrid::maxDistance(Photon const& ph) const
-{	
-    double const dsx = ds(ph.pos().x(), ph.dir().x(), xmax_);
-    double const dsy = ds(ph.pos().y(), ph.dir().y(), ymax_);
-    double const dsz = ds(ph.pos().z(), ph.dir().z(), zmax_);
-
-    return std::min(dsx, std::min(dsy, dsz));
-}
-
-
-// find distance to next x, y, and z cell walls.  
-// note that dx is not the x-distance, but the actual distance along 
-// the direction of travel to the next x-face, and likewise for dy and dz.
-std::pair<double, std::uint64_t> CartesianGrid::cellDistance(const Photon& ph, Vector3d const& phDirInv, Vector3d const& phDirPos, std::int64_t dCellX, std::int64_t dCellY, std::int64_t dCellZ) const
-{
-    auto const x = static_cast<std::uint32_t>( ph.cellId() & 0x0000000000FFFFu);
-    auto const y = static_cast<std::uint32_t>((ph.cellId() & 0x00000FFFF00000u) >> 20u);
-    auto const z = static_cast<std::uint32_t>((ph.cellId() & 0xFFFF0000000000u) >> 40u);
-
-    double const dx = ((x + phDirPos.x()) * xCellSize_ - xmax_ - ph.pos().x()) * phDirInv.x();
-    double const dy = ((y + phDirPos.y()) * yCellSize_ - ymax_ - ph.pos().y()) * phDirInv.y();
-    double const dz = ((z + phDirPos.z()) * zCellSize_ - zmax_ - ph.pos().z()) * phDirInv.z();
-
-    std::pair<double, std::uint64_t> const dcell = (dx < dy) ? std::make_pair(dx, ph.cellId() + dCellX) : std::make_pair(dy, ph.cellId() + dCellY);
-    return (dcell.first < dz ) ? dcell : std::make_pair(dz, ph.cellId() + dCellZ);
-}
-
-
 double CartesianGrid::findOpticalDepth(Photon ph) const
 {
     double taurun=0.0;
@@ -133,16 +104,45 @@ double CartesianGrid::findOpticalDepth(Photon ph) const
     std::int64_t const dCellY = ph.dir().y() > 0.0 ? 0x000000000100000 : ph.dir().y() < 0.0 ? -0x000000000100000 : 0;
     std::int64_t const dCellZ = ph.dir().z() > 0.0 ? 0x000010000000000 : ph.dir().z() < 0.0 ? -0x000010000000000 : 0;
 
+    auto x = static_cast<std::uint32_t>( ph.cellId() & 0x0000000000FFFFu);
+    auto y = static_cast<std::uint32_t>((ph.cellId() & 0x00000FFFF00000u) >> 20u);
+    auto z = static_cast<std::uint32_t>((ph.cellId() & 0xFFFF0000000000u) >> 40u);
+
+    Vector3d border(
+        (x + phDirPos.x()) * xCellSize_ - xmax_,
+        (y + phDirPos.y()) * yCellSize_ - ymax_,
+        (z + phDirPos.z()) * zCellSize_ - zmax_);
+
+    // integrate through grid
     while (inside_inner(ph.cellId()))
     {
-        std::pair<double, std::uint64_t> const dcell = cellDistance(ph, phDirInv, phDirPos, dCellX, dCellY, dCellZ);
+        double const dx = (border.x() - ph.pos().x()) * phDirInv.x();
+        double const dy = (border.y() - ph.pos().y()) * phDirInv.y();
+        double const dz = (border.z() - ph.pos().z()) * phDirInv.z();
 
-        auto const x = static_cast<std::uint32_t>( ph.cellId() & 0x0000000000FFFFu);
-        auto const y = static_cast<std::uint32_t>((ph.cellId() & 0x00000FFFF00000u) >> 20u);
-        auto const z = static_cast<std::uint32_t>((ph.cellId() & 0xFFFF0000000000u) >> 40u);
+        double const rhocell = rhokappa_[ x+y*nx_+z*ny_*nx_ ];
+        std::uint64_t newCellId = ph.cellId();
+        double dcell = dx;
 
-        taurun += dcell.first * rhokappa_[ x+y*nx_+z*ny_*nx_ ];
-        ph.Move(dcell.first, dcell.second);
+        if (dx < dy && dx < dz)
+        {
+            newCellId += dCellX;
+            x += dCellX;
+            border.x() = (x + phDirPos.x()) * xCellSize_ - xmax_;
+        } else if (dy < dz) {
+            dcell = dy;
+            newCellId += dCellY;
+            y = static_cast<std::uint32_t>((newCellId & 0x00000FFFF00000u) >> 20u);
+            border.y() = (y + phDirPos.y()) * yCellSize_ - ymax_;
+        } else {
+            dcell = dz;
+            newCellId += dCellZ;
+            z = static_cast<std::uint32_t>((newCellId & 0xFFFF0000000000u) >> 40u);
+            border.z() = (z + phDirPos.z()) * zCellSize_ - zmax_;
+        }
+
+        taurun += dcell * rhocell;
+        ph.Move(dcell, newCellId);
     }
 
     return taurun;
@@ -164,25 +164,53 @@ double CartesianGrid::movePhotonAtDistance(Photon &ph, double distance) const
     std::int64_t const dCellY = ph.dir().y() > 0.0 ? 0x000000000100000 : ph.dir().y() < 0.0 ? -0x000000000100000 : 0;
     std::int64_t const dCellZ = ph.dir().z() > 0.0 ? 0x000010000000000 : ph.dir().z() < 0.0 ? -0x000010000000000 : 0;
 
+    auto x = static_cast<std::uint32_t>( ph.cellId() & 0x0000000000FFFFu);
+    auto y = static_cast<std::uint32_t>((ph.cellId() & 0x00000FFFF00000u) >> 20u);
+    auto z = static_cast<std::uint32_t>((ph.cellId() & 0xFFFF0000000000u) >> 40u);
+
+    Vector3d border(
+        (x + phDirPos.x()) * xCellSize_ - xmax_,
+        (y + phDirPos.y()) * yCellSize_ - ymax_,
+        (z + phDirPos.z()) * zCellSize_ - zmax_);
+
     // integrate through grid
     while (d < distance && inside_inner(ph.cellId()))
     {
-        std::pair<double, std::uint64_t> const dcell = cellDistance(ph, phDirInv, phDirPos, dCellX, dCellY, dCellZ);
+        double const dx = (border.x() - ph.pos().x()) * phDirInv.x();
+        double const dy = (border.y() - ph.pos().y()) * phDirInv.y();
+        double const dz = (border.z() - ph.pos().z()) * phDirInv.z();
 
-        auto const x = static_cast<std::uint32_t>( ph.cellId() & 0x0000000000FFFFu);
-        auto const y = static_cast<std::uint32_t>((ph.cellId() & 0x00000FFFF00000u) >> 20u);
-        auto const z = static_cast<std::uint32_t>((ph.cellId() & 0xFFFF0000000000u) >> 40u);
+        double const rhocell = rhokappa_[ x+y*nx_+z*ny_*nx_ ];
+        std::uint64_t newCellId = ph.cellId();
+        double dcell = dx;
 
-        if(d + dcell.first >= distance)
+        if (dx < dy && dx < dz)
+        {
+             newCellId += dCellX;
+             x += dCellX;
+             border.x() = (x + phDirPos.x()) * xCellSize_ - xmax_;
+        } else if (dy < dz) {
+             dcell = dy;
+             newCellId += dCellY;
+             y = static_cast<std::uint32_t>((newCellId & 0x00000FFFF00000u) >> 20u);
+             border.y() = (y + phDirPos.y()) * yCellSize_ - ymax_;
+        } else {
+             dcell = dz;
+             newCellId += dCellZ;
+             z = static_cast<std::uint32_t>((newCellId & 0xFFFF0000000000u) >> 40u);
+             border.z() = (z + phDirPos.z()) * zCellSize_ - zmax_;
+        }
+
+        if(d + dcell >= distance)
         {
             double const d1 = distance - d;
-            taurun += d1 * rhokappa_[ x+y*nx_+z*ny_*nx_ ];
+            taurun += d1 * rhocell;
             ph.Move(d1, ph.cellId());
             break;
         } else {
-            d += dcell.first;
-            taurun += dcell.first * rhokappa_[ x+y*nx_+z*ny_*nx_ ];
-            ph.Move(dcell.first, dcell.second);
+            d += dcell;
+            taurun += dcell * rhocell;
+            ph.Move(dcell, newCellId);
         }
     }
 
@@ -194,7 +222,6 @@ int CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold) con
 {
     double taurun=tauold, d=0.0;
 
-    double const smax = maxDistance(ph);
     Vector3d const phDirInv = ph.dir().vector().inverse();
 
     Vector3d const phDirPos(
@@ -206,25 +233,52 @@ int CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold) con
     std::int64_t const dCellY = ph.dir().y() > 0.0 ? 0x000000000100000 : ph.dir().y() < 0.0 ? -0x000000000100000 : 0;
     std::int64_t const dCellZ = ph.dir().z() > 0.0 ? 0x000010000000000 : ph.dir().z() < 0.0 ? -0x000010000000000 : 0;
 
+    auto x = static_cast<std::uint32_t>( ph.cellId() & 0x0000000000FFFFu);
+    auto y = static_cast<std::uint32_t>((ph.cellId() & 0x00000FFFF00000u) >> 20u);
+    auto z = static_cast<std::uint32_t>((ph.cellId() & 0xFFFF0000000000u) >> 40u);
+
+    Vector3d border(
+        (x + phDirPos.x()) * xCellSize_ - xmax_,
+        (y + phDirPos.y()) * yCellSize_ - ymax_,
+        (z + phDirPos.z()) * zCellSize_ - zmax_);
+
     // integrate through grid
-    while (taurun < tau && d < (0.9999*smax))
+    while (taurun < tau && inside_inner(ph.cellId()))
     {
-        std::pair<double, std::uint64_t> const dcell = cellDistance(ph, phDirInv, phDirPos, dCellX, dCellY, dCellZ);
+        double const dx = (border.x() - ph.pos().x()) * phDirInv.x();
+        double const dy = (border.y() - ph.pos().y()) * phDirInv.y();
+        double const dz = (border.z() - ph.pos().z()) * phDirInv.z();
 
-        auto const x = static_cast<std::uint32_t>( ph.cellId() & 0x0000000000FFFFu);
-        auto const y = static_cast<std::uint32_t>((ph.cellId() & 0x00000FFFF00000u) >> 20u);
-        auto const z = static_cast<std::uint32_t>((ph.cellId() & 0xFFFF0000000000u) >> 40u);
+        double const rhocell = rhokappa_[ x+y*nx_+z*ny_*nx_ ];
+        std::uint64_t newCellId = ph.cellId();
+        double dcell = dx;
 
-        double const taucell = dcell.first * rhokappa_[ x+y*nx_+z*ny_*nx_ ];
+        if (dx < dy && dx < dz)
+        {
+             newCellId += dCellX;
+             x += dCellX;
+             border.x() = (x + phDirPos.x()) * xCellSize_ - xmax_;
+        } else if (dy < dz) {
+             dcell = dy;
+             newCellId += dCellY;
+             y = static_cast<std::uint32_t>((newCellId & 0x00000FFFF00000u) >> 20u);
+             border.y() = (y + phDirPos.y()) * yCellSize_ - ymax_;
+        } else {
+             dcell = dz;
+             newCellId += dCellZ;
+             z = static_cast<std::uint32_t>((newCellId & 0xFFFF0000000000u) >> 40u);
+             border.z() = (z + phDirPos.z()) * zCellSize_ - zmax_;
+        }
 
+        double const taucell = dcell * rhocell;
         if(taurun + taucell >= tau)
         {
-            double const d1 = (tau-taurun) / rhokappa_[ x+y*nx_+z*ny_*nx_ ];
+            double const d1 = (tau-taurun) / rhocell;
             d += d1;
             ph.Move(d1, ph.cellId());
         } else {
-            d += dcell.first;
-            ph.Move(dcell.first, dcell.second);
+            d += dcell;
+            ph.Move(dcell, newCellId);
         }
 
         taurun += taucell;
@@ -233,7 +287,7 @@ int CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold) con
     // calculate photon final position.  if it escapes envelope then
     // set tflag=1.  if photon doesn't escape leave tflag=0 and update
     // photon position.
-    return d >= 0.999 * smax;
+    return inside_inner(ph.cellId());
 }
 
 

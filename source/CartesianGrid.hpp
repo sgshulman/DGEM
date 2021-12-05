@@ -32,8 +32,6 @@ class CartesianGrid : public IGrid
 
     private:
         inline bool inside_inner(std::uint64_t cellId) const;
-        double maxDistance(Photon const& ph) const;
-        inline std::pair<double, std::uint64_t> cellDistance(const Photon& ph, Vector3d const& phDirInv, Vector3d const& phDirPos, std::int64_t dxc, std::int64_t dyc, std::int64_t dzc) const;
 
         std::uint32_t const nx_, ny_, nz_;
         std::uint64_t const maxCellId_;
