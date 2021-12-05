@@ -9,21 +9,6 @@
 #include "Random.hpp"
 #include "Units.hpp"
 
-namespace
-{
-    inline double ds(double const pos, double const velocity, double const max)
-    {
-        if(velocity > 0.0)
-        {
-            return (max - pos) / velocity;
-        } else if(velocity < 0.0) {
-            return -(pos + max) / velocity;
-        }
-        return 2.0 * max;
-    }
-}
-
-
 CartesianGrid::CartesianGrid(
         double const xmax,
         double const ymax,
