@@ -127,7 +127,7 @@ double CartesianGrid::findOpticalDepth(Photon ph) const
         if (dx < dy && dx < dz)
         {
             newCellId += dCellX;
-            x += dCellX;
+            x += static_cast<std::uint32_t>(dCellX);
             border.x() = (x + phDirPos.x()) * xCellSize_ - xmax_;
         } else if (dy < dz) {
             dcell = dy;
@@ -187,7 +187,7 @@ double CartesianGrid::movePhotonAtDistance(Photon &ph, double distance) const
         if (dx < dy && dx < dz)
         {
              newCellId += dCellX;
-             x += dCellX;
+             x += static_cast<std::uint32_t>(dCellX);
              border.x() = (x + phDirPos.x()) * xCellSize_ - xmax_;
         } else if (dy < dz) {
              dcell = dy;
@@ -256,7 +256,7 @@ int CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold) con
         if (dx < dy && dx < dz)
         {
              newCellId += dCellX;
-             x += dCellX;
+             x += static_cast<std::uint32_t>(dCellX);
              border.x() = (x + phDirPos.x()) * xCellSize_ - xmax_;
         } else if (dy < dz) {
              dcell = dy;
