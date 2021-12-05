@@ -52,8 +52,8 @@ Monte Carlo parameters
 DGEM parameters
 - fUseHEALPixGrid &mdash; defines the sphere grid type. Set True to use HEALPix grid ([Gorski et. al. 2005](#gorski2005)).
   Otherwise, a grid based on a partition of a regular icosahedron is used
-- PrimaryDirectionsLevel &mdash; the primary directions grid parameter. If *fUseHEALPixGrid* is True the primary directions number is 20 * PrimaryDirectionsLevel ^ 2. Otherwise, it is 5 * 4 ^ PrimaryDirectionsLevel 
-- SecondaryDirectionsLevel &mdash; the secondary directions grid parameter. If *fUseHEALPixGrid* is True the primary directions number is 20 * SecondaryDirectionsLevel ^ 2. Otherwise, it is  primary directions number is 5 * 4 ^ SecondaryDirectionsLevel
+- PrimaryDirectionsLevel &mdash; the primary directions grid parameter. If *fUseHEALPixGrid* is True the primary directions number is 12 * PrimaryDirectionsLevel ^ 2. Otherwise, it is 5 * 4 ^ PrimaryDirectionsLevel 
+- SecondaryDirectionsLevel &mdash; the secondary directions grid parameter. If *fUseHEALPixGrid* is True the primary directions number is 12 * SecondaryDirectionsLevel ^ 2. Otherwise, it is  primary directions number is 5 * 4 ^ SecondaryDirectionsLevel
 - NumOfPrimaryScatterings &mdash; number of scatterings in every direction in the primary grid.
                             This parameter should be zero to use optimized one-parameter DGEM.
                             One-parameter DGEM is a recommended mode.
