@@ -220,5 +220,18 @@ int main(int argc, char *argv[])
     std::cout << "Initialization time:\t" << std::chrono::duration_cast<std::chrono::milliseconds>(startTime - initTime).count() * 0.001 << "s\n"
               << "Computation time:\t" << std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count() * 0.001 << "s" << std::endl;
 
+    {
+        std::ofstream timefile("time.txt");
+        timefile.precision(4);
+
+        timefile << "Initialization time:\t"
+                 << std::chrono::duration_cast<std::chrono::milliseconds>(startTime - initTime).count() * 0.001 << "s\n"
+                 << "Computation time:\t"
+                 << std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count() * 0.001 << "s"
+                 << std::endl;
+
+        timefile.close();
+    }
+
     return 0;
 }
