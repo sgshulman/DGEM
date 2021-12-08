@@ -37,6 +37,56 @@ namespace
 
 TEST_CASE("Cartezian Grid", "[grid]")
 {
+    SECTION("Inside")
+    {
+        IMatterCPtr matter = std::make_shared<PolynomialMatter>(1., 0., 0., 0.);
+        CartesianGrid grid(10., 20., 100., 1. / AU_Cm, 30, 20, 200, matter);
+
+        {
+            REQUIRE(grid.inside(photon(grid, { 9.9,  19.9,  99.9}, {  1, 0, 0})));
+            REQUIRE(grid.inside(photon(grid, { 9.9,  19.9, -99.9}, {  0, 1, 0})));
+            REQUIRE(grid.inside(photon(grid, { 9.9, -19.9,  99.9}, {  0, 0, 1})));
+            REQUIRE(grid.inside(photon(grid, { 9.9, -19.9, -99.9}, { -1, 0, 0})));
+
+            REQUIRE(grid.inside(photon(grid, { 9.9,  19.9,  99.9}, { 0, -1,  0})));
+            REQUIRE(grid.inside(photon(grid, { 9.9,  19.9, -99.9}, { 0,  0, -1})));
+            REQUIRE(grid.inside(photon(grid, {-9.9, -19.9,  99.9}, { 1, -1,  0})));
+            REQUIRE(grid.inside(photon(grid, {-9.9, -19.9, -99.9}, { 0,  1, -1})));
+        }
+
+        {
+            REQUIRE(!grid.inside(photon(grid, { 10.1, -20.1, 100.1}, { 1,  0,  0})));
+            REQUIRE(!grid.inside(photon(grid, { 10.1,  11.1, 100.1}, { 0,  1,  0})));
+            REQUIRE(!grid.inside(photon(grid, { 10.1,  20.1, 100.1}, { 0,  0,  1})));
+            REQUIRE(!grid.inside(photon(grid, {  9.9, -20.1, 100.1}, {-1,  0,  0})));
+            REQUIRE(!grid.inside(photon(grid, {  0.0,  -9.9, 100.1}, { 0, -1,  0})));
+            REQUIRE(!grid.inside(photon(grid, { -9.9, -20.1, 100.1}, { 0,  0, -1})));
+            REQUIRE(!grid.inside(photon(grid, {-10.1,  20.1, 100.1}, { 1, -1,  0})));
+            REQUIRE(!grid.inside(photon(grid, {-10.1,   9.9, 100.1}, { 0,  1, -1})));
+            REQUIRE(!grid.inside(photon(grid, {-10.1,  20.1, 100.1}, {-1,  0,  1})));
+
+            REQUIRE(!grid.inside(photon(grid, { 10.1, -20.1,  80}, {  1, 0, 0})));
+            REQUIRE(!grid.inside(photon(grid, { 10.1,  11.1, -80}, {  0, 1, 0})));
+            REQUIRE(!grid.inside(photon(grid, { 10.1,  20.1,  90}, {  0, 0, 1})));
+            REQUIRE(!grid.inside(photon(grid, {  9.9, -20.1, -90}, { -1, 0, 0})));
+
+            REQUIRE(!grid.inside(photon(grid, { -9.9,  20.1, -15}, { 0,  0, -1})));
+            REQUIRE(!grid.inside(photon(grid, {-10.1, -20.1,  15}, { 1, -1,  0})));
+            REQUIRE(!grid.inside(photon(grid, {-10.1, -19.9, -60}, { 0,  1, -1})));
+            REQUIRE(!grid.inside(photon(grid, {-10.1,  20.1,  60}, { -1,  0, 1})));
+
+            REQUIRE(!grid.inside(photon(grid, { 10.1, -20.1, -100.1}, { 1,  0,  0})));
+            REQUIRE(!grid.inside(photon(grid, { 10.1,  11.1, -100.1}, { 0,  1,  0})));
+            REQUIRE(!grid.inside(photon(grid, { 10.1,  20.1, -100.1}, { 0,  0,  1})));
+            REQUIRE(!grid.inside(photon(grid, {  9.9, -20.1, -100.1}, {-1,  0,  0})));
+            REQUIRE(!grid.inside(photon(grid, {  0.0,  -9.9, -100.1}, { 0, -1,  0})));
+            REQUIRE(!grid.inside(photon(grid, { -9.9,  20.1, -100.1}, { 0,  0, -1})));
+            REQUIRE(!grid.inside(photon(grid, {-10.1, -20.1, -100.1}, { 1, -1,  0})));
+            REQUIRE(!grid.inside(photon(grid, {-10.1,   9.9, -100.1}, { 0,  1, -1})));
+            REQUIRE(!grid.inside(photon(grid, {-10.1,  20.1, -100.1}, {-1,  0,  1})));
+        }
+    }
+
     SECTION("Uniform dust. findOpticalDepth")
     {
         IMatterCPtr matter = std::make_shared<PolynomialMatter>(1., 0., 0., 0.);
