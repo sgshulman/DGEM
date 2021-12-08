@@ -356,10 +356,15 @@ double CartesianGrid::max() const
 
 std::uint64_t CartesianGrid::cellId(const Vector3d& position) const
 {
-    auto const x = static_cast<std::uint64_t>((position.x()+xmax_)*xCellSizeInv_);
-    auto const y = static_cast<std::uint64_t>((position.y()+ymax_)*yCellSizeInv_);
-    auto const z = static_cast<std::uint64_t>((position.z()+zmax_)*zCellSizeInv_);
-    return (x | (y << 20u) | (z << 40u)) | 0x100001000010000;
+    double const x = (position.x()+xmax_)*xCellSizeInv_;
+    double const y = (position.y()+ymax_)*yCellSizeInv_;
+    double const z = (position.z()+zmax_)*zCellSizeInv_;
+
+    std::uint64_t const xCell = (x >= 0 ? 0x10000 : 0xFFFF) + static_cast<std::int32_t>(x);
+    std::uint64_t const yCell = (y >= 0 ? 0x10000 : 0xFFFF) + static_cast<std::int32_t>(y);
+    std::uint64_t const zCell = (z >= 0 ? 0x10000 : 0xFFFF) + static_cast<std::int32_t>(z);
+
+    return (xCell | (yCell << 20u) | (zCell << 40u));
 }
 
 
