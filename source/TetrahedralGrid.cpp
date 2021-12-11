@@ -621,18 +621,25 @@ int TetrahedralGrid::movePhotonAtDepth(Photon& ph, double tau, double tauold) co
         taucell=dcell.first* (rho1 + rho2)*0.5;
         if( (taurun+taucell) >= tau)
         {
-            double a = (rho2 - rho1)/2/dcell.first;
-            double b = rho1;
-            double c = taurun-tau;
+            double const a = 0.5 * (rho2 - rho1) / dcell.first;
+            double const b = rho1;
+            double const c = taurun - tau;
+            double d1;
 
-            double d1=0.5*(-b+sqrt(b*b-4*a*c))/a;
-            d=d+d1;
-            taurun=taurun+taucell;
-            ph.Move( d1, ph.cellId() );
+            if (std::abs(a) > std::numeric_limits<float>::epsilon())
+            {
+                d1 = 0.5 * (-b + std::sqrt(b*b - 4*a*c)) / a;
+            } else {
+                d1 = -c / b;
+            }
+
+            d = d + d1;
+            taurun = taurun + taucell;
+            ph.Move(d1, ph.cellId());
         } else {
-            d=d+dcell.first;
-            taurun=taurun+taucell;
-            ph.Move( dcell.first, dcell.second );
+            d = d + dcell.first;
+            taurun = taurun + taucell;
+            ph.Move(dcell.first, dcell.second);
         }
     }
     if((d>=(0.999*smax))) return 1;
