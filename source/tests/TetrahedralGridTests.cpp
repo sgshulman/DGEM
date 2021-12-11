@@ -158,6 +158,36 @@ TEST_CASE("Tetrahedral Grid", "[grid]")
         REQUIRE(Approx(grid.movePhotonAtDistance(ph4, 100)) == 100);
     }
 
+    SECTION("Uniform dust. movePhotonAtDepth")
+    {
+        std::stringstream nodes;
+        std::stringstream elements;
+        createGrid(&nodes, &elements, 10, 100.);
+
+        IMatterCPtr matter = std::make_shared<PolynomialMatter>(1., 0., 0., 0.);
+        TetrahedralGrid grid(nodes, elements, 100., 1. / AU_Cm, matter);
+
+        Vector3d position;
+        std::uint64_t cellId = grid.cellId(position);
+
+        Photon ph1(position, cellId, Direction3d{ {1, 0, 0} }, 1, 1);
+        grid.movePhotonAtDepth(ph1, 0.1, 0.0);
+
+        REQUIRE(Approx((ph1.pos()-position).norm()) == 0.1);
+
+        Photon ph2(position, cellId, Direction3d{ {1, 1, 1} }, 1, 1);
+        grid.movePhotonAtDepth(ph2, 1, 0.0);
+        REQUIRE(Approx((ph2.pos()-position).norm()) == 1);
+
+        Photon ph3(position, cellId, Direction3d{ {0, -1, -1} }, 1, 1);
+        grid.movePhotonAtDepth(ph3, 10, 0.0);
+        REQUIRE(Approx((ph3.pos()-position).norm()) == 10);
+
+        Photon ph4(position, cellId, Direction3d{ {-1, 1, 0.5} }, 1, 1);
+        grid.movePhotonAtDepth(ph4, 100, 0.0);
+        REQUIRE(Approx((ph4.pos()-position).norm()) == 100);
+    }
+
     SECTION("Polynomial dust density. findOpticalDepth")
     {
         std::stringstream nodes;
@@ -232,5 +262,35 @@ TEST_CASE("Tetrahedral Grid", "[grid]")
 
         Photon ph4(position, cellId, Direction3d{ {-1, 0, 1} }, 1, 1);
         REQUIRE(Approx(grid.movePhotonAtDistance(ph4, 100 * sqrt2)) == 0.5 * 100 * sqrt2 * (1 + 0.3));
+    }
+
+    SECTION("Polynomial dust density. movePhotonAtDistance")
+    {
+        std::stringstream nodes;
+        std::stringstream elements;
+        createGrid(&nodes, &elements, 10, 100.);
+
+        IMatterCPtr matter = std::make_shared<PolynomialMatter>(1., -0.001, -0.003, -0.006);
+        TetrahedralGrid grid(nodes, elements, 100., 1. / AU_Cm, matter);
+
+        Vector3d position;
+        std::uint64_t cellId = grid.cellId(position);
+
+        Photon ph1(position, cellId, Direction3d{ {1, 0, 0} }, 1, 1);
+        grid.movePhotonAtDepth(ph1, 0.5 * 0.1 * (1 + 0.9999), 0.0);
+        REQUIRE(Approx((ph1.pos()-position).norm()) == 0.1);
+
+        Photon ph2(position, cellId, Direction3d{ {0, 1, 0} }, 1, 1);
+        grid.movePhotonAtDepth(ph2, 0.5 * (1 + 0.997), 0.0);
+        REQUIRE(Approx((ph2.pos()-position).norm()) == 1.0);
+
+        double const sqrt2 = std::sqrt(2.0);
+        Photon ph3(position, cellId, Direction3d{ {0, -1, -1} }, 1, 1);
+        grid.movePhotonAtDepth(ph3, 0.5 * 10 * sqrt2 * (1 + 0.91), 0.0);
+        REQUIRE(Approx((ph3.pos()-position).norm()) == 10 * sqrt2);
+
+        Photon ph4(position, cellId, Direction3d{ {-1, 0, 1} }, 1, 1);
+        grid.movePhotonAtDepth(ph4, 0.5 * 100 * sqrt2 * (1 + 0.3), 0.0);
+        REQUIRE(Approx((ph4.pos()-position).norm()) == 100 * sqrt2);
     }
 }
