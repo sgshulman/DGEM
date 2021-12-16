@@ -51,7 +51,7 @@ namespace
             if (cend(items) == std::find(cbegin(items), cend(items), k.key()))
             {
                 std::stringstream ss;
-                ss << "Section " << section << " contains invalid item " << k.key()
+                ss << "Section \"" << section << "\" contains invalid item " << k.key()
                    << ". Possible items are: ";
 
                 for (const auto& i: items)

@@ -12,7 +12,7 @@
 #include "Sources.hpp"
 
 
-int main(int argc, char *argv[])
+int run(int argc, char *argv[])
 {
     auto const initTime = std::chrono::high_resolution_clock::now();
 
@@ -224,14 +224,27 @@ int main(int argc, char *argv[])
         std::ofstream timefile("time.txt");
         timefile.precision(4);
 
-        timefile << "Initialization time:\t"
+        timefile << "Initialization time:    "
                  << std::chrono::duration_cast<std::chrono::milliseconds>(startTime - initTime).count() * 0.001 << "s\n"
-                 << "Computation time:\t"
+                 << "Computation time:       "
                  << std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count() * 0.001 << "s"
                  << std::endl;
 
         timefile.close();
     }
 
+    return 0;
+}
+
+
+int main(int argc, char *argv[])
+{
+    try
+    {
+        return run(argc, argv);
+    }
+    catch (std::exception const& ex) {
+        std::cerr << "Terminated after throwing an exception:\n" << ex.what() << std::endl;
+    }
     return 0;
 }
