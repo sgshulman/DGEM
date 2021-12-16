@@ -57,7 +57,7 @@ namespace
             return 0;
         }
 
-        bool inside(const Vector3d& /*position*/) const override
+        bool inside(const Photon& /*ph*/) const override
         {
             return true;
         }
