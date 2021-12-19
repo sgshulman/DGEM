@@ -17,7 +17,7 @@ namespace
 Direction3d Direction3d::rotate(Direction3d const& other) const
 {
     // Other.theta is 0 or 180, we rotate around z-axis then result phi = this.phi + other.phi
-    if(std::abs(other.sinTheta()) < std::numeric_limits<double>::epsilon())
+    if(other.sinTheta() < std::numeric_limits<double>::epsilon())
     {
         if (other.cosTheta() > 0)
         {
@@ -39,14 +39,13 @@ Direction3d Direction3d::rotate(Direction3d const& other) const
     double const cosb = cosTheta();
     double const sinb = sinTheta();
 
-    double const cosC = cos(phi());
-    double sinC;
-
-    if (std::sin(phi()) < 0) // the angle is 2*pi - this phi
+    double const r = sinTheta();
+    double cosC = 1.;
+    double sinC = 0.;
+    if (r > 0.)
     {
-        sinC = -sin(phi());
-    } else { // the angle is this phi
-        sinC = sin(phi());
+        cosC = vector_.x() / r;
+        sinC = vector_.y() > 0.0 ? vector_.y() / r : -vector_.y() / r;
     }
 
     bool same_sign;
@@ -92,15 +91,19 @@ Direction3d Direction3d::rotate(Direction3d const& other) const
     double const cosB = (cosb - cosa * cosc) / (sina * sinc);
     double const sinB = sinC * sinb / sinc;
 
+    double const otherR = other.sinTheta();
+    double const cosOtherPhi = other.vector().x() / otherR;
+    double const sinOtherPhi = other.vector().y() / otherR;
+
     // Find final phi values
-    if(std::sin(phi()) < 0.)// the top angle is this phi - result phi
+    if(vector_.y() < 0.)// the top angle is this phi - result phi
     {
-        double const finalCosp = cosB * std::cos(other.phi()) + sinB * std::sin(other.phi());
-        double const finalSinp = cosB * std::sin(other.phi()) - sinB * std::cos(other.phi());
+        double const finalCosp = cosB * cosOtherPhi + sinB * sinOtherPhi;
+        double const finalSinp = cosB * sinOtherPhi - sinB * cosOtherPhi;
         return { Vector3d{sinc * finalCosp, sinc * finalSinp, cosc } };
     }
     // the top angle is result phi - this phi
-    double const finalCosp = cosB * std::cos(other.phi()) - sinB * std::sin(other.phi());
-    double const finalSinp = cosB * std::sin(other.phi()) + sinB * std::cos(other.phi());
+    double const finalCosp = cosB * cosOtherPhi - sinB * sinOtherPhi;
+    double const finalSinp = cosB * sinOtherPhi + sinB * cosOtherPhi;
     return { Vector3d{sinc * finalCosp, sinc * finalSinp, cosc } };
 }
