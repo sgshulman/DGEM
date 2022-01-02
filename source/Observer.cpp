@@ -161,7 +161,7 @@ Observer::Observer(double const phi, double const theta, double const rImage, do
     , nx_{ Nx }
     , ny_{ Ny }
     , rImage_{ rImage }
-    , rMask_{ rMask }
+    , rMask2_{ rMask * rMask }
     , theta_{ theta }
     , cosp_{ std::cos(phi) }
     , sinp_{ std::sin(phi) }
@@ -202,15 +202,17 @@ void Observer::write(std::ostream& stream)
 
 bool Observer::inFov(const Photon &photon) const
 {
-    double const yimage = rImage_ + photon.pos().z() * direction_.sinTheta() -
+    double const yimage = photon.pos().z() * direction_.sinTheta() -
                           direction_.cosTheta() * (photon.pos().y()*sinp_ + photon.pos().x()*cosp_);
 
-    double const ximage = rImage_ + photon.pos().y()*cosp_ - photon.pos().x()*sinp_;
+    double const ximage = photon.pos().y()*cosp_ - photon.pos().x()*sinp_;
 
-    auto const xl = static_cast<int64_t>(nx_ * ximage / (2.0 * rImage_));
-    auto const yl = static_cast<int64_t>(ny_ * yimage / (2.0 * rImage_));
+    double const r2 = yimage * yimage + ximage * ximage;
 
-    return (xl>=0) && (yl >= 0) && ((std::uint32_t)xl < nx_) && ((std::uint32_t)yl < ny_);
+    auto const xl = static_cast<int64_t>(nx_ * (rImage_ + ximage) / (2.0 * rImage_));
+    auto const yl = static_cast<int64_t>(ny_ * (rImage_ + yimage) / (2.0 * rImage_));
+
+    return (xl>=0) && (yl >= 0) && ((std::uint32_t)xl < nx_) && ((std::uint32_t)yl < ny_) && r2 >= rMask2_;
 }
 
 void Observer::bin(Photon const& photon)

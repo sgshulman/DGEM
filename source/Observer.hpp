@@ -70,7 +70,7 @@ private:
     Direction3d direction_;
     std::uint32_t const nx_, ny_;
     double const rImage_;
-    double const rMask_;
+    double const rMask2_;
     double const theta_;
     double const cosp_, sinp_;
 };
