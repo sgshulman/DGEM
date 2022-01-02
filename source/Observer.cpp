@@ -154,21 +154,21 @@ void Pictures::sum(std::ostream& stream)
 }
 
 
-Observer::Observer(double const phi, double const theta, double const rimage, std::uint32_t const Nx, std::uint32_t const Ny)
+Observer::Observer(double const phi, double const theta, double const rImage, double const rMask, std::uint32_t const Nx, std::uint32_t const Ny)
     : result_(Nx, Ny)
     , result0_(Nx, Ny)
     , result1_(Nx, Ny)
     , result2_(Nx, Ny)
     , direction_{phi, theta}
-    , nx_(Nx)
-    , ny_(Ny)
-{
-    rimage_ = rimage;
-    theta_ = theta;
+    , nx_{ Nx }
+    , ny_{ Ny }
+    , rImage_{ rImage }
+    , rMask_{ rMask }
+    , theta_{ theta }
+    , cosp_{ std::cos(phi) }
+    , sinp_{ std::sin(phi) }
+{}
 
-    cosp_ = std::cos(phi);
-    sinp_ = std::sin(phi);
-}
 
 void Observer::normalize(std::uint64_t const numPhotons)
 {
@@ -205,13 +205,13 @@ void Observer::write(std::ostream& stream)
 
 bool Observer::inFov(const Photon &photon) const
 {
-    double const yimage = rimage_ + photon.pos().z() * direction_.sinTheta() -
+    double const yimage = rImage_ + photon.pos().z() * direction_.sinTheta() -
                           direction_.cosTheta() * (photon.pos().y()*sinp_ + photon.pos().x()*cosp_);
 
-    double const ximage = rimage_ + photon.pos().y()*cosp_ - photon.pos().x()*sinp_;
+    double const ximage = rImage_ + photon.pos().y()*cosp_ - photon.pos().x()*sinp_;
 
-    auto const xl = static_cast<int64_t>(nx_ * ximage / (2.0 * rimage_));
-    auto const yl = static_cast<int64_t>(ny_ * yimage / (2.0 * rimage_));
+    auto const xl = static_cast<int64_t>(nx_ * ximage / (2.0 * rImage_));
+    auto const yl = static_cast<int64_t>(ny_ * yimage / (2.0 * rImage_));
 
     return (xl>=0) && (yl >= 0) && ((std::uint32_t)xl < nx_) && ((std::uint32_t)yl < ny_);
 }
@@ -221,8 +221,8 @@ void Observer::bin(Photon const& photon)
     double const yimage = imageY(photon.pos());
     double const ximage = imageX(photon.pos());
 
-    auto const xl = static_cast<int64_t>(nx_ * ximage / (2.0 * rimage_));
-    auto const yl = static_cast<int64_t>(ny_ * yimage / (2.0 * rimage_));
+    auto const xl = static_cast<int64_t>(nx_ * ximage / (2.0 * rImage_));
+    auto const yl = static_cast<int64_t>(ny_ * yimage / (2.0 * rImage_));
 
     double const eps = std::numeric_limits<float>::epsilon();
 
@@ -230,8 +230,8 @@ void Observer::bin(Photon const& photon)
         photon,
         xl,
         yl,
-        photon.nscat() != 0 && std::abs(ximage - xl * (2.0 * rimage_) / nx_) < eps,
-        photon.nscat() != 0 && std::abs(yimage - yl * (2.0 * rimage_) / ny_) < eps,
+        photon.nscat() != 0 && std::abs(ximage - xl * (2.0 * rImage_) / nx_) < eps,
+        photon.nscat() != 0 && std::abs(yimage - yl * (2.0 * rImage_) / ny_) < eps,
         1.0);
 }
 
@@ -240,13 +240,13 @@ void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &p
 {
     double const yimage1 = imageY(pos1);
     double const ximage1 = imageX(pos1);
-    auto const xl1 = static_cast<int64_t>(nx_ * ximage1 / (2.0 * rimage_));
-    auto const yl1 = static_cast<int64_t>(ny_ * yimage1 / (2.0 * rimage_));
+    auto const xl1 = static_cast<int64_t>(nx_ * ximage1 / (2.0 * rImage_));
+    auto const yl1 = static_cast<int64_t>(ny_ * yimage1 / (2.0 * rImage_));
 
     double const yimage2 = imageY(pos2);
     double const ximage2 = imageX(pos2);
-    auto const xl2 = static_cast<int64_t>(nx_ * ximage2 / (2.0 * rimage_));
-    auto const yl2 = static_cast<int64_t>(ny_ * yimage2 / (2.0 * rimage_));
+    auto const xl2 = static_cast<int64_t>(nx_ * ximage2 / (2.0 * rImage_));
+    auto const yl2 = static_cast<int64_t>(ny_ * yimage2 / (2.0 * rImage_));
 
     double const eps = std::numeric_limits<float>::epsilon();
 
@@ -256,8 +256,8 @@ void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &p
             photon,
             xl2,
             yl2,
-            std::abs(ximage2 - ximage1) < eps && std::abs(ximage2 - xl2 * (2.0 * rimage_) / nx_) < eps,
-            std::abs(yimage2 - yimage1) < eps && std::abs(yimage2 - yl2 * (2.0 * rimage_) / ny_) < eps,
+            std::abs(ximage2 - ximage1) < eps && std::abs(ximage2 - xl2 * (2.0 * rImage_) / nx_) < eps,
+            std::abs(yimage2 - yimage1) < eps && std::abs(yimage2 - yl2 * (2.0 * rImage_) / ny_) < eps,
             1.0);
 
         return;
@@ -298,8 +298,8 @@ void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &p
 
     while (borderX <= lastBorderX && borderY <= lastBorderY)
     {
-        double const xborder = std::min(static_cast<double>(borderX+1) * (2.0 * rimage_) / nx_, xImageMax);
-        double const yborder = std::min(static_cast<double>(borderY+1) * (2.0 * rimage_) / ny_, yImageMax);
+        double const xborder = std::min(static_cast<double>(borderX+1) * (2.0 * rImage_) / nx_, xImageMax);
+        double const yborder = std::min(static_cast<double>(borderY+1) * (2.0 * rImage_) / ny_, yImageMax);
 
         double const xt = dx > 0 ? (xborder - x) / dx : std::numeric_limits<double>::infinity();
         double const yt = dy > 0 ? (yborder - y) / dy : std::numeric_limits<double>::infinity();
@@ -314,7 +314,7 @@ void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &p
                 borderX,
                 borderY,
                 false,
-                dy < eps && std::fabs(y - borderY * (2.0 * rimage_) / ny_) < eps,
+                dy < eps && std::fabs(y - borderY * (2.0 * rImage_) / ny_) < eps,
                 w / totalW);
 
             ++borderX;
@@ -328,7 +328,7 @@ void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &p
                 photon,
                 borderX,
                 borderY,
-                dx < eps && std::fabs(x - borderX * (2.0 * rimage_) / nx_) < eps,
+                dx < eps && std::fabs(x - borderX * (2.0 * rImage_) / nx_) < eps,
                 false,
                 w / totalW);
 
@@ -341,12 +341,12 @@ void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &p
 
 inline double Observer::imageX(Vector3d const &position) const
 {
-    return rimage_ + position.y() * cosp_ - position.x() * sinp_;
+    return rImage_ + position.y() * cosp_ - position.x() * sinp_;
 }
 
 inline double Observer::imageY(Vector3d const &position) const
 {
-    return rimage_ + position.z() * direction_.sinTheta() - direction_.cosTheta() * (position.y()*sinp_ + position.x()*cosp_);
+    return rImage_ + position.z() * direction_.sinTheta() - direction_.cosTheta() * (position.y()*sinp_ + position.x()*cosp_);
 }
 
 inline void Observer::bin(Photon const& photon, int64_t const x, int64_t const y, double const weight)

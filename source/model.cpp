@@ -550,9 +550,12 @@ namespace
 
     void parseObservers(std::vector<Observer>* observers, nlohmann::json const& json)
     {
-        checkParameters(json, sObservers, {"rimage", "manual", "parallel", "meridian"});
+        checkParameters(json, sObservers, {"rimage", "rmask", "nx", "ny", "manual", "parallel", "meridian"});
 
-        auto const rimage = get_double(json, sObservers, "rimage");
+        auto const rImage = get_double(json, sObservers, "rimage");
+        auto const rMask  = get_optional_double(json, sObservers, "rmask", 0.0);
+        auto const nX = get_optional_uint32(json, sObservers, "nx", 200);
+        auto const nY = get_optional_uint32(json, sObservers, "ny", 200);
 
         if (json.contains("manual"))
         {
@@ -566,7 +569,10 @@ namespace
                 observers->emplace_back(
                     radians(get_double(observer, observersManual, "phi")),
                     radians(get_double(observer, observersManual, "theta")),
-                    rimage);
+                    rImage,
+                    rMask,
+                    nX,
+                    nY);
             }
         }
 
@@ -581,7 +587,7 @@ namespace
 
             for (std::uint32_t i=0; i!=numberOfObservers; ++i)
             {
-                observers->emplace_back(2*PI/numberOfObservers*i, radians(viewTheta), rimage);
+                observers->emplace_back(2*PI/numberOfObservers*i, radians(viewTheta), rImage, rMask, nX, nY);
             }
         }
 
@@ -596,7 +602,7 @@ namespace
 
             for (std::uint32_t i=0; i!=numberOfObservers; ++i)
             {
-                observers->emplace_back(radians(viewPhi), PI/numberOfObservers*(i + 0.5), rimage);
+                observers->emplace_back(radians(viewPhi), PI/numberOfObservers*(i + 0.5), rImage, rMask, nX, nY);
             }
         }
 
