@@ -23,7 +23,7 @@ class Pictures
         void normalize(std::uint64_t numPhotons);
 
         void write(double phi, double theta, int key) const;
-        void sum(std::ofstream& file);
+        void sum(std::ostream& file);
 
     private:
         std::uint32_t nx_, ny_;
@@ -36,11 +36,11 @@ class Pictures
 class Observer
 {
 public:
-    Observer(double phi, double theta, double rimage, std::uint32_t Nx=200, std::uint32_t Ny=200);
+    Observer(double phi, double theta, double rImage, double rMask=0.0, std::uint32_t Nx=200, std::uint32_t Ny=200);
 
     void normalize(std::uint64_t numPhotons);
     void writeToMapFiles(bool fWriteSingleAndDoubleScatterings, std::uint32_t numberOfScatterings);
-    void write(std::ofstream& file);
+    void write(std::ostream& file);
     bool inFov(Photon const& photon) const;
     void bin(Photon const& photon);
     void bin(Photon const& photo, Vector3d const& pos1, Vector3d const& pos2);
@@ -68,10 +68,11 @@ private:
 
     Pictures result_, result0_, result1_, result2_;
     Direction3d direction_;
-    std::uint32_t nx_, ny_;
-    double rimage_;
-    double theta_;
-    double cosp_, sinp_;
+    std::uint32_t const nx_, ny_;
+    double const rImage_;
+    double const rMask_;
+    double const theta_;
+    double const cosp_, sinp_;
 };
 
 #endif

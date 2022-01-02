@@ -48,6 +48,28 @@ TEST_CASE("Parse Observers", "[model]")
         compareDirection(observers.at(1).direction(), Vector3d{0.,  std::sqrt(3.)/2, -0.5});
     }
 
+    SECTION("Manual - Detailed")
+    {
+        nlohmann::json observersJson = R"({
+            "rimage": 800.0,
+            "rmask": 10.0,
+            "nx": 100,
+            "ny": 100,
+            "manual": [
+              {
+                "phi": 0.0,
+                "theta": 45.0
+              }
+            ]}
+            )"_json;
+
+        parseObservers(&observers, observersJson);
+
+        REQUIRE(1 == observers.size());
+        REQUIRE(Approx(0.).margin(1e-12) == observers.at(0).phi());
+        REQUIRE(Approx(PI / 4.) == observers.at(0).theta());
+    }
+
     SECTION("Parallel")
     {
         nlohmann::json observersJson = R"({

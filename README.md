@@ -321,10 +321,13 @@ _&theta;_ is a zenith distance (an angle between positive _z_-axis direction and
 _&phi;_ is an azimuth, measured counterclockwise in _xy_ plane from the positive _x_-axis direction.
 The azimuth may be in the range from -180&deg; to 180&deg; or from 0 to 360&deg;.
 
-The third parameter of the observer is _rimage_.
-It is a radius of the visible area in astronomy units.
-Both axes of the image will be from -_rimage_ to _rimage_.
-We specify _rimage_ once for all observers.
+There are four additional parameters to describe the observer.
+We specify them once for all observers.
+- _rimage_ is a radius of the visible area in astronomy units.
+  Both axes of the image will be from -_rimage_ to _rimage_.
+- _rmask_ defines the radius in astronomy units of the circular area in the center of the image, which will be covered with a mask (allows you to make an analog of a coronagraph).
+  Optional parameter: 0 is the default value.
+- _nx_ and _ny_ are optional parameters describing the image size in pixels. The default size is 200x200.
 
 There are three ways to specify observer directions:
 
@@ -353,6 +356,7 @@ The JSON configuration may be specified in the following way:
 ```yaml
 "observers": {
     "rimage": 800.0,
+    "rmask": 0.1,
     "manual": [
       {
         "phi": 45.0,
