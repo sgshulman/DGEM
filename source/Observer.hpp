@@ -62,7 +62,7 @@ public:
     Observer& operator=(Observer&& other) = default;
 
     double totalLuminosity(int64_t xl, int64_t yl) const
-    {   return result0_.f(xl, yl); }
+    {   return result_.f(xl, yl); }
 
 private:
     inline double imageX(Vector3d const &position) const;

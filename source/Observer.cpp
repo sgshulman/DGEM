@@ -237,7 +237,7 @@ void Observer::bin(Photon const& photon)
         1.0);
 }
 
-// TODO: Add tests for this method
+
 void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &pos2)
 {
     double const yimage1 = imageY(pos1);
@@ -361,8 +361,13 @@ inline void Observer::bin(Photon const& photon, int64_t const x, int64_t const y
 
 inline void Observer::bin(const Photon &photon, int64_t const x, int64_t const y, bool const onXBorder, bool const onYBorder, double const weight)
 {
-    if (onXBorder && x > 0)
+    if (onXBorder && x > 0 && onYBorder && y > 0)
     {
+        bin(photon, x,   y,   0.25 * weight);
+        bin(photon, x,   y-1, 0.25 * weight);
+        bin(photon, x-1, y,   0.25 * weight);
+        bin(photon, x-1, y-1, 0.25 * weight);
+    } else if (onXBorder && x > 0) {
         bin(photon, x, y, 0.5 * weight);
         bin(photon, x-1, y, 0.5 * weight);
     } else if (onYBorder && y > 0) {
