@@ -23,7 +23,10 @@ class Pictures
         void normalize(std::uint64_t numPhotons);
 
         void write(double phi, double theta, int key) const;
-        void sum(std::ostream& file);
+        void sum(std::ostream& stream);
+
+        double f(int64_t xl, int64_t yl) const
+        {   return f_[xl+yl*nx_]; }
 
     private:
         std::uint32_t nx_, ny_;
@@ -58,6 +61,9 @@ public:
 
     Observer(Observer&& other) = default;
     Observer& operator=(Observer&& other) = default;
+
+    double totalLuminosity(int64_t xl, int64_t yl) const
+    {   return result_.f(xl, yl); }
 
 private:
     inline double imageX(Vector3d const &position) const;

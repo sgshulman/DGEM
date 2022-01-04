@@ -167,6 +167,7 @@ Observer::Observer(double const phi, double const theta, double const rImage, do
     , sinp_{ std::sin(phi) }
 {}
 
+
 void Observer::normalize(std::uint64_t const numPhotons)
 {
     result_.normalize(numPhotons);
@@ -234,7 +235,7 @@ void Observer::bin(Photon const& photon)
         1.0);
 }
 
-// TODO: Add tests for this method
+
 void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &pos2)
 {
     double const yimage1 = imageY(pos1);
@@ -330,8 +331,13 @@ inline void Observer::binToPixel(Photon const& photon, int64_t const x, int64_t 
 
 inline void Observer::binPoint(const Photon &photon, int64_t const x, int64_t const y, bool const onXBorder, bool const onYBorder, double const weight)
 {
-    if (onXBorder && x > 0)
+    if (onXBorder && x > 0 && onYBorder && y > 0)
     {
+        binToPixel(photon, x,   y,   0.25 * weight);
+        binToPixel(photon, x,   y-1, 0.25 * weight);
+        binToPixel(photon, x-1, y,   0.25 * weight);
+        binToPixel(photon, x-1, y-1, 0.25 * weight);
+    } else if (onXBorder && x > 0) {
         binToPixel(photon, x, y, 0.5 * weight);
         binToPixel(photon, x-1, y, 0.5 * weight);
     } else if (onYBorder && y > 0) {
