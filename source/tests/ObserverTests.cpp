@@ -42,6 +42,17 @@ TEST_CASE("Observer. bin", "[observer]")
         observer.bin(Photon{{ 0.5, -0.5, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 3});
         REQUIRE(Approx(luminosity(observer)) == 4.0);
         REQUIRE(Approx(observer.totalLuminosity(2, 1)) == 1.0);
+
+        // Photons are outside of the image
+        observer.bin(Photon{{ 2.1,  2.1, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 0});
+        observer.bin(Photon{{ 2.1, -2.1, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1});
+        observer.bin(Photon{{-2.1,  2.1, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 2});
+        observer.bin(Photon{{-2.1, -2.1, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 3});
+        observer.bin(Photon{{ 0.0,  2.1, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 2});
+        observer.bin(Photon{{ 0.0, -2.1, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 3});
+        observer.bin(Photon{{ 2.1,  0.0, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 2});
+        observer.bin(Photon{{-2.1,  0.0, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 3});
+        REQUIRE(Approx(luminosity(observer)) == 4.0);
     }
 
     SECTION("Border photons")
@@ -93,6 +104,19 @@ TEST_CASE("Observer. bin", "[observer]")
         REQUIRE(Approx(observer.totalLuminosity(2, 2)) == 0.25);
         REQUIRE(Approx(observer.totalLuminosity(2, 3)) == 0.25);
         REQUIRE(Approx(observer.totalLuminosity(3, 3)) == 0.5);
+
+        // One half of the section is outside of the image
+        observer.bin(Photon{{ 0.1,  2.0, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 2}, {0.1, 2.5, 0.0}, {0.1, 1.5, 0.0});
+        REQUIRE(Approx(luminosity(observer)) == 3.5);
+
+        observer.bin(Photon{{ 0.1, -2.0, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 2}, {0.1, -1.5, 0.0}, {0.1, -2.5, 0.0});
+        REQUIRE(Approx(luminosity(observer)) == 4.0);
+
+        observer.bin(Photon{{ 2.0,  0.1, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 2}, {2.5, 0.1, 0.0}, {1.5, 0.1, 0.0});
+        REQUIRE(Approx(luminosity(observer)) == 4.5);
+
+        observer.bin(Photon{{-2.0,  0.1, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 2}, {-1.5, 0.1, 0.0}, {-2.5, 0.1, 0.0});
+        REQUIRE(Approx(luminosity(observer)) == 5.0);
     }
 
     SECTION("Section border photons")
@@ -123,12 +147,12 @@ TEST_CASE("Observer. inFov", "[observer]")
     {
         Observer observer(0., 0., 100., 0., 200, 200);
 
-        REQUIRE(observer.inFov(Photon{{  0.,   0.,     0.}, 0, Direction3d{0., 0., 1.}, 1, 0}));
-        REQUIRE(observer.inFov(Photon{{  0., -0.1,    10.}, 0, Direction3d{0., 0., 1.}, 1, 0}));
-        REQUIRE(observer.inFov(Photon{{  0.,    1.,  100.}, 0, Direction3d{0., 0., 1.}, 1, 0}));
-        REQUIRE(observer.inFov(Photon{{ 10.,    0., -200.}, 0, Direction3d{0., 0., 1.}, 1, 0}));
-        REQUIRE(observer.inFov(Photon{{  0.,   50.,  250.}, 0, Direction3d{0., 0., 1.}, 1, 0}));
-        REQUIRE(observer.inFov(Photon{{-75.,    0., -300.}, 0, Direction3d{0., 0., 1.}, 1, 0}));
+        REQUIRE(observer.inFov(Photon{{  0.,   0.,    0.}, 0, Direction3d{0., 0., 1.}, 1, 0}));
+        REQUIRE(observer.inFov(Photon{{  0., -0.1,   10.}, 0, Direction3d{0., 0., 1.}, 1, 0}));
+        REQUIRE(observer.inFov(Photon{{  0.,   1.,  100.}, 0, Direction3d{0., 0., 1.}, 1, 0}));
+        REQUIRE(observer.inFov(Photon{{ 10.,   0., -200.}, 0, Direction3d{0., 0., 1.}, 1, 0}));
+        REQUIRE(observer.inFov(Photon{{  0.,  50.,  250.}, 0, Direction3d{0., 0., 1.}, 1, 0}));
+        REQUIRE(observer.inFov(Photon{{-75.,   0., -300.}, 0, Direction3d{0., 0., 1.}, 1, 0}));
 
         REQUIRE(observer.inFov(Photon{{ 99., 0., 0.}, 0, Direction3d{0., 0., 1.}, 1, 0}));
         REQUIRE(observer.inFov(Photon{{-99., 0., 0.}, 0, Direction3d{0., 0., 1.}, 1, 0}));

@@ -67,7 +67,7 @@ void Pictures::bin(Photon const& ph, int64_t const xl, int64_t const yl, int64_t
     {
         f_[xl+yl*nx_] += weight * ph.weight() * ph.fi();
         q_[xl+yl*nx_] += weight * ph.weight() * ph.fq();
-        u_[xl+yl*nx_] += weight * ph.weight()*ph.fu();
+        u_[xl+yl*nx_] += weight * ph.weight() * ph.fu();
     }
 }
 
@@ -220,11 +220,12 @@ bool Observer::inFov(const Photon &photon) const
 
 void Observer::bin(Photon const& photon)
 {
-    double const yimage = imageY(photon.pos());
     double const ximage = imageX(photon.pos());
-
-    auto const xl = static_cast<int64_t>(nx_ * ximage / (2.0 * rImage_));
-    auto const yl = static_cast<int64_t>(ny_ * yimage / (2.0 * rImage_));
+    double const yimage = imageY(photon.pos());
+    double const x = nx_ * ximage / (2.0 * rImage_);
+    double const y = ny_ * yimage / (2.0 * rImage_);
+    auto const xl = static_cast<std::int64_t>(x) - (x < 0.0);
+    auto const yl = static_cast<std::int64_t>(y) - (y < 0.0);
 
     double const eps = std::numeric_limits<float>::epsilon();
 
@@ -240,15 +241,19 @@ void Observer::bin(Photon const& photon)
 
 void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &pos2)
 {
-    double const yimage1 = imageY(pos1);
     double const ximage1 = imageX(pos1);
-    auto const xl1 = static_cast<int64_t>(nx_ * ximage1 / (2.0 * rImage_));
-    auto const yl1 = static_cast<int64_t>(ny_ * yimage1 / (2.0 * rImage_));
+    double const yimage1 = imageY(pos1);
+    double const x1 = nx_ * ximage1 / (2.0 * rImage_);
+    double const y1 = ny_ * yimage1 / (2.0 * rImage_);
+    auto const xl1 = static_cast<std::int64_t>(x1) - (x1 < 0.0);
+    auto const yl1 = static_cast<std::int64_t>(y1) - (y1 < 0.0);
 
-    double const yimage2 = imageY(pos2);
     double const ximage2 = imageX(pos2);
-    auto const xl2 = static_cast<int64_t>(nx_ * ximage2 / (2.0 * rImage_));
-    auto const yl2 = static_cast<int64_t>(ny_ * yimage2 / (2.0 * rImage_));
+    double const yimage2 = imageY(pos2);
+    double const x2 = nx_ * ximage2 / (2.0 * rImage_);
+    double const y2 = ny_ * yimage2 / (2.0 * rImage_);
+    auto const xl2 = static_cast<std::int64_t>(x2) - (x2 < 0.0);
+    auto const yl2 = static_cast<std::int64_t>(y2) - (y2 < 0.0);
 
     double const eps = std::numeric_limits<float>::epsilon();
 
