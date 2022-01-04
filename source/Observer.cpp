@@ -218,24 +218,30 @@ bool Observer::inFov(const Photon &photon) const
     return (xl>=0) && (yl >= 0) && ((std::uint32_t)xl < nx_) && ((std::uint32_t)yl < ny_) && r2 >= rMask2_;
 }
 
+
 void Observer::bin(Photon const& photon)
 {
     double const ximage = imageX(photon.pos());
     double const yimage = imageY(photon.pos());
-    double const x = nx_ * ximage / (2.0 * rImage_);
-    double const y = ny_ * yimage / (2.0 * rImage_);
-    auto const xl = static_cast<std::int64_t>(x) - (x < 0.0);
-    auto const yl = static_cast<std::int64_t>(y) - (y < 0.0);
+    double const r2 = (ximage - rImage_)*(ximage - rImage_) + (yimage - rImage_)*(yimage - rImage_);
 
-    double const eps = std::numeric_limits<float>::epsilon();
+    if (r2 >= rMask2_)
+    {
+        double const x = nx_ * ximage / (2.0 * rImage_);
+        double const y = ny_ * yimage / (2.0 * rImage_);
+        auto const xl = static_cast<std::int64_t>(x) - (x < 0.0);
+        auto const yl = static_cast<std::int64_t>(y) - (y < 0.0);
 
-    bin(
-        photon,
-        xl,
-        yl,
-        photon.nscat() != 0 && std::abs(ximage - xl * (2.0 * rImage_) / nx_) < eps,
-        photon.nscat() != 0 && std::abs(yimage - yl * (2.0 * rImage_) / ny_) < eps,
-        1.0);
+        double const eps = std::numeric_limits<float>::epsilon();
+
+        bin(
+            photon,
+            xl,
+            yl,
+            photon.nscat() != 0 && std::abs(ximage - xl * (2.0 * rImage_) / nx_) < eps,
+            photon.nscat() != 0 && std::abs(yimage - yl * (2.0 * rImage_) / ny_) < eps,
+            1.0);
+    }
 }
 
 

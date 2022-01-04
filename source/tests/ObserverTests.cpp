@@ -141,6 +141,28 @@ TEST_CASE("Observer. bin", "[observer]")
 }
 
 
+TEST_CASE("Observer. bin mask", "[observer]")
+{
+    SECTION("Usual photons")
+    {
+        // align image and world axes
+        Observer observer(radians(-90.0), 0.0, 2., 0.5, 4, 4);
+
+        observer.bin(Photon{{ 0.4, 0.4, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1});
+        REQUIRE(Approx(luminosity(observer)) == 1.0);
+
+        observer.bin(Photon{{ -0.4, 0., 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1});
+        REQUIRE(Approx(luminosity(observer)) == 1.0);
+
+        observer.bin(Photon{{ -0.3, -0.3, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1});
+        REQUIRE(Approx(luminosity(observer)) == 1.0);
+
+        observer.bin(Photon{{ 0., -0.51, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1});
+        REQUIRE(Approx(luminosity(observer)) == 2.0);
+    }
+}
+
+
 TEST_CASE("Observer. inFov", "[observer]")
 {
     SECTION("Without mask")
