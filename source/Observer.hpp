@@ -4,6 +4,7 @@
 #include <fstream>
 #include <cstdio>
 #include "Photon.hpp"
+#include "Vector2d.hpp"
 
 // pictures 
 class Pictures
@@ -46,8 +47,8 @@ public:
     void write(std::ostream& file);
     bool inFov(Photon const& photon) const;
     void bin(Photon const& photon);
-    void bin(Photon const& photo, Vector3d const& pos1, Vector3d const& pos2);
-    void binHex(Photon const& photo, Vector3d const& pos1, Vector3d const& pos2);
+    void bin(Photon const& photon, Vector3d const& pos1, Vector3d const& pos2);
+    void binHex(Photon const& photon, Vector3d const& pos1, Vector3d const& pos2);
 
     double phi() const
     {	return direction_.phi();	}
@@ -66,11 +67,12 @@ public:
     {   return result_.f(xl, yl); }
 
 private:
-    inline double imageX(Vector3d const &position) const;
-    inline double imageY(Vector3d const &position) const;
+    inline Vector2d project(Vector3d const &position) const;
+
     inline void binToPixel(Photon const& photon, int64_t x, int64_t y, double weight);
     inline void binPoint(Photon const& photon, int64_t x, int64_t y, bool onXBorder, bool onYBorder, double weight);
-    inline void binLine(Photon const& photon, double ximage1, double yimage1, double ximage2, double yimage2, double lineWeight);
+    inline void binLine(Photon const& photon, const Vector2d &pos1, const Vector2d &pos2, double lineWeight);
+    inline void binMaskedLine(Photon const& photon, const Vector3d &pos1, const Vector3d &pos2, double lineWeight);
 
     Pictures result_, result0_, result1_, result2_;
     Direction3d direction_;

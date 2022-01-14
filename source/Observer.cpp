@@ -219,14 +219,14 @@ bool Observer::inFov(const Photon &photon) const
 
 void Observer::bin(Photon const& photon)
 {
-    double const ximage = imageX(photon.pos());
-    double const yimage = imageY(photon.pos());
-    double const r2 = (ximage - rImage_)*(ximage - rImage_) + (yimage - rImage_)*(yimage - rImage_);
+    Vector2d const imagePos = project(photon.pos());
+    double const r2 = imagePos.norm2();
 
     if (r2 >= rMask2_)
     {
-        double const x = nx_ * ximage / (2.0 * rImage_);
-        double const y = ny_ * yimage / (2.0 * rImage_);
+        Vector2d const imagePosShifted = imagePos + Vector2d{rImage_, rImage_};
+        double const x = nx_ * imagePosShifted.x() / (2.0 * rImage_);
+        double const y = ny_ * imagePosShifted.y() / (2.0 * rImage_);
         auto const xl = static_cast<std::int64_t>(x) - (x < 0.0);
         auto const yl = static_cast<std::int64_t>(y) - (y < 0.0);
 
@@ -236,8 +236,8 @@ void Observer::bin(Photon const& photon)
             photon,
             xl,
             yl,
-            photon.nscat() != 0 && std::abs(ximage - xl * (2.0 * rImage_) / nx_) < eps,
-            photon.nscat() != 0 && std::abs(yimage - yl * (2.0 * rImage_) / ny_) < eps,
+            photon.nscat() != 0 && std::abs(imagePosShifted.x() - xl * (2.0 * rImage_) / nx_) < eps,
+            photon.nscat() != 0 && std::abs(imagePosShifted.y() - yl * (2.0 * rImage_) / ny_) < eps,
             1.0);
     }
 }
@@ -245,36 +245,7 @@ void Observer::bin(Photon const& photon)
 
 void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &pos2)
 {
-    double const ximage1 = imageX(pos1);
-    double const yimage1 = imageY(pos1);
-    double const x1 = nx_ * ximage1 / (2.0 * rImage_);
-    double const y1 = ny_ * yimage1 / (2.0 * rImage_);
-    auto const xl1 = static_cast<std::int64_t>(x1) - (x1 < 0.0);
-    auto const yl1 = static_cast<std::int64_t>(y1) - (y1 < 0.0);
-
-    double const ximage2 = imageX(pos2);
-    double const yimage2 = imageY(pos2);
-    double const x2 = nx_ * ximage2 / (2.0 * rImage_);
-    double const y2 = ny_ * yimage2 / (2.0 * rImage_);
-    auto const xl2 = static_cast<std::int64_t>(x2) - (x2 < 0.0);
-    auto const yl2 = static_cast<std::int64_t>(y2) - (y2 < 0.0);
-
-    double const eps = std::numeric_limits<float>::epsilon();
-
-    if (xl1 == xl2 && yl1 == yl2)
-    {
-        binPoint(
-            photon,
-            xl2,
-            yl2,
-            std::abs(ximage2 - ximage1) < eps && std::abs(ximage2 - xl2 * (2.0 * rImage_) / nx_) < eps,
-            std::abs(yimage2 - yimage1) < eps && std::abs(yimage2 - yl2 * (2.0 * rImage_) / ny_) < eps,
-            1.0);
-
-        return;
-    }
-
-    binLine(photon, ximage1, yimage1, ximage2, yimage2, 1.0);
+    binMaskedLine(photon, pos1, pos2, 1.0);
 }
 
 
@@ -294,47 +265,17 @@ void Observer::binHex(Photon const& photon, Vector3d const& pos1, Vector3d const
     for (int i=0; i!=7; ++i)
     {
         Vector3d const shift = r * (shifts[i].x() * x + shifts[i].y() * y);
-        double const yimage1 = imageY(pos1 + shift);
-        double const ximage1 = imageX(pos1 + shift);
-        double const x1 = nx_ * ximage1 / (2.0 * rImage_);
-        double const y1 = ny_ * yimage1 / (2.0 * rImage_);
-        auto const xl1 = static_cast<std::int64_t>(x1) - (x1 < 0.0);
-        auto const yl1 = static_cast<std::int64_t>(y1) - (y1 < 0.0);
-
-        double const yimage2 = imageY(pos2 + shift);
-        double const ximage2 = imageX(pos2 + shift);
-        double const x2 = nx_ * ximage2 / (2.0 * rImage_);
-        double const y2 = ny_ * yimage2 / (2.0 * rImage_);
-        auto const xl2 = static_cast<std::int64_t>(x2) - (x2 < 0.0);
-        auto const yl2 = static_cast<std::int64_t>(y2) - (y2 < 0.0);
-
-        double const eps = std::numeric_limits<float>::epsilon();
-
-        if (xl1 == xl2 && yl1 == yl2)
-        {
-            binPoint(
-                photon,
-                xl2,
-                yl2,
-                std::abs(ximage2 - ximage1) < eps && std::abs(ximage2 - xl2 * (2.0 * rImage_) / nx_) < eps,
-                std::abs(yimage2 - yimage1) < eps && std::abs(yimage2 - yl2 * (2.0 * rImage_) / ny_) < eps,
-                1.0/7.0);
-        } else {
-            binLine(photon, ximage1, yimage1, ximage2, yimage2, 1.0 / 7.0);
-        }
+        binMaskedLine(photon, pos1 + shift, pos2 + shift, 1.0 / 7.0);
     }
 }
 
 
-inline double Observer::imageX(Vector3d const &position) const
+inline Vector2d Observer::project(Vector3d const &position) const
 {
-    return rImage_ + position.y() * cosp_ - position.x() * sinp_;
+    return { position.y() * cosp_ - position.x() * sinp_,
+        position.z() * direction_.sinTheta() - direction_.cosTheta() * (position.y()*sinp_ + position.x()*cosp_)};
 }
 
-inline double Observer::imageY(Vector3d const &position) const
-{
-    return rImage_ + position.z() * direction_.sinTheta() - direction_.cosTheta() * (position.y()*sinp_ + position.x()*cosp_);
-}
 
 inline void Observer::binToPixel(Photon const& photon, int64_t const x, int64_t const y, double const weight)
 {
@@ -343,6 +284,7 @@ inline void Observer::binToPixel(Photon const& photon, int64_t const x, int64_t 
     result1_.bin(photon, x, y, 1, weight);
     result2_.bin(photon, x, y, 2, weight);
 }
+
 
 inline void Observer::binPoint(const Photon &photon, int64_t const x, int64_t const y, bool const onXBorder, bool const onYBorder, double const weight)
 {
@@ -363,23 +305,59 @@ inline void Observer::binPoint(const Photon &photon, int64_t const x, int64_t co
     }
 }
 
-inline void Observer::binLine(const Photon &photon, double const ximage1, double const yimage1, double const ximage2, double const yimage2, double const lineWeight)
+
+inline void Observer::binLine(Photon const& photon, const Vector2d &pos1, const Vector2d &pos2, double const weight)
 {
+    double const x1 = nx_ * pos1.x() / (2.0 * rImage_);
+    double const y1 = ny_ * pos1.y() / (2.0 * rImage_);
+    auto const xl1 = static_cast<std::int64_t>(x1) - (x1 < 0.0);
+    auto const yl1 = static_cast<std::int64_t>(y1) - (y1 < 0.0);
+
+    double const x2 = nx_ * pos2.x() / (2.0 * rImage_);
+    double const y2 = ny_ * pos2.y() / (2.0 * rImage_);
+    auto const xl2 = static_cast<std::int64_t>(x2) - (x2 < 0.0);
+    auto const yl2 = static_cast<std::int64_t>(y2) - (y2 < 0.0);
+
     double const eps = std::numeric_limits<float>::epsilon();
 
-    double const xImageMin = std::min(ximage1, ximage2);
-    double const xImageMax = std::max(ximage1, ximage2);
-    double const bx1       = nx_ * xImageMin / (2.0 * rImage_);
-    double const bx2       = nx_ * xImageMax / (2.0 * rImage_);
-    auto borderX           = static_cast<std::int64_t>(bx1) - (bx1 < 0);
-    auto const lastBorderX = static_cast<std::int64_t>(bx2) - (bx2 < 0);
+    if (xl1 == xl2 && yl1 == yl2)
+    {
+        binPoint(
+            photon,
+            xl2,
+            yl2,
+            std::abs(pos2.x() - pos1.x()) < eps && std::abs(pos2.x() - xl2 * (2.0 * rImage_) / nx_) < eps,
+            std::abs(pos2.y() - pos1.y()) < eps && std::abs(pos2.y() - yl2 * (2.0 * rImage_) / ny_) < eps,
+            weight);
 
-    double const yImageMin = std::min(yimage1, yimage2);
-    double const yImageMax = std::max(yimage1, yimage2);
-    double const by1       = ny_ * yImageMin / (2.0 * rImage_);
-    double const by2       = ny_ * yImageMax / (2.0 * rImage_);
-    auto borderY           = static_cast<std::int64_t>(by1) - (by1 < 0);
-    auto const lastBorderY = static_cast<std::int64_t>(by2) - (by2 < 0);
+        return;
+    }
+
+    double xImageMin = pos1.x();
+    double xImageMax = pos2.x();
+    int64_t borderX = xl1;
+    int64_t lastBorderX = xl2;
+
+    if (pos1.x() > pos2.x())
+    {
+        xImageMin = pos2.x();
+        xImageMax = pos1.x();
+        borderX = xl2;
+        lastBorderX = xl1;
+    }
+
+    double yImageMin = pos1.y();
+    double yImageMax = pos2.y();;
+    int64_t borderY = yl1;
+    int64_t lastBorderY = yl2;
+
+    if (pos1.y() > pos2.y())
+    {
+        yImageMin = pos2.y();
+        yImageMax = pos1.y();
+        borderY = yl2;
+        lastBorderY = yl1;
+    }
 
     double const dx = xImageMax - xImageMin;
     double const dy = yImageMax - yImageMin;
@@ -407,7 +385,7 @@ inline void Observer::binLine(const Photon &photon, double const ximage1, double
                 borderY,
                 false,
                 dy < eps && std::fabs(y - borderY * (2.0 * rImage_) / ny_) < eps,
-                w / totalW * lineWeight);
+                weight * w / totalW);
 
             ++borderX;
             x = xborder;
@@ -422,11 +400,102 @@ inline void Observer::binLine(const Photon &photon, double const ximage1, double
                 borderY,
                 dx < eps && std::fabs(x - borderX * (2.0 * rImage_) / nx_) < eps,
                 false,
-                w / totalW * lineWeight);
+                weight * w / totalW);
 
             ++borderY;
             x = xNew;
             y = yborder;
+        }
+    }
+}
+
+
+void Observer::binMaskedLine(Photon const& photon, const Vector3d &pos1, const Vector3d &pos2, double const lineWeight)
+{
+    Vector2d const imagePos1 = project(pos1);
+    Vector2d const imagePos2 = project(pos2);
+    Vector2d const shift{rImage_, rImage_};
+
+    if (rMask2_ < std::numeric_limits<double>::epsilon())
+    {
+        binLine(photon, imagePos1 + shift, imagePos2 + shift, lineWeight);
+        return;
+    }
+
+    if ((imagePos1 - imagePos2).norm2() < std::numeric_limits<double>::epsilon() && imagePos1.norm2() >= rMask2_)
+    {
+        binLine(photon, imagePos1 + shift, imagePos2 + shift, lineWeight);
+        return;
+    }
+
+    double const r1sq = imagePos1.norm2();
+    double const r2sq = imagePos2.norm2();
+
+    if (r1sq <= rMask2_ && r2sq <= rMask2_)
+    {
+        return;
+    }
+
+    // line equation Ax + By + C = 0 based on two points
+    double const A = imagePos1.y() - imagePos2.y();
+    double const B = imagePos2.x() - imagePos1.x();
+    double const C = imagePos1.x() * imagePos2.y() - imagePos2.x() * imagePos1.y();
+
+    // closest point on the line
+    double const A2B2 = A * A + B * B;
+    Vector2d const closest{-A * C / A2B2, -B * C / A2B2};
+
+    if (rMask2_ <= closest.norm2() + std::numeric_limits<double>::epsilon())
+    {
+        binLine(photon, imagePos1 + shift, imagePos2 + shift, lineWeight);
+        return;
+    }
+
+    double const d2 = rMask2_ - C * C / A2B2;
+    double const m = std::sqrt(d2 / A2B2);
+    double const length = std::sqrt(A2B2);
+
+    Vector2d const line{-B, A};
+
+    double const cos1 = line * (closest - imagePos1);
+    double const cos2 = line * (closest - imagePos2);
+
+    if (cos1 * cos2 < 0)
+    {
+        double const cos1sign = (cos1 > 0.0) ? 1.0 : -1.0;
+        // first subsegment
+        if ((imagePos1 - closest).norm2() > d2)
+        {
+            Vector2d const border = closest + Vector2d{cos1sign * B * m, -cos1sign * A * m};
+            binLine(photon, imagePos1 + shift, border + shift, lineWeight * (imagePos1 - border).norm() / length);
+        }
+
+        // second subsegment
+        if ((imagePos2 - closest).norm2() > d2)
+        {
+            Vector2d const border = closest + Vector2d{-cos1sign * B * m, cos1sign * A * m};
+            binLine(photon, imagePos2 + shift, border + shift, lineWeight * (imagePos2 - border).norm() / length);
+        }
+    }
+    else
+    {
+        double const cosSign = (cos1 > 0.0 || cos2 > 0.0) ? 1.0 : -1.0;
+        Vector2d const border = closest + Vector2d{cosSign * B * m, -cosSign * A * m};
+
+        double const cos1b = line * (border - imagePos1);
+        double const cos2b = line * (border - imagePos2);
+        if (cos1b * cos2b < 0)
+        {
+            // intersects
+            if (cos1b * cosSign > 0)
+            {
+                binLine(photon, imagePos1 + shift, border + shift, lineWeight * (imagePos1 - border).norm() / length);
+            } else {
+                binLine(photon, imagePos2 + shift, border + shift, lineWeight * (imagePos2 - border).norm() / length);
+            }
+        } else if (cos1b * cosSign >= 0 && cos2b * cosSign >= 0) {
+            // outside
+            binLine(photon, imagePos1 + shift, imagePos2 + shift, lineWeight);
         }
     }
 }
