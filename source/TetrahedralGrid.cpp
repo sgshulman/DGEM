@@ -734,7 +734,7 @@ std::uint64_t TetrahedralGrid::cellId(const Vector3d &position) const
 
 void TetrahedralGrid::peeloff(Photon ph, Observer &observer, const IDustCPtr &dust) const
 {
-    if (!observer.inFov(ph))
+    if (!observer.inFov(ph.pos()))
     {
         return;
     }
@@ -755,7 +755,7 @@ void TetrahedralGrid::peeloff(Photon ph, Observer &observer, const IDustCPtr &du
 
 void TetrahedralGrid::peeloff(Photon ph, Observer &observer, const IDustCPtr &dust, Vector3d const& pos1, Vector3d const& pos2) const
 {
-    if (!observer.inFov(ph))
+    if (!observer.inFov(ph.pos()))
     {
         return;
     }
@@ -776,7 +776,7 @@ void TetrahedralGrid::peeloff(Photon ph, Observer &observer, const IDustCPtr &du
 
 void TetrahedralGrid::peeloffHex(Photon ph, Observer &observer, const IDustCPtr &dust, Vector3d const& pos1, Vector3d const& pos2) const
 {
-    if (!observer.inFov(ph))
+    if (!observer.inFov(ph.pos()))
     {
         return;
     }

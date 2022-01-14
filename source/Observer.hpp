@@ -45,7 +45,7 @@ public:
     void normalize(std::uint64_t numPhotons);
     void writeToMapFiles(bool fWriteSingleAndDoubleScatterings, std::uint32_t numberOfScatterings);
     void write(std::ostream& file);
-    bool inFov(Photon const& photon) const;
+    bool inFov(Vector3d const& pos) const;
     void bin(Photon const& photon);
     void bin(Photon const& photon, Vector3d const& pos1, Vector3d const& pos2);
     void binHex(Photon const& photon, Vector3d const& pos1, Vector3d const& pos2);

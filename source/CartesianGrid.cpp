@@ -285,7 +285,7 @@ int CartesianGrid::movePhotonAtRandomDepth(Photon &ph, IRandomGenerator *ran) co
 
 void CartesianGrid::peeloff(Photon ph, Observer& observer, IDustCRef dust) const
 {
-    if (!observer.inFov(ph))
+    if (!observer.inFov(ph.pos()))
     {
         return;
     }
@@ -307,7 +307,7 @@ void CartesianGrid::peeloff(Photon ph, Observer& observer, IDustCRef dust) const
 
 void CartesianGrid::peeloff(Photon ph, Observer &observer, const IDustCPtr &dust, Vector3d const& pos1, Vector3d const& pos2) const
 {
-    if (!observer.inFov(ph))
+    if (!observer.inFov(ph.pos()))
     {
         return;
     }
@@ -328,7 +328,7 @@ void CartesianGrid::peeloff(Photon ph, Observer &observer, const IDustCPtr &dust
 
 void CartesianGrid::peeloffHex(Photon ph, Observer &observer, const IDustCPtr &dust, Vector3d const& pos1, Vector3d const& pos2) const
 {
-    if (!observer.inFov(ph))
+    if (!observer.inFov(ph.pos()))
     {
         return;
     }
