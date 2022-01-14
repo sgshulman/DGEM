@@ -147,7 +147,8 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
 
         for (std::uint64_t io=0; io!=observers->size(); ++io)
         {
-            if (!intersectSphereSource(pointSources_[is].pos(), (*observers)[io].direction().vector()))
+            if ((*observers)[io].inFov(pointSources_[is].pos())
+                && !intersectSphereSource(pointSources_[is].pos(), (*observers)[io].direction().vector()))
             {
                 // Set photon location, grid cell, and direction of observation
                 Photon ph(pointSources_[is].pos(), pointSources_[is].cellId(), (*observers)[io].direction(), 1.0, 0);
@@ -191,7 +192,8 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
                 auto const position = starSurface(sphereSources_[is], sphereDir_.direction(ip), grid);
                 double cosTheta = sphereDir_.direction(ip) * (*observers)[io].direction().vector();
 
-                if (cosTheta >= 0 && !intersectSphereSource(position.first, (*observers)[io].direction().vector(), is))
+                if (cosTheta >= 0 && (*observers)[io].inFov(position.first)
+                    && !intersectSphereSource(position.first, (*observers)[io].direction().vector(), is))
                 {
                     // Set photon location, grid cell, and direction of observation
                     Photon ph(position.first, position.second, (*observers)[io].direction(), 1.0, 0);
