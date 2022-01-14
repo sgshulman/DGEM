@@ -69,18 +69,21 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
 
         for (std::uint64_t io=0; io!=observers->size(); ++io)
         {
-            // Set photon location, grid cell, and direction of observation
-            Photon ph(pointSources_[is].pos(), pointSources_[is].cellId(), (*observers)[io].direction(), 1.0, 0);
+            if ((*observers)[io].inFov(pointSources_[is].pos()))
+            {
+                // Set photon location, grid cell, and direction of observation
+                Photon ph(pointSources_[is].pos(), pointSources_[is].cellId(), (*observers)[io].direction(), 1.0, 0);
 
-            // Find optical depth, tau1, to edge of grid along viewing direction
-            double tau1 = grid->findRealOpticalDepth(pointSources_[is].pos(), (*observers)[io].direction().vector());
+                // Find optical depth, tau1, to edge of grid along viewing direction
+                double tau1 = grid->findRealOpticalDepth(pointSources_[is].pos(), (*observers)[io].direction().vector());
 
-            // direct photon weight is exp(-tau1)/4pi
-            ph.weight() = nph * std::exp(-tau1) / 4.0 / PI;
+                // direct photon weight is exp(-tau1)/4pi
+                ph.weight() = nph * std::exp(-tau1) / 4.0 / PI;
 
-            // bin the photon into the image according to its position and
-            // direction of travel.
-            (*observers)[io].bin(ph);
+                // bin the photon into the image according to its position and
+                // direction of travel.
+                (*observers)[io].bin(ph);
+            }
         }
     }
 }
