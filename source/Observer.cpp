@@ -203,17 +203,14 @@ void Observer::write(std::ostream& stream)
     stream << "\n";
 }
 
-bool Observer::inFov(const Photon &photon) const
+bool Observer::inFov(const Vector3d &pos) const
 {
-    double const yimage = photon.pos().z() * direction_.sinTheta() -
-                          direction_.cosTheta() * (photon.pos().y()*sinp_ + photon.pos().x()*cosp_);
+    Vector2d const imagePos = project(pos);
 
-    double const ximage = photon.pos().y()*cosp_ - photon.pos().x()*sinp_;
+    double const r2 = imagePos.norm2();
 
-    double const r2 = yimage * yimage + ximage * ximage;
-
-    auto const xl = static_cast<int64_t>(nx_ * (rImage_ + ximage) / (2.0 * rImage_));
-    auto const yl = static_cast<int64_t>(ny_ * (rImage_ + yimage) / (2.0 * rImage_));
+    auto const xl = static_cast<int64_t>(nx_ * (rImage_ + imagePos.x()) / (2.0 * rImage_));
+    auto const yl = static_cast<int64_t>(ny_ * (rImage_ + imagePos.y()) / (2.0 * rImage_));
 
     return (xl>=0) && (yl >= 0) && ((std::uint32_t)xl < nx_) && ((std::uint32_t)yl < ny_) && r2 >= rMask2_;
 }
