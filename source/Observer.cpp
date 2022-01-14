@@ -221,14 +221,14 @@ bool Observer::inFov(const Photon &photon) const
 
 void Observer::bin(Photon const& photon)
 {
-    double const ximage = imageX(photon.pos());
-    double const yimage = imageY(photon.pos());
-    double const r2 = (ximage - rImage_)*(ximage - rImage_) + (yimage - rImage_)*(yimage - rImage_);
+    Vector2d const imagePos = project(photon.pos());
+    double const r2 = imagePos.norm2();
 
     if (r2 >= rMask2_)
     {
-        double const x = nx_ * ximage / (2.0 * rImage_);
-        double const y = ny_ * yimage / (2.0 * rImage_);
+        Vector2d const imagePosShifted = imagePos + Vector2d{rImage_, rImage_};
+        double const x = nx_ * imagePosShifted.x() / (2.0 * rImage_);
+        double const y = ny_ * imagePosShifted.y() / (2.0 * rImage_);
         auto const xl = static_cast<std::int64_t>(x) - (x < 0.0);
         auto const yl = static_cast<std::int64_t>(y) - (y < 0.0);
 
@@ -238,26 +238,22 @@ void Observer::bin(Photon const& photon)
             photon,
             xl,
             yl,
-            photon.nscat() != 0 && std::abs(ximage - xl * (2.0 * rImage_) / nx_) < eps,
-            photon.nscat() != 0 && std::abs(yimage - yl * (2.0 * rImage_) / ny_) < eps,
+            photon.nscat() != 0 && std::abs(imagePosShifted.x() - xl * (2.0 * rImage_) / nx_) < eps,
+            photon.nscat() != 0 && std::abs(imagePosShifted.y() - yl * (2.0 * rImage_) / ny_) < eps,
             1.0);
     }
 }
 
 
-void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &pos2)
+inline void Observer::bin(Photon const& photon, const Vector2d &pos1, const Vector2d &pos2, double const weight)
 {
-    double const ximage1 = imageX(pos1);
-    double const yimage1 = imageY(pos1);
-    double const x1 = nx_ * ximage1 / (2.0 * rImage_);
-    double const y1 = ny_ * yimage1 / (2.0 * rImage_);
+    double const x1 = nx_ * pos1.x() / (2.0 * rImage_);
+    double const y1 = ny_ * pos1.y() / (2.0 * rImage_);
     auto const xl1 = static_cast<std::int64_t>(x1) - (x1 < 0.0);
     auto const yl1 = static_cast<std::int64_t>(y1) - (y1 < 0.0);
 
-    double const ximage2 = imageX(pos2);
-    double const yimage2 = imageY(pos2);
-    double const x2 = nx_ * ximage2 / (2.0 * rImage_);
-    double const y2 = ny_ * yimage2 / (2.0 * rImage_);
+    double const x2 = nx_ * pos2.x() / (2.0 * rImage_);
+    double const y2 = ny_ * pos2.y() / (2.0 * rImage_);
     auto const xl2 = static_cast<std::int64_t>(x2) - (x2 < 0.0);
     auto const yl2 = static_cast<std::int64_t>(y2) - (y2 < 0.0);
 
@@ -269,35 +265,35 @@ void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &p
             photon,
             xl2,
             yl2,
-            std::abs(ximage2 - ximage1) < eps && std::abs(ximage2 - xl2 * (2.0 * rImage_) / nx_) < eps,
-            std::abs(yimage2 - yimage1) < eps && std::abs(yimage2 - yl2 * (2.0 * rImage_) / ny_) < eps,
-            1.0);
+            std::abs(pos2.x() - pos1.x()) < eps && std::abs(pos2.x() - xl2 * (2.0 * rImage_) / nx_) < eps,
+            std::abs(pos2.y() - pos1.y()) < eps && std::abs(pos2.y() - yl2 * (2.0 * rImage_) / ny_) < eps,
+            weight);
 
         return;
     }
 
-    double xImageMin = std::min(ximage1, ximage2);
-    double xImageMax = std::max(ximage1, ximage2);
+    double xImageMin = pos1.x();
+    double xImageMax = pos2.x();
     int64_t borderX = xl1;
     int64_t lastBorderX = xl2;
 
-    if (ximage1 > ximage2)
+    if (pos1.x() > pos2.x())
     {
-        xImageMin = ximage2;
-        xImageMax = ximage1;
+        xImageMin = pos2.x();
+        xImageMax = pos1.x();
         borderX = xl2;
         lastBorderX = xl1;
     }
 
-    double yImageMin = yimage1;
-    double yImageMax = yimage2;
+    double yImageMin = pos1.y();
+    double yImageMax = pos2.y();;
     int64_t borderY = yl1;
     int64_t lastBorderY = yl2;
 
-    if (yimage1 > yimage2)
+    if (pos1.y() > pos2.y())
     {
-        yImageMin = yimage2;
-        yImageMax = yimage1;
+        yImageMin = pos2.y();
+        yImageMax = pos1.y();
         borderY = yl2;
         lastBorderY = yl1;
     }
@@ -328,7 +324,7 @@ void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &p
                 borderY,
                 false,
                 dy < eps && std::fabs(y - borderY * (2.0 * rImage_) / ny_) < eps,
-                w / totalW);
+                weight * w / totalW);
 
             ++borderX;
             x = xborder;
@@ -343,7 +339,7 @@ void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &p
                 borderY,
                 dx < eps && std::fabs(x - borderX * (2.0 * rImage_) / nx_) < eps,
                 false,
-                w / totalW);
+                weight * w / totalW);
 
             ++borderY;
             x = xNew;
@@ -352,15 +348,104 @@ void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &p
     }
 }
 
-inline double Observer::imageX(Vector3d const &position) const
+
+void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &pos2)
 {
-    return rImage_ + position.y() * cosp_ - position.x() * sinp_;
+    Vector2d const imagePos1 = project(pos1);
+    Vector2d const imagePos2 = project(pos2);
+    Vector2d const shift{rImage_, rImage_};
+
+    if (rMask2_ < std::numeric_limits<double>::epsilon())
+    {
+        bin(photon, imagePos1 + shift, imagePos2 + shift, 1.0);
+        return;
+    }
+
+    if ((imagePos1 - imagePos2).norm2() < std::numeric_limits<double>::epsilon())
+    {
+        bin(photon);
+        return;
+    }
+
+    double const r1sq = (imagePos1).norm2();
+    double const r2sq = (imagePos2).norm2();
+
+    if (r1sq <= rMask2_ && r2sq <= rMask2_)
+    {
+        return;
+    }
+
+    // line equation Ax + By + C = 0 based on two points
+    double const A = imagePos1.y() - imagePos2.y();
+    double const B = imagePos2.x() - imagePos1.x();
+    double const C = imagePos1.x() * imagePos2.y() - imagePos2.x() * imagePos1.y();
+
+    // closest point on the line
+    double const A2B2 = A * A + B * B;
+    Vector2d const closest{-A * C / A2B2, -B * C / A2B2};
+
+    if (rMask2_ <= closest.norm2() + std::numeric_limits<double>::epsilon())
+    {
+        bin(photon, imagePos1 + shift, imagePos2 + shift, 1.0);
+        return;
+    }
+
+    double const d2 = rMask2_ - C * C / A2B2;
+    double const m = std::sqrt(d2 / A2B2);
+    double const length = std::sqrt(A2B2);
+
+    Vector2d const line{-B, A};
+
+    double const cos1 = line * (closest - imagePos1);
+    double const cos2 = line * (closest - imagePos2);
+
+    if (cos1 * cos2 < 0)
+    {
+        double const cos1sign = (cos1 > 0.0) ? 1.0 : -1.0;
+        // first subsegment
+        if ((imagePos1 - closest).norm2() > d2)
+        {
+            Vector2d const border = closest + Vector2d{cos1sign * B * m, -cos1sign * A * m};
+            bin(photon, imagePos1 + shift, border + shift, (imagePos1 - border).norm() / length);
+        }
+
+        // second subsegment
+        if ((imagePos2 - closest).norm2() > d2)
+        {
+            Vector2d const border = closest + Vector2d{-cos1sign * B * m, cos1sign * A * m};
+            bin(photon, imagePos2 + shift, border + shift, (imagePos2 - border).norm() / length);
+        }
+    }
+    else
+    {
+        double const cosSign = (cos1 > 0.0 || cos2 > 0.0) ? 1.0 : -1.0;
+        Vector2d const border = closest + Vector2d{cosSign * B * m, -cosSign * A * m};
+
+        double const cos1b = line * (border - imagePos1);
+        double const cos2b = line * (border - imagePos2);
+        if (cos1b * cos2b < 0)
+        {
+            // intersects
+            if (cos1b * cosSign > 0)
+            {
+                bin(photon, imagePos1 + shift, border + shift, (imagePos1 - border).norm() / length);
+            } else {
+                bin(photon, imagePos2 + shift, border + shift, (imagePos2 - border).norm() / length);
+            }
+        } else if (cos1b * cosSign >= 0 && cos2b * cosSign >= 0) {
+            // outside
+            bin(photon, imagePos1 + shift, imagePos2 + shift, 1.0);
+        }
+    }
 }
 
-inline double Observer::imageY(Vector3d const &position) const
+
+inline Vector2d Observer::project(Vector3d const &position) const
 {
-    return rImage_ + position.z() * direction_.sinTheta() - direction_.cosTheta() * (position.y()*sinp_ + position.x()*cosp_);
+    return { position.y() * cosp_ - position.x() * sinp_,
+        position.z() * direction_.sinTheta() - direction_.cosTheta() * (position.y()*sinp_ + position.x()*cosp_)};
 }
+
 
 inline void Observer::bin(Photon const& photon, int64_t const x, int64_t const y, double const weight)
 {

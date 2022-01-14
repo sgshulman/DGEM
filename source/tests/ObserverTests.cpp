@@ -160,6 +160,129 @@ TEST_CASE("Observer. bin mask", "[observer]")
         observer.bin(Photon{{ 0., -0.51, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1});
         REQUIRE(Approx(luminosity(observer)) == 2.0);
     }
+
+    SECTION("Section photons")
+    {
+        // align image and world axes
+        Observer observer(radians(-90.0), 0.0, 2., 0.5, 4, 4);
+
+        SECTION("Half - along the center - one side")
+        {
+            observer.bin(Photon{{ 0.0, 0.5, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {0., 0.1, 0.0}, {0.0, 0.9, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 0.5);
+
+            observer.bin(Photon{{ 0.0, -0.5, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {0., -0.1, 0.0}, {0.0, -0.9, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 1.0);
+
+            observer.bin(Photon{{ 0.5, 0.0, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {0.1, 0.0, 0.0}, {0.9, 0.0, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 1.5);
+
+            observer.bin(Photon{{ -0.5, -0.0, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {-0.1, 0.0, 0.0}, {-0.9, 0.0, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 2.0);
+        }
+
+        SECTION("Half - along the center - one side - reversed points order")
+        {
+            observer.bin(Photon{{ 0.0, 0.5, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {0.0, 0.9, 0.0}, {0., 0.1, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 0.5);
+
+            observer.bin(Photon{{ 0.0, -0.5, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {0.0, -0.9, 0.0}, {0., -0.1, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 1.0);
+
+            observer.bin(Photon{{ 0.5, 0.0, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {0.9, 0.0, 0.0}, {0.1, 0.0, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 1.5);
+
+            observer.bin(Photon{{ -0.5, -0.0, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {-0.9, 0.0, 0.0}, {-0.1, 0.0, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 2.0);
+        }
+
+        SECTION("Half - along the center - two side")
+        {
+            observer.bin(Photon{{ 0.0, 0.5, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {0., -0.1, 0.0}, {0.0, 1.1, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 0.5);
+
+            observer.bin(Photon{{ 0.0, -0.5, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {0., 0.1, 0.0}, {0.0, -1.1, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 1.0);
+
+            observer.bin(Photon{{ 0.5, 0.0, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {-0.1, 0.0, 0.0}, {1.1, 0.0, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 1.5);
+
+            observer.bin(Photon{{ -0.5, -0.0, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {0.1, 0.0, 0.0}, {-1.1, 0.0, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 2.0);
+
+            observer.bin(Photon{{ 0.0, 0.5, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {0.0, 1.1, 0.0}, {0., -0.1, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 2.5);
+        }
+
+        SECTION("Half - shifted")
+        {
+            observer.bin(Photon{{ 0.0, 0.5, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {0.1, 0.4, 0.0}, {-0.1, 0.6, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 0.5);
+
+            observer.bin(Photon{{ 0.0, 0.5, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {-0.1, 0.6, 0.0}, {0.1, 0.4, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 1.0);
+        }
+
+        SECTION("Outside - along the center")
+        {
+            observer.bin(Photon{{ 0.0, 1.5, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {0.0, 1.4, 0.0}, {0.0, 1.6, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 1.0);
+
+            observer.bin(Photon{{ 1.5, 1.5, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {1.4, 1.4, 0.0}, {1.6, 1.6, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 2.0);
+        }
+
+        SECTION("Outside - shifted")
+        {
+            observer.bin(Photon{{ 0.2, 1.5, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {0.2, 1.4, 0.0}, {0.2, 1.6, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 1.0);
+
+            observer.bin(Photon{{ 1.0, 0.9, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {1.1, 1.0, 0.0}, {0.9, 0.8, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 2.0);
+        }
+
+        SECTION("Outside - far away")
+        {
+            observer.bin(Photon{{ 1.0, 1.0, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {0.9, 1.1, 0.0}, {1.1, 0.9, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 1.0);
+
+            observer.bin(Photon{{ 1.0, -1.0, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {1.0, 0.0, 0.0}, {1.0, -2.0, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 2.0);
+        }
+
+        SECTION("Inner")
+        {
+            observer.bin(Photon{{ 0.0, 0.0, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {-0.4, 0.0, 0.0}, {0.4, 0.0, 0.0});
+            REQUIRE(luminosity(observer) < std::numeric_limits<double>::epsilon());
+
+            observer.bin(Photon{{ 0.0, 0.0, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {0.0, -0.4, 0.0}, {0.0, 0.4, 0.0});
+            REQUIRE(luminosity(observer) < std::numeric_limits<double>::epsilon());
+
+            observer.bin(Photon{{ 0.1, 0.1, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {0.1, 0.05, 0.0}, {0.1, 0.15, 0.0});
+            REQUIRE(luminosity(observer) < std::numeric_limits<double>::epsilon());
+
+            observer.bin(Photon{{ 0.2, 0.2, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {0.3, 0.1, 0.0}, {0.1, 0.3, 0.0});
+            REQUIRE(luminosity(observer) < std::numeric_limits<double>::epsilon());
+        }
+
+        SECTION("Single point")
+        {
+            observer.bin(Photon{{ 0.5, 0.5, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {0.5, 0.5, 0.0}, {0.5, 0.5, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 1.0);
+
+            observer.bin(Photon{{ 0.2, 0.2, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {0.2, 0.2, 0.0}, {0.2, 0.2, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 1.0);
+        }
+
+        SECTION("Long - along the center")
+        {
+            observer.bin(Photon{{ 0.0, 0.0, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {1.0, 0.0, 0.0}, {-1.0, 0.0, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 0.5);
+
+            observer.bin(Photon{{ 0.0, 0.0, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1}, {0.0, -0.6, 0.0}, {0.0, 1.4, 0.0});
+            REQUIRE(Approx(luminosity(observer)) == 1.0);
+        }
+    }
 }
 
 

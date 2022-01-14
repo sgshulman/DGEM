@@ -4,6 +4,7 @@
 #include <ostream>
 #include <cstdio>
 #include "Photon.hpp"
+#include "Vector2d.hpp"
 
 // pictures 
 class Pictures
@@ -65,10 +66,11 @@ public:
     {   return result_.f(xl, yl); }
 
 private:
-    inline double imageX(Vector3d const &position) const;
-    inline double imageY(Vector3d const &position) const;
+    inline Vector2d project(Vector3d const &position) const;
+
     inline void bin(Photon const& photon, int64_t x, int64_t y, double weight);
     inline void bin(Photon const& photon, int64_t x, int64_t y, bool onXBorder, bool onYBorder, double weight);
+    inline void bin(Photon const& photon, const Vector2d &pos1, const Vector2d &pos2, double const weight);
 
     Pictures result_, result0_, result1_, result2_;
     Direction3d direction_;
