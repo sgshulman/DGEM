@@ -10,7 +10,7 @@ class Directions {
         explicit Directions(std::uint32_t NumOfDirectionsLevels, bool useHEALPixGrid);
 
         // Direction grid for sphere source
-        explicit Directions(std::uint32_t NumOfDirectionsLevels);
+        explicit Directions(std::uint32_t Nphi, std::uint32_t NumOfDirectionsLevels, bool ringScheme);
 
         ~Directions()
         {
@@ -35,6 +35,7 @@ class Directions {
     private:
         // Isolatitude sphere tessalation with N_theta = 3, Nphi must be even
         void isolatitudeGrid(std::uint32_t Nphi, std::uint32_t Nside);
+        void isolatitudeGridNested(std::uint32_t Nphi, std::uint32_t const Nside);
 
         Vector3d *points_{ nullptr };
         double   *w_{ nullptr };

@@ -290,10 +290,16 @@ Directions::Directions(std::uint32_t const NumOfDirectionsLevels, bool const use
     }
 }
 
-// HEALPix like equal-area isolatitude tessellations of the sphere with N_theta = 3 and N_phi = 6
-Directions::Directions(std::uint32_t const NumOfDirectionsLevels)
+
+// HEALPix like equal-area isolatitude tessellations of the sphere with N_theta = 3
+Directions::Directions(std::uint32_t const Nphi, std::uint32_t const NumOfDirectionsLevels, bool const ringScheme)
 {
-    isolatitudeGrid(6, NumOfDirectionsLevels);
+    if (ringScheme)
+    {
+        isolatitudeGrid(Nphi, NumOfDirectionsLevels);
+    } else { // Nested Scheme
+        isolatitudeGridNested(Nphi, NumOfDirectionsLevels);
+    }
 }
 
 
@@ -321,7 +327,7 @@ void Directions::isolatitudeGrid(std::uint32_t Nphi, std::uint32_t const Nside)
         double const z = 1 - (i*i) / (3. * Nside * Nside);
         double const phi = 2 * PI / (Nphi * i) * (j - 0.5);
         points_[p] = Vector3d(phi, std::acos(z));
-        points_[directionsNumber_ - 1 - p] = Vector3d(PI + phi, std::acos(-z));
+        points_[directionsNumber_ - 1 - p] = Vector3d(2 * PI - phi, std::acos(-z));
     }
 
     // Equatorial belts
@@ -335,10 +341,13 @@ void Directions::isolatitudeGrid(std::uint32_t Nphi, std::uint32_t const Nside)
         assert(1 <= j && j <= Nphi * Nside);
 
         double const z = 4.0 / 3 - (2 * i) / (3. * Nside);
-        std::uint32_t const s = (i - Nside + 1) % 2;
-        double const phi = 2 * PI / (Nphi * Nside) * (j - 0.5 * s);
+        std::uint32_t const s = (i - Nside) % 2;
+
+        double const phi = 2 * PI / (Nphi * Nside) * (j - 0.5 * (1 + s));
+        double const phi2 = 2 * PI / (Nphi * Nside) * (j - 0.5 * (1 - s));
+
         points_[p] = Vector3d(phi, std::acos(z));
-        points_[directionsNumber_ - 1 - p] = Vector3d(PI + phi, std::acos(-z));
+        points_[directionsNumber_ - 1 - p] = Vector3d(2 * PI - phi2, std::acos(-z));
     }
 
     w_ = new double[directionsNumber_]{};
@@ -348,3 +357,67 @@ void Directions::isolatitudeGrid(std::uint32_t Nphi, std::uint32_t const Nside)
         w_[i] = 1.0;
     }
 }
+
+
+void Directions::isolatitudeGridNested(std::uint32_t Nphi, std::uint32_t const Nside)
+{
+    assert(Nphi % 2 == 0);
+
+    directionsNumber_ = 3 * Nphi * Nside * Nside;
+    points_ = new Vector3d[directionsNumber_]{};
+
+    for (std::uint64_t id = 0; id != directionsNumber_; ++id)
+    {
+        std::uint64_t const f = id / (Nside * Nside);
+        std::uint64_t const frow = f / Nphi;
+
+        std::uint64_t const squareId0 = id % (Nside * Nside);
+
+        std::uint64_t const squareId1 = (squareId0 & 0x9999999999999999) | ((squareId0 & 0x4444444444444444) >> 1) | ((squareId0 & 0x2222222222222222) << 1);
+        std::uint64_t const squareId2 = (squareId1 & 0xC3C3C3C3C3C3C3C3) | ((squareId1 & 0x3030303030303030) >> 2) | ((squareId1 & 0x0C0C0C0C0C0C0C0C) << 2);
+        std::uint64_t const squareId3 = (squareId2 & 0xF00FF00FF00FF00F) | ((squareId2 & 0x0F000F000F000F00) >> 4) | ((squareId2 & 0x00F000F000F000F0) << 4);
+        std::uint64_t const squareId4 = (squareId3 & 0xFF0000FFFF0000FF) | ((squareId3 & 0x00FF000000FF0000) >> 8) | ((squareId3 & 0x0000FF000000FF00) << 8);
+        std::uint64_t const squareId5 = (squareId4 & 0xFFFF00000000FFFF) | ((squareId4 & 0x0000FFFF00000000) >>16) | ((squareId4 & 0x00000000FFFF0000) <<16);
+        std::uint64_t const x = squareId5 & 0x00000000FFFFFFFF;
+        std::uint64_t const y = (squareId5 & 0xFFFFFFFF00000000) >> 32;
+
+        std::uint64_t const v = x + y; // [0, 2*(Nside-1)]
+        std::uint64_t const h = x - y; // [-(Nside-1), (Nside-1)]
+
+        std::uint64_t const F1 = frow + 2;
+        std::uint64_t const F2 = 2 * (f % Nphi) - (frow % 2) + 1;
+
+        std::uint64_t i = F1 * Nside - v - 1;
+        double z = 4.0 / 3.0 - 2.0 * i / (3.0 * Nside);
+        std::uint64_t s = (i - Nside + 1) % 2;
+        std::uint64_t r = Nside;
+
+        if (i < Nside) // North polar cap
+        {
+            r = i;
+            z = 1.0 - i * i / (3.0 * Nside * Nside);
+            s = 1;
+        }
+        else if (i > 3 * Nside) // South polar cap
+        {
+            r = 4 * Nside - i;
+            z = -1.0 + r * r / (3.0 * Nside * Nside);
+            s = 1;
+        }
+
+        std::uint64_t j = (F2 * r + h + s) / 2;
+
+        if (j > Nphi * Nside) j -= Nphi * Nside;
+        if (j < 1) j += Nphi * Nside;
+
+        points_[id] = Vector3d((j - 0.5 * s) * 2 * PI / (Nphi * r), std::acos(z));
+    }
+
+     w_ = new double[directionsNumber_]{};
+
+     for (std::uint32_t i=0; i!=directionsNumber_; ++i)
+     {
+        w_[i] = 1.0;
+     }
+}
+
