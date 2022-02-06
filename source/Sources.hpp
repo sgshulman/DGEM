@@ -105,7 +105,7 @@ public:
         , sphereSources_{ std::move(sphereSources) }
         , totlum_{ 0. }
         , primaryDir_{ parameters_.useMonteCarlo_ ? 1 : parameters_.PrimaryDirectionsLevel_, parameters_.useHEALPixGrid_ }
-        , sphereDir_{ parameters_.SphereSourceDirectionsLevel_ }
+        , sphereDir_{ 6, parameters_.SphereSourceDirectionsLevel_, true }
         , currentSource_{ 0 }
         , photonId_{ 0 }
     {
