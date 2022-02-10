@@ -378,19 +378,19 @@ void Directions::isolatitudeGridNested(std::uint32_t Nphi, std::uint32_t const N
         std::uint64_t const squareId3 = (squareId2 & 0xF00FF00FF00FF00F) | ((squareId2 & 0x0F000F000F000F00) >> 4) | ((squareId2 & 0x00F000F000F000F0) << 4);
         std::uint64_t const squareId4 = (squareId3 & 0xFF0000FFFF0000FF) | ((squareId3 & 0x00FF000000FF0000) >> 8) | ((squareId3 & 0x0000FF000000FF00) << 8);
         std::uint64_t const squareId5 = (squareId4 & 0xFFFF00000000FFFF) | ((squareId4 & 0x0000FFFF00000000) >>16) | ((squareId4 & 0x00000000FFFF0000) <<16);
-        std::uint64_t const x = squareId5 & 0x00000000FFFFFFFF;
-        std::uint64_t const y = (squareId5 & 0xFFFFFFFF00000000) >> 32;
+        std::int64_t const x = squareId5 & 0x00000000FFFFFFFF;
+        std::int64_t const y = (squareId5 & 0xFFFFFFFF00000000) >> 32;
 
-        std::uint64_t const v = x + y; // [0, 2*(Nside-1)]
-        std::uint64_t const h = x - y; // [-(Nside-1), (Nside-1)]
+        std::int64_t const v = x + y;
+        std::int64_t const h = x - y;
 
-        std::uint64_t const F1 = frow + 2;
-        std::uint64_t const F2 = 2 * (f % Nphi) - (frow % 2) + 1;
+        std::int64_t const F1 = frow + 2;
+        std::int64_t const F2 = 2 * (f % Nphi) - (frow % 2) + 1;
 
-        std::uint64_t i = F1 * Nside - v - 1;
+        std::int64_t i = F1 * Nside - v - 1;
         double z = 4.0 / 3.0 - 2.0 * i / (3.0 * Nside);
-        std::uint64_t s = (i - Nside + 1) % 2;
-        std::uint64_t r = Nside;
+        std::int64_t s = (i - Nside + 1) % 2;
+        std::int64_t r = Nside;
 
         if (i < Nside) // North polar cap
         {
@@ -405,7 +405,7 @@ void Directions::isolatitudeGridNested(std::uint32_t Nphi, std::uint32_t const N
             s = 1;
         }
 
-        std::uint64_t j = (F2 * r + h + s) / 2;
+        std::int64_t j = (F2 * r + h + s) / 2;
 
         if (j > Nphi * Nside) j -= Nphi * Nside;
         if (j < 1) j += Nphi * Nside;
