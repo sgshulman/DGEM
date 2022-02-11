@@ -104,12 +104,12 @@ public:
         , pointSources_{ std::move(pointSources) }
         , sphereSources_{ std::move(sphereSources) }
         , totlum_{ 0. }
-        , primaryDir_{ parameters_.useMonteCarlo_ ? 1 : parameters_.PrimaryDirectionsLevel_, parameters_.useHEALPixGrid_ }
-        , sphereDir_{ 3, 6, parameters_.SphereSourceDirectionsLevel_, true }
+        , primaryDir_{ 3, 4, parameters_.PrimaryDirectionsLevel_, false /*parameters_.useMonteCarlo_ ? 1 : parameters_.PrimaryDirectionsLevel_, parameters_.useHEALPixGrid_*/ }
+        , sphereDir_{ 2, 4, parameters_.SphereSourceDirectionsLevel_, true }
         , currentSource_{ 0 }
         , photonId_{ 0 }
     {
-        if (!parameters.useMonteCarlo_)
+       if (!parameters.useMonteCarlo_)
         {
             parameters_.num_photons_ = primaryDir_.number();
         }
@@ -160,9 +160,11 @@ private:
     std::uint64_t photonsNumber_;
 
     // dgem for sphere source
-    std::uint64_t pointId_{0};
+    std::int64_t pointId_{-1};
     Vector3d pointPosition_;
+    Vector3d pointPosition2_;
     std::uint64_t pointCellId_;
+    std::uint64_t pointCellId2_;
 
     bool intersectSphereSource(Vector3d const& position, Vector3d const& direction, std::uint64_t ignoredSource) const;
 };

@@ -118,21 +118,48 @@ Photon Sources::emitDgemPhoton(IGridCRef grid)
 
     std::uint32_t const sphereSourceId = sourceId - static_cast<std::uint32_t>(pointSources_.size());
 
-    // TODO: add real logic
-    if (photonId % sphereSources_.size() == 0)
+    static double cosineSum{ 0. };
+
+    std::uint64_t localD = 2 * primaryDir_.number() / sphereDir_.number();
+    if (photonId % localD == 0)
     {
+        ++pointId_;
+
         auto const position = starSurface(sphereSources_[sphereSourceId], sphereDir_.direction(pointId_), grid);
         pointPosition_ = position.first;
         pointCellId_ = position.second;
-        ++pointId_;
+
+        auto const position2 = starSurface(sphereSources_[sphereSourceId], -1.0 * sphereDir_.direction(pointId_), grid);
+        pointPosition2_ = position2.first;
+        pointCellId2_ = position2.second;
+
+        // compute normalization factor
+        cosineSum = 0.;
+        for (std::uint64_t ip=0; ip!=localD; ++ip)
+        {
+            std::uint64_t const sphPhotonId = (1004987 * (photonId / localD)) % (sphereDir_.number() / 2) + ip * sphereDir_.number() / 2;
+            double cosTheta = sphereDir_.direction(pointId_) * primaryDir_.direction(sphPhotonId);
+            cosineSum += std::abs(cosTheta);
+        }
     }
 
-    // TODO: add check for half-sphere
+    std::uint64_t const sphPhotonId = (1004987 * (photonId / localD)) % (sphereDir_.number() / 2) + (photonId % localD) * sphereDir_.number() / 2;
+    double const cosTheta = sphereDir_.direction(pointId_) * primaryDir_.direction(sphPhotonId);
+    if (cosTheta > 0)
+    {
+        return {
+            pointPosition_,
+            pointCellId_,
+            primaryDir_.direction(sphPhotonId),
+            primaryDir_.w(sphPhotonId) * sphereSources_[sphereSourceId].luminosity() / totlum_ * cosTheta / cosineSum * localD,
+            1};
+    }
+
     return {
-        pointPosition_,
-        pointCellId_,
-        primaryDir_.direction(photonId),
-        primaryDir_.w(photonId) * sphereSources_[sphereSourceId].luminosity() / totlum_,
+        pointPosition2_,
+        pointCellId2_,
+        primaryDir_.direction(sphPhotonId),
+        primaryDir_.w(sphPhotonId) * sphereSources_[sphereSourceId].luminosity() / totlum_ * -cosTheta / cosineSum * localD,
         1};
 }
 
