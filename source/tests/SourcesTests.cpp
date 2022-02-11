@@ -146,7 +146,7 @@ TEST_CASE("Source Luminosity", "[sources]")
 
 TEST_CASE("Star disc", "[sources]")
 {
-    SourceParameters const sourceParameters{10, 1, 100, true, false};
+    SourceParameters const sourceParameters{10, 1, 128, true, false};
 
     std::vector<SphereSource> sphereSources;
     sphereSources.emplace_back(Vector3d{0.,0.,0.}, 0, 1., 1.);

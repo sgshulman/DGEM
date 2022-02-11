@@ -74,11 +74,11 @@ private:
 
     Pictures result_, result0_, result1_, result2_;
     Direction3d direction_;
-    std::uint32_t const nx_, ny_;
-    double const rImage_;
-    double const rMask2_;
-    double const theta_;
-    double const cosp_, sinp_;
+    std::uint32_t nx_, ny_;
+    double rImage_;
+    double rMask2_;
+    double theta_;
+    double cosp_, sinp_;
 };
 
 #endif
