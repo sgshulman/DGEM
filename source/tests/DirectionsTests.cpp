@@ -35,7 +35,7 @@ namespace
     }
 }
 
-TEST_CASE("Icosahedron Directions", "[sphere integration]")
+TEST_CASE("Icosahedron Integration", "[sphere integration]")
 {
     SECTION("Icosahedron 1")
     {
@@ -167,7 +167,8 @@ TEST_CASE("Icosahedron Directions", "[sphere integration]")
     }
 }
 
-TEST_CASE("HEALPix Directions", "[sphere integration]")
+
+TEST_CASE("HEALPix Integration", "[sphere integration]")
 {
     SECTION("HEALPix 2")
     {
@@ -325,11 +326,11 @@ TEST_CASE("HEALPix Directions", "[sphere integration]")
 }
 
 
-TEST_CASE("Isolatitude 3-6 Directions", "[sphere integration]")
+TEST_CASE("Isolatitude 3-6 Integration", "[sphere integration]")
 {
     SECTION("Sphere 2")
     {
-        Directions d(6, 2, true);
+        Directions d(3, 6, 2, true);
         REQUIRE(Approx(integrate(d, 0, 0)) == 1.);
 
         REQUIRE(Approx(integrate(d, 0, 0)) == 1.);
@@ -355,7 +356,7 @@ TEST_CASE("Isolatitude 3-6 Directions", "[sphere integration]")
 
     SECTION("Sphere 3")
     {
-        Directions d(6, 3, true);
+        Directions d(3, 6, 3, true);
         REQUIRE(Approx(integrate(d, 0, 0)) == 1.);
 
         REQUIRE(Approx(integrate(d, 1, 1)).epsilon(0.006) == 1.);
@@ -379,10 +380,155 @@ TEST_CASE("Isolatitude 3-6 Directions", "[sphere integration]")
 }
 
 
+TEST_CASE("Isolatitude 2-4 Integration", "[sphere integration]")
+{
+    SECTION("Sphere 3")
+    {
+        Directions d(2, 4, 3, true);
+        REQUIRE(Approx(integrate(d, 0, 0)) == 1.);
+
+        REQUIRE(Approx(integrate(d, 0, 0)) == 1.);
+
+        REQUIRE(Approx(integrate(d, 1, 1)).epsilon(0.02) == 1.);
+        REQUIRE(Approx(integrate(d, 1, 0)).epsilon(0.03) == 1.);
+        REQUIRE(Approx(integrate(d, 1, -1)).epsilon(0.02) == 1.);
+
+        REQUIRE(Approx(integrate(d, 2, 2)).epsilon(0.01)  == 1.);
+        REQUIRE(Approx(integrate(d, 2, 1)).epsilon(0.02) == 1.);
+        REQUIRE(Approx(integrate(d, 2, 0)).epsilon(0.06) == 1.);
+        REQUIRE(Approx(integrate(d, 2, -1)).epsilon(0.02) == 1.);
+        REQUIRE(Approx(integrate(d, 2, -2)).epsilon(0.01) == 1.);
+
+        REQUIRE(Approx(integrate(d, 3, 3)).epsilon(0.008) == 1.);
+        REQUIRE(Approx(integrate(d, 3, 2)).epsilon(0.03) == 1.);
+        REQUIRE(Approx(integrate(d, 3, 1)).epsilon(0.004) == 1.);
+        REQUIRE(Approx(integrate(d, 3, 0)).epsilon(0.06) == 1.);
+        REQUIRE(Approx(integrate(d, 3, -1)).epsilon(0.004) == 1.);
+        REQUIRE(Approx(integrate(d, 3, -2)).epsilon(0.03) == 1.);
+        REQUIRE(Approx(integrate(d, 3, -3)).epsilon(0.008) == 1.);
+    }
+
+    SECTION("Sphere 20")
+    {
+        Directions d(2, 4, 20, true);
+        REQUIRE(Approx(integrate(d, 0, 0)) == 1.);
+
+        REQUIRE(Approx(integrate(d, 1, 1)).epsilon(3e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 1, 0)).epsilon(5e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 1, -1)).epsilon(3e-4) == 1.);
+
+        REQUIRE(Approx(integrate(d, 2, 2)).epsilon(3e-4)  == 1.);
+        REQUIRE(Approx(integrate(d, 2, 1)).epsilon(3e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 2, 0)).epsilon(2e-3) == 1.);
+        REQUIRE(Approx(integrate(d, 2, -1)).epsilon(3e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 2, -2)).epsilon(3e-4) == 1.);
+
+        REQUIRE(Approx(integrate(d, 3, 3)).epsilon(2e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 3, 2)).epsilon(4e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 3, 1)).epsilon(2e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 3, 0)).epsilon(2e-3) == 1.);
+        REQUIRE(Approx(integrate(d, 3, -1)).epsilon(2e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 3, -2)).epsilon(4e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 3, -3)).epsilon(2e-4) == 1.);
+
+        REQUIRE(Approx(integrate(d, 4, 4)).epsilon(2e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 4, 3)).epsilon(5e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 4, 2)).epsilon(1e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 4, 1)).epsilon(2e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 4, 0)).epsilon(2e-3) == 1.);
+        REQUIRE(Approx(integrate(d, 4, -1)).epsilon(2e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 4, -2)).epsilon(1e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 4, -3)).epsilon(5e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 4, -4)).epsilon(2e-4) == 1.);
+
+        REQUIRE(Approx(integrate(d, 5, 5)).epsilon(2e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 5, 4)).epsilon(5e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 5, 3)).epsilon(3e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 5, 2)).epsilon(7e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 5, 1)).epsilon(3e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 5, 0)).epsilon(3e-3) == 1.);
+        REQUIRE(Approx(integrate(d, 5, -1)).epsilon(3e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 5, -2)).epsilon(7e-5) == 1.);
+        REQUIRE(Approx(integrate(d, 5, -3)).epsilon(3e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 5, -4)).epsilon(5e-4) == 1.);
+        REQUIRE(Approx(integrate(d, 5, -5)).epsilon(2e-4) == 1.);
+    }
+}
+
+
+TEST_CASE("Isolatitude 2-4 Directions", "[directions]")
+{
+    SECTION("Icosahedron 1")
+    {
+        Directions d(2, 4, 1, true);
+
+        REQUIRE(dir_diff(d.direction(0), {  PI/4, PI/3}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(1), {3*PI/4, PI/3}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(2), {5*PI/4, PI/3}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(3), {7*PI/4, PI/3}) < std::numeric_limits<float>::epsilon());
+
+        REQUIRE(dir_diff(d.direction(4), {   0.0, 2*PI/3}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(5), {  PI/2, 2*PI/3}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(6), {    PI, 2*PI/3}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(7), {3*PI/2, 2*PI/3}) < std::numeric_limits<float>::epsilon());
+    }
+
+    SECTION("Icosahedron 2")
+    {
+        Directions d(2, 4, 2, true);
+
+        REQUIRE(dir_diff(d.direction(0), {  PI/4, acos(7./8)}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(1), {3*PI/4, acos(7./8)}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(2), {5*PI/4, acos(7./8)}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(3), {7*PI/4, acos(7./8)}) < std::numeric_limits<float>::epsilon());
+
+        REQUIRE(dir_diff(d.direction( 4), {   PI/8, PI/3}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction( 5), { 3*PI/8, PI/3}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction( 6), { 5*PI/8, PI/3}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction( 7), { 7*PI/8, PI/3}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction( 8), { 9*PI/8, PI/3}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction( 9), {11*PI/8, PI/3}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(10), {13*PI/8, PI/3}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(11), {15*PI/8, PI/3}) < std::numeric_limits<float>::epsilon());
+
+        REQUIRE(dir_diff(d.direction(12), {   0.0, PI/2}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(13), {  PI/4, PI/2}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(14), {  PI/2, PI/2}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(15), {3*PI/4, PI/2}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(16), {    PI, PI/2}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(17), {5*PI/4, PI/2}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(18), {3*PI/2, PI/2}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(19), {7*PI/4, PI/2}) < std::numeric_limits<float>::epsilon());
+
+        REQUIRE(dir_diff(d.direction(20), {   PI/8, 2*PI/3}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(21), { 3*PI/8, 2*PI/3}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(22), { 5*PI/8, 2*PI/3}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(23), { 7*PI/8, 2*PI/3}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(24), { 9*PI/8, 2*PI/3}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(25), {11*PI/8, 2*PI/3}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(26), {13*PI/8, 2*PI/3}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(27), {15*PI/8, 2*PI/3}) < std::numeric_limits<float>::epsilon());
+
+        INFO(d.direction(28).x());
+        INFO(d.direction(28).y());
+        INFO(d.direction(28).z());
+
+        INFO(Vector3d(   0.0, acos(-7./8)).x());
+        INFO(Vector3d(   0.0, acos(-7./8)).y());
+        INFO(Vector3d(   0.0, acos(-7./8)).z());
+
+        REQUIRE(dir_diff(d.direction(28), {   0.0, acos(-7./8)}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(29), {  PI/2, acos(-7./8)}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(30), {    PI, acos(-7./8)}) < std::numeric_limits<float>::epsilon());
+        REQUIRE(dir_diff(d.direction(31), {3*PI/2, acos(-7./8)}) < std::numeric_limits<float>::epsilon());
+    }
+}
+
+
 TEST_CASE("HEALPix 2 ring and nested schemes", "[HEALPix schemes]")
 {
-    Directions ring(4, 2, true);
-    Directions nested(4, 2, false);
+    Directions ring(3, 4, 2, true);
+    Directions nested(3, 4, 2, false);
 
     REQUIRE(dir_diff(ring.direction( 0), nested.direction( 3)) < std::numeric_limits<float>::epsilon());
     REQUIRE(dir_diff(ring.direction( 1), nested.direction( 7)) < std::numeric_limits<float>::epsilon());
@@ -443,8 +589,8 @@ TEST_CASE("HEALPix 2 ring and nested schemes", "[HEALPix schemes]")
 
 TEST_CASE("HEALPix 4 ring and nested schemes", "[HEALPix schemes]")
 {
-    Directions ring(4, 4, true);
-    Directions nested(4, 4, false);
+    Directions ring(3, 4, 4, true);
+    Directions nested(3, 4, 4, false);
 
     REQUIRE(dir_diff(ring.direction(  0), nested.direction( 15)) < std::numeric_limits<float>::epsilon());
     REQUIRE(dir_diff(ring.direction(  1), nested.direction( 31)) < std::numeric_limits<float>::epsilon());
@@ -653,3 +799,4 @@ TEST_CASE("HEALPix 4 ring and nested schemes", "[HEALPix schemes]")
     REQUIRE(dir_diff(ring.direction(190), nested.direction(160)) < std::numeric_limits<float>::epsilon());
     REQUIRE(dir_diff(ring.direction(191), nested.direction(176)) < std::numeric_limits<float>::epsilon());
 }
+
