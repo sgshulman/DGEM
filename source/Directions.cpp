@@ -1,6 +1,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cassert>
+#include "DebugUtils.hpp"
 #include "Directions.hpp"
 #include "MathUtils.hpp"
 
@@ -281,7 +282,7 @@ Directions::Directions(std::uint32_t const NumOfDirectionsLevels, bool const use
 {
     if (useHEALPixGrid)
     {
-        isolatitudeGrid(4, NumOfDirectionsLevels);
+        isolatitudeGrid3(4, NumOfDirectionsLevels);
     } else {
         IcosahedronMesh mesh(NumOfDirectionsLevels);
         points_ = mesh.points();
@@ -292,18 +293,33 @@ Directions::Directions(std::uint32_t const NumOfDirectionsLevels, bool const use
 
 
 // HEALPix like equal-area isolatitude tessellations of the sphere with N_theta = 3
-Directions::Directions(std::uint32_t const Nphi, std::uint32_t const NumOfDirectionsLevels, bool const ringScheme)
+Directions::Directions(std::uint32_t const Ntheta, std::uint32_t const Nphi, std::uint32_t const NumOfDirectionsLevels, bool const ringScheme)
 {
-    if (ringScheme)
+    DATA_ASSERT(Ntheta >= 2 && Ntheta <= 3, "Ntheta can be 2 or 3");
+    DATA_ASSERT(Nphi % 2 == 0, "Nphi must be even");
+
+    if (Ntheta == 3)
     {
-        isolatitudeGrid(Nphi, NumOfDirectionsLevels);
-    } else { // Nested Scheme
-        isolatitudeGridNested(Nphi, NumOfDirectionsLevels);
+        if (ringScheme)
+        {
+            isolatitudeGrid3(Nphi, NumOfDirectionsLevels);
+        } else { // Nested Scheme
+            isolatitudeGrid3Nested(Nphi, NumOfDirectionsLevels);
+        }
+    }
+    else
+    {
+        if (ringScheme)
+        {
+            isolatitudeGrid2(Nphi, NumOfDirectionsLevels);
+        } else { // Nested Scheme
+            isolatitudeGrid2Nested(Nphi, NumOfDirectionsLevels);
+        }
     }
 }
 
 
-void Directions::isolatitudeGrid(std::uint32_t Nphi, std::uint32_t const Nside)
+void Directions::isolatitudeGrid3(std::uint32_t Nphi, std::uint32_t const Nside)
 {
     assert(Nphi % 2 == 0);
 
@@ -359,10 +375,8 @@ void Directions::isolatitudeGrid(std::uint32_t Nphi, std::uint32_t const Nside)
 }
 
 
-void Directions::isolatitudeGridNested(std::uint32_t Nphi, std::uint32_t const Nside)
+void Directions::isolatitudeGrid3Nested(std::uint32_t Nphi, std::uint32_t const Nside)
 {
-    assert(Nphi % 2 == 0);
-
     directionsNumber_ = 3 * Nphi * Nside * Nside;
     points_ = new Vector3d[directionsNumber_]{};
 
@@ -421,3 +435,60 @@ void Directions::isolatitudeGridNested(std::uint32_t Nphi, std::uint32_t const N
      }
 }
 
+
+void Directions::isolatitudeGrid2(std::uint32_t Nphi, std::uint32_t const Nside)
+{
+    directionsNumber_ = 2 * Nphi * Nside * Nside;
+    points_ = new Vector3d[directionsNumber_]{};
+
+    std::uint32_t p = 0;
+
+    // Polar caps
+    for (std::uint32_t i = 1, j = 1; p!= Nphi * Nside * (Nside - 1) / 2; ++j, ++p)
+    {
+        if (j > Nphi * i)
+        {
+            j = 1;
+            ++i;
+        }
+
+        assert(1 <= i && i <= Nside);
+        assert(1 <= j && j <= i * Nphi);
+
+        double const z = 1 - (i*i) / (2. * Nside * Nside);
+        double const phi = 2 * PI / (Nphi * i) * (j - 0.5);
+        double const phi2 = 2 * PI / (Nphi * i) * j;
+        points_[p] = Vector3d(phi, std::acos(z));
+        points_[directionsNumber_ - 1 - p] = Vector3d(2 * PI - phi2, std::acos(-z));
+    }
+
+    // Equatorial belts
+    for (; p!= Nphi * Nside * (3 * Nside + 1) / 2; ++p)
+    {
+        std::uint32_t const pp = p - Nphi * Nside * (Nside - 1) / 2;
+        std::uint32_t const i = pp / (Nphi * Nside) + Nside;
+        std::uint32_t const j = pp % (Nphi * Nside) + 1;
+
+        assert(Nside <= i && i <= 2 * Nside);
+        assert(1 <= j && j <= Nphi * Nside);
+
+        double const z = 3.0 / 2 - (1. * i) / Nside;
+        std::uint32_t const s = (i - Nside) % 2;
+
+        double const phi = 2 * PI / (Nphi * Nside) * (j - 0.5 * (1 + s));
+
+        points_[p] = Vector3d(phi, std::acos(z));
+    }
+
+    w_ = new double[directionsNumber_]{};
+
+    for (std::uint32_t i=0; i!=directionsNumber_; ++i)
+    {
+        w_[i] = 1.0;
+    }
+}
+
+
+void Directions::isolatitudeGrid2Nested(std::uint32_t /*Nphi*/, std::uint32_t const /*Nside*/)
+{
+}
