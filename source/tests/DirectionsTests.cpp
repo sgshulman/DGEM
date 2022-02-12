@@ -509,14 +509,6 @@ TEST_CASE("Isolatitude 2-4 Directions", "[directions]")
         REQUIRE(dir_diff(d.direction(26), {13*PI/8, 2*PI/3}) < std::numeric_limits<float>::epsilon());
         REQUIRE(dir_diff(d.direction(27), {15*PI/8, 2*PI/3}) < std::numeric_limits<float>::epsilon());
 
-        INFO(d.direction(28).x());
-        INFO(d.direction(28).y());
-        INFO(d.direction(28).z());
-
-        INFO(Vector3d(   0.0, acos(-7./8)).x());
-        INFO(Vector3d(   0.0, acos(-7./8)).y());
-        INFO(Vector3d(   0.0, acos(-7./8)).z());
-
         REQUIRE(dir_diff(d.direction(28), {   0.0, acos(-7./8)}) < std::numeric_limits<float>::epsilon());
         REQUIRE(dir_diff(d.direction(29), {  PI/2, acos(-7./8)}) < std::numeric_limits<float>::epsilon());
         REQUIRE(dir_diff(d.direction(30), {    PI, acos(-7./8)}) < std::numeric_limits<float>::epsilon());
@@ -800,3 +792,45 @@ TEST_CASE("HEALPix 4 ring and nested schemes", "[HEALPix schemes]")
     REQUIRE(dir_diff(ring.direction(191), nested.direction(176)) < std::numeric_limits<float>::epsilon());
 }
 
+TEST_CASE("Isolatitude 2-4 2 ring and nested schemes", "[HEALPix schemes]")
+{
+    Directions ring(2, 4, 2, true);
+    Directions nested(2, 4, 2, false);
+
+    REQUIRE(dir_diff(ring.direction( 0), nested.direction( 3)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction( 1), nested.direction( 7)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction( 2), nested.direction(11)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction( 3), nested.direction(15)) < std::numeric_limits<float>::epsilon());
+
+    REQUIRE(dir_diff(ring.direction( 4), nested.direction( 2)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction( 5), nested.direction( 1)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction( 6), nested.direction( 6)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction( 7), nested.direction( 5)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction( 8), nested.direction(10)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction( 9), nested.direction( 9)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction(10), nested.direction(14)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction(11), nested.direction(13)) < std::numeric_limits<float>::epsilon());
+
+    REQUIRE(dir_diff(ring.direction(12), nested.direction(19)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction(13), nested.direction( 0)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction(14), nested.direction(23)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction(15), nested.direction( 4)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction(16), nested.direction(27)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction(17), nested.direction( 8)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction(18), nested.direction(31)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction(19), nested.direction(12)) < std::numeric_limits<float>::epsilon());
+
+    REQUIRE(dir_diff(ring.direction(20), nested.direction(17)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction(21), nested.direction(22)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction(22), nested.direction(21)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction(23), nested.direction(26)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction(24), nested.direction(25)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction(25), nested.direction(30)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction(26), nested.direction(29)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction(27), nested.direction(18)) < std::numeric_limits<float>::epsilon());
+
+    REQUIRE(dir_diff(ring.direction(28), nested.direction(16)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction(29), nested.direction(20)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction(30), nested.direction(24)) < std::numeric_limits<float>::epsilon());
+    REQUIRE(dir_diff(ring.direction(31), nested.direction(28)) < std::numeric_limits<float>::epsilon());
+}
