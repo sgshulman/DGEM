@@ -165,25 +165,22 @@ TEST_CASE("Star disc", "[sources]")
     int const BELT_NUMBER{ 10 };
     double f[BELT_NUMBER]{};
 
-    for (std::uint64_t x=0; x!=200; ++x)
+    for (std::int64_t x=0; x!=200; ++x)
     {
-        for (std::uint64_t y=0; y != 200; ++y)
+        for (std::int64_t y=0; y != 200; ++y)
         {
-            double dx = 0.01 * static_cast<double>(x - 100);
-            double dy = 0.01 * static_cast<double>(y - 100);
+            double dx = 0.01 * static_cast<double>(1.0 * x - 99.5);
+            double dy = 0.01 * static_cast<double>(1.0 * y - 99.5);
 
             double const r = std::sqrt(dx * dx + dy * dy);
 
-            if (0. < r && r < 1.)
-            {
-                int id = std::min(BELT_NUMBER - 1, static_cast<int>(BELT_NUMBER * r));
-                f[id] += observers[0].totalLuminosity(x, y) / (2 * PI * r);
-            }
+            int id = std::min(BELT_NUMBER - 1, static_cast<int>(BELT_NUMBER * r));
+            f[id] += observers[0].totalLuminosity(x, y) / (2 * PI * r);
         }
     }
 
     double const minF = *std::min_element(f, f + BELT_NUMBER);
     double const maxF = *std::max_element(f, f + BELT_NUMBER);
 
-    REQUIRE((maxF / minF - 1) < 0.2);
+    REQUIRE((maxF / minF - 1) < 0.05);
 }
