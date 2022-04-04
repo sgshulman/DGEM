@@ -139,7 +139,7 @@ Photon Sources::emitDgemPhoton(IGridCRef grid)
         {
             std::uint64_t const sphPhotonId = (1004987 * (photonId / localD)) % (sphereDir_.number() / 2) + ip * sphereDir_.number() / 2;
             double cosTheta = sphereDir_.direction(pointId_) * primaryDir_.direction(sphPhotonId);
-            cosineSum += std::abs(cosTheta);
+            cosineSum += std::abs(cosTheta * cosTheta);
         }
     }
 
@@ -151,7 +151,7 @@ Photon Sources::emitDgemPhoton(IGridCRef grid)
             pointPosition_,
             pointCellId_,
             primaryDir_.direction(sphPhotonId),
-            primaryDir_.w(sphPhotonId) * sphereSources_[sphereSourceId].luminosity() / totlum_ * cosTheta / cosineSum * localD,
+            primaryDir_.w(sphPhotonId) * sphereSources_[sphereSourceId].luminosity() / totlum_ * cosTheta * cosTheta / cosineSum * localD,
             1};
     }
 
@@ -159,7 +159,7 @@ Photon Sources::emitDgemPhoton(IGridCRef grid)
         pointPosition2_,
         pointCellId2_,
         primaryDir_.direction(sphPhotonId),
-        primaryDir_.w(sphPhotonId) * sphereSources_[sphereSourceId].luminosity() / totlum_ * -cosTheta / cosineSum * localD,
+        primaryDir_.w(sphPhotonId) * sphereSources_[sphereSourceId].luminosity() / totlum_ * cosTheta * cosTheta / cosineSum * localD,
         1};
 }
 
