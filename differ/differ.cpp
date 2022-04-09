@@ -1,57 +1,156 @@
-#include <iostream>
 #include <cmath>
-#include <cstdio>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <vector>
+
+class Image
+{
+    public:
+        Image(const char* filename)
+        {
+            std::ifstream stream(filename);
+
+            if (stream.is_open())
+            {
+                readFromStream(stream);
+            } else {
+                std::cerr << "File " << filename << " should exist." << std::endl;
+            }
+        }
+
+        Image(std::istream& stream)
+        {
+            readFromStream(stream);
+        }
+
+        std::int64_t rows() const
+        {
+            return nRows_;
+        }
+
+        std::int64_t cols() const
+        {
+            return nCols_;
+        }
+
+        bool correct() const
+        {
+            return correct_;
+        }
+
+        double operator[](std::size_t i)
+        {
+            return i < data_.size() ? data_[i] : 0.0;
+        }
+
+    private:
+        void readFromStream(std::istream& stream)
+        {
+            std::string line;
+
+            while (std::getline(stream, line))
+            {
+                std::int64_t col{ 0 };
+                std::istringstream iss(line);
+
+                double v;
+                while (iss >> v)
+                {
+                    data_.push_back(v);
+                    ++col;
+                }
+
+                if (col > 0)
+                {
+                    if (nCols_ == -1)
+                    {
+                        nCols_ = col;
+                    } else if (nCols_ != col) {
+                        std::cerr << "Different number of values in rows." << std::endl;
+                        return;
+                    }
+
+                    ++nRows_;
+                }
+            }
+            correct_ = true;
+        }
+
+        std::int64_t nRows_{ 0 };
+        std::int64_t nCols_{ -1 };
+        bool correct_{ false };
+        std::vector<double> data_;
+};
+
 
 int main( int argc, char *argv[] )
 {
-	if( argc!=3 ) return 0;
-	int Nx_ = 200;
-	int Ny_ = 200;
-	
-	FILE *f1=NULL;
-	FILE *f2=NULL;
-	FILE *fd1=NULL;
-	FILE *fd2=NULL;
-	
-	f1= fopen(argv[1], "r");
-	f2= fopen(argv[2], "r");
-	fd1= fopen("dif_abs.dat", "w");
-	fd2= fopen("dif_rel.dat", "w");
-	double sum=0.0, sum2=0.0, totsum=0;
-	double a, b, tmp;
-	int num=0;
-	for (long int x=0; x!=Nx_; ++x)
+	if (argc != 3)
 	{
-		for (long int y=0; y!=Ny_; ++y)
+	    std::cerr << argv[0] << " requires 2 arguments." << std::endl;
+	    return 0;
+	}
+
+	Image image1(argv[1]);
+	Image image2(argv[2]);
+
+    if (!image1.correct() || !image2.correct())
+    {
+        return 0;
+    }
+
+    if (image1.rows() != image2.rows() || image1.cols() != image2.cols())
+    {
+        std::cerr << argv[1] << " (" << image1.rows() << "x" << image1.cols() << ") and " << argv[2] << " ("
+                << image2.rows() <<"x" << image2.cols() << ") should have the same shape." << std::endl;
+
+    	return 0;
+    }
+
+    std::ofstream difstream("dif.dat");
+	std::ofstream absdifstream("dif_abs.dat");
+	std::ofstream reldifstream("dif_rel.dat");
+
+    difstream.precision(14);
+    absdifstream.precision(14);
+    reldifstream.precision(14);
+
+	double absdifsum=0.0, reldifsum=0.0, totsum=0;
+
+	int num=0;
+	std::size_t i=0;
+
+	for (std::int64_t x=0; x!=image1.rows(); ++x)
+	{
+		for (std::int64_t y=0; y!=image1.cols(); ++y)
 		{
-			int res = fscanf(f1, "%lg", &a);
-			res =fscanf(f2, "%lg", &b);
-			(void)res;
-			tmp = fabs(a-b);	
-			fprintf(fd1, "%lg\t", tmp);
-			if (0.5*fabs(a+b) < 0.07)
+			double const dif = image1[i] - image2[i];
+			double const absdif = std::abs(dif);
+            double const mean = 0.5*(image1[i] + image2[i]);
+			difstream << dif << "\t";
+			absdifstream << absdif << "\t";
+
+			if (mean < 0.07)
 			{
-				sum+=tmp;
-				totsum += 0.5*fabs(a+b);
-			} else {
-			    printf("ZERO\n");
+				absdifsum += absdif;
+				totsum += mean;
 			}
-			if (a!=0 && b!=0)
+
+			if (image1[i] > 0 && image2[i] > 0)
 			{
 				++num;
-				sum2+=2*tmp/fabs(a+b);
-				fprintf(fd2, "%lg\t", 2*tmp/fabs(a+b));
+				reldifsum += absdif/mean;
+				reldifstream << absdif/mean << "\t";
 			} else {
-				fprintf(fd2, "0\t");
+				reldifstream << "0\t";
 			}
-			
+			++i;
 		}
-		fprintf(fd1, "\n");
-		fprintf(fd2, "\n");
+        difstream << std::endl;
+		absdifstream << std::endl;
+		reldifstream << std::endl;
 	}
-	printf("sum = %lg sum/n=%lg sum2/n=%lg n =%i \n refsum = %lg\n", sum, sum/num, sum2/num, num, sum/totsum );
-	fclose( f1 );
-	fclose( f2 );
-	fclose( fd1 );
-	fclose( fd2 );
+	std::cout << "dif= " << absdifsum << " meandif= " << absdifsum/num << " meanreldif= "
+	        << reldifsum/num << " n= " << num << std::endl << "refsum= " << absdifsum/totsum << std::endl;
 }
