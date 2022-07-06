@@ -237,13 +237,14 @@ namespace
                 get_double(jsonHump, roundHump, "sigma2"));
         } else if (json.contains("azimuthalHump")) {
             nlohmann::json const& jsonHump = json.at(azimuthalHump);
-            checkParameters(jsonHump, azimuthalHump, {"h", "r", "sigma2", "sigma2azimuthal"});
+            checkParameters(jsonHump, azimuthalHump, {"h", "r", "sigma2", "sigma2azimuthal", "sigma2azimuthalBackward"});
 
             return std::make_shared<AzimuthalHump const>(
                 get_double(jsonHump, azimuthalHump, "h"),
                 get_double(jsonHump, azimuthalHump, "r"),
                 get_double(jsonHump, azimuthalHump, "sigma2"),
-                get_double(jsonHump, azimuthalHump, "sigma2azimuthal"));
+                get_double(jsonHump, azimuthalHump, "sigma2azimuthal"),
+                get_optional_double(jsonHump, azimuthalHump, "sigma2azimuthalBackward", 0.0));
         }
 
         return nullptr;

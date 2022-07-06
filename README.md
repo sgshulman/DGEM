@@ -203,7 +203,8 @@ In this equations _v_ is the value the hump changes and other values are hump mo
 - h &mdash; the hump relative height
 - r &mdash; the distance from the disk axis to the centre of the hump
 - sigma2 &mdash; the variance of the hump mass distribution along the disk plane (for the round hump) or the radius (for azimuthal hump)
-- rMax &mdash; the variance of the hump mass distribution along the azimuth for azimuthal hump.
+- sigma2azimuthal &mdash; the variance of the hump mass distribution along the azimuth for the azimuthal hump
+- sigma2azimuthalBackward &mdash; the optional variance of the hump mass distribution along the azimuth for the azimuthal hump. When _sigma2azimuthalBackward_ is provided it is used for negative values of _arctan(y, x)_ and _sigma2azimuthal_ is used only for positive values of _arctan(y, x)_.
 
 #### Sphere Envelope
 

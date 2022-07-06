@@ -229,6 +229,22 @@ TEST_CASE("Parse Geometry", "[model]")
         REQUIRE(hump);
     }
 
+    SECTION("Azimuthal Hump")
+    {
+        nlohmann::json humpJson = R"({
+            "azimuthalHump": {
+              "r": 1,
+              "h": 2,
+              "sigma2": 0.1,
+              "sigma2azimuthal": 0.1,
+              "sigma2azimuthalBackward": 0.2
+            }}
+            )"_json;
+
+        const auto hump = parseDiskHump(humpJson);
+        REQUIRE(hump);
+    }
+
     SECTION("Flared Disk with Safier wind and translation")
     {
         nlohmann::json flaredDiskJson = R"({
