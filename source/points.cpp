@@ -140,7 +140,6 @@ int run(int argc, char *argv[])
             // pessimistic estimation of scattering number, as we use it only for minimal optical depth estimation
             double const nScatteringsRev = std::log(base) / std::log(std::sqrt(3.) * grid->max());
             double const minWeight = 1. - std::exp(-model.taumin() * nScatteringsRev);
-            std::cout << minWeight << std::endl;
 
             for (;;)
             {
