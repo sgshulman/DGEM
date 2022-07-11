@@ -135,6 +135,10 @@ DifferenceStats computeDifference(
     return stats;
 }
 
+#ifdef ENABLE_UNIT_TESTS
+#include "tests/DifferTests.inl"
+#else
+
 int main( int argc, char *argv[] )
 {
     if (argc != 3)
@@ -173,3 +177,5 @@ int main( int argc, char *argv[] )
             << stats.relDifSum/stats.pixelNum << " n= " << stats.pixelNum << std::endl << "refsum= "
             << stats.absDifSum/stats.totalSum << std::endl;
 }
+
+#endif
