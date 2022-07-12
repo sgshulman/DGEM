@@ -1,9 +1,53 @@
 #include "../../source/third-party/catch2/catch.hpp"
+#include <sstream>
 
 TEST_CASE("Differ", "[differ]")
 {
-    SECTION("Differ")
+    SECTION("Positive values")
     {
-        REQUIRE(true);
+        std::stringstream imageStream1;
+        imageStream1 << 0.1 << 0.2 << 0.3 << 0.4 << std::endl;
+
+        std::stringstream imageStream2;
+        imageStream2 << 0.1 << 0.3 << 0.1 << 0.5 << std::endl;
+
+        std::stringstream difStream;
+        std::stringstream absDifStream;
+        std::stringstream relDifStream;
+
+        Image image1(imageStream1);
+        Image image2(imageStream2);
+
+        REQUIRE(image1.correct());
+        REQUIRE(image2.correct());
+        REQUIRE(image1.cols() == 4);
+        REQUIRE(image2.cols() == 4);
+        REQUIRE(image1.rows() == 1);
+        REQUIRE(image2.rows() == 1);
+
+        DifferenceStats stats = computeDifference(image1, image2, difStream, absDifStream, relDifStream);
+
+        REQUIRE(Approx(stats.absDifSum) == 0.4);
+        REQUIRE(Approx(stats.relDifSum) == 1.4 + 1 / 4.5);
+        REQUIRE(Approx(stats.totalSum) == 1.0);
+        REQUIRE(stats.pixelNum == 4);
+
+        Image difImage(difStream);
+        REQUIRE(Approx(difImage[0]).margin(1e-14) == 0.0);
+        REQUIRE(Approx(difImage[1]) == -0.1);
+        REQUIRE(Approx(difImage[2]) ==  0.2);
+        REQUIRE(Approx(difImage[3]) == -0.1);
+
+        Image absDifImage(absDifStream);
+        REQUIRE(Approx(absDifImage[0]).margin(1e-14) == 0.0);
+        REQUIRE(Approx(absDifImage[1]) == 0.1);
+        REQUIRE(Approx(absDifImage[2]) == 0.2);
+        REQUIRE(Approx(absDifImage[3]) == 0.1);
+
+        Image relDifImage(relDifStream);
+        REQUIRE(Approx(relDifImage[0]).margin(1e-14) == 0.0);
+        REQUIRE(Approx(relDifImage[1]) == 0.4);
+        REQUIRE(Approx(relDifImage[2]) == 1.0);
+        REQUIRE(Approx(relDifImage[3]) == 1 / 4.5);
     }
 }
