@@ -111,12 +111,9 @@ DifferenceStats computeDifference(
             difStream << dif << "\t";
             absDifStream << absDif << "\t";
 
-            if (mean < 0.07)
-            {
-                stats.absDifSum += absDif;
-                stats.totalSum += mean;
-            }
-    
+            stats.absDifSum += absDif;
+            stats.totalSum += mean;
+
             if (image1[i] > 0 && image2[i] > 0)
             {
                 ++stats.pixelNum;
