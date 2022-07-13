@@ -114,11 +114,12 @@ DifferenceStats computeDifference(
             stats.absDifSum += absDif;
             stats.totalSum += mean;
 
-            if (image1[i] > 0 && image2[i] > 0)
+            if (image1[i] != 0 && image2[i] != 0)
             {
                 ++stats.pixelNum;
-                stats.relDifSum += absDif / mean;
-                relDifStream << absDif / mean << "\t";
+                double const meanAbs = 0.5*(std::abs(image1[i]) + std::abs(image2[i]));
+                stats.relDifSum += absDif / meanAbs;
+                relDifStream << absDif / meanAbs << "\t";
             } else {
                 relDifStream << "0\t";
             }
