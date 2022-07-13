@@ -19,7 +19,7 @@ The method was described in [Shulman (2018)](#shulman2018).
 - [Used third-party libraries](#used-third-party-libraries)
 - [References](#references)
 
-This code is based on mcpolar program by Kenneth Wood (http://www-star.st-and.ac.uk/~kw25/research/montecarlo/montecarlo.html). The code was translated from FORTRAN to C++, refactored and improved. Now it realizes two radiative transfer techniques: Monte Carlo method and directions grid enumeration method (DGEM). DGEM uses precalculated directions of the photons propagation instead of the random ones to speed up the calculations process.
+This code is based on `mcpolar` program by Kenneth Wood (http://www-star.st-and.ac.uk/~kw25/research/montecarlo/montecarlo.html). The code was translated from FORTRAN to C++, refactored and improved. Now it realizes two radiative transfer techniques: Monte Carlo method and directions grid enumeration method (DGEM). DGEM uses precalculated directions of the photons propagation instead of the random ones to speed up the calculations process.
 
 The physics and method detail will be presented in a paper which is in preparation now.
 
@@ -28,7 +28,15 @@ Cmake configuration can be used to build the program and for IDEs.
 
 PLOT3.plt is a gnuplot script for plotting the resulting images.
 
-A utility for results comparison is differ. It is in a directory differ. Compiled differ utility requires two filenames as command arguments. The difference is called "refsum".
+A utility for result images comparison is `imdiff`.
+It is in a directory `utils`.
+It can be compiled both with makefile and Cmake.
+Compiled `imdiff` utility requires two filenames as command arguments.
+It produces three files: `dif.dat` with the image pixel difference, 
+`dif_abs.dat` with the absolute pixel difference,
+and `dif_rel.dat` with the relative pixel difference.
+In the output statistics the main value is `refsum`.
+It is the difference norm for the images.
 
 ## DGEM configuration
 The first program argument is a configuration file.
