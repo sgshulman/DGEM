@@ -3,7 +3,7 @@ set(CMAKE_GENERATOR "Unix Makefiles")
 
 project(IM_DIFF)
 
-set(SOURCES differ.cpp)
+set(SOURCES imdiff.cpp)
 
 add_executable(imdiff ${SOURCES})
 
@@ -16,7 +16,7 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
     message("UNIT TESTS ENABLED")
 
     set(UNITTEST_SOURCES
-        tests/unittests.cpp
+        tests/utilstests.cpp
         tests/DifferTests.inl
         ../source/third-party/catch2/catch.hpp)
 
