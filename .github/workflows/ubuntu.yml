@@ -41,3 +41,12 @@ jobs:
 
       - name: unit-tests
         run: ./unittests
+        
+      - name: cmake-utils
+        run: cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_UNIT_TESTS=TRUE  -G "CodeBlocks - Unix Makefiles" -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }} -S ./utils -B ./utils
+
+      - name: build-utils
+        run: cmake --build ./utils
+        
+      - name: unit-tests-utils
+        run: ./utils/differtests

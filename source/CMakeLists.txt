@@ -107,7 +107,7 @@ else()
 endif()
 
 # MinGW has problems with the linker
-if ( MINGW)
+if ( MINGW )
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -static-libstdc++ -Wa,-mbig-obj")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -static-libstdc++ -Wa,-mbig-obj")
 endif()
