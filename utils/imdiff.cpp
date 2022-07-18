@@ -139,9 +139,19 @@ DifferenceStats computeDifference(
 
 int main( int argc, char *argv[] )
 {
+    if (argc > 1 && (std::string(argv[1]) == "-h" || std::string(argv[1]) == "--help"))
+    {
+        std::cout << "Usage: " << argv[0] << " [OPTION] FILE1 FILE2\n"
+            << "Compare image files FILE1 and FILE2 and creates difference files.\n"
+            << "Options:\n"
+            << "\t-h, --help\tdisplay this help and exit.\n";
+
+        return 0;
+    }
+
     if (argc != 3)
     {
-        std::cerr << argv[0] << " requires 2 arguments." << std::endl;
+        std::cerr << argv[0] << " requires two image filenames as arguments." << std::endl;
         return 0;
     }
 
