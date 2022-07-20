@@ -61,16 +61,19 @@ int run(int argc, char *argv[])
             {
                 ph.weight() *= model.dust()->albedo();
                 // Do peeling off and project weighted photons into image
-                // учитыается нерассеяшийся свет от каждой точки рассеяния и последующие рассеяния, пока фотон не изыдет
                 for (Observer &observer : observers)
                 {
                     grid->peeloff(ph, observer, model.dust());
                 }
 
                 // Scatter photon into new direction and update Stokes parameters
+                if (ph.nscat() >= model.nscat())
+                {
+                    break;
+                }
+
                 ph.Stokes(model.dust(), Direction3d(), 0.0, false, &ran);
                 ph.nscat() += 1;
-                if (ph.nscat() > model.nscat()) break;
 
                 // Find next scattering location
                 tflag = grid->movePhotonAtRandomDepth(ph, &ran);
