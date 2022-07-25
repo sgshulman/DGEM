@@ -3,7 +3,7 @@
 
 #include <sstream>
 
-TEST_CASE("Random", "[Saving]")
+TEST_CASE("Random", "[LEcuyer saving]")
 {
     LEcuyer longRandom(-1556);
     LEcuyer firstRandom(-1556);

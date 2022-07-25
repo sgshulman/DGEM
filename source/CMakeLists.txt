@@ -46,6 +46,8 @@ set(SOURCES
         Sources.hpp
         SafierWind.cpp
         SafierWind.hpp
+        Sobol.cpp
+        Sobol.hpp
         SphereEnvelope.cpp
         SphereEnvelope.hpp
         TetrahedralGrid.cpp
@@ -78,6 +80,7 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
         tests/MieDustTests.cpp
         tests/ModelTests.inl
         tests/RoundHumpTests.cpp
+        tests/SobolTests.cpp
         tests/SphereEnvelopeTests.cpp
         tests/TestUtils.hpp
         tests/TetrahedralGridTests.cpp
