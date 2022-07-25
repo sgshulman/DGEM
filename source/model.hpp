@@ -29,7 +29,7 @@ class Model
 		std::uint32_t nscat() const
 		{	return nscat_;	}
 
-		Random createRandomGenerator() const;
+		IRandomGenerator* createRandomGenerator() const;
 
 		std::uint32_t SecondaryDirectionsLevel() const
 		{	return SecondaryDirectionsLevel_;	}

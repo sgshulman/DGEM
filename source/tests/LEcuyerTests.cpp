@@ -1,12 +1,12 @@
 #include "../third-party/catch2/catch.hpp"
-#include "../Random.hpp"
+#include "../LEcuyer.hpp"
 
 #include <sstream>
 
 TEST_CASE("Random", "[Saving]")
 {
-    Random longRandom(-1556);
-    Random firstRandom(-1556);
+    LEcuyer longRandom(-1556);
+    LEcuyer firstRandom(-1556);
 
     for (int i=0; i!=10; ++i)
     {
@@ -17,7 +17,7 @@ TEST_CASE("Random", "[Saving]")
     std::stringstream stream;
     firstRandom.save(stream);
 
-    Random secondRandom(-1556);
+    LEcuyer secondRandom(-1556);
     secondRandom.load(stream);
 
     for (int i=0; i!=10; ++i)

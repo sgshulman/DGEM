@@ -14,7 +14,7 @@
 #include "MatterArray.hpp"
 #include "MatterTranslation.hpp"
 #include "MieDust.hpp"
-#include "Random.hpp"
+#include "LEcuyer.hpp"
 #include "RoundHump.hpp"
 #include "SafierWind.hpp"
 #include "Sources.hpp"
@@ -793,15 +793,15 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
     parseObservers(observers, j.at(sObservers));
 }
 
-Random Model::createRandomGenerator() const
+IRandomGenerator* Model::createRandomGenerator() const
 {
-    Random rand(iseed_);
+    LEcuyer* rand = new LEcuyer(iseed_);
 
     if (!inputRandomFile_.empty())
     {
-        rand.load(inputRandomFile_);
+        rand->load(inputRandomFile_);
     }
 
-    rand.setOutputFile(outputRandomFile_);
+    rand->setOutputFile(outputRandomFile_);
     return rand;
 }

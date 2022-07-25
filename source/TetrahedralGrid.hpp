@@ -37,7 +37,7 @@ public:
     double findOpticalDepth(Photon ph) const override;
     double movePhotonAtDistance(Photon& ph, double distance) const override;
     int movePhotonAtDepth(Photon &ph, double tau, double tauold) const override;
-    int movePhotonAtRandomDepth(Photon& ph, Random *ran) const override;
+    int movePhotonAtRandomDepth(Photon& ph, IRandomGenerator *ran) const override;
     void peeloff(Photon ph, Observer& observer, IDustCRef dust) const override;
     void peeloff(Photon ph, Observer& observer, IDustCRef dust, Vector3d const& pos1, Vector3d const& pos2) const override;
     double computeMatterMass() const override;

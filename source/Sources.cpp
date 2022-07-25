@@ -3,10 +3,10 @@
 #include <iostream>
 #include "Observer.hpp"
 #include "CartesianGrid.hpp"
+#include "IRandomGenerator.hpp"
 #include "MathUtils.hpp"
-#include "Random.hpp"
 
-Photon Sources::emitPhoton(Random* ran)
+Photon Sources::emitPhoton(IRandomGenerator* ran)
 {
     if (currentSource_ == pointSources_.size())
     {

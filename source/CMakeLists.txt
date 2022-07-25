@@ -21,10 +21,11 @@ set(SOURCES
         IDust.hpp
         IGrid.hpp
         IMatter.hpp
+        IRandomGenerator.hpp
         KurosawaWind.cpp
         KurosawaWind.hpp
-        Observer.cpp
-        Observer.hpp
+        LEcuyer.cpp
+        LEcuyer.hpp
         MathUtils.hpp
         MatterArray.cpp
         MatterArray.hpp
@@ -34,11 +35,11 @@ set(SOURCES
         MieDust.hpp
         model.cpp
         model.hpp
+        Observer.cpp
+        Observer.hpp
         Photon.cpp
         Photon.hpp
         Predefines.hpp
-        Random.cpp
-        Random.hpp
         RoundHump.cpp
         RoundHump.hpp
         Sources.cpp
@@ -70,12 +71,12 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
         tests/AzimuthalHumpTests.cpp
         tests/CartesianGridTests.cpp
         tests/Direction3dTests.cpp
+        tests/LEcuyerTests.cpp
         tests/MathUtilsTests.cpp
         tests/MatterArrayTests.cpp
         tests/MatterTranslationTests.cpp
         tests/MieDustTests.cpp
         tests/ModelTests.inl
-        tests/RandomTests.cpp
         tests/RoundHumpTests.cpp
         tests/SphereEnvelopeTests.cpp
         tests/TestUtils.hpp

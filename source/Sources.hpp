@@ -83,7 +83,7 @@ public:
     Sources(Sources const &) = delete;
     Sources& operator=(Sources const&) = delete;
 
-    Photon emitPhoton(Random* ran);
+    Photon emitPhoton(IRandomGenerator* ran);
     void directPhotons(IGridCRef grid, std::vector<Observer>* observers);
     void writeObserversOpticalDepths(IGridCRef grid, std::vector<Observer>* observers);
 

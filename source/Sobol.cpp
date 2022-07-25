@@ -107,7 +107,7 @@ void Sobol::nextPoint()
     ++pointId_;
     unsigned int const c = rightmost_zero_bit(pointId_);
 
-    for (int dim = 0; dim != dimension_; ++dim)
+    for (unsigned int dim = 0; dim != dimension_; ++dim)
     {
         x_[dim] ^= m(c, dim);
     }

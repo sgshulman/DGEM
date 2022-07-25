@@ -4,11 +4,11 @@
 #include <vector>
 #include "model.hpp"
 #include "CartesianGrid.hpp"
+#include "IDust.hpp"
+#include "IRandomGenerator.hpp"
 #include "Observer.hpp"
 #include "Photon.hpp"
-#include "Random.hpp"
 #include "Directions.hpp"
-#include "IDust.hpp"
 #include "Sources.hpp"
 
 
@@ -22,7 +22,7 @@ int run(int argc, char *argv[])
     Model& model = Model::instance(&observers, argc == 2 ? argv[1] : "parameters.json");
     IGridCPtr grid = model.grid();
     SourcesPtr sources = model.sources();
-    Random ran{ model.createRandomGenerator() };
+    IRandomGenerator* ran{ model.createRandomGenerator() };
 
     std::cout << "Matter mass:\t" << grid->computeMatterMass() << "\t Solar Masses" << std::endl;
     sources->writeObserversOpticalDepths(grid, &observers);
@@ -34,7 +34,7 @@ int run(int argc, char *argv[])
     {
         for (;;)
         {
-            Photon ph{ sources->emitPhoton(&ran) };
+            Photon ph{ sources->emitPhoton(ran) };
 
             if (ph.termination())
             {
@@ -51,7 +51,7 @@ int run(int argc, char *argv[])
             ph.weight() = w;
 
             // Force photon to scatter at optical depth tau before edge of grid
-            double tau = -std::log(1.0 - ran.Get() * w);
+            double tau = -std::log(1.0 - ran->Get() * w);
             // Find scattering location of tau
             grid->movePhotonAtDepth(ph, tau, 0.0);
             // Photon scatters in grid until it exits (tflag=1) or number
@@ -72,11 +72,11 @@ int run(int argc, char *argv[])
                 }
 
                 // Scatter photon into new direction and update Stokes parameters
-                ph.Stokes(model.dust(), Direction3d(), 0.0, false, &ran);
+                ph.Stokes(model.dust(), Direction3d(), 0.0, false, ran);
                 ph.nscat() += 1;
 
                 // Find next scattering location
-                tflag = grid->movePhotonAtRandomDepth(ph, &ran);
+                tflag = grid->movePhotonAtRandomDepth(ph, ran);
             }
         }
     } else {
@@ -89,7 +89,7 @@ int run(int argc, char *argv[])
         {
             for (;;)
             {
-                Photon ph0{sources->emitPhoton(&ran)};
+                Photon ph0{sources->emitPhoton(ran)};
 
                 if (ph0.termination())
                 {
@@ -132,7 +132,7 @@ int run(int argc, char *argv[])
                         grid->peeloff(ph, observer, model.dust());
                     }
 
-                    if (ph.nscat() < model.nscat()) ph.Scatt(model, sdir, grid, observers, &ran);
+                    if (ph.nscat() < model.nscat()) ph.Scatt(model, sdir, grid, observers, ran);
                 }
             }
         }
@@ -146,7 +146,7 @@ int run(int argc, char *argv[])
 
             for (;;)
             {
-                Photon ph0{sources->emitPhoton(&ran)};
+                Photon ph0{sources->emitPhoton(ran)};
 
                 if (ph0.termination())
                 {
@@ -183,7 +183,7 @@ int run(int argc, char *argv[])
                             grid->peeloff(ph, observer, model.dust(), oldpos, ph0.pos());
                         }
 
-                        if (ph.nscat() < model.nscat()) ph.Scatt(model, sdir, grid, observers, &ran);
+                        if (ph.nscat() < model.nscat()) ph.Scatt(model, sdir, grid, observers, ran);
                     }
                     oldR = r;
                 }
@@ -216,7 +216,8 @@ int run(int argc, char *argv[])
     }
     observersResultFile.close();
 
-    ran.save();
+    ran->save();
+    delete ran;
 
     auto const endTime = std::chrono::high_resolution_clock::now();
     std::cout.precision(4);

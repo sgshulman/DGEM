@@ -4,9 +4,9 @@
 
 #include "CartesianGrid.hpp"
 #include "IMatter.hpp"
+#include "IRandomGenerator.hpp"
 #include "Observer.hpp"
 #include "Photon.hpp"
-#include "Random.hpp"
 #include "Units.hpp"
 
 CartesianGrid::CartesianGrid(
@@ -276,7 +276,7 @@ int CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold) con
 }
 
 
-int CartesianGrid::movePhotonAtRandomDepth(Photon &ph, Random *ran) const
+int CartesianGrid::movePhotonAtRandomDepth(Photon &ph, IRandomGenerator *ran) const
 {
     double const tau = -std::log(ran->Get());
     return movePhotonAtDepth(ph, tau, 0.0);

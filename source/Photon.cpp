@@ -1,10 +1,10 @@
 #include <cmath>
 #include "CartesianGrid.hpp"
+#include "IDust.hpp"
+#include "IRandomGenerator.hpp"
 #include "Observer.hpp"
 #include "Photon.hpp"
-#include "Random.hpp"
 #include "Directions.hpp"
-#include "IDust.hpp"
 
 Photon::Photon( Vector3d const& pos, std::uint64_t cellId, Direction3d const& dir, double weight, std::uint32_t nscat, double fi, double fq, double fu, double fv )
     : cellId_{ cellId }
@@ -19,7 +19,7 @@ Photon::Photon( Vector3d const& pos, std::uint64_t cellId, Direction3d const& di
 {}
 
 
-double Photon::Scatt(IDustCRef dust, Direction3d const& dir, Random* ran)
+double Photon::Scatt(IDustCRef dust, Direction3d const& dir, IRandomGenerator* ran)
 {
     // cos(Theta), where Theta is angle between incident
     // and outgoing (i.e., observed) photon direction
@@ -31,7 +31,7 @@ double Photon::Scatt(IDustCRef dust, Direction3d const& dir, Random* ran)
 }
 
 
-void Photon::Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std::vector<Observer>& observers, Random* ran)
+void Photon::Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std::vector<Observer>& observers, IRandomGenerator* ran)
 {
     if (nscat_ == m.MonteCarloStart() )
     {
@@ -118,7 +118,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std:
 
 // Stokes vector changes
 // spherical trigonometry is used
-void Photon::Stokes(IDustCRef dust, Direction3d const &dir, double calpha, bool fDir, Random* ran)
+void Photon::Stokes(IDustCRef dust, Direction3d const &dir, double calpha, bool fDir, IRandomGenerator* ran)
 {
     double a11,a12,a13,a21,a22,a23,a24,a31,a32,a33,a34;
         double a42,a43,a44;

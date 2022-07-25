@@ -10,7 +10,6 @@ class Observer;
 class Photon ;
 class Source ;
 class Directions ;  // directions grid
-class Random;
 
 class Sources;
 using SourcesPtr = std::shared_ptr<Sources>;
@@ -32,5 +31,7 @@ using IGridCRef = IGridCPtr const &;
 class IDust;
 using IDustCPtr = std::shared_ptr<IDust const>;
 using IDustCRef = IDustCPtr const &;
+
+class IRandomGenerator;
 
 #endif

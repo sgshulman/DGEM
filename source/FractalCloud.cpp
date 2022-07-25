@@ -1,6 +1,6 @@
 #include "FractalCloud.hpp"
 #include "DebugUtils.hpp"
-#include "Random.hpp"
+#include "LEcuyer.hpp"
 #include <vector>
 
 namespace
@@ -10,7 +10,7 @@ namespace
         std::uint32_t const cubeDotNumber,
         std::uint32_t const oldDotNumber,
         std::vector<Vector3d> const& dots,
-        Random* ran)
+        LEcuyer* ran)
     {
         std::vector<Vector3d> newDots(cubeDotNumber * oldDotNumber);
 
@@ -44,7 +44,7 @@ FractalCloud::FractalCloud(
     DATA_ASSERT(dCube > 0, "dCube (fractal dimension) must be positive.");
 
     const double l = 2 * max;
-    Random ran(seed);
+    LEcuyer ran(seed);
 
     std::vector<Vector3d> dots0;
     dots0.reserve(dotsN);

@@ -3,14 +3,14 @@
 #include <string>
 
 #include "DebugUtils.hpp"
-#include "Random.hpp"
+#include "LEcuyer.hpp"
 
-Random::Random(std::int32_t const iseed)
+LEcuyer::LEcuyer(std::int32_t const iseed)
     : iseed_(iseed)
 {}
 
 
-void Random::save() const
+void LEcuyer::save() const
 {
     if (!outputFile_.empty())
     {
@@ -19,7 +19,7 @@ void Random::save() const
     }
 }
 
-void Random::save(std::ostream& stream) const
+void LEcuyer::save(std::ostream& stream) const
 {
     stream << iseed_ << "\n";
     stream << idum2_ << "\n";
@@ -30,14 +30,14 @@ void Random::save(std::ostream& stream) const
     }
 }
 
-void Random::load(std::string const& filename)
+void LEcuyer::load(std::string const& filename)
 {
     std::ifstream stream(filename);
     DATA_ASSERT(stream.is_open(), filename + " should exist.");
     load(stream);
 }
 
-void Random::load(std::istream& stream)
+void LEcuyer::load(std::istream& stream)
 {
     stream >> iseed_;
     stream >> idum2_;
@@ -48,12 +48,12 @@ void Random::load(std::istream& stream)
     }
 }
 
-void Random::setOutputFile(std::string const& filename)
+void LEcuyer::setOutputFile(std::string const& filename)
 {
     outputFile_ = filename;
 }
 
-double Random::Get()
+double LEcuyer::Get()
 {
     std::int32_t const IM1{ 2147483563 };
     std::int32_t const IM2{ 2147483399 };

@@ -1,9 +1,9 @@
 #include "TetrahedralGrid.hpp"
 #include "DebugUtils.hpp"
 #include "IMatter.hpp"
+#include "IRandomGenerator.hpp"
 #include "Observer.hpp"
 #include "Photon.hpp"
-#include "Random.hpp"
 #include "Units.hpp"
 
 #include <algorithm>
@@ -647,7 +647,7 @@ int TetrahedralGrid::movePhotonAtDepth(Photon& ph, double tau, double tauold) co
 }
 
 
-int TetrahedralGrid::movePhotonAtRandomDepth(Photon &ph, Random *ran) const
+int TetrahedralGrid::movePhotonAtRandomDepth(Photon &ph, IRandomGenerator *ran) const
 {
     double const tau = -std::log(ran->Get());
     return movePhotonAtDepth(ph, tau, 0.0);
