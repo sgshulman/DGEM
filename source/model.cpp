@@ -17,6 +17,7 @@
 #include "LEcuyer.hpp"
 #include "RoundHump.hpp"
 #include "SafierWind.hpp"
+#include "Sobol.hpp"
 #include "Sources.hpp"
 #include "SphereEnvelope.hpp"
 #include "TetrahedralGrid.hpp"
@@ -197,6 +198,56 @@ namespace
     {
         return json.contains(name) ? extract_bool(json.at(name), section, name) : defaultValue;
     }
+
+    template<typename T>
+    T extract_enum(
+        const nlohmann::json& json,
+        char const* section,
+        char const* name,
+        std::initializer_list<std::string> enumValues)
+    {
+        if (!json.is_string())
+        {
+            throw std::invalid_argument(std::string("Item ") + name + " from section " + section + " should be string.");
+        }
+
+        std::string const str = json.get<std::string>();
+        std::uint32_t i = 0;
+        for (auto const& value : enumValues)
+        {
+            if (str == value)
+            {
+                return static_cast<T>(i);
+            }
+            ++i;
+        }
+
+        std::stringstream ss;
+        ss << "Enum \"" << name << "\" from section \"" << section << "\" contains invalid value " << str
+           << ". Possible values are: ";
+
+        for (const auto& value : enumValues)
+        {
+            ss << value << ", ";
+        }
+        ss << "\n";
+
+        throw std::invalid_argument(ss.str());
+
+        return T();
+    }
+
+    template<typename T>
+    T get_optional_enum(
+        const nlohmann::json& json,
+        char const* section,
+        char const* name,
+        std::initializer_list<std::string> enumValues,
+        T defaultValue)
+    {
+        return json.contains(name) ? extract_enum<T>(json.at(name), section, name, enumValues) : defaultValue;
+    }
+
 
     MatterTranslationCPtr parseTranslation(const nlohmann::json& json)
     {
@@ -744,7 +795,7 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
     checkParameters(
         methodJson,
         methodParameters,
-        {"fMonteCarlo", "nphotons", "PrimaryDirectionsLevel", "iseed", "inputRandomFile", "outputRandomFile", "taumin", "nscat",
+        {"fMonteCarlo", "nphotons", "PrimaryDirectionsLevel", "generatorType", "iseed", "inputRandomFile", "outputRandomFile", "taumin", "nscat",
          "SecondaryDirectionsLevel", "NumOfPrimaryScatterings", "NumOfSecondaryScatterings", "MonteCarloStart", "fUseHEALPixGrid",
          "defaultStarRadius", "fWriteScatterings"});
 
@@ -753,7 +804,11 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
     sourceParameters.PrimaryDirectionsLevel_ = get_uint32(methodJson, methodParameters, "PrimaryDirectionsLevel");
     sourceParameters.useHEALPixGrid_ = get_optional_bool(methodJson, methodParameters, "fUseHEALPixGrid", false);
 
-    iseed_ = get_int32(methodJson, methodParameters, "iseed");
+    generatorType_ = get_optional_enum(methodJson, methodParameters, "generatorType", {"LEcuyer", "Sobol"}, RandomGeneratorType::LECUYER);
+    if (LECUYER == generatorType_)
+    {
+        iseed_ = get_int32(methodJson, methodParameters, "iseed");
+    }
     inputRandomFile_ = get_optional_string(methodJson, methodParameters, "inputRandomFile", "");
     outputRandomFile_ = get_optional_string(methodJson, methodParameters, "outputRandomFile", "");
 
@@ -795,7 +850,17 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
 
 IRandomGenerator* Model::createRandomGenerator() const
 {
-    LEcuyer* rand = new LEcuyer(iseed_);
+    IRandomGenerator* rand{ nullptr };
+    if (RandomGeneratorType::LECUYER == generatorType_)
+    {
+        rand = new LEcuyer(iseed_);
+    }
+    else if (RandomGeneratorType::SOBOL == generatorType_)
+    {
+        rand = new Sobol(3);
+    }
+
+    assert(rand != nullptr);
 
     if (!inputRandomFile_.empty())
     {

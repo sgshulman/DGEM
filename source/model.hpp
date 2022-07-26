@@ -7,6 +7,12 @@
 
 #include "Predefines.hpp"
 
+enum RandomGeneratorType
+{
+    LECUYER,
+    SOBOL
+};
+
 // model parameters
 class Model
 {
@@ -53,7 +59,8 @@ class Model
         double defaultStarRadius_;
 
 		// Random generator parameters
-		int32_t iseed_;
+		RandomGeneratorType generatorType_;
+		int32_t iseed_{ 0 };
 		std::string inputRandomFile_;
         std::string outputRandomFile_;
 
