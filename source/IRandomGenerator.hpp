@@ -14,6 +14,9 @@ public:
     IRandomGenerator& operator=(IRandomGenerator &&) noexcept = default;
 
     virtual double Get() = 0;
+    // Skip random number if we must get them by sequences of a certain length
+    virtual void Skip() {}
+
     virtual void save() const = 0;
     virtual void load(std::string const& filename) = 0;
     virtual void setOutputFile(std::string const& filename) = 0;

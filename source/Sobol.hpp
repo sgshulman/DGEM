@@ -20,8 +20,8 @@ public:
     void save(std::ostream& stream) const;
     void load(std::istream& stream);
 
-    double Get();
-
+    double Get() override;
+    void Skip() override;
 private:
     constexpr static unsigned int MAX_DIMENSION = 6;
     constexpr static unsigned int POLINOMIAL_NUMBER = MAX_DIMENSION - 1;

@@ -57,6 +57,16 @@ double Sobol::Get()
     return static_cast<double>(x_[currentDimension_++]) / POW2;
 }
 
+void Sobol::Skip()
+{
+    if (currentDimension_ == dimension_)
+    {
+        nextPoint();
+        currentDimension_ = 0;
+    }
+    ++currentDimension_;
+}
+
 void Sobol::save() const
 {
     if (!outputFile_.empty())

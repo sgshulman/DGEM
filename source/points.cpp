@@ -45,6 +45,7 @@ int run(int argc, char *argv[])
             double tau1 = grid->findOpticalDepth(ph);
             if (tau1 < model.taumin())
             {
+                ran->Skip();
                 continue;
             }
             double w = 1.0 - std::exp(-tau1);
