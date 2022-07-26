@@ -1,6 +1,7 @@
 #include <cassert>
-#include <iostream>
+#include <fstream>
 
+#include "DebugUtils.hpp"
 #include "Sobol.hpp"
 
 namespace
@@ -54,6 +55,45 @@ double Sobol::Get()
     }
 
     return static_cast<double>(x_[currentDimension_++]) / POW2;
+}
+
+void Sobol::save() const
+{
+    if (!outputFile_.empty())
+    {
+        std::ofstream stream(outputFile_);
+        save(stream);
+    }
+}
+
+void Sobol::load(std::string const& filename)
+{
+    std::ifstream stream(filename);
+    DATA_ASSERT(stream.is_open(), filename + " should exist.");
+    load(stream);
+}
+
+void Sobol::setOutputFile(std::string const& filename)
+{
+    outputFile_ = filename;
+}
+
+void Sobol::save(std::ostream& stream) const
+{
+    stream << pointId_ << "\n";
+    for (unsigned int dim = 0; dim != dimension_; ++dim)
+    {
+        stream << x_[dim] << "\t";
+    }
+}
+
+void Sobol::load(std::istream& stream)
+{
+    stream >> pointId_;
+    for (unsigned int dim = 0; dim != dimension_; ++dim)
+    {
+        stream >> x_[dim];
+    }
 }
 
 void Sobol::initMiTable()

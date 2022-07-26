@@ -2,12 +2,24 @@
 #define SOBOL_HPP_
 
 #include <cmath>
+#include <string>
 #include <vector>
 
-class Sobol
+#include "IRandomGenerator.hpp"
+
+class Sobol : public IRandomGenerator
 {
 public:
     Sobol(unsigned dimension);
+    ~Sobol() = default;
+
+    void save() const override;
+    void load(std::string const& filename) override;
+    void setOutputFile(std::string const& filename) override;
+
+    void save(std::ostream& stream) const;
+    void load(std::istream& stream);
+
     double Get();
 
 private:
@@ -54,6 +66,7 @@ private:
     std::uint64_t pointId_{0};
     point_t x_[MAX_DIMENSION]{};
     std::vector<point_t> m_;
+    std::string outputFile_;
 };
 
 #endif // SOBOL_HPP_

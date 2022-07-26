@@ -1,6 +1,5 @@
 #include <cstdint>
 #include <fstream>
-#include <string>
 
 #include "DebugUtils.hpp"
 #include "LEcuyer.hpp"
