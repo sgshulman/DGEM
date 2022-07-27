@@ -40,7 +40,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std:
         ph.Stokes( m.dust(), Direction3d(), 0.0, false, ran);
         tflag = grid->movePhotonAtRandomDepth(ph, ran);
         ph.nscat()+=1;
-        while ( !tflag && ( ph.nscat() <= m.nscat() ) )
+        while (!tflag)
         {
             ph.weight() *= m.dust()->albedo();
             // Do peeling off and project weighted photons into image
@@ -49,10 +49,15 @@ void Photon::Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std:
                 grid->peeloff(ph, observer, m.dust());
             }
 
+            if (ph.nscat() >= m.nscat())
+            {
+                break;
+            }
+
             // Scatter photon into new direction and update Stokes parameters
-            ph.Stokes( m.dust(), Direction3d(), 0.0, false, ran);
-            ph.nscat()+=1;
-            if (ph.nscat() > m.nscat()) break;
+            ph.Stokes(m.dust(), Direction3d(), 0.0, false, ran);
+            ph.nscat() += 1;
+
             // Find next scattering location
             tflag = grid->movePhotonAtRandomDepth(ph, ran);
         }

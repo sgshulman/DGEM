@@ -57,7 +57,7 @@ int run(int argc, char *argv[])
             // Photon scatters in grid until it exits (tflag=1) or number
             // of scatterings exceeds a set value (nscatt)
             int tflag = 0;
-            while (!tflag && (ph.nscat() <= model.nscat()))
+            while (!tflag)
             {
                 ph.weight() *= model.dust()->albedo();
                 // Do peeling off and project weighted photons into image
@@ -66,12 +66,12 @@ int run(int argc, char *argv[])
                     grid->peeloff(ph, observer, model.dust());
                 }
 
-                // Scatter photon into new direction and update Stokes parameters
                 if (ph.nscat() >= model.nscat())
                 {
                     break;
                 }
 
+                // Scatter photon into new direction and update Stokes parameters
                 ph.Stokes(model.dust(), Direction3d(), 0.0, false, &ran);
                 ph.nscat() += 1;
 
