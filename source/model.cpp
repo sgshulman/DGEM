@@ -795,9 +795,9 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
     checkParameters(
         methodJson,
         methodParameters,
-        {"fMonteCarlo", "nphotons", "PrimaryDirectionsLevel", "generatorType", "iseed", "inputRandomFile", "outputRandomFile", "taumin", "nscat",
-         "SecondaryDirectionsLevel", "NumOfPrimaryScatterings", "NumOfSecondaryScatterings", "MonteCarloStart", "fUseHEALPixGrid",
-         "defaultStarRadius", "fWriteScatterings"});
+        {"fMonteCarlo", "nphotons", "PrimaryDirectionsLevel", "generatorType", "iseed", "dgemBinType", "inputRandomFile",
+         "outputRandomFile", "taumin", "nscat", "SecondaryDirectionsLevel", "NumOfPrimaryScatterings",
+         "NumOfSecondaryScatterings", "MonteCarloStart", "fUseHEALPixGrid", "defaultStarRadius", "fWriteScatterings"});
 
     sourceParameters.useMonteCarlo_ = get_bool(methodJson, methodParameters, "fMonteCarlo");
     sourceParameters.num_photons_ = get_uint64(methodJson, methodParameters, "nphotons");
@@ -809,6 +809,8 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
     {
         iseed_ = get_int32(methodJson, methodParameters, "iseed");
     }
+
+    dgemBinType_ = get_optional_enum(methodJson, methodParameters, "dgemBinType", {"Point", "Line", "HexLines"}, DgemBinType::LINE);
     inputRandomFile_ = get_optional_string(methodJson, methodParameters, "inputRandomFile", "");
     outputRandomFile_ = get_optional_string(methodJson, methodParameters, "outputRandomFile", "");
 

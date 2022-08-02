@@ -179,9 +179,22 @@ int run(int argc, char *argv[])
 
                         ph.weight() *= model.dust()->albedo() * (1.0 - std::exp(-tau));
 
-                        for (Observer &observer : observers)
+                        switch (model.dgemBinType())
                         {
-                            grid->peeloff(ph, observer, model.dust(), oldpos, ph0.pos());
+                            case (DgemBinType::POINT):
+                                for (Observer &observer : observers)
+                                {
+                                     grid->peeloff(ph, observer, model.dust());
+                                }
+                                break;
+                            case (DgemBinType::LINE):
+                                for (Observer &observer : observers)
+                                {
+                                     grid->peeloff(ph, observer, model.dust(), oldpos, ph0.pos());
+                                }
+                                break;
+                            default:
+                                ;
                         }
 
                         if (ph.nscat() < model.nscat()) ph.Scatt(model, sdir, grid, observers, ran);

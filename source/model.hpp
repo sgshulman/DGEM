@@ -13,6 +13,13 @@ enum RandomGeneratorType
     SOBOL
 };
 
+enum DgemBinType
+{
+    POINT,
+    LINE,
+    HEX_LINES
+};
+
 // model parameters
 class Model
 {
@@ -32,6 +39,8 @@ class Model
 		{	return taumin_;	}
         double defaultStarRadius() const
         {	return defaultStarRadius_;	}
+        DgemBinType dgemBinType() const
+        {   return dgemBinType_;    }
 		std::uint32_t nscat() const
 		{	return nscat_;	}
 
@@ -60,6 +69,7 @@ class Model
 
 		// Random generator parameters
 		RandomGeneratorType generatorType_;
+		DgemBinType dgemBinType_;
 		int32_t iseed_{ 0 };
 		std::string inputRandomFile_;
         std::string outputRandomFile_;
