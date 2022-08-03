@@ -45,6 +45,11 @@ class Vector3d
             return std::sqrt(x_*x_ + y_*y_ + z_*z_);
         }
 
+        inline double norm2() const
+        {
+            return x_*x_ + y_*y_ + z_*z_;
+        }
+
         // data
         inline double x() const { return x_; }
         inline double y() const { return y_; }

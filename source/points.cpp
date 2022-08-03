@@ -193,6 +193,12 @@ int run(int argc, char *argv[])
                                      grid->peeloff(ph, observer, model.dust(), oldpos, ph0.pos());
                                 }
                                 break;
+                            case (DgemBinType::HEX_LINES):
+                                for (Observer &observer : observers)
+                                {
+                                     grid->peeloffHex(ph, observer, model.dust(), oldpos, ph0.pos());
+                                }
+                                break;
                             default:
                                 ;
                         }

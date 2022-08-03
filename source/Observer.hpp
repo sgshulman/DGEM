@@ -43,7 +43,8 @@ public:
     void write(std::ofstream& file);
     bool inFov(Photon const& photon) const;
     void bin(Photon const& photon);
-    void bin(Photon const& photon, const Vector3d &pos1, const Vector3d &pos2);
+    void bin(Photon const& photo, Vector3d const& pos1, Vector3d const& pos2);
+    void binHex(Photon const& photo, Vector3d const& pos1, Vector3d const& pos2);
 
     double phi() const
     {	return direction_.phi();	}

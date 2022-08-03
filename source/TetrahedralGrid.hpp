@@ -40,6 +40,7 @@ public:
     int movePhotonAtRandomDepth(Photon& ph, IRandomGenerator *ran) const override;
     void peeloff(Photon ph, Observer& observer, IDustCRef dust) const override;
     void peeloff(Photon ph, Observer& observer, IDustCRef dust, Vector3d const& pos1, Vector3d const& pos2) const override;
+    void peeloffHex(Photon ph, Observer& observer, IDustCRef dust, Vector3d const& pos1, Vector3d const& pos2) const override;
     double computeMatterMass() const override;
     double max() const override;
     std::uint64_t cellId(const Vector3d& position) const override;
