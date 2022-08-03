@@ -9,14 +9,14 @@ class Vector3d
     public:
         Vector3d() = default;
 
-        Vector3d(double const x, double const y, double const z)
+        constexpr Vector3d(double const x, double const y, double const z)
             : x_(x)
             , y_(y)
             , z_(z)
         {}
 
         // union vector with spherical coordinates
-        Vector3d(double const phi, double const theta)
+        constexpr Vector3d(double const phi, double const theta)
             : x_(std::cos(phi))
             , y_(std::sin(phi))
             , z_(std::cos(theta))

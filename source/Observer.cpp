@@ -341,26 +341,27 @@ void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &p
 
 void Observer::binHex(Photon const& photon, Vector3d const& pos1, Vector3d const& pos2)
 {
-    double const r = (pos2-pos1).norm() / 2.;
+    constexpr double a = 1.0 / std::sqrt(7);
 
-    Vector3d v = pos2 - pos1;
-    Vector3d x = Vector3d(-v.z(), v.x() * v.y() > 0 ? -v.z() : v.z(), v.x() * v.y() > 0 ? v.x() + v.y() : v.x() - v.y()).normalized();
-    Vector3d y = vectorProduct(v, x).normalized();
-    double const a = r / std::sqrt(7);
+    constexpr Vector3d shifts[7] = {{0., 0., 0.}, {1.5*a, std::sqrt(3.)/2.*a, 0}, {1.5*a, -std::sqrt(3.)/2.*a, 0},
+        {0, std::sqrt(3.)*a, 0}, {0, -std::sqrt(3.)*a, 0},
+        {-1.5*a, std::sqrt(3.)/2.*a, 0}, {-1.5*a, -std::sqrt(3.)/2.*a, 0}};
 
-    Vector3d shifts[7] = {{0., 0., 0.}, {1.5*a, sqrt(3.)/2.*a, 0}, {1.5*a, -sqrt(3.)/2.*a, 0},
-        {0, sqrt(3.)*a, 0}, {0, -sqrt(3.)*a, 0},
-        {-1.5*a, sqrt(3.)/2.*a, 0}, {-1.5*a, -sqrt(3.)/2.*a, 0}};
+    Vector3d const v = pos2 - pos1;
+    double const r = v.norm() / 2.;
+    Vector3d const x = Vector3d(-v.z(), v.x() * v.y() > 0 ? -v.z() : v.z(), v.x() * v.y() > 0 ? v.x() + v.y() : v.x() - v.y()).normalized();
+    Vector3d const y = vectorProduct(v, x).normalized();
 
     for (int i=0; i!=7; ++i)
     {
-        double const yimage1 = imageY(pos1 + shifts[i].x() * x + shifts[i].y() * y);
-        double const ximage1 = imageX(pos1 + shifts[i].x() * x + shifts[i].y() * y);
+        Vector3d const shift = r * (shifts[i].x() * x + shifts[i].y() * y);
+        double const yimage1 = imageY(pos1 + shift);
+        double const ximage1 = imageX(pos1 + shift);
         auto const xl1 = static_cast<int64_t>(nx_ * ximage1 / (2.0 * rimage_));
         auto const yl1 = static_cast<int64_t>(ny_ * yimage1 / (2.0 * rimage_));
 
-        double const yimage2 = imageY(pos2 + shifts[i].x() * x + shifts[i].y() * y);
-        double const ximage2 = imageX(pos2 + shifts[i].x() * x + shifts[i].y() * y);
+        double const yimage2 = imageY(pos2 + shift);
+        double const ximage2 = imageX(pos2 + shift);
         auto const xl2 = static_cast<int64_t>(nx_ * ximage2 / (2.0 * rimage_));
         auto const yl2 = static_cast<int64_t>(ny_ * yimage2 / (2.0 * rimage_));
 
