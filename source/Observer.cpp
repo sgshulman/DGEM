@@ -225,7 +225,7 @@ void Observer::bin(Photon const& photon)
 
     double const eps = std::numeric_limits<float>::epsilon();
 
-    bin(
+    binPoint(
         photon,
         xl,
         yl,
@@ -251,7 +251,7 @@ void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &p
 
     if (xl1 == xl2 && yl1 == yl2)
     {
-        bin(
+        binPoint(
             photon,
             xl2,
             yl2,
@@ -262,80 +262,7 @@ void Observer::bin(Photon const& photon, const Vector3d &pos1, const Vector3d &p
         return;
     }
 
-    double xImageMin = std::min(ximage1, ximage2);
-    double xImageMax = std::max(ximage1, ximage2);
-    int64_t borderX = xl1;
-    int64_t lastBorderX = xl2;
-
-    if (ximage1 > ximage2)
-    {
-        xImageMin = ximage2;
-        xImageMax = ximage1;
-        borderX = xl2;
-        lastBorderX = xl1;
-    }
-
-    double yImageMin = yimage1;
-    double yImageMax = yimage2;
-    int64_t borderY = yl1;
-    int64_t lastBorderY = yl2;
-
-    if (yimage1 > yimage2)
-    {
-        yImageMin = yimage2;
-        yImageMax = yimage1;
-        borderY = yl2;
-        lastBorderY = yl1;
-    }
-
-    double const dx = xImageMax - xImageMin;
-    double const dy = yImageMax - yImageMin;
-    double const totalW = std::sqrt(dx*dx + dy*dy);
-
-    double x = xImageMin;
-    double y = yImageMin;
-
-    while (borderX <= lastBorderX && borderY <= lastBorderY)
-    {
-        double const xborder = std::min(static_cast<double>(borderX+1) * (2.0 * rimage_) / nx_, xImageMax);
-        double const yborder = std::min(static_cast<double>(borderY+1) * (2.0 * rimage_) / ny_, yImageMax);
-
-        double const xt = dx > 0 ? (xborder - x) / dx : std::numeric_limits<double>::infinity();
-        double const yt = dy > 0 ? (yborder - y) / dy : std::numeric_limits<double>::infinity();
-
-        if (xt < yt)
-        {
-            double yNew = y + xt * dy;
-            double w = std::sqrt((yNew - y)*(yNew-y) + (xborder - x)*(xborder - x));
-
-            bin(
-                photon,
-                borderX,
-                borderY,
-                false,
-                dy < eps && std::fabs(y - borderY * (2.0 * rimage_) / ny_) < eps,
-                w / totalW);
-
-            ++borderX;
-            x = xborder;
-            y = yNew;
-        } else {
-            double xNew = x + yt * dx;
-            double w = std::sqrt((xNew - x)*(xNew-x) + (yborder - y)*(yborder - y));
-
-            bin(
-                photon,
-                borderX,
-                borderY,
-                dx < eps && std::fabs(x - borderX * (2.0 * rimage_) / nx_) < eps,
-                false,
-                w / totalW);
-
-            ++borderY;
-            x = xNew;
-            y = yborder;
-        }
-    }
+    binLine(photon, ximage1, yimage1, ximage2, yimage2, 1.0);
 }
 
 
@@ -369,7 +296,7 @@ void Observer::binHex(Photon const& photon, Vector3d const& pos1, Vector3d const
 
         if (xl1 == xl2 && yl1 == yl2)
         {
-            bin(
+            binPoint(
                 photon,
                 xl2,
                 yl2,
@@ -377,80 +304,7 @@ void Observer::binHex(Photon const& photon, Vector3d const& pos1, Vector3d const
                 std::abs(yimage2 - yimage1) < eps && std::abs(yimage2 - yl2 * (2.0 * rimage_) / ny_) < eps,
                 1.0/7.0);
         } else {
-            double xImageMin = std::min(ximage1, ximage2);
-            double xImageMax = std::max(ximage1, ximage2);
-            int64_t borderX = xl1;
-            int64_t lastBorderX = xl2;
-
-            if (ximage1 > ximage2)
-            {
-                xImageMin = ximage2;
-                xImageMax = ximage1;
-                borderX = xl2;
-                lastBorderX = xl1;
-            }
-
-            double yImageMin = yimage1;
-            double yImageMax = yimage2;
-            int64_t borderY = yl1;
-            int64_t lastBorderY = yl2;
-
-            if (yimage1 > yimage2)
-            {
-                yImageMin = yimage2;
-                yImageMax = yimage1;
-                borderY = yl2;
-                lastBorderY = yl1;
-            }
-
-            double const dx = xImageMax - xImageMin;
-            double const dy = yImageMax - yImageMin;
-            double const totalW = std::sqrt(dx*dx + dy*dy);
-
-            double x = xImageMin;
-            double y = yImageMin;
-
-            while (borderX <= lastBorderX && borderY <= lastBorderY)
-            {
-                double const xborder = std::min(static_cast<double>(borderX+1) * (2.0 * rimage_) / nx_, xImageMax);
-                double const yborder = std::min(static_cast<double>(borderY+1) * (2.0 * rimage_) / ny_, yImageMax);
-
-                double const xt = dx > 0 ? (xborder - x) / dx : std::numeric_limits<double>::infinity();
-                double const yt = dy > 0 ? (yborder - y) / dy : std::numeric_limits<double>::infinity();
-
-                if (xt < yt)
-                {
-                    double yNew = y + xt * dy;
-                    double w = std::sqrt((yNew - y)*(yNew-y) + (xborder - x)*(xborder - x));
-
-                    bin(
-                        photon,
-                        borderX,
-                        borderY,
-                        false,
-                        dy < eps && std::fabs(y - borderY * (2.0 * rimage_) / ny_) < eps,
-                        w / totalW / 7.0);
-
-                    ++borderX;
-                    x = xborder;
-                    y = yNew;
-                } else {
-                    double xNew = x + yt * dx;
-                    double w = std::sqrt((xNew - x)*(xNew-x) + (yborder - y)*(yborder - y));
-
-                    bin(
-                        photon,
-                        borderX,
-                        borderY,
-                        dx < eps && std::fabs(x - borderX * (2.0 * rimage_) / nx_) < eps,
-                        false,
-                        w / totalW / 7.0);
-
-                    ++borderY;
-                    x = xNew;
-                    y = yborder;
-                }
-            }
+            binLine(photon, ximage1, yimage1, ximage2, yimage2, 1.0 / 7.0);
         }
     }
 }
@@ -466,7 +320,7 @@ inline double Observer::imageY(Vector3d const &position) const
     return rimage_ + position.z() * direction_.sinTheta() - direction_.cosTheta() * (position.y()*sinp_ + position.x()*cosp_);
 }
 
-inline void Observer::bin(Photon const& photon, int64_t const x, int64_t const y, double const weight)
+inline void Observer::binToPixel(Photon const& photon, int64_t const x, int64_t const y, double const weight)
 {
     result_.bin(photon, x, y, -1, weight);
     result0_.bin(photon, x, y, 0, weight);
@@ -474,16 +328,80 @@ inline void Observer::bin(Photon const& photon, int64_t const x, int64_t const y
     result2_.bin(photon, x, y, 2, weight);
 }
 
-inline void Observer::bin(const Photon &photon, int64_t const x, int64_t const y, bool const onXBorder, bool const onYBorder, double const weight)
+inline void Observer::binPoint(const Photon &photon, int64_t const x, int64_t const y, bool const onXBorder, bool const onYBorder, double const weight)
 {
     if (onXBorder && x > 0)
     {
-        bin(photon, x, y, 0.5 * weight);
-        bin(photon, x-1, y, 0.5 * weight);
+        binToPixel(photon, x, y, 0.5 * weight);
+        binToPixel(photon, x-1, y, 0.5 * weight);
     } else if (onYBorder && y > 0) {
-        bin(photon, x, y, 0.5 * weight);
-        bin(photon, x, y-1, 0.5 * weight);
+        binToPixel(photon, x, y, 0.5 * weight);
+        binToPixel(photon, x, y-1, 0.5 * weight);
     } else {
-        bin(photon, x, y, weight);
+        binToPixel(photon, x, y, weight);
+    }
+}
+
+inline void Observer::binLine(const Photon &photon, double const ximage1, double const yimage1, double const ximage2, double const yimage2, double const lineWeight)
+{
+    double const eps = std::numeric_limits<float>::epsilon();
+
+    double const xImageMin = std::min(ximage1, ximage2);
+    double const xImageMax = std::max(ximage1, ximage2);
+    auto borderX           = static_cast<int64_t>(nx_ * xImageMin / (2.0 * rimage_));
+    auto const lastBorderX = static_cast<int64_t>(ny_ * xImageMax / (2.0 * rimage_));
+
+    double const yImageMin = std::min(yimage1, yimage2);
+    double const yImageMax = std::max(yimage1, yimage2);
+    auto borderY           = static_cast<int64_t>(ny_ * yImageMin / (2.0 * rimage_));
+    auto const lastBorderY = static_cast<int64_t>(ny_ * yImageMax / (2.0 * rimage_));
+
+    double const dx = xImageMax - xImageMin;
+    double const dy = yImageMax - yImageMin;
+    double const totalW = std::sqrt(dx*dx + dy*dy);
+
+    double x = xImageMin;
+    double y = yImageMin;
+
+    while (borderX <= lastBorderX && borderY <= lastBorderY)
+    {
+        double const xborder = std::min(static_cast<double>(borderX+1) * (2.0 * rimage_) / nx_, xImageMax);
+        double const yborder = std::min(static_cast<double>(borderY+1) * (2.0 * rimage_) / ny_, yImageMax);
+
+        double const xt = dx > 0 ? (xborder - x) / dx : std::numeric_limits<double>::infinity();
+        double const yt = dy > 0 ? (yborder - y) / dy : std::numeric_limits<double>::infinity();
+
+        if (xt < yt)
+        {
+            double yNew = y + xt * dy;
+            double w = std::sqrt((yNew - y)*(yNew-y) + (xborder - x)*(xborder - x));
+
+            binPoint(
+                photon,
+                borderX,
+                borderY,
+                false,
+                dy < eps && std::fabs(y - borderY * (2.0 * rimage_) / ny_) < eps,
+                w / totalW * lineWeight);
+
+            ++borderX;
+            x = xborder;
+            y = yNew;
+        } else {
+            double xNew = x + yt * dx;
+            double w = std::sqrt((xNew - x)*(xNew-x) + (yborder - y)*(yborder - y));
+
+            binPoint(
+                photon,
+                borderX,
+                borderY,
+                dx < eps && std::fabs(x - borderX * (2.0 * rimage_) / nx_) < eps,
+                false,
+                w / totalW * lineWeight);
+
+            ++borderY;
+            x = xNew;
+            y = yborder;
+        }
     }
 }
