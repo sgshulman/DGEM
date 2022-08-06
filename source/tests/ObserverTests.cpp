@@ -138,6 +138,22 @@ TEST_CASE("Observer. bin", "[observer]")
         REQUIRE(Approx(observer.totalLuminosity(2, 2)) == 0.5);
         REQUIRE(Approx(observer.totalLuminosity(2, 3)) == 0.5);
     }
+
+    SECTION("Diagonals")
+    {
+        // align image and world axes
+        Observer observer(radians(-90.0), 0., 2., 0., 4, 4);
+
+        observer.bin(Photon{{0.0, 0.0, 0.0}, 0, Direction3d{0., 0., 1.}, 1.0, 0}, {-0.5, -0.5, 0.0}, {0.5, 0.5, 0.0});
+        REQUIRE(Approx(luminosity(observer)) == 1.0);
+        REQUIRE(Approx(observer.totalLuminosity(1, 1)) == 0.5);
+        REQUIRE(Approx(observer.totalLuminosity(2, 2)) == 0.5);
+
+        observer.bin(Photon{{0.0, 0.0, 0.0}, 0, Direction3d{0., 0., 1.}, 1.0, 0}, {-0.5, 0.5, 0.0}, {0.5, -0.5, 0.0});
+        REQUIRE(Approx(luminosity(observer)) == 2.0);
+        REQUIRE(Approx(observer.totalLuminosity(1, 2)) == 0.5);
+        REQUIRE(Approx(observer.totalLuminosity(2, 1)) == 0.5);
+    }
 }
 
 
