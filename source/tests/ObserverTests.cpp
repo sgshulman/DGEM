@@ -149,10 +149,10 @@ TEST_CASE("Observer. bin", "[observer]")
         REQUIRE(Approx(observer.totalLuminosity(1, 1)) == 0.5);
         REQUIRE(Approx(observer.totalLuminosity(2, 2)) == 0.5);
 
-        observer.bin(Photon{{0.0, 0.0, 0.0}, 0, Direction3d{0., 0., 1.}, 1.0, 0}, {-0.5, 0.5, 0.0}, {0.5, -0.5, 0.0});
+        observer.bin(Photon{{0.0, 0.0, 0.0}, 0, Direction3d{0., 0., 1.}, 1.0, 0}, {-0.25, 0.25, 0.0}, {0.75, -0.75, 0.0});
         REQUIRE(Approx(luminosity(observer)) == 2.0);
-        REQUIRE(Approx(observer.totalLuminosity(1, 2)) == 0.5);
-        REQUIRE(Approx(observer.totalLuminosity(2, 1)) == 0.5);
+        REQUIRE(Approx(observer.totalLuminosity(1, 2)) == 0.25);
+        REQUIRE(Approx(observer.totalLuminosity(2, 1)) == 0.75);
     }
 }
 

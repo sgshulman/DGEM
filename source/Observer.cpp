@@ -330,46 +330,32 @@ inline void Observer::binLine(Photon const& photon, const Vector2d &pos1, const 
         return;
     }
 
-    double xImageMin = pos1.x();
-    double xImageMax = pos2.x();
+    double const dx = pos2.x() - pos1.x();
+    double const dy = pos2.y() - pos1.y();
+    int const xDir = dx > 0. ? 1.0 : -1.0;
+    int const yDir = dy > 0. ? 1.0 : -1.0;
+
     int64_t borderX = xl1;
-    int64_t lastBorderX = xl2;
+    int64_t const lastBorderX = xl2 + xDir;
 
-    if (pos1.x() > pos2.x())
-    {
-        xImageMin = pos2.x();
-        xImageMax = pos1.x();
-        borderX = xl2;
-        lastBorderX = xl1;
-    }
-
-    double yImageMin = pos1.y();
-    double yImageMax = pos2.y();;
     int64_t borderY = yl1;
-    int64_t lastBorderY = yl2;
+    int64_t const lastBorderY = yl2 + yDir;
 
-    if (pos1.y() > pos2.y())
-    {
-        yImageMin = pos2.y();
-        yImageMax = pos1.y();
-        borderY = yl2;
-        lastBorderY = yl1;
-    }
-
-    double const dx = xImageMax - xImageMin;
-    double const dy = yImageMax - yImageMin;
     double const totalW = std::sqrt(dx*dx + dy*dy);
 
-    double x = xImageMin;
-    double y = yImageMin;
+    double x = pos1.x();
+    double y = pos1.y();
 
-    while (borderX <= lastBorderX && borderY <= lastBorderY)
+    while (borderX != lastBorderX && borderY != lastBorderY)
     {
-        double const xborder = std::min(static_cast<double>(borderX+1) * (2.0 * rImage_) / nx_, xImageMax);
-        double const yborder = std::min(static_cast<double>(borderY+1) * (2.0 * rImage_) / ny_, yImageMax);
+        double const xborder = dx > 0 ? std::min(static_cast<double>(borderX+1) * (2.0 * rImage_) / nx_, pos2.x())
+            : std::max(static_cast<double>(borderX) * (2.0 * rImage_) / nx_, pos2.x());
 
-        double const xt = dx > 0 ? (xborder - x) / dx : std::numeric_limits<double>::infinity();
-        double const yt = dy > 0 ? (yborder - y) / dy : std::numeric_limits<double>::infinity();
+        double const yborder = dy > 0 ? std::min(static_cast<double>(borderY+1) * (2.0 * rImage_) / ny_, pos2.y())
+            : std::max(static_cast<double>(borderY) * (2.0 * rImage_) / ny_, pos2.y());
+
+        double const xt = dx != 0 ? (xborder - x) / dx : std::numeric_limits<double>::infinity();
+        double const yt = dy != 0 ? (yborder - y) / dy : std::numeric_limits<double>::infinity();
 
         if (xt < yt)
         {
@@ -384,7 +370,7 @@ inline void Observer::binLine(Photon const& photon, const Vector2d &pos1, const 
                 dy < eps && std::fabs(y - borderY * (2.0 * rImage_) / ny_) < eps,
                 weight * w / totalW);
 
-            ++borderX;
+            borderX += xDir;
             x = xborder;
             y = yNew;
         } else {
@@ -399,7 +385,7 @@ inline void Observer::binLine(Photon const& photon, const Vector2d &pos1, const 
                 false,
                 weight * w / totalW);
 
-            ++borderY;
+            borderY += yDir;
             x = xNew;
             y = yborder;
         }
