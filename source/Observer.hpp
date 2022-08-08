@@ -77,7 +77,8 @@ private:
     Pictures result_, result0_, result1_, result2_;
     Direction3d direction_;
     std::uint32_t nx_, ny_;
-    double rImage_;
+    double rImage_, rImageRev_;
+    Vector2d pixelSize_;
     double rMask2_;
     double theta_;
     double cosp_, sinp_;

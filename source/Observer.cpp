@@ -161,6 +161,8 @@ Observer::Observer(double const phi, double const theta, double const rImage, do
     , nx_{ Nx }
     , ny_{ Ny }
     , rImage_{ rImage }
+    , rImageRev_{ 1.0 / (2.0 * rImage) }
+    , pixelSize_{ (2.0 * rImage_) / nx_, (2.0 * rImage_) / ny_ }
     , rMask2_{ rMask * rMask }
     , theta_{ theta }
     , cosp_{ std::cos(phi) }
@@ -207,8 +209,8 @@ bool Observer::inFov(const Vector3d &pos) const
 
     double const r2 = imagePos.norm2();
 
-    auto const xl = static_cast<int64_t>(nx_ * (rImage_ + imagePos.x()) / (2.0 * rImage_));
-    auto const yl = static_cast<int64_t>(ny_ * (rImage_ + imagePos.y()) / (2.0 * rImage_));
+    auto const xl = static_cast<int64_t>(nx_ * (rImage_ + imagePos.x()) * rImageRev_);
+    auto const yl = static_cast<int64_t>(ny_ * (rImage_ + imagePos.y()) * rImageRev_);
 
     return (xl>=0) && (yl >= 0) && ((std::uint32_t)xl < nx_) && ((std::uint32_t)yl < ny_) && r2 >= rMask2_;
 }
@@ -222,8 +224,8 @@ void Observer::bin(Photon const& photon)
     if (r2 >= rMask2_)
     {
         Vector2d const imagePosShifted = imagePos + Vector2d{rImage_, rImage_};
-        double const x = nx_ * imagePosShifted.x() / (2.0 * rImage_);
-        double const y = ny_ * imagePosShifted.y() / (2.0 * rImage_);
+        double const x = nx_ * imagePosShifted.x() * rImageRev_;
+        double const y = ny_ * imagePosShifted.y() * rImageRev_;
         auto const xl = static_cast<std::int64_t>(x) - (x < 0.0);
         auto const yl = static_cast<std::int64_t>(y) - (y < 0.0);
 
@@ -233,8 +235,8 @@ void Observer::bin(Photon const& photon)
             photon,
             xl,
             yl,
-            photon.nscat() != 0 && std::abs(imagePosShifted.x() - xl * (2.0 * rImage_) / nx_) < eps,
-            photon.nscat() != 0 && std::abs(imagePosShifted.y() - yl * (2.0 * rImage_) / ny_) < eps,
+            photon.nscat() != 0 && std::abs(imagePosShifted.x() - xl * pixelSize_.x()) < eps,
+            photon.nscat() != 0 && std::abs(imagePosShifted.y() - yl * pixelSize_.y()) < eps,
             1.0);
     }
 }
@@ -306,13 +308,13 @@ inline void Observer::binPoint(const Photon &photon, int64_t const x, int64_t co
 
 inline void Observer::binLine(Photon const& photon, const Vector2d &pos1, const Vector2d &pos2, double const weight)
 {
-    double const x1 = nx_ * pos1.x() / (2.0 * rImage_);
-    double const y1 = ny_ * pos1.y() / (2.0 * rImage_);
+    double const x1 = nx_ * pos1.x() * rImageRev_;
+    double const y1 = ny_ * pos1.y() * rImageRev_;
     auto const xl1 = static_cast<std::int64_t>(x1) - (x1 < 0.0);
     auto const yl1 = static_cast<std::int64_t>(y1) - (y1 < 0.0);
 
-    double const x2 = nx_ * pos2.x() / (2.0 * rImage_);
-    double const y2 = ny_ * pos2.y() / (2.0 * rImage_);
+    double const x2 = nx_ * pos2.x() * rImageRev_;
+    double const y2 = ny_ * pos2.y() * rImageRev_;
     auto const xl2 = static_cast<std::int64_t>(x2) - (x2 < 0.0);
     auto const yl2 = static_cast<std::int64_t>(y2) - (y2 < 0.0);
 
@@ -324,8 +326,8 @@ inline void Observer::binLine(Photon const& photon, const Vector2d &pos1, const 
             photon,
             xl2,
             yl2,
-            std::abs(pos2.x() - pos1.x()) < eps && std::abs(pos2.x() - xl2 * (2.0 * rImage_) / nx_) < eps,
-            std::abs(pos2.y() - pos1.y()) < eps && std::abs(pos2.y() - yl2 * (2.0 * rImage_) / ny_) < eps,
+            std::abs(pos2.x() - pos1.x()) < eps && std::abs(pos2.x() - xl2 * pixelSize_.x()) < eps,
+            std::abs(pos2.y() - pos1.y()) < eps && std::abs(pos2.y() - yl2 * pixelSize_.y()) < eps,
             weight);
 
         return;
@@ -347,14 +349,14 @@ inline void Observer::binLine(Photon const& photon, const Vector2d &pos1, const 
     double x = pos1.x();
     double y = pos1.y();
 
+    double xborder = dx > 0 ? std::min(static_cast<double>(borderX+1) * pixelSize_.x(), pos2.x())
+            : std::max(static_cast<double>(borderX) * pixelSize_.x(), pos2.x());
+
+    double yborder = dy > 0 ? std::min(static_cast<double>(borderY+1) * pixelSize_.y(), pos2.y())
+            : std::max(static_cast<double>(borderY) * pixelSize_.y(), pos2.y());
+
     while (borderX != lastBorderX && borderY != lastBorderY)
     {
-        double const xborder = dx > 0 ? std::min(static_cast<double>(borderX+1) * (2.0 * rImage_) / nx_, pos2.x())
-            : std::max(static_cast<double>(borderX) * (2.0 * rImage_) / nx_, pos2.x());
-
-        double const yborder = dy > 0 ? std::min(static_cast<double>(borderY+1) * (2.0 * rImage_) / ny_, pos2.y())
-            : std::max(static_cast<double>(borderY) * (2.0 * rImage_) / ny_, pos2.y());
-
         double const xt = dx != 0 ? (xborder - x) / dx : std::numeric_limits<double>::infinity();
         double const yt = dy != 0 ? (yborder - y) / dy : std::numeric_limits<double>::infinity();
 
@@ -368,12 +370,15 @@ inline void Observer::binLine(Photon const& photon, const Vector2d &pos1, const 
                 borderX,
                 borderY,
                 false,
-                dy < eps && std::fabs(y - borderY * (2.0 * rImage_) / ny_) < eps,
+                dy < eps && std::fabs(y - borderY * pixelSize_.y()) < eps,
                 weight * w / totalW);
 
             borderX += xDir;
             x = xborder;
             y = yNew;
+
+            xborder = dx > 0 ? std::min(static_cast<double>(borderX+1) * pixelSize_.x(), pos2.x())
+                    : std::max(static_cast<double>(borderX) * pixelSize_.x(), pos2.x());
         } else {
             double xNew = x + yt * dx;
             double w = std::sqrt((xNew - x)*(xNew-x) + (yborder - y)*(yborder - y));
@@ -382,13 +387,16 @@ inline void Observer::binLine(Photon const& photon, const Vector2d &pos1, const 
                 photon,
                 borderX,
                 borderY,
-                dx < eps && std::fabs(x - borderX * (2.0 * rImage_) / nx_) < eps,
+                dx < eps && std::fabs(x - borderX * pixelSize_.x()) < eps,
                 false,
                 weight * w / totalW);
 
             borderY += yDir;
             x = xNew;
             y = yborder;
+
+            yborder = dy > 0 ? std::min(static_cast<double>(borderY+1) * pixelSize_.y(), pos2.y())
+                    : std::max(static_cast<double>(borderY) * pixelSize_.y(), pos2.y());
         }
     }
 }
