@@ -27,7 +27,7 @@ private:
     constexpr static unsigned int POLINOMIAL_NUMBER = MAX_DIMENSION - 1;
     constexpr static unsigned int MAX_DEGREE = 4;
     constexpr static unsigned int BIT_COUNT = 64;
-    constexpr static double POW2 = std::pow(2.0, BIT_COUNT);
+    static double const POW2;
 
     using table_t = std::uint8_t;
     using point_t = std::uint64_t;

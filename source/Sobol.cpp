@@ -38,6 +38,7 @@ namespace
 
 constexpr Sobol::table_t Sobol::P_TABLE[];
 constexpr Sobol::table_t Sobol::MI_TABLE[];
+double const Sobol::POW2 = std::pow(2.0, BIT_COUNT);
 
 Sobol::Sobol(unsigned dimension)
     : dimension_{dimension}

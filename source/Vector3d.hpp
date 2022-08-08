@@ -16,7 +16,7 @@ class Vector3d
         {}
 
         // union vector with spherical coordinates
-        constexpr Vector3d(double const phi, double const theta)
+        Vector3d(double const phi, double const theta)
             : x_(std::cos(phi))
             , y_(std::sin(phi))
             , z_(std::cos(theta))
