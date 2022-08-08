@@ -23,35 +23,25 @@ Pictures::Pictures(std::uint32_t nx, std::uint32_t ny)
     : nx_{ nx }
     , ny_{ ny }
 {
-    f_ = new double[ nx*ny ]();
-    q_ = new double[ nx*ny ]();
-    u_ = new double[ nx*ny ]();
+    f_ = new double[ 3*nx*ny ]();
 }
 
 Pictures::~Pictures()
 {
     delete[] f_;
-    delete[] q_;
-    delete[] u_;
 }
 
 Pictures::Pictures(Pictures&& other) noexcept
     : nx_{ other.nx_ }
     , ny_{ other.ny_ }
     , f_{ other.f_ }
-    , q_{ other.q_ }
-    , u_{ other.u_ }
 {
     other.f_ = nullptr;
-    other.q_ = nullptr;
-    other.u_ = nullptr;
 }
 
 Pictures& Pictures::operator=(Pictures&& other) noexcept
 {
     std::swap(f_, other.f_);
-    std::swap(q_, other.q_);
-    std::swap(u_, other.u_);
     nx_ = other.nx_;
     ny_ = other.ny_;
     return *this;
@@ -63,19 +53,17 @@ void Pictures::bin(Photon const& ph, int64_t const xl, int64_t const yl, int64_t
     // place weighted photon into image location
     if((id == -1 || static_cast<std::uint64_t>(id) == ph.nscat()) && (xl>=0) && (yl >= 0) && ((std::uint32_t)xl < nx_) && ((std::uint32_t)yl < ny_) )
     {
-        f_[xl+yl*nx_] += weight * ph.weight() * ph.fi();
-        q_[xl+yl*nx_] += weight * ph.weight() * ph.fq();
-        u_[xl+yl*nx_] += weight * ph.weight() * ph.fu();
+        f_[3*(xl+yl*nx_)] += weight * ph.weight() * ph.fi();
+        f_[3*(xl+yl*nx_)+1] += weight * ph.weight() * ph.fq();
+        f_[3*(xl+yl*nx_)+2] += weight * ph.weight() * ph.fu();
     }
 }
 
 void Pictures::normalize(std::uint64_t const numPhotons)
 {
-    for (std::uint64_t i=0; i!=nx_*ny_; ++i)
+    for (std::uint64_t i=0; i!=3*nx_*ny_; ++i)
     {
         f_[i] /= numPhotons;
-        q_[i] /= numPhotons;
-        u_[i] /= numPhotons;
     }
 }
 
@@ -99,7 +87,7 @@ void Pictures::write(double const phi, double const theta, int const key) const
     {
         for (std::uint64_t x=0; x!=nx_; ++x)
         {
-            f << f_[x + y * nx_] << "\t";
+            f << f_[3*(x + y * nx_)] << "\t";
         }
         f << "\n";
     }
@@ -113,7 +101,7 @@ void Pictures::write(double const phi, double const theta, int const key) const
     {
         for (std::uint64_t x=0; x!=nx_; ++x)
         {
-            q << q_[x + y * nx_] << "\t";
+            q << f_[3*(x + y * nx_)+1] << "\t";
         }
         q << "\n";
     }
@@ -127,7 +115,7 @@ void Pictures::write(double const phi, double const theta, int const key) const
     {
         for (std::uint64_t x=0; x!=nx_; ++x)
         {
-            u << u_[x + y * nx_] << "\t";
+            u << f_[3*(x + y * nx_)+2] << "\t";
         }
         u << "\n";
     }
@@ -141,9 +129,9 @@ void Pictures::sum(std::ostream& stream)
     {
         for (std::uint64_t y=0; y != ny_; ++y)
         {
-            fsum += f_[y + x * ny_];
-            qsum += q_[y + x * ny_];
-            usum += u_[y + x * ny_];
+            fsum += f_[3*(y + x * ny_)];
+            qsum += f_[3*(y + x * ny_)+1];
+            usum += f_[3*(y + x * ny_)+2];
         }
     }
     stream << "\tF= " << fsum << "\tQ= " << qsum << "\tU= " << usum

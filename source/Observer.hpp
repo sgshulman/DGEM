@@ -27,13 +27,11 @@ class Pictures
         void sum(std::ostream& stream);
 
         double f(int64_t xl, int64_t yl) const
-        {   return f_[xl+yl*nx_]; }
+        {   return f_[3*(xl+yl*nx_)]; }
 
     private:
         std::uint32_t nx_, ny_;
         double *f_;
-        double *q_;
-        double *u_;
 };
 
 
