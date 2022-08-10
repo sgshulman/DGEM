@@ -209,6 +209,7 @@ int run(int argc, char *argv[])
 
     // put general information into file
     std::ofstream observersResultFile("observers.dat");
+    observersResultFile.precision(14);
     for (std::uint64_t cnt = 0; cnt != observers.size(); ++cnt)
     {
         observers[cnt].write(observersResultFile);
