@@ -6,39 +6,11 @@
 #include "Photon.hpp"
 #include "Vector2d.hpp"
 
-// pictures 
-class Pictures
-{
-    public:
-        Pictures(std::uint32_t nx, std::uint32_t ny);
-        ~Pictures();
-
-        Pictures (Pictures const& other) = delete;
-        Pictures& operator=(Pictures const& other) = delete;
-
-        Pictures(Pictures&& other) noexcept;
-        Pictures& operator=(Pictures&& other) noexcept;
-
-        // place photon on the images
-        void bin(Photon const& ph, int64_t xl, int64_t yl, int64_t id, double weight);
-        void normalize(std::uint64_t numPhotons);
-
-        void write(double phi, double theta, int key) const;
-        void sum(std::ostream& stream);
-
-        double f(int64_t xl, int64_t yl) const
-        {   return f_[3*(xl+yl*nx_)]; }
-
-    private:
-        std::uint32_t nx_, ny_;
-        double *f_;
-};
-
-
 class Observer
 {
 public:
     Observer(double phi, double theta, double rImage, double rMask=0.0, std::uint32_t Nx=200, std::uint32_t Ny=200);
+    ~Observer();
 
     void normalize(std::uint64_t numPhotons);
     void writeToMapFiles(bool fWriteSingleAndDoubleScatterings, std::uint32_t numberOfScatterings);
@@ -58,11 +30,11 @@ public:
     Observer(Observer const& other) = delete;
     Observer& operator=(Observer const& other) = delete;
 
-    Observer(Observer&& other) = default;
-    Observer& operator=(Observer&& other) = default;
+    Observer(Observer&& other) noexcept;
+    Observer& operator=(Observer&& other) = delete;
 
-    double totalLuminosity(int64_t xl, int64_t yl) const
-    {   return result_.f(xl, yl); }
+    double totalLuminosity(std::int64_t x, std::int64_t y) const
+    {   return result_[3*(x + y * nx_)]; }
 
 private:
     inline Vector2d project(Vector3d const &position) const;
@@ -72,7 +44,10 @@ private:
     inline void binLine(Photon const& photon, const Vector2d &pos1, const Vector2d &pos2, double lineWeight);
     inline void binMaskedLine(Photon const& photon, const Vector3d &pos1, const Vector3d &pos2, double lineWeight);
 
-    Pictures result_, result0_, result1_, result2_;
+    constexpr static int NUM_OF_RESULTS{ 3 };
+
+    double* result_{ nullptr };
+    double* results_[NUM_OF_RESULTS];
     Direction3d direction_;
     std::uint32_t nx_, ny_;
     double rImage_, rImageRev_;

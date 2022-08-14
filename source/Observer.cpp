@@ -16,136 +16,106 @@ namespace
             snprintf(str, length, "%2.2li-%3.3li", degrees, milliDegrees);
         }
     }
-}
 
-// pictures
-Pictures::Pictures(std::uint32_t nx, std::uint32_t ny)
-    : nx_{ nx }
-    , ny_{ ny }
-{
-    f_ = new double[ 3*nx*ny ]();
-}
-
-Pictures::~Pictures()
-{
-    delete[] f_;
-}
-
-Pictures::Pictures(Pictures&& other) noexcept
-    : nx_{ other.nx_ }
-    , ny_{ other.ny_ }
-    , f_{ other.f_ }
-{
-    other.f_ = nullptr;
-}
-
-Pictures& Pictures::operator=(Pictures&& other) noexcept
-{
-    std::swap(f_, other.f_);
-    nx_ = other.nx_;
-    ny_ = other.ny_;
-    return *this;
-}
-
-// place photon on the images
-void Pictures::bin(Photon const& ph, int64_t const xl, int64_t const yl, int64_t const id, double const weight)
-{
-    // place weighted photon into image location
-    if((id == -1 || static_cast<std::uint64_t>(id) == ph.nscat()) && (xl>=0) && (yl >= 0) && ((std::uint32_t)xl < nx_) && ((std::uint32_t)yl < ny_) )
+    inline void bin(double * const f, std::uint64_t const id, Photon const& ph, double const weight)
     {
-        f_[3*(xl+yl*nx_)] += weight * ph.weight() * ph.fi();
-        f_[3*(xl+yl*nx_)+1] += weight * ph.weight() * ph.fq();
-        f_[3*(xl+yl*nx_)+2] += weight * ph.weight() * ph.fu();
+        // place weighted photon into image location
+        f[3*id]   += weight * ph.weight() * ph.fi();
+        f[3*id+1] += weight * ph.weight() * ph.fq();
+        f[3*id+2] += weight * ph.weight() * ph.fu();
     }
-}
 
-void Pictures::normalize(std::uint64_t const numPhotons)
-{
-    for (std::uint64_t i=0; i!=3*nx_*ny_; ++i)
+    inline void normalizeResult(double * const f, std::uint64_t const nx, std::uint64_t const ny, std::uint64_t const numPhotons)
     {
-        f_[i] /= numPhotons;
-    }
-}
-
-void Pictures::write(double const phi, double const theta, int const key) const
-{
-    int const FILENAME_LENGTH{ 40 };
-    int const ANGLE_LENGTH{ 10 };
-
-    char fname[FILENAME_LENGTH];
-    char phiStr[ANGLE_LENGTH];
-    char thetaStr[ANGLE_LENGTH];
-
-    formatAngle(phiStr, ANGLE_LENGTH, phi);
-    formatAngle(thetaStr, ANGLE_LENGTH, theta);
-
-    snprintf(fname, FILENAME_LENGTH, "fimage%s_%s_%2.2i.dat", phiStr, thetaStr, key);
-    std::ofstream f(fname);
-    f.precision(14);
-
-    for (std::uint64_t y=0; y != ny_; ++y)
-    {
-        for (std::uint64_t x=0; x!=nx_; ++x)
+        for (std::uint64_t i=0; i!=3*nx*ny; ++i)
         {
-            f << f_[3*(x + y * nx_)] << "\t";
-        }
-        f << "\n";
-    }
-    f.close();
-
-    snprintf(fname, FILENAME_LENGTH, "qimage%s_%s_%2.2i.dat", phiStr, thetaStr, key);
-    std::ofstream q(fname);
-    q.precision(14);
-
-    for (std::uint64_t y=0; y != ny_; ++y)
-    {
-        for (std::uint64_t x=0; x!=nx_; ++x)
-        {
-            q << f_[3*(x + y * nx_)+1] << "\t";
-        }
-        q << "\n";
-    }
-    q.close();
-
-    snprintf(fname, FILENAME_LENGTH, "uimage%s_%s_%2.2i.dat", phiStr, thetaStr, key);
-    std::ofstream u(fname);
-    u.precision(14);
-
-    for (std::uint64_t y=0; y != ny_; ++y)
-    {
-        for (std::uint64_t x=0; x!=nx_; ++x)
-        {
-            u << f_[3*(x + y * nx_)+2] << "\t";
-        }
-        u << "\n";
-    }
-    u.close();
-}
-
-void Pictures::sum(std::ostream& stream)
-{
-    double fsum=0, qsum=0, usum=0;
-    for (std::uint64_t x=0; x!=nx_; ++x)
-    {
-        for (std::uint64_t y=0; y != ny_; ++y)
-        {
-            fsum += f_[3*(y + x * ny_)];
-            qsum += f_[3*(y + x * ny_)+1];
-            usum += f_[3*(y + x * ny_)+2];
+            f[i] /= numPhotons;
         }
     }
-    stream << "\tF= " << fsum << "\tQ= " << qsum << "\tU= " << usum
-         << "\tp= " << std::sqrt(qsum*qsum + usum*usum)/fsum
-         << "\tphi= " << 90 * std::atan2(usum, qsum)/PI;
+
+    inline void writeResult(
+        double * const f,
+        std::uint32_t const nx,
+        std::uint32_t const ny,
+        double const phi,
+        double const theta,
+        int const key)
+    {
+        int const FILENAME_LENGTH{ 40 };
+        int const ANGLE_LENGTH{ 10 };
+
+        char fname[FILENAME_LENGTH];
+        char phiStr[ANGLE_LENGTH];
+        char thetaStr[ANGLE_LENGTH];
+
+        formatAngle(phiStr, ANGLE_LENGTH, phi);
+        formatAngle(thetaStr, ANGLE_LENGTH, theta);
+
+        snprintf(fname, FILENAME_LENGTH, "fimage%s_%s_%2.2i.dat", phiStr, thetaStr, key);
+        std::ofstream fFile(fname);
+        fFile.precision(14);
+
+        for (std::uint32_t y=0; y != ny; ++y)
+        {
+            for (std::uint32_t x=0; x!=nx; ++x)
+            {
+                fFile << f[3*(x + y * nx)] << "\t";
+            }
+            fFile << "\n";
+        }
+        fFile.close();
+
+        snprintf(fname, FILENAME_LENGTH, "qimage%s_%s_%2.2i.dat", phiStr, thetaStr, key);
+        std::ofstream qFile(fname);
+        qFile.precision(14);
+
+        for (std::uint32_t y=0; y != ny; ++y)
+        {
+            for (std::uint32_t x=0; x!=nx; ++x)
+            {
+                qFile << f[3*(x + y * nx)+1] << "\t";
+            }
+            qFile << "\n";
+        }
+        qFile.close();
+
+        snprintf(fname, FILENAME_LENGTH, "uimage%s_%s_%2.2i.dat", phiStr, thetaStr, key);
+        std::ofstream uFile(fname);
+        uFile.precision(14);
+
+        for (std::uint32_t y=0; y != ny; ++y)
+        {
+            for (std::uint32_t x=0; x!=nx; ++x)
+            {
+                uFile << f[3*(x + y * nx)+2] << "\t";
+            }
+            uFile << "\n";
+        }
+        uFile.close();
+    }
+
+    inline void writeResultSum(double * const f, std::uint32_t const nx, std::uint32_t const ny, std::ostream& stream)
+    {
+        double fsum=0, qsum=0, usum=0;
+        for (std::uint32_t x=0; x != nx; ++x)
+        {
+            for (std::uint32_t y=0; y != ny; ++y)
+            {
+                fsum += f[3*(y + x * ny)];
+                qsum += f[3*(y + x * ny) + 1];
+                usum += f[3*(y + x * ny) + 2];
+            }
+        }
+
+        stream << "\tF= " << fsum << "\tQ= " << qsum << "\tU= " << usum
+             << "\tp= " << std::sqrt(qsum*qsum + usum*usum)/fsum
+             << "\tphi= " << 90 * std::atan2(usum, qsum)/PI;
+    }
 }
 
 
 Observer::Observer(double const phi, double const theta, double const rImage, double const rMask, std::uint32_t const Nx, std::uint32_t const Ny)
-    : result_(Nx, Ny)
-    , result0_(Nx, Ny)
-    , result1_(Nx, Ny)
-    , result2_(Nx, Ny)
-    , direction_{phi, theta}
+    : direction_{phi, theta}
     , nx_{ Nx }
     , ny_{ Ny }
     , rImage_{ rImage }
@@ -155,28 +125,71 @@ Observer::Observer(double const phi, double const theta, double const rImage, do
     , theta_{ theta }
     , cosp_{ std::cos(phi) }
     , sinp_{ std::sin(phi) }
-{}
+{
+    result_ = new double[ 3*nx_*ny_ ]();
+
+    for (int i=0; i!=NUM_OF_RESULTS; ++i)
+    {
+        results_[i] = new double[ 3*nx_*ny_ ]();
+    }
+}
+
+
+Observer::Observer(Observer && other) noexcept
+    : direction_{other.direction_}
+    , nx_{ other.nx_ }
+    , ny_{ other.ny_ }
+    , rImage_{ other.rImage_ }
+    , rImageRev_{ other.rImageRev_ }
+    , pixelSize_{ other.pixelSize_ }
+    , rMask2_{ other.rMask2_ }
+    , theta_{ other.theta_ }
+    , cosp_{ other.cosp_ }
+    , sinp_{ other.sinp_ }
+{
+    result_ = other.result_;
+    other.result_ = nullptr;
+
+    for (int i=0; i!=NUM_OF_RESULTS; ++i)
+    {
+        results_[i] = other.results_[i];
+        other.results_[i] = nullptr;
+    }
+}
+
+
+Observer::~Observer()
+{
+    delete[] result_;
+
+    for (int i=0; i!=NUM_OF_RESULTS; ++i)
+    {
+        delete[] results_[i];
+    }
+}
 
 
 void Observer::normalize(std::uint64_t const numPhotons)
 {
-    result_.normalize(numPhotons);
-    result0_.normalize(numPhotons);
-    result1_.normalize(numPhotons);
-    result2_.normalize(numPhotons);
+    normalizeResult(result_, nx_, ny_, numPhotons);
+
+    for (int i=0; i!=NUM_OF_RESULTS; ++i)
+    {
+        normalizeResult(results_[i], nx_, ny_, numPhotons);
+    }
 }
 
 void Observer::writeToMapFiles(bool const fWriteSingleAndDoubleScatterings, std::uint32_t const numberOfScatterings)
 {
-    result_.write(direction_.phi(), theta_, 0);
+    writeResult(result_, nx_, ny_, direction_.phi(), theta_, 0);
 
     if (fWriteSingleAndDoubleScatterings)
     {
-        result1_.write(direction_.phi(), theta_, 1);
+        writeResult(results_[1], nx_, ny_, direction_.phi(), theta_, 1);
 
         if (numberOfScatterings >= 2)
         {
-            result2_.write(direction_.phi(), theta_, 2);
+            writeResult(results_[2], nx_, ny_, direction_.phi(), theta_, 2);
         }
     }
 }
@@ -184,10 +197,11 @@ void Observer::writeToMapFiles(bool const fWriteSingleAndDoubleScatterings, std:
 void Observer::write(std::ostream& stream)
 {
     stream << "phi= " << degrees(direction_.phi()) << "\ttheta= " << degrees(theta_);
-    result_.sum(stream);
-    result0_.sum(stream);
-    result1_.sum(stream);
-    result2_.sum(stream);
+    writeResultSum(result_, nx_, ny_, stream);
+    for (int i=0; i!=NUM_OF_RESULTS; ++i)
+    {
+        writeResultSum(results_[i], nx_, ny_, stream);
+    }
     stream << "\n";
 }
 
@@ -267,10 +281,16 @@ inline Vector2d Observer::project(Vector3d const &position) const
 
 inline void Observer::binToPixel(Photon const& photon, int64_t const x, int64_t const y, double const weight)
 {
-    result_.bin(photon, x, y, -1, weight);
-    result0_.bin(photon, x, y, 0, weight);
-    result1_.bin(photon, x, y, 1, weight);
-    result2_.bin(photon, x, y, 2, weight);
+    if (x >= 0 && y >= 0 && (std::uint32_t)x < nx_ && (std::uint32_t)y < ny_)
+    {
+        std::uint64_t const id = x + y*nx_;
+        ::bin(result_, id, photon, weight);
+
+        if (photon.nscat() <= 2)
+        {
+            ::bin(results_[photon.nscat()], id, photon, weight);
+        }
+    }
 }
 
 
@@ -278,10 +298,10 @@ inline void Observer::binPoint(const Photon &photon, int64_t const x, int64_t co
 {
     if (onXBorder && x > 0 && onYBorder && y > 0)
     {
-        binToPixel(photon, x,   y,   0.25 * weight);
+        binToPixel(photon, x-1, y-1, 0.25 * weight);
         binToPixel(photon, x,   y-1, 0.25 * weight);
         binToPixel(photon, x-1, y,   0.25 * weight);
-        binToPixel(photon, x-1, y-1, 0.25 * weight);
+        binToPixel(photon, x,   y,   0.25 * weight);
     } else if (onXBorder && x > 0) {
         binToPixel(photon, x, y, 0.5 * weight);
         binToPixel(photon, x-1, y, 0.5 * weight);
