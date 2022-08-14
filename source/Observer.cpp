@@ -39,7 +39,7 @@ namespace
         std::uint32_t const ny,
         double const phi,
         double const theta,
-        int const key)
+        std::uint32_t const key)
     {
         int const FILENAME_LENGTH{ 40 };
         int const ANGLE_LENGTH{ 10 };
@@ -128,7 +128,7 @@ Observer::Observer(double const phi, double const theta, double const rImage, do
 {
     result_ = new double[ 3*nx_*ny_ ]();
 
-    for (int i=0; i!=NUM_OF_RESULTS; ++i)
+    for (std::uint32_t i=0; i!=NUM_OF_RESULTS; ++i)
     {
         results_[i] = new double[ 3*nx_*ny_ ]();
     }
@@ -150,7 +150,7 @@ Observer::Observer(Observer && other) noexcept
     result_ = other.result_;
     other.result_ = nullptr;
 
-    for (int i=0; i!=NUM_OF_RESULTS; ++i)
+    for (std::uint32_t i=0; i!=NUM_OF_RESULTS; ++i)
     {
         results_[i] = other.results_[i];
         other.results_[i] = nullptr;
@@ -162,7 +162,7 @@ Observer::~Observer()
 {
     delete[] result_;
 
-    for (int i=0; i!=NUM_OF_RESULTS; ++i)
+    for (std::uint32_t i=0; i!=NUM_OF_RESULTS; ++i)
     {
         delete[] results_[i];
     }
@@ -173,7 +173,7 @@ void Observer::normalize(std::uint64_t const numPhotons)
 {
     normalizeResult(result_, nx_, ny_, numPhotons);
 
-    for (int i=0; i!=NUM_OF_RESULTS; ++i)
+    for (std::uint32_t i=0; i!=NUM_OF_RESULTS; ++i)
     {
         normalizeResult(results_[i], nx_, ny_, numPhotons);
     }
@@ -185,11 +185,9 @@ void Observer::writeToMapFiles(bool const fWriteSingleAndDoubleScatterings, std:
 
     if (fWriteSingleAndDoubleScatterings)
     {
-        writeResult(results_[1], nx_, ny_, direction_.phi(), theta_, 1);
-
-        if (numberOfScatterings >= 2)
+        for (std::uint32_t i=1; i <= std::min(numberOfScatterings, NUM_OF_RESULTS-1); ++i)
         {
-            writeResult(results_[2], nx_, ny_, direction_.phi(), theta_, 2);
+            writeResult(results_[i], nx_, ny_, direction_.phi(), theta_, i);
         }
     }
 }
@@ -198,7 +196,7 @@ void Observer::write(std::ostream& stream)
 {
     stream << "phi= " << degrees(direction_.phi()) << "\ttheta= " << degrees(theta_);
     writeResultSum(result_, nx_, ny_, stream);
-    for (int i=0; i!=NUM_OF_RESULTS; ++i)
+    for (std::uint32_t i=0; i!=NUM_OF_RESULTS; ++i)
     {
         writeResultSum(results_[i], nx_, ny_, stream);
     }

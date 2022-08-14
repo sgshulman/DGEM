@@ -44,7 +44,7 @@ private:
     inline void binLine(Photon const& photon, const Vector2d &pos1, const Vector2d &pos2, double lineWeight);
     inline void binMaskedLine(Photon const& photon, const Vector3d &pos1, const Vector3d &pos2, double lineWeight);
 
-    constexpr static int NUM_OF_RESULTS{ 3 };
+    constexpr static std::uint32_t NUM_OF_RESULTS{ 5 };
 
     double* result_{ nullptr };
     double* results_[NUM_OF_RESULTS];
