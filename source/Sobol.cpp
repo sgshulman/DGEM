@@ -25,7 +25,7 @@ namespace
 
         if (i > 0)
         {
-            unsigned value = i-1;
+            std::uint64_t value = i-1;
             while (value & 1)
             {
                 value >>= 1;

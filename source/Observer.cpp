@@ -341,8 +341,8 @@ inline void Observer::binLine(Photon const& photon, const Vector2d &pos1, const 
 
     double const dx = pos2.x() - pos1.x();
     double const dy = pos2.y() - pos1.y();
-    int const xDir = dx > 0. ? 1.0 : -1.0;
-    int const yDir = dy > 0. ? 1.0 : -1.0;
+    int const xDir = dx > 0. ? 1 : -1;
+    int const yDir = dy > 0. ? 1 : -1;
 
     int64_t borderX = xl1;
     int64_t const lastBorderX = xl2 + xDir;
