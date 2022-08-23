@@ -253,9 +253,9 @@ void Observer::binHex(Photon const& photon, Vector3d const& pos1, Vector3d const
     constexpr double a = 1.0 / 2.6457513110645907; // 1.0 / std::sqrt(7);
     constexpr double sqrt3 = 1.7320508075688772;
 
-    constexpr Vector3d shifts[7] = {{0., 0., 0.}, {1.5*a, sqrt3/2.*a, 0}, {1.5*a, -sqrt3/2.*a, 0},
-        {0, sqrt3*a, 0}, {0, -sqrt3*a, 0},
-        {-1.5*a, sqrt3/2.*a, 0}, {-1.5*a, -sqrt3/2.*a, 0}};
+    constexpr Vector2d shifts[7] = {{0., 0.}, {1.5*a, sqrt3/2.*a}, {1.5*a, -sqrt3/2.*a},
+        {0, sqrt3*a}, {0, -sqrt3*a},
+        {-1.5*a, sqrt3/2.*a}, {-1.5*a, -sqrt3/2.*a}};
 
     Vector3d const v = pos2 - pos1;
     double const r = v.norm() / 2.;

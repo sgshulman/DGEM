@@ -9,7 +9,7 @@ class Vector2d
     public:
         Vector2d() = default;
 
-        Vector2d(double const x, double const y)
+        constexpr Vector2d(double const x, double const y)
             : x_(x)
             , y_(y)
         {}
