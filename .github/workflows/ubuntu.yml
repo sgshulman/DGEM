@@ -49,4 +49,4 @@ jobs:
         run: cmake --build ./utils
         
       - name: unit-tests-utils
-        run: ./utils/differtests
+        run: ./utils/utiltests

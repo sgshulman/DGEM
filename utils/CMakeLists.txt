@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.5)
 set(CMAKE_GENERATOR "Unix Makefiles")
 
-project(IM_DIFF)
+project(UTILS)
 
-set(SOURCES imdiff.cpp)
+set(SOURCES
+        Image.hpp
+        imdiff.cpp)
 
 add_executable(imdiff ${SOURCES})
 
@@ -20,9 +22,9 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
         tests/DifferTests.inl
         ../source/third-party/catch2/catch.hpp)
 
-    add_executable(differtests ${UNITTEST_SOURCES} ${SOURCES})
+    add_executable(utiltests ${UNITTEST_SOURCES} ${SOURCES})
 
-    set_target_properties(differtests PROPERTIES
+    set_target_properties(utiltests PROPERTIES
             CXX_STANDARD 17
             CXX_STANDARD_REQUIRED YES
             CXX_EXTENSIONS NO

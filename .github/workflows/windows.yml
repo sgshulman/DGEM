@@ -25,7 +25,7 @@ jobs:
       run: cmake --build ./utils
 
     - name: unit-tests-utils
-      run: ./utils/differtests
+      run: ./utils/utiltests
       
   build_msvc:
     runs-on: windows-latest
@@ -56,4 +56,4 @@ jobs:
         run: cmake --build ./utils --config Debug
 
       - name: unit-tests-utils
-        run: ./utils/Debug/differtests
+        run: ./utils/Debug/utiltests
