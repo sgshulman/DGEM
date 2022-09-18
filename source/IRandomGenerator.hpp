@@ -1,6 +1,8 @@
 #ifndef I_RANDOM_GENERATOR_HPP_
 #define I_RANDOM_GENERATOR_HPP_
 
+#include <string>
+
 class IRandomGenerator
 {
 public:
