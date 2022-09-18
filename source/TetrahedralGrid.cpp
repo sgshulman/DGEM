@@ -519,7 +519,7 @@ double TetrahedralGrid::rhoInDot(const Vector3d& dot, const Tetrahedron& el) con
 double TetrahedralGrid::findOpticalDepth(Photon ph) const
 {
     if (ph.cellId() >= elements_.size()) return 0.0;
-    double taurun=0.0, d=0.0;
+    double taurun=0.0;
 
     while (inside_inner(ph.cellId()))
     {
@@ -540,7 +540,6 @@ double TetrahedralGrid::findOpticalDepth(Photon ph) const
         }
         taurun += dcell.first * rho;
         ph.Move( dcell.first, dcell.second );
-        d += dcell.first;
     }
     return taurun;
 }
