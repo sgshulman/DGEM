@@ -3,13 +3,24 @@ set(CMAKE_GENERATOR "Unix Makefiles")
 
 project(UTILS)
 
-set(SOURCES
+set(IMDIFF_SOURCES
         Image.hpp
         imdiff.cpp)
 
-add_executable(imdiff ${SOURCES})
+add_executable(imdiff ${IMDIFF_SOURCES})
 
 set_target_properties(imdiff PROPERTIES
+        CXX_STANDARD 14
+        CXX_STANDARD_REQUIRED YES
+        CXX_EXTENSIONS NO)
+
+set(IMSUM_SOURCES
+        Image.hpp
+        imsum.cpp)
+
+add_executable(imsum ${IMSUM_SOURCES})
+
+set_target_properties(imsum PROPERTIES
         CXX_STANDARD 14
         CXX_STANDARD_REQUIRED YES
         CXX_EXTENSIONS NO)
@@ -18,11 +29,15 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
     message("UNIT TESTS ENABLED")
 
     set(UNITTEST_SOURCES
-        tests/utilstests.cpp
+        Image.hpp
+        imdiff.cpp
+        imsum.cpp
         tests/DifferTests.inl
+        tests/SumTests.inl
+        tests/utilstests.cpp
         ../source/third-party/catch2/catch.hpp)
 
-    add_executable(utiltests ${UNITTEST_SOURCES} ${SOURCES})
+    add_executable(utiltests ${UNITTEST_SOURCES})
 
     set_target_properties(utiltests PROPERTIES
             CXX_STANDARD 17
