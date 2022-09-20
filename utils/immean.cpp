@@ -5,13 +5,14 @@
 
 namespace
 {
-    void computeSum(
+    void computeMean(
         std::vector<Image> const& images,
         std::ostream& sumStream)
     {
         std::int64_t const rows = images[0].rows();
         std::int64_t const cols = images[0].cols();
         std::size_t i=0;
+        double weight = 1.0 / images.size();
 
         for (std::int64_t x=0; x!=rows; ++x)
         {
@@ -23,6 +24,7 @@ namespace
                 {
                     sum += image[i];
                 }
+                sum *= weight;
                 sumStream << sum << "\t";
 
                 ++i;
@@ -32,16 +34,12 @@ namespace
     }
 }
 
-#ifdef ENABLE_UNIT_TESTS
-#include "tests/SumTests.inl"
-#else
-
 int main(int argc, char *argv[])
 {
     if (argc > 1 && (std::string(argv[1]) == "-h" || std::string(argv[1]) == "--help"))
     {
         std::cout << "Usage: " << argv[0] << " [OPTION] FILES -o SUMFILE\n"
-            << "Computes sum of images from FILES and stores the resulting image into SUMFILE.\n"
+            << "Computes mean of images from FILES and stores the resulting image into SUMFILE.\n"
             << "Options:\n"
             << "\t-h, --help\tdisplay this help and exit.\n";
 
@@ -70,8 +68,7 @@ int main(int argc, char *argv[])
     std::ofstream sumStream(argv[argc-1]);
     sumStream.precision(14);
 
-    computeSum(images, sumStream);
+    computeMean(images, sumStream);
     return 0;
 }
 
-#endif

@@ -1,3 +1,6 @@
+#ifndef UTILS_IMAGE_HPP_
+#define UTILS_IMAGE_HPP_
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -81,3 +84,41 @@ class Image
         bool correct_{ false };
         std::vector<double> data_;
 };
+
+
+inline bool readImages(std::vector<Image>& images, int n, char *filenames[])
+{
+    if (n == 0)
+    {
+        return true;
+    }
+
+    images.reserve(n);
+
+    for (int i=0; i != n; ++i)
+    {
+        images.emplace_back(filenames[i]);
+        if (!images.back().correct())
+        {
+            return false;
+        }
+    }
+
+    std::int64_t const rows = images[0].rows();
+    std::int64_t const cols = images[0].cols();
+
+    for (std::size_t i=1; i != images.size(); ++i)
+    {
+        if (images[i].rows() != rows || images[i].cols() != cols)
+        {
+            std::cerr << filenames[0] << " (" << rows << "x" << cols << ") and " << filenames[i] << " ("
+                    << images[i].rows() <<"x" << images[i].cols() << ") should have the same shape." << std::endl;
+
+            return false;
+        }
+    }
+
+    return true;
+}
+
+#endif

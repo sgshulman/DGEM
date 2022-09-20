@@ -14,6 +14,19 @@ set_target_properties(imdiff PROPERTIES
         CXX_STANDARD_REQUIRED YES
         CXX_EXTENSIONS NO)
 
+
+set(IMMEAN_SOURCES
+        Image.hpp
+        immean.cpp)
+
+add_executable(immean ${IMMEAN_SOURCES})
+
+set_target_properties(immean PROPERTIES
+        CXX_STANDARD 14
+        CXX_STANDARD_REQUIRED YES
+        CXX_EXTENSIONS NO)
+
+
 set(IMSUM_SOURCES
         Image.hpp
         imsum.cpp)
@@ -24,6 +37,7 @@ set_target_properties(imsum PROPERTIES
         CXX_STANDARD 14
         CXX_STANDARD_REQUIRED YES
         CXX_EXTENSIONS NO)
+
 
 if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
     message("UNIT TESTS ENABLED")
