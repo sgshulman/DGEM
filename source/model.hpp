@@ -63,6 +63,7 @@ class Model
 	private:
 		bool fMonteCarlo_;
 		bool useHEALPixGrid_;
+		bool fSobolVectorPerScattering_{ false };
 		bool writeScatterings_;
 		double taumin_;
         double defaultStarRadius_;

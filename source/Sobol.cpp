@@ -44,6 +44,7 @@ Sobol::Sobol(unsigned dimension)
     : dimension_{dimension}
     , currentDimension_{dimension}
 {
+    DATA_ASSERT(dimension_ <= MAX_DIMENSION, "Sobol Generator dimension is too high.");
     initMiTable();
 }
 
@@ -60,12 +61,11 @@ double Sobol::Get()
 
 void Sobol::Skip()
 {
-    if (currentDimension_ == dimension_)
+    if (currentDimension_ != dimension_)
     {
         nextPoint();
         currentDimension_ = 0;
     }
-    ++currentDimension_;
 }
 
 void Sobol::save() const

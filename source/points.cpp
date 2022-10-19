@@ -79,6 +79,7 @@ int run(int argc, char *argv[])
                 // Find next scattering location
                 tflag = grid->movePhotonAtRandomDepth(ph, ran);
             }
+            ran->Skip();
         }
     } else {
         // Set up directions grid
@@ -134,6 +135,7 @@ int run(int argc, char *argv[])
                     }
 
                     if (ph.nscat() < model.nscat()) ph.Scatt(model, sdir, grid, observers, ran);
+                    ran->Skip();
                 }
             }
         }
@@ -205,6 +207,7 @@ int run(int argc, char *argv[])
 
                         if (ph.nscat() < model.nscat()) ph.Scatt(model, sdir, grid, observers, ran);
                     }
+                    ran->Skip();
                     oldR = r;
                 }
             }

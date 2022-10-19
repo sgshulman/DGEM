@@ -812,7 +812,7 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
     checkParameters(
         methodJson,
         methodParameters,
-        {"fMonteCarlo", "nphotons", "PrimaryDirectionsLevel", "generatorType", "iseed", "dgemBinType", "inputRandomFile",
+        {"fMonteCarlo", "nphotons", "PrimaryDirectionsLevel", "generatorType", "iseed", "SobolVectorPerScattering", "dgemBinType", "inputRandomFile",
          "outputRandomFile", "taumin", "nscat", "SecondaryDirectionsLevel", "NumOfPrimaryScatterings",
          "NumOfSecondaryScatterings", "MonteCarloStart", "fUseHEALPixGrid", "defaultStarRadius", "fWriteScatterings"});
 
@@ -825,6 +825,8 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
     if (LECUYER == generatorType_)
     {
         iseed_ = get_int32(methodJson, methodParameters, "iseed");
+    } else if (SOBOL == generatorType_) {
+        fSobolVectorPerScattering_ = get_optional_bool(methodJson, methodParameters, "SobolVectorPerScattering", false);
     }
 
     dgemBinType_ = get_optional_enum(methodJson, methodParameters, "dgemBinType", {"Point", "Line", "HexLines"}, DgemBinType::LINE);
@@ -876,7 +878,12 @@ IRandomGenerator* Model::createRandomGenerator() const
     }
     else if (RandomGeneratorType::SOBOL == generatorType_)
     {
-        rand = new Sobol(3);
+        if (fSobolVectorPerScattering_)
+        {
+            rand = new Sobol(3);
+        } else {
+            rand = new Sobol(3 * (nscat_ - 1 + fMonteCarlo_) );
+        }
     }
 
     assert(rand != nullptr);
