@@ -41,8 +41,8 @@ constexpr Sobol::table_t Sobol::MI_TABLE[];
 double const Sobol::POW2 = std::pow(2.0, BIT_COUNT);
 
 Sobol::Sobol(unsigned dimension)
-    : dimension_{dimension}
-    , currentDimension_{dimension}
+    : dimension_{dimension > 0 ? dimension : 1}
+    , currentDimension_{dimension_}
 {
     DATA_ASSERT(dimension_ <= MAX_DIMENSION, "Sobol Generator dimension is too high.");
     initMiTable();
