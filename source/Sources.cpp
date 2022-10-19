@@ -30,8 +30,12 @@ Photon Sources::emitPhoton(Random* ran)
     {
         ++currentSource_;
 
+        double const nextLuminosity = currentSource_ < pointSources_.size()
+                                      ? pointSources_[currentSource_].luminosity()
+                                      : 0;
+
         photonsNumber_ = parameters_.useMonteCarlo_
-                        ? (std::uint64_t) (parameters_.num_photons_ * pointSources_[currentSource_].luminosity() / totlum_)
+                        ? (std::uint64_t) (parameters_.num_photons_ * nextLuminosity / totlum_)
                         : primaryDir_.number();
 
         photonId_ = 0;
