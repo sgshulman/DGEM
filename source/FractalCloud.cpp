@@ -18,10 +18,10 @@ namespace
         {
             for (std::uint64_t j = 0; j != cubeDotNumber; ++j)
             {
-                newDots.at(i*cubeDotNumber+j) = Vector3d(
-                    dots.at(i).x() + ran->Get()*2*d - d,
-                    dots.at(i).y() + ran->Get()*2*d - d,
-                    dots.at(i).z() + ran->Get()*2*d - d);
+                double const z = dots.at(i).z() + ran->Get()*2*d - d;
+                double const y = dots.at(i).y() + ran->Get()*2*d - d;
+                double const x = dots.at(i).x() + ran->Get()*2*d - d;
+                newDots.at(i*cubeDotNumber+j) = Vector3d(x, y, z);
             }
         }
 
@@ -51,7 +51,10 @@ FractalCloud::FractalCloud(
 
     for (std::uint64_t i = 0; i != dotsN; ++i)
     {
-        dots0.emplace_back(ran.Get()*l - max_, ran.Get()*l - max_, ran.Get()*l - max_);
+        double const z = ran.Get()*l - max_;
+        double const y = ran.Get()*l - max_;
+        double const x = ran.Get()*l - max_;
+        dots0.emplace_back(x, y, z);
     }
 
     const double delta = std::pow(1.0*dotsN, 1.0/dCube);
