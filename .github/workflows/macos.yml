@@ -9,16 +9,8 @@ jobs:
 
     strategy:
       matrix:
-        compiler_name: [build_gcc9, build_gcc10, build_gcc11, build_clang]
+        compiler_name: [build_gcc11, build_clang]
         include:
-          - compiler_name: build_gcc9
-            c_compiler: gcc-9
-            cxx_compiler: g++-9
-
-          - compiler_name: build_gcc10
-            c_compiler: gcc-10
-            cxx_compiler: g++-10
-
           - compiler_name: build_gcc11
             c_compiler: gcc-11
             cxx_compiler: g++-11
