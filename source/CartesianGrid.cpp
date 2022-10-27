@@ -205,7 +205,7 @@ double CartesianGrid::movePhotonAtDistance(Photon &ph, double distance) const
 
 int CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold) const
 {
-    double taurun=tauold, d=0.0;
+    double taurun=tauold;
 
     Vector3d const phDirInv = ph.dir().vector().inverse();
 
@@ -259,10 +259,8 @@ int CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold) con
         if(taurun + taucell >= tau)
         {
             double const d1 = (tau-taurun) / rhocell;
-            d += d1;
             ph.Move(d1, ph.cellId());
         } else {
-            d += dcell;
             ph.Move(dcell, newCellId);
         }
 
