@@ -49,6 +49,12 @@ TEST_CASE("Differ", "[differ]")
         REQUIRE(Approx(relDifImage[1]) == 0.4);
         REQUIRE(Approx(relDifImage[2]) == 1.0);
         REQUIRE(Approx(relDifImage[3]) == 1 / 4.5);
+
+        DifferenceStats stats2 = computeDifference(image1, image2);
+        REQUIRE(Approx(stats.absDifSum) == stats2.absDifSum);
+        REQUIRE(Approx(stats.relDifSum) == stats2.relDifSum);
+        REQUIRE(Approx(stats.totalSum) == stats2.totalSum);
+        REQUIRE(stats.pixelNum == stats2.pixelNum);
     }
 
     SECTION("Negative values")
@@ -97,5 +103,11 @@ TEST_CASE("Differ", "[differ]")
         REQUIRE(Approx(relDifImage[1]) == 2.0);
         REQUIRE(Approx(relDifImage[2]) == 1 / 1.5);
         REQUIRE(Approx(relDifImage[3]) == 1 / 3.5);
+
+        DifferenceStats stats2 = computeDifference(image1, image2);
+        REQUIRE(Approx(stats.absDifSum) == stats2.absDifSum);
+        REQUIRE(Approx(stats.relDifSum) == stats2.relDifSum);
+        REQUIRE(Approx(stats.totalSum) == stats2.totalSum);
+        REQUIRE(stats.pixelNum == stats2.pixelNum);
     }
 }
