@@ -194,7 +194,7 @@ void Observer::writeToMapFiles(bool const fWriteSingleAndDoubleScatterings)
 
     if (fWriteSingleAndDoubleScatterings)
     {
-        for (std::uint32_t i=1; i <= numberOfResults_; ++i)
+        for (std::uint32_t i=1; i!=numberOfResults_; ++i)
         {
             writeResult(results_[i], nx_, ny_, direction_.phi(), theta_, i);
         }
