@@ -227,7 +227,7 @@ int run(int argc, char *argv[])
     // put results into output files
     for (std::uint64_t cnt = 0; cnt != observers.size(); ++cnt)
     {
-        observers[cnt].writeToMapFiles(model.writeScatterings(), model.nscat());
+        observers[cnt].writeToMapFiles(model.writeScatterings());
     }
 
     // put general information into file

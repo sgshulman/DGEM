@@ -33,7 +33,7 @@ TEST_CASE("Parse Observers", "[model]")
             ]}
             )"_json;
 
-        parseObservers(&observers, observersJson);
+        parseObservers(&observers, observersJson, 1);
 
         REQUIRE(2 == observers.size());
         REQUIRE(Approx(0.).margin(1e-12) == observers.at(0).phi());
@@ -63,7 +63,7 @@ TEST_CASE("Parse Observers", "[model]")
             ]}
             )"_json;
 
-        parseObservers(&observers, observersJson);
+        parseObservers(&observers, observersJson, 1);
 
         REQUIRE(1 == observers.size());
         REQUIRE(Approx(0.).margin(1e-12) == observers.at(0).phi());
@@ -80,7 +80,7 @@ TEST_CASE("Parse Observers", "[model]")
             }}
             )"_json;
 
-        parseObservers(&observers, observersJson);
+        parseObservers(&observers, observersJson, 1);
 
         REQUIRE(10 == observers.size());
 
@@ -101,7 +101,7 @@ TEST_CASE("Parse Observers", "[model]")
             }}
             )"_json;
 
-        parseObservers(&observers, observersJson);
+        parseObservers(&observers, observersJson, 1);
 
         REQUIRE(5 == observers.size());
 
@@ -136,7 +136,7 @@ TEST_CASE("Parse Observers", "[model]")
             }}
             )"_json;
 
-        parseObservers(&observers, observersJson);
+        parseObservers(&observers, observersJson, 1);
 
         REQUIRE(14 == observers.size());
     }

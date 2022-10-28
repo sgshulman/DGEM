@@ -9,11 +9,11 @@
 class Observer
 {
 public:
-    Observer(double phi, double theta, double rImage, double rMask=0.0, std::uint32_t Nx=200, std::uint32_t Ny=200);
+    Observer(double phi, double theta, double rImage, double rMask=0.0, std::uint32_t Nx=200, std::uint32_t Ny=200, uint32_t numberOfScatterings = NUM_OF_RESULTS-1);
     ~Observer();
 
     void normalize(std::uint64_t numPhotons);
-    void writeToMapFiles(bool fWriteSingleAndDoubleScatterings, std::uint32_t numberOfScatterings);
+    void writeToMapFiles(bool fWriteSingleAndDoubleScatterings);
     void write(std::ostream& file);
     bool inFov(Vector3d const& pos) const;
     void bin(Photon const& photon);
@@ -55,6 +55,7 @@ private:
     double rMask2_;
     double theta_;
     double cosp_, sinp_;
+    uint32_t numberOfResults_;
 };
 
 #endif

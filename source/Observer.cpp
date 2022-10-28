@@ -114,7 +114,14 @@ namespace
 }
 
 
-Observer::Observer(double const phi, double const theta, double const rImage, double const rMask, std::uint32_t const Nx, std::uint32_t const Ny)
+Observer::Observer(
+        double const phi,
+        double const theta,
+        double const rImage,
+        double const rMask,
+        std::uint32_t const Nx,
+        std::uint32_t const Ny,
+        uint32_t numberOfScatterings)
     : direction_{phi, theta}
     , nx_{ Nx }
     , ny_{ Ny }
@@ -125,10 +132,11 @@ Observer::Observer(double const phi, double const theta, double const rImage, do
     , theta_{ theta }
     , cosp_{ std::cos(phi) }
     , sinp_{ std::sin(phi) }
+    , numberOfResults_{ numberOfScatterings + 1 < NUM_OF_RESULTS ? numberOfScatterings + 1 : NUM_OF_RESULTS }
 {
     result_ = new double[ 3*nx_*ny_ ]();
 
-    for (std::uint32_t i=0; i!=NUM_OF_RESULTS; ++i)
+    for (std::uint32_t i=0; i!=numberOfResults_; ++i)
     {
         results_[i] = new double[ 3*nx_*ny_ ]();
     }
@@ -146,11 +154,12 @@ Observer::Observer(Observer && other) noexcept
     , theta_{ other.theta_ }
     , cosp_{ other.cosp_ }
     , sinp_{ other.sinp_ }
+    , numberOfResults_{ other.numberOfResults_ }
 {
     result_ = other.result_;
     other.result_ = nullptr;
 
-    for (std::uint32_t i=0; i!=NUM_OF_RESULTS; ++i)
+    for (std::uint32_t i=0; i!=numberOfResults_; ++i)
     {
         results_[i] = other.results_[i];
         other.results_[i] = nullptr;
@@ -162,7 +171,7 @@ Observer::~Observer()
 {
     delete[] result_;
 
-    for (std::uint32_t i=0; i!=NUM_OF_RESULTS; ++i)
+    for (std::uint32_t i=0; i!=numberOfResults_; ++i)
     {
         delete[] results_[i];
     }
@@ -173,19 +182,19 @@ void Observer::normalize(std::uint64_t const numPhotons)
 {
     normalizeResult(result_, nx_, ny_, numPhotons);
 
-    for (std::uint32_t i=0; i!=NUM_OF_RESULTS; ++i)
+    for (std::uint32_t i=0; i!=numberOfResults_; ++i)
     {
         normalizeResult(results_[i], nx_, ny_, numPhotons);
     }
 }
 
-void Observer::writeToMapFiles(bool const fWriteSingleAndDoubleScatterings, std::uint32_t const numberOfScatterings)
+void Observer::writeToMapFiles(bool const fWriteSingleAndDoubleScatterings)
 {
     writeResult(result_, nx_, ny_, direction_.phi(), theta_, 0);
 
     if (fWriteSingleAndDoubleScatterings)
     {
-        for (std::uint32_t i=1; i <= std::min(numberOfScatterings, NUM_OF_RESULTS-1); ++i)
+        for (std::uint32_t i=1; i <= numberOfResults_; ++i)
         {
             writeResult(results_[i], nx_, ny_, direction_.phi(), theta_, i);
         }
@@ -196,7 +205,7 @@ void Observer::write(std::ostream& stream)
 {
     stream << "phi= " << degrees(direction_.phi()) << "\ttheta= " << degrees(theta_);
     writeResultSum(result_, nx_, ny_, stream);
-    for (std::uint32_t i=0; i!=NUM_OF_RESULTS; ++i)
+    for (std::uint32_t i=0; i!=numberOfResults_; ++i)
     {
         writeResultSum(results_[i], nx_, ny_, stream);
     }

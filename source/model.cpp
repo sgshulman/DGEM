@@ -599,7 +599,7 @@ namespace
     }
 
 
-    void parseObservers(std::vector<Observer>* observers, nlohmann::json const& json)
+    void parseObservers(std::vector<Observer>* observers, nlohmann::json const& json, std::uint32_t nscat)
     {
         checkParameters(json, sObservers, {"rimage", "rmask", "nx", "ny", "manual", "parallel", "meridian"});
 
@@ -623,7 +623,8 @@ namespace
                     rImage,
                     rMask,
                     nX,
-                    nY);
+                    nY,
+                    nscat);
             }
         }
 
@@ -638,7 +639,7 @@ namespace
 
             for (std::uint32_t i=0; i!=numberOfObservers; ++i)
             {
-                observers->emplace_back(2*PI/numberOfObservers*i, radians(viewTheta), rImage, rMask, nX, nY);
+                observers->emplace_back(2*PI/numberOfObservers*i, radians(viewTheta), rImage, rMask, nX, nY, nscat);
             }
         }
 
@@ -653,7 +654,7 @@ namespace
 
             for (std::uint32_t i=0; i!=numberOfObservers; ++i)
             {
-                observers->emplace_back(radians(viewPhi), PI/numberOfObservers*(i + 0.5), rImage, rMask, nX, nY);
+                observers->emplace_back(radians(viewPhi), PI/numberOfObservers*(i + 0.5), rImage, rMask, nX, nY, nscat);
             }
         }
 
@@ -866,7 +867,7 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
     }
 
     sources_ = parseSources(j.at(sStars), sourceParameters, grid_);
-    parseObservers(observers, j.at(sObservers));
+    parseObservers(observers, j.at(sObservers), nscat_);
 }
 
 IRandomGenerator* Model::createRandomGenerator() const
