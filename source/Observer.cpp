@@ -293,7 +293,7 @@ inline void Observer::binToPixel(Photon const& photon, int64_t const x, int64_t 
         std::uint64_t const id = x + y*nx_;
         ::bin(result_, id, photon, weight);
 
-        if (photon.nscat() <= 2)
+        if (photon.nscat() < numberOfResults_)
         {
             ::bin(results_[photon.nscat()], id, photon, weight);
         }
