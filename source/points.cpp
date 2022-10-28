@@ -55,10 +55,11 @@ int run(int argc, char *argv[])
             double tau = -std::log(1.0 - ran->Get() * w);
             // Find scattering location of tau
             grid->movePhotonAtDepth(ph, tau, 0.0);
-            // Photon scatters in grid until it exits (tflag=1) or number
+
+            // Photon scatters inside grid until leaves it or the number
             // of scatterings exceeds a set value (nscatt)
-            int tflag = 0;
-            while (!tflag)
+            bool insideGrid = true;
+            while (insideGrid)
             {
                 ph.weight() *= model.dust()->albedo();
                 // Do peeling off and project weighted photons into image
@@ -77,7 +78,7 @@ int run(int argc, char *argv[])
                 ph.nscat() += 1;
 
                 // Find next scattering location
-                tflag = grid->movePhotonAtRandomDepth(ph, ran);
+                insideGrid = grid->movePhotonAtRandomDepth(ph, ran);
             }
             ran->Skip();
         }
@@ -122,9 +123,6 @@ int run(int argc, char *argv[])
                     grid->movePhotonAtDepth(ph, tau, tauold);
                     spos = ph.pos();
                     sCellId = ph.cellId();
-
-                    // Photon scatters in grid until it exits (tflag=1) or number
-                    // of scatterings exceeds a set value (nscatt)
 
                     // Photons scattering
                     ph.weight() *= model.dust()->albedo();

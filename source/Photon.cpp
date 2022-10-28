@@ -36,11 +36,11 @@ void Photon::Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std:
     if (nscat_ == m.MonteCarloStart() )
     {
         Photon ph(*this);
-        int tflag = 0;
+
         ph.Stokes( m.dust(), Direction3d(), 0.0, false, ran);
-        tflag = grid->movePhotonAtRandomDepth(ph, ran);
+        bool insideGrid = grid->movePhotonAtRandomDepth(ph, ran);
         ph.nscat()+=1;
-        while (!tflag)
+        while (insideGrid)
         {
             ph.weight() *= m.dust()->albedo();
             // Do peeling off and project weighted photons into image
@@ -59,7 +59,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std:
             ph.nscat() += 1;
 
             // Find next scattering location
-            tflag = grid->movePhotonAtRandomDepth(ph, ran);
+            insideGrid = grid->movePhotonAtRandomDepth(ph, ran);
         }
     } else {
         double calpha;

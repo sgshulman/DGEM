@@ -36,8 +36,8 @@ public:
     double findRealOpticalDepth(Vector3d const& position, Vector3d const& direction) const override;
     double findOpticalDepth(Photon ph) const override;
     double movePhotonAtDistance(Photon& ph, double distance) const override;
-    int movePhotonAtDepth(Photon &ph, double tau, double tauold) const override;
-    int movePhotonAtRandomDepth(Photon& ph, IRandomGenerator *ran) const override;
+    bool movePhotonAtDepth(Photon &ph, double tau, double tauold) const override;
+    bool movePhotonAtRandomDepth(Photon& ph, IRandomGenerator *ran) const override;
     void peeloff(Photon ph, Observer& observer, IDustCRef dust) const override;
     void peeloff(Photon ph, Observer& observer, IDustCRef dust, Vector3d const& pos1, Vector3d const& pos2) const override;
     void peeloffHex(Photon ph, Observer& observer, IDustCRef dust, Vector3d const& pos1, Vector3d const& pos2) const override;

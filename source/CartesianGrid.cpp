@@ -203,7 +203,7 @@ double CartesianGrid::movePhotonAtDistance(Photon &ph, double distance) const
 }
 
 
-int CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold) const
+bool CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold) const
 {
     double taurun=tauold;
 
@@ -267,14 +267,11 @@ int CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold) con
         taurun += taucell;
     }
 
-    // calculate photon final position.  if it escapes envelope then
-    // set tflag=1.  if photon doesn't escape leave tflag=0 and update
-    // photon position.
     return inside_inner(ph.cellId());
 }
 
 
-int CartesianGrid::movePhotonAtRandomDepth(Photon &ph, IRandomGenerator *ran) const
+bool CartesianGrid::movePhotonAtRandomDepth(Photon &ph, IRandomGenerator *ran) const
 {
     double const tau = -std::log(ran->Get());
     return movePhotonAtDepth(ph, tau, 0.0);

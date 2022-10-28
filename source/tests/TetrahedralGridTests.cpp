@@ -171,21 +171,29 @@ TEST_CASE("Tetrahedral Grid", "[grid]")
         std::uint64_t cellId = grid.cellId(position);
 
         Photon ph1(position, cellId, Direction3d{ {1, 0, 0} }, 1, 1);
-        grid.movePhotonAtDepth(ph1, 0.1, 0.0);
-
+        bool const inside1 = grid.movePhotonAtDepth(ph1, 0.1, 0.0);
         REQUIRE(Approx((ph1.pos()-position).norm()) == 0.1);
+        REQUIRE(inside1);
 
         Photon ph2(position, cellId, Direction3d{ {1, 1, 1} }, 1, 1);
-        grid.movePhotonAtDepth(ph2, 1, 0.0);
+        bool const inside2 = grid.movePhotonAtDepth(ph2, 1, 0.0);
         REQUIRE(Approx((ph2.pos()-position).norm()) == 1);
+        REQUIRE(inside2);
 
         Photon ph3(position, cellId, Direction3d{ {0, -1, -1} }, 1, 1);
-        grid.movePhotonAtDepth(ph3, 10, 0.0);
+        bool const inside3 = grid.movePhotonAtDepth(ph3, 10, 0.0);
         REQUIRE(Approx((ph3.pos()-position).norm()) == 10);
+        REQUIRE(inside3);
 
         Photon ph4(position, cellId, Direction3d{ {-1, 1, 0.5} }, 1, 1);
-        grid.movePhotonAtDepth(ph4, 100, 0.0);
+        bool const inside4 = grid.movePhotonAtDepth(ph4, 100, 0.0);
         REQUIRE(Approx((ph4.pos()-position).norm()) == 100);
+        REQUIRE(inside4);
+
+        Photon ph5(position, cellId, Direction3d{ {1, 0, 0} }, 1, 1);
+        bool const inside5 = grid.movePhotonAtDepth(ph5, 300, 0.0);
+        REQUIRE(Approx((ph5.pos()-position).norm()) == 100);
+        REQUIRE(!inside5);
     }
 
     SECTION("Polynomial dust density. findOpticalDepth")

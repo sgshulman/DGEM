@@ -590,8 +590,7 @@ double TetrahedralGrid::movePhotonAtDistance(Photon &ph, double distance) const
 }
 
 
-// NEED TO BE REDONE
-int TetrahedralGrid::movePhotonAtDepth(Photon& ph, double tau, double tauold) const
+bool TetrahedralGrid::movePhotonAtDepth(Photon& ph, double tau, double tauold) const
 {
     if (ph.cellId() >= elements_.size()) return 1;
     double taurun=tauold, taucell, d=0.0;
@@ -641,12 +640,12 @@ int TetrahedralGrid::movePhotonAtDepth(Photon& ph, double tau, double tauold) co
             ph.Move(dcell.first, dcell.second);
         }
     }
-    if((d>=(0.999*smax))) return 1;
-    return 0;
+    if((d>=(0.999*smax))) return 0;
+    return 1;
 }
 
 
-int TetrahedralGrid::movePhotonAtRandomDepth(Photon &ph, IRandomGenerator *ran) const
+bool TetrahedralGrid::movePhotonAtRandomDepth(Photon &ph, IRandomGenerator *ran) const
 {
     double const tau = -std::log(ran->Get());
     return movePhotonAtDepth(ph, tau, 0.0);
