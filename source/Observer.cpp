@@ -188,11 +188,11 @@ void Observer::normalize(std::uint64_t const numPhotons)
     }
 }
 
-void Observer::writeToMapFiles(bool const fWriteSingleAndDoubleScatterings)
+void Observer::writeToMapFiles(bool const fWriteScatterings)
 {
     writeResult(result_, nx_, ny_, direction_.phi(), theta_, 0);
 
-    if (fWriteSingleAndDoubleScatterings)
+    if (fWriteScatterings)
     {
         for (std::uint32_t i=1; i!=numberOfResults_; ++i)
         {

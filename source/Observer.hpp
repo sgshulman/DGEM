@@ -13,7 +13,7 @@ public:
     ~Observer();
 
     void normalize(std::uint64_t numPhotons);
-    void writeToMapFiles(bool fWriteSingleAndDoubleScatterings);
+    void writeToMapFiles(bool fWriteScatterings);
     void write(std::ostream& file);
     bool inFov(Vector3d const& pos) const;
     void bin(Photon const& photon);
