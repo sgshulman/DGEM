@@ -9,7 +9,7 @@
 class Observer
 {
 public:
-    Observer(double phi, double theta, double rImage, double rMask=0.0, std::uint32_t Nx=200, std::uint32_t Ny=200, uint32_t numberOfScatterings = NUM_OF_RESULTS-1);
+    Observer(double phi, double theta, double rImage, double rMask, std::uint32_t Nx, std::uint32_t Ny, uint32_t numberOfScatterings);
     ~Observer();
 
     void normalize(std::uint64_t numPhotons);

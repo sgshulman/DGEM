@@ -25,7 +25,7 @@ TEST_CASE("Observer. bin", "[observer]")
     SECTION("Usual photons")
     {
         // align image and world axes
-        Observer observer(radians(-90.0), 0., 2., 0., 4, 4);
+        Observer observer(radians(-90.0), 0., 2., 0., 4, 4, 3);
 
         observer.bin(Photon{{ -1.5, -1.5, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 0});
         REQUIRE(Approx(luminosity(observer)) == 1.0);
@@ -58,7 +58,7 @@ TEST_CASE("Observer. bin", "[observer]")
     SECTION("Border photons")
     {
         // align image and world axes
-        Observer observer(radians(-90.0), 0., 2., 0., 4, 4);
+        Observer observer(radians(-90.0), 0., 2., 0., 4, 4, 3);
 
         // direct photons are not split between pixels
         observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 0});
@@ -87,7 +87,7 @@ TEST_CASE("Observer. bin", "[observer]")
     SECTION("Section photons")
     {
         // align image and world axes
-        Observer observer(radians(-90.0), 0., 2., 0., 4, 4);
+        Observer observer(radians(-90.0), 0., 2., 0., 4, 4, 2);
 
         observer.bin(Photon{{ -1.5, -1., 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 0}, {-1.5, -1.1, 0.0}, {-1.5, -0.1, 0.0});
         REQUIRE(Approx(luminosity(observer)) == 1.0);
@@ -122,7 +122,7 @@ TEST_CASE("Observer. bin", "[observer]")
     SECTION("Section border photons")
     {
         // align image and world axes
-        Observer observer(radians(-90.0), 0., 2., 0., 4, 4);
+        Observer observer(radians(-90.0), 0., 2., 0., 4, 4, 1);
 
         observer.bin(Photon{{ -1.0, 0.0, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 0}, {-1.0, -1.5, 0.0}, {-1.0, 1.0, 0.0});
         REQUIRE(Approx(luminosity(observer)) == 1.0);
@@ -142,7 +142,7 @@ TEST_CASE("Observer. bin", "[observer]")
     SECTION("Diagonals")
     {
         // align image and world axes
-        Observer observer(radians(-90.0), 0., 2., 0., 4, 4);
+        Observer observer(radians(-90.0), 0., 2., 0., 4, 4, 1);
 
         observer.bin(Photon{{0.0, 0.0, 0.0}, 0, Direction3d{0., 0., 1.}, 1.0, 0}, {-0.5, -0.5, 0.0}, {0.5, 0.5, 0.0});
         REQUIRE(Approx(luminosity(observer)) == 1.0);
@@ -162,7 +162,7 @@ TEST_CASE("Observer. bin mask", "[observer]")
     SECTION("Usual photons")
     {
         // align image and world axes
-        Observer observer(radians(-90.0), 0.0, 2., 0.5, 4, 4);
+        Observer observer(radians(-90.0), 0.0, 2., 0.5, 4, 4, 1);
 
         observer.bin(Photon{{ 0.4, 0.4, 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 1});
         REQUIRE(Approx(luminosity(observer)) == 1.0);
@@ -180,7 +180,7 @@ TEST_CASE("Observer. bin mask", "[observer]")
     SECTION("Section photons")
     {
         // align image and world axes
-        Observer observer(radians(-90.0), 0.0, 2., 0.5, 4, 4);
+        Observer observer(radians(-90.0), 0.0, 2., 0.5, 4, 4, 1);
 
         SECTION("Half - along the center - one side")
         {
@@ -306,7 +306,7 @@ TEST_CASE("Observer. inFov", "[observer]")
 {
     SECTION("Without mask")
     {
-        Observer observer(0., 0., 100., 0., 200, 200);
+        Observer observer(0., 0., 100., 0., 200, 200, 1);
 
         REQUIRE(observer.inFov({  0.,   0.,    0.}));
         REQUIRE(observer.inFov({  0., -0.1,   10.}));
@@ -328,7 +328,7 @@ TEST_CASE("Observer. inFov", "[observer]")
 
     SECTION("With mask")
     {
-        Observer observer(0., 0., 100., 10., 200, 200);
+        Observer observer(0., 0., 100., 10., 200, 200, 1);
 
         REQUIRE(!observer.inFov({ 0., 0., 0.}));
 
