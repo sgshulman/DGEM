@@ -1,6 +1,8 @@
 #include "../third-party/catch2/catch.hpp"
 #include "../Observer.hpp"
 
+#include <sstream>
+
 namespace
 {
     double luminosity(Observer const& obs, std::uint32_t const nX = 4, std::uint32_t const nY = 4)
@@ -16,6 +18,28 @@ namespace
         }
 
         return sum;
+    }
+
+    void getLuminosities(std::stringstream &stream, double &f_total, double *f)
+    {
+        // (phi, theta)	(F, Q, U, p, phi) (F, Q, U, p, phi) (F, Q, U, p, phi) (F, Q, U, p, phi) (F, Q, U, p, phi) (F, Q, U, p, phi)
+        std::string str;
+        double d;
+
+        for (int i = 0; i != 3; ++i)
+        {
+            stream >> str >> d;
+        }
+        f_total = d;
+
+        for (int scattering = 0; scattering != 5; ++scattering)
+        {
+            for (int i = 0; i != 5; ++i)
+            {
+                 stream >> str >> d;
+            }
+            f[scattering] = d;
+        }
     }
 }
 
@@ -361,5 +385,108 @@ TEST_CASE("Observer. inFov", "[observer]")
         REQUIRE(!observer.inFov({-101., 0., 0.}));
         REQUIRE(!observer.inFov({0.,  101., 0.}));
         REQUIRE(!observer.inFov({0., -101., 0.}));
+    }
+}
+
+TEST_CASE("Observer. Multiple scatterings", "[observer]")
+{
+    SECTION("1 scattering")
+    {
+        Observer observer(0., 0., 100., 0., 200, 200, 1);
+
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 0});
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 0.51, 1});
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 0.24, 2});
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 0.14, 3});
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 0.06, 4});
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 0.05, 5});
+
+        std::stringstream stream;
+        observer.write(stream);
+
+        double f_total = 0;
+        double f[5]{};
+        getLuminosities(stream, f_total, f);
+        REQUIRE(Approx(f_total) == 2.0);
+        REQUIRE(Approx(f[0]) == 1.0);
+        REQUIRE(Approx(f[1]) == 0.51);
+        REQUIRE(Approx(f[2]) == 0.0);
+        REQUIRE(Approx(f[3]) == 0.0);
+        REQUIRE(Approx(f[4]) == 0.0);
+    }
+
+    SECTION("2 scatterings")
+    {
+        Observer observer(0., 0., 100., 0., 200, 200, 2);
+
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 1.0, 0});
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 0.49, 1});
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 0.26, 2});
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 0.12, 3});
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 0.09, 4});
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 0.06, 5});
+
+        std::stringstream stream;
+        observer.write(stream);
+
+        double f_total = 0;
+        double f[5]{};
+        getLuminosities(stream, f_total, f);
+        REQUIRE(Approx(f_total) == 2.02);
+        REQUIRE(Approx(f[0]) == 1.0);
+        REQUIRE(Approx(f[1]) == 0.49);
+        REQUIRE(Approx(f[2]) == 0.26);
+        REQUIRE(Approx(f[3]) == 0.0);
+        REQUIRE(Approx(f[4]) == 0.0);
+    }
+
+    SECTION("3 scatterings")
+    {
+        Observer observer(0., 0., 100., 0., 200, 200, 3);
+
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 1.02, 0});
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 0.4, 1});
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 0.35, 2});
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 0.17, 3});
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 0.03, 4});
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 0.03, 5});
+
+        std::stringstream stream;
+        observer.write(stream);
+
+        double f_total = 0;
+        double f[5]{};
+        getLuminosities(stream, f_total, f);
+        REQUIRE(Approx(f_total) == 2.0);
+        REQUIRE(Approx(f[0]) == 1.02);
+        REQUIRE(Approx(f[1]) == 0.4);
+        REQUIRE(Approx(f[2]) == 0.35);
+        REQUIRE(Approx(f[3]) == 0.17);
+        REQUIRE(Approx(f[4]) == 0.0);
+    }
+
+    SECTION("4 scatterings")
+    {
+        Observer observer(0., 0., 100., 0., 200, 200, 4);
+
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 1.2, 0});
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 0.5, 1});
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 0.25, 2});
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 0.13, 3});
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 0.07, 4});
+        observer.bin(Photon{{ 0., 0., 0.}, 0, Direction3d{0., 0., 1.}, 0.05, 5});
+
+        std::stringstream stream;
+        observer.write(stream);
+
+        double f_total = 0;
+        double f[5]{};
+        getLuminosities(stream, f_total, f);
+        REQUIRE(Approx(f_total) == 2.2);
+        REQUIRE(Approx(f[0]) == 1.2);
+        REQUIRE(Approx(f[1]) == 0.5);
+        REQUIRE(Approx(f[2]) == 0.25);
+        REQUIRE(Approx(f[3]) == 0.13);
+        REQUIRE(Approx(f[4]) == 0.07);
     }
 }
