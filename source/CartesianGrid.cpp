@@ -272,7 +272,7 @@ int CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold) con
     // calculate photon final position.  if it escapes envelope then
     // set tflag=1.  if photon doesn't escape leave tflag=0 and update
     // photon position.
-    return inside_inner(ph.cellId());
+    return !inside_inner(ph.cellId());
 }
 
 
