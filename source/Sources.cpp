@@ -134,7 +134,8 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
 
             for (std::uint64_t io = 0; io != observers->size(); ++io)
             {
-                if (sphereDir_.direction(ip) * (*observers)[io].direction().vector() >= 0)
+                if ((*observers)[io].inFov(innerPh.pos())
+                    && sphereDir_.direction(ip) * (*observers)[io].direction().vector() >= 0)
                 {
                     // Set photon location, grid cell, and direction of observation
                     Photon ph(innerPh.pos(), innerPh.cellId(), (*observers)[io].direction(), 1.0, 0);
