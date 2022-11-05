@@ -26,6 +26,7 @@ class MatterTranslation;
 using MatterTranslationCPtr = std::shared_ptr<MatterTranslation const>;
 
 class IGrid;
+using IGridPtr = std::shared_ptr<IGrid>;
 using IGridCPtr = std::shared_ptr<IGrid const>;
 using IGridCRef = IGridCPtr const &;
 

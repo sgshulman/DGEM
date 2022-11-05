@@ -535,12 +535,12 @@ namespace
     }
 
 
-    IGridCPtr parseCartesianGrid(const nlohmann::json& json, double const kappa, IMatterCPtr matter)
+    IGridPtr parseCartesianGrid(const nlohmann::json& json, double const kappa, IMatterCPtr matter)
     {
         char const cartesian[] = "grid::cartesian";
         checkParameters(json, cartesian, {"xmax", "ymax", "zmax", "nx", "ny", "nz"});
 
-        return std::make_shared<CartesianGrid const>(
+        return std::make_shared<CartesianGrid>(
             get_double(json, cartesian, "xmax"),
             get_double(json, cartesian, "ymax"),
             get_double(json, cartesian, "zmax"),
@@ -552,7 +552,7 @@ namespace
     }
 
 
-    IGridCPtr parseTetrahedralGrid(const nlohmann::json& json, double const kappa, IMatterCPtr matter)
+    IGridPtr parseTetrahedralGrid(const nlohmann::json& json, double const kappa, IMatterCPtr matter)
     {
         char const tetrahedral[] = "grid::tetrahedral";
         checkParameters(json, "tetrahedral", {"nodesFile", "elementsFile", "gridBinFile", "max"});
@@ -563,7 +563,7 @@ namespace
 
         if (json.contains("nodesFile") && json.contains("elementsFile"))
         {
-            return std::make_shared<TetrahedralGrid const>(
+            return std::make_shared<TetrahedralGrid>(
                 get_string(json, tetrahedral, "nodesFile"),
                 get_string(json, tetrahedral, "elementsFile"),
                 get_optional_string(json, tetrahedral, "gridBinFile", ""),
@@ -572,7 +572,7 @@ namespace
                 std::move(matter));
         }
 
-        return std::make_shared<TetrahedralGrid const>(
+        return std::make_shared<TetrahedralGrid>(
             get_string(json, tetrahedral, "gridBinFile"),
             get_double(json, tetrahedral, "max"),
             kappa,
@@ -580,7 +580,7 @@ namespace
     }
 
 
-    IGridCPtr parseGrid(const nlohmann::json& json, double const kappa, IMatterCPtr matter)
+    IGridPtr parseGrid(const nlohmann::json& json, double const kappa, IMatterCPtr matter)
     {
         checkParameters(json, sGrid, {"cartesian", "tetrahedral"});
 
@@ -880,6 +880,8 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
     }
 
     sources_ = parseSources(j.at(sStars), sourceParameters, grid_);
+    grid_->registerSources(sources_);
+
     parseObservers(observers, j.at(sObservers), nscat_);
 }
 

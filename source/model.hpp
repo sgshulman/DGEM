@@ -82,7 +82,7 @@ class Model
 		std::uint32_t NumOfSecondaryScatterings_;
 
 		IDustCPtr dust_;
-        IGridCPtr grid_;
+        IGridPtr grid_;
         SourcesPtr sources_;
 
 		Model(std::vector<Observer> *observers, std::string const& parametersFile);
