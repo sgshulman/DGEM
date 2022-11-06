@@ -184,3 +184,45 @@ TEST_CASE("Star disc", "[sources]")
 
     REQUIRE((maxF / minF - 1) < 0.05);
 }
+
+TEST_CASE("Sphere star is opaque for direct light", "[sources]")
+{
+    std::uint64_t const numPhotons = 100;
+    SourceParameters const sourceParameters{numPhotons, 1, 10, true, false};
+
+    std::vector<SphereSource> sphereSources;
+    std::vector<PointSource> pointSources;
+
+    sphereSources.emplace_back(Vector3d{10., 0., 0.}, 0, 1., 1.);
+    pointSources.emplace_back(Vector3d{-10., 0., 0.}, 0, 1.);
+
+    Sources sources(sourceParameters, std::move(pointSources), std::move(sphereSources));
+    IGridCPtr grid = std::make_shared<TestGrid>();
+
+    std::vector<Observer> observers;
+    observers.emplace_back(0, 0, 100., 0., 200, 200, 1);
+    observers.emplace_back(0, radians(90), 100., 0., 200, 200, 1);
+    observers.emplace_back(radians(90), radians(90), 100., 0., 200, 200, 1);
+
+    sources.directPhotons(grid, &observers);
+
+    std::stringstream log0;
+    observers[0].normalize(numPhotons);
+    observers[0].write(log0);
+
+    double const poleLuminosity = parseTotalLuminosity(log0);
+
+    std::stringstream log1;
+    observers[1].normalize(numPhotons);
+    observers[1].write(log1);
+    double const equatorLuminosity = parseTotalLuminosity(log1);
+
+    std::stringstream log2;
+    observers[2].normalize(numPhotons);
+    observers[2].write(log2);
+    double const equatorLuminosity2 = parseTotalLuminosity(log2);
+
+    REQUIRE(Approx(poleLuminosity) == 1 / 4. / PI);
+    REQUIRE(Approx(poleLuminosity) == 2. * equatorLuminosity);
+    REQUIRE(Approx(poleLuminosity) == equatorLuminosity2);
+}
