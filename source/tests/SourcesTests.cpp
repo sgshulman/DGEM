@@ -203,6 +203,7 @@ TEST_CASE("Sphere star is opaque for direct light", "[sources]")
     observers.emplace_back(0, 0, 100., 0., 200, 200, 1);
     observers.emplace_back(0, radians(90), 100., 0., 200, 200, 1);
     observers.emplace_back(radians(90), radians(90), 100., 0., 200, 200, 1);
+    observers.emplace_back(radians(180), radians(90), 100., 0., 200, 200, 1);
 
     sources.directPhotons(grid, &observers);
 
@@ -222,9 +223,15 @@ TEST_CASE("Sphere star is opaque for direct light", "[sources]")
     observers[2].write(log2);
     double const equatorLuminosity2 = parseTotalLuminosity(log2);
 
+    std::stringstream log3;
+    observers[3].normalize(numPhotons);
+    observers[3].write(log3);
+    double const equatorLuminosity3 = parseTotalLuminosity(log3);
+
     REQUIRE(Approx(poleLuminosity) == 1 / 4. / PI);
     REQUIRE(Approx(poleLuminosity) == 2. * equatorLuminosity);
     REQUIRE(Approx(poleLuminosity) == equatorLuminosity2);
+    REQUIRE(Approx(poleLuminosity) == equatorLuminosity3);
 }
 
 TEST_CASE("intersectSphereSource", "[sources]")
@@ -261,12 +268,12 @@ TEST_CASE("intersectSphereSource", "[sources]")
     REQUIRE(!sources.intersectSphereSource({0., 1.05, 0.}, {0., 1., 0}));
 
     REQUIRE(sources.intersectSphereSource(Vector3d{1., 1., 1}.normalized() * 0.95,  Vector3d{1., 1., 1}.normalized()));
-    REQUIRE(sources.intersectSphereSource(Vector3d{1., 1., 1}.normalized() * 1.05,  Vector3d{1., 1., 1}.normalized()));
+    REQUIRE(!sources.intersectSphereSource(Vector3d{1., 1., 1}.normalized() * 1.05,  Vector3d{1., 1., 1}.normalized()));
 
     REQUIRE(sources.intersectSphereSource(Vector3d{1., -1., 1}.normalized() * 0.95,  Vector3d{1., -1., 1}.normalized()));
-    REQUIRE(sources.intersectSphereSource(Vector3d{1., -1., 1}.normalized() * 1.05,  Vector3d{1., -1., 1}.normalized()));
+    REQUIRE(!sources.intersectSphereSource(Vector3d{1., -1., 1}.normalized() * 1.05,  Vector3d{1., -1., 1}.normalized()));
 
     REQUIRE(sources.intersectSphereSource(Vector3d{-1., 1., -1}.normalized() * 0.95,  Vector3d{-1., 1., -1}.normalized()));
-    REQUIRE(sources.intersectSphereSource(Vector3d{-1., 1., -1}.normalized() * 1.05,  Vector3d{-1., 1., -1}.normalized()));
+    REQUIRE(!sources.intersectSphereSource(Vector3d{-1., 1., -1}.normalized() * 1.05,  Vector3d{-1., 1., -1}.normalized()));
 }
 

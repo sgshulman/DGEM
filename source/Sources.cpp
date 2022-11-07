@@ -291,8 +291,9 @@ bool Sources::intersectSphereSource(Vector3d const& position, Vector3d const& di
     {
         Vector3d const radius = sphereSources_[i].pos() - position;
         double const d2 = vectorProduct(radius, direction).norm2();
+        double const sourceR2 = sphereSources_[i].radius() * sphereSources_[i].radius();
 
-        if (d2 <= sphereSources_[i].radius() * sphereSources_[i].radius())
+        if (d2 <= sourceR2 && (radius * direction > 0 || radius.norm2() <= sourceR2))
         {
             return true;
         }
@@ -309,8 +310,9 @@ bool Sources::intersectSphereSource(Vector3d const& position, Vector3d const& di
         {
             Vector3d const radius = sphereSources_[i].pos() - position;
             double const d2 = vectorProduct(radius, direction).norm2();
+            double const sourceR2 = sphereSources_[i].radius() * sphereSources_[i].radius();
 
-            if (d2 <= sphereSources_[i].radius() * sphereSources_[i].radius())
+            if (d2 <= sourceR2 && (radius * direction > 0 || radius.norm2() <= sourceR2))
             {
                 return true;
             }
