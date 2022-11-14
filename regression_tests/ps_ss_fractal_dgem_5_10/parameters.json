@@ -1,0 +1,62 @@
+{
+  "method parameters": {
+    "fMonteCarlo": false,
+    "taumin": 0.01,
+    "nscat": 1,
+    "nphotons": 100000000,
+    "iseed": -1556,
+    "fUseHEALPixGrid": false,
+    "PrimaryDirectionsLevel": 5,
+    "SecondaryDirectionsLevel": 1,
+    "NumOfPrimaryScatterings": 10,
+    "NumOfSecondaryScatterings": 1,
+    "MonteCarloStart": 1
+  },
+  "dust": {
+    "kappa": 66.0,
+    "white": {
+      "albedo": 0.4,
+      "hgg": 0.41,
+      "pl": 0.51,
+      "pc": 0.0,
+      "sc": 1.0
+    }
+  },
+  "grid": {
+    "cartesian": {
+      "xmax": 800.0,
+      "ymax": 800.0,
+      "zmax": 800.0,
+      "nx": 201,
+      "ny": 201,
+      "nz": 201
+    }
+  },
+  "geometry": {
+    "fractalCloud": {
+       "n": 200,
+       "max": 800,
+       "dCube": 2.3,
+       "rho0" : 1.804764578e-17,
+       "dotsN": 32,
+       "seed": -1556
+     }
+  },
+  "stars": [
+    {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0,
+      "l": 1.0
+    }
+  ],
+  "observers": {
+    "rimage": 800.0,
+    "manual": [
+      {
+        "phi": 0.0,
+        "theta": 60.0
+      }
+    ]
+  }
+}

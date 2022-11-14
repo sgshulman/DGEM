@@ -1,0 +1,27 @@
+name:  Regression Tests
+
+on: [ push ]
+
+jobs:
+  regression-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: cmake
+        run: cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_UNIT_TESTS=FALSE -G "CodeBlocks - Unix Makefiles" -DCMAKE_C_COMPILER=clang-12 -DCMAKE_CXX_COMPILER=clang++-12 -S ./source
+
+      - name: build
+        run: cmake --build ./
+
+      - name: cmake-utils
+        run: cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_UNIT_TESTS=FALSE -G "CodeBlocks - Unix Makefiles" -DCMAKE_C_COMPILER=clang-12 -DCMAKE_CXX_COMPILER=clang++-12 -S ./utils -B ./utils
+
+      - name: build-utils
+        run: cmake --build ./utils
+        
+      - name: run-regression-tests
+        run: |
+          cd ./regression_tests
+          python3 ./regression_tests.py
