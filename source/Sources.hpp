@@ -90,7 +90,8 @@ struct SourceParameters
 {
     std::uint64_t num_photons_;
     std::uint32_t PrimaryDirectionsLevel_;
-    std::uint32_t SphereSourceDirectionsLevel_;
+    std::uint32_t SphereDirectionsLevel_;
+    std::uint32_t SphereSurfaceDirectionsLevel_;
     bool useMonteCarlo_;
     bool useHEALPixGrid_;
 };
@@ -104,8 +105,9 @@ public:
         , pointSources_{ std::move(pointSources) }
         , sphereSources_{ std::move(sphereSources) }
         , totlum_{ 0. }
-        , primaryDir_{ 3, 4, parameters_.PrimaryDirectionsLevel_, false /*parameters_.useMonteCarlo_ ? 1 : parameters_.PrimaryDirectionsLevel_, parameters_.useHEALPixGrid_*/ }
-        , sphereDir_{ 2, 4, parameters_.SphereSourceDirectionsLevel_, true }
+        , primaryDir_{ parameters_.useMonteCarlo_ ? 1 : parameters_.PrimaryDirectionsLevel_, parameters_.useHEALPixGrid_ }
+        , sphereDir_{ 3, 4, parameters_.SphereDirectionsLevel_, false }
+        , sphereSurfaceDir_{ 2, 4, parameters_.SphereSurfaceDirectionsLevel_, true }
         , currentSource_{ 0 }
         , photonId_{ 0 }
     {
@@ -155,6 +157,7 @@ private:
 
     Directions primaryDir_;
     Directions sphereDir_;
+    Directions sphereSurfaceDir_;
     std::uint32_t currentSource_;
     std::uint64_t photonId_;
     std::uint64_t photonsNumber_;

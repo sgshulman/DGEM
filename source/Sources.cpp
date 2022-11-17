@@ -120,16 +120,16 @@ Photon Sources::emitDgemPhoton(IGridCRef grid)
 
     static double cosineSum{ 0. };
 
-    std::uint64_t localD = 2 * primaryDir_.number() / sphereDir_.number();
+    std::uint64_t localD = 2 * sphereDir_.number() / sphereSurfaceDir_.number();
     if (photonId % localD == 0)
     {
         ++pointId_;
 
-        auto const position = starSurface(sphereSources_[sphereSourceId], sphereDir_.direction(pointId_), grid);
+        auto const position = starSurface(sphereSources_[sphereSourceId], sphereSurfaceDir_.direction(pointId_), grid);
         pointPosition_ = position.first;
         pointCellId_ = position.second;
 
-        auto const position2 = starSurface(sphereSources_[sphereSourceId], -1.0 * sphereDir_.direction(pointId_), grid);
+        auto const position2 = starSurface(sphereSources_[sphereSourceId], -1.0 * sphereSurfaceDir_.direction(pointId_), grid);
         pointPosition2_ = position2.first;
         pointCellId2_ = position2.second;
 
@@ -137,29 +137,29 @@ Photon Sources::emitDgemPhoton(IGridCRef grid)
         cosineSum = 0.;
         for (std::uint64_t ip=0; ip!=localD; ++ip)
         {
-            std::uint64_t const sphPhotonId = (1004987 * (photonId / localD)) % (sphereDir_.number() / 2) + ip * sphereDir_.number() / 2;
-            double cosTheta = sphereDir_.direction(pointId_) * primaryDir_.direction(sphPhotonId);
+            std::uint64_t const sphPhotonId = (1004987 * (photonId / localD)) % (sphereSurfaceDir_.number() / 2) + ip * sphereSurfaceDir_.number() / 2;
+            double cosTheta = sphereSurfaceDir_.direction(pointId_) * sphereDir_.direction(sphPhotonId);
             cosineSum += std::abs(cosTheta * cosTheta);
         }
     }
 
-    std::uint64_t const sphPhotonId = (1004987 * (photonId / localD)) % (sphereDir_.number() / 2) + (photonId % localD) * sphereDir_.number() / 2;
-    double const cosTheta = sphereDir_.direction(pointId_) * primaryDir_.direction(sphPhotonId);
+    std::uint64_t const sphPhotonId = (1004987 * (photonId / localD)) % (sphereSurfaceDir_.number() / 2) + (photonId % localD) * sphereSurfaceDir_.number() / 2;
+    double const cosTheta = sphereSurfaceDir_.direction(pointId_) * sphereDir_.direction(sphPhotonId);
     if (cosTheta > 0)
     {
         return {
             pointPosition_,
             pointCellId_,
-            primaryDir_.direction(sphPhotonId),
-            primaryDir_.w(sphPhotonId) * sphereSources_[sphereSourceId].luminosity() / totlum_ * cosTheta * cosTheta / cosineSum * localD,
+            sphereDir_.direction(sphPhotonId),
+            sphereDir_.w(sphPhotonId) * sphereSources_[sphereSourceId].luminosity() / totlum_ * cosTheta * cosTheta / cosineSum * localD,
             1};
     }
 
     return {
         pointPosition2_,
         pointCellId2_,
-        primaryDir_.direction(sphPhotonId),
-        primaryDir_.w(sphPhotonId) * sphereSources_[sphereSourceId].luminosity() / totlum_ * cosTheta * cosTheta / cosineSum * localD,
+        sphereDir_.direction(sphPhotonId),
+        sphereDir_.w(sphPhotonId) * sphereSources_[sphereSourceId].luminosity() / totlum_ * cosTheta * cosTheta / cosineSum * localD,
         1};
 }
 
@@ -203,9 +203,9 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
         {
             // compute normalization factor
             double cosineSum{ 0. };
-            for (std::uint64_t ip=0; ip!=sphereDir_.number(); ++ip)
+            for (std::uint64_t ip=0; ip!=sphereSurfaceDir_.number(); ++ip)
             {
-                double cosTheta = sphereDir_.direction(ip) * (*observers)[io].direction().vector();
+                double cosTheta = sphereSurfaceDir_.direction(ip) * (*observers)[io].direction().vector();
 
                 if (cosTheta >= 0)
                 {
@@ -213,10 +213,10 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
                 }
             }
 
-            for (std::uint64_t ip=0; ip!=sphereDir_.number(); ++ip)
+            for (std::uint64_t ip=0; ip!=sphereSurfaceDir_.number(); ++ip)
             {
-                auto const position = starSurface(sphereSources_[is], sphereDir_.direction(ip), grid);
-                double cosTheta = sphereDir_.direction(ip) * (*observers)[io].direction().vector();
+                auto const position = starSurface(sphereSources_[is], sphereSurfaceDir_.direction(ip), grid);
+                double cosTheta = sphereSurfaceDir_.direction(ip) * (*observers)[io].direction().vector();
 
                 if (cosTheta >= 0 && (*observers)[io].inFov(position.first)
                     && !intersectSphereSource(position.first, (*observers)[io].direction().vector(), is))

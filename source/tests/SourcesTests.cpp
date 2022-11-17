@@ -81,7 +81,7 @@ namespace
 
     double sourceLuminosity(std::uint64_t num_photons, double radius, std::uint32_t diskLevel)
     {
-        SourceParameters const sourceParameters{num_photons, 1, diskLevel, true, false};
+        SourceParameters const sourceParameters{num_photons, 1, 1, diskLevel, true, false};
 
         std::vector<SphereSource> sphereSources;
         std::vector<PointSource> pointSources;
@@ -116,7 +116,7 @@ TEST_CASE("Sphere source. Random", "[sources]")
     std::vector<SphereSource> sphereSources;
     sphereSources.emplace_back(Vector3d{0.,0.,0.}, 0, 1., 1.);
 
-    SourceParameters const sourceParameters{10, 1, 100, true, false};
+    SourceParameters const sourceParameters{10, 1, 1, 100, true, false};
     Sources sources(sourceParameters, std::move(pointSources), std::move(sphereSources));
 
     IGridCPtr grid = std::make_shared<TestGrid>();
@@ -149,7 +149,7 @@ TEST_CASE("Source Luminosity", "[sources]")
 
 TEST_CASE("Star disc", "[sources]")
 {
-    SourceParameters const sourceParameters{10, 1, 128, true, false};
+    SourceParameters const sourceParameters{10, 1, 1, 128, true, false};
 
     std::vector<SphereSource> sphereSources;
     sphereSources.emplace_back(Vector3d{0.,0.,0.}, 0, 1., 1.);
@@ -188,7 +188,7 @@ TEST_CASE("Star disc", "[sources]")
 TEST_CASE("Sphere star is opaque for direct light", "[sources]")
 {
     std::uint64_t const numPhotons = 100;
-    SourceParameters const sourceParameters{numPhotons, 1, 10, true, false};
+    SourceParameters const sourceParameters{numPhotons, 1, 1, 10, true, false};
 
     std::vector<SphereSource> sphereSources;
     std::vector<PointSource> pointSources;
@@ -236,7 +236,7 @@ TEST_CASE("Sphere star is opaque for direct light", "[sources]")
 
 TEST_CASE("intersectSphereSource", "[sources]")
 {
-    SourceParameters const sourceParameters{100, 1, 10, true, false};
+    SourceParameters const sourceParameters{100, 1, 1, 10, true, false};
 
     std::vector<SphereSource> sphereSources;
     std::vector<PointSource> pointSources;
