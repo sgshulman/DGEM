@@ -30,17 +30,16 @@ namespace
             {
                 double const dif = image1[i] - image2[i];
                 double const absDif = std::abs(dif);
-                double const mean = 0.5*(image1[i] + image2[i]);
+                double const meanAbs = 0.5*(std::abs(image1[i]) + std::abs(image2[i]));
                 difStream << dif << "\t";
                 absDifStream << absDif << "\t";
 
                 stats.absDifSum += absDif;
-                stats.totalSum += mean;
+                stats.totalSum += meanAbs;
 
                 if (image1[i] != 0 && image2[i] != 0)
                 {
                     ++stats.pixelNum;
-                    double const meanAbs = 0.5*(std::abs(image1[i]) + std::abs(image2[i]));
                     stats.relDifSum += absDif / meanAbs;
                     relDifStream << absDif / meanAbs << "\t";
                 } else {
@@ -67,15 +66,14 @@ namespace
             {
                 double const dif = image1[i] - image2[i];
                 double const absDif = std::abs(dif);
-                double const mean = 0.5*(image1[i] + image2[i]);
+                double const meanAbs = 0.5*(std::abs(image1[i]) + std::abs(image2[i]));
 
                 stats.absDifSum += absDif;
-                stats.totalSum += mean;
+                stats.totalSum += meanAbs;
 
                 if (image1[i] != 0 && image2[i] != 0)
                 {
                     ++stats.pixelNum;
-                    double const meanAbs = 0.5*(std::abs(image1[i]) + std::abs(image2[i]));
                     stats.relDifSum += absDif / meanAbs;
                 }
                 ++i;
