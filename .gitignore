@@ -3,7 +3,15 @@ CMakeFiles
 .idea
 CMakeCache.txt
 *.iml
+
 docs_src/tex/*.aux
 docs_src/tex/*.log
 docs_src/tex/*.svg
 docs_src/tex/*.pdf
+
+regression_tests/*/fimage??_??_??.dat
+regression_tests/*/qimage??_??_??.dat
+regression_tests/*/uimage??_??_??.dat
+regression_tests/*/observers.dat
+regression_tests/*/time.txt
+regression_tests/*/dgem
