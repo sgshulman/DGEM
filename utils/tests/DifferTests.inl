@@ -83,7 +83,7 @@ TEST_CASE("Differ", "[differ]")
 
         REQUIRE(Approx(stats.absDifSum) == 0.4);
         REQUIRE(Approx(stats.relDifSum) == 2 + 1 / 1.5 + 1 / 3.5);
-        REQUIRE(Approx(stats.totalSum) == 0.2);
+        REQUIRE(Approx(stats.totalSum) == 0.6);
         REQUIRE(stats.pixelNum == 3);
 
         Image difImage(difStream);
