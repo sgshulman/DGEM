@@ -1,5 +1,6 @@
 import os
 import sys
+from colorama import Fore, Style
 from shutil import copyfile
 import subprocess as sp
 
@@ -23,7 +24,7 @@ def check_difference(reference: str, filename: str) -> bool:
 def run_single_scattering_test(folder: str, observer_pos: str) -> int:
     print()
     print()
-    print("Single scattering test " + folder + " started")
+    print("Single scattering test " + Style.BRIGHT + folder + Style.RESET_ALL + " started")
     os.chdir(folder)
     copyfile("../../dgem", "./dgem")
     os.chmod("./dgem", 0o775)
@@ -38,10 +39,10 @@ def run_single_scattering_test(folder: str, observer_pos: str) -> int:
     os.chdir("../")
 
     if not ok:
-        print("Single scattering test " + folder + " failed")
+        print(Fore.RED + "Single scattering test " + folder + " failed" + Style.RESET_ALL)
         return 1
 
-    print("Single scattering test " + folder + " succeeded")
+    print(Fore.GREEN + "Single scattering test " + folder + " succeeded" + Style.RESET_ALL)
     return 0
 
 
@@ -57,10 +58,14 @@ def run_tests() -> int:
 
 
 if __name__ == "__main__":
+    print()
+    print(Style.BRIGHT + "Start Regression Tests" + Style.RESET_ALL)
     failed_number: int = run_tests()
+    print()
+
     if failed_number == 0:
-        print("All tests passed")
+        print(Style.BRIGHT + Fore.GREEN + "All tests passed!!!" + Style.RESET_ALL)
         sys.exit(0)
 
-    print(str(failed_number) + " tests failed")
+    print(Style.BRIGHT + Fore.RED + str(failed_number) + " tests failed" + Style.RESET_ALL)
     sys.exit(1)
