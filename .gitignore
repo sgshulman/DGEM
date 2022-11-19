@@ -1,8 +1,21 @@
 source/cmake-build-*
 CMakeFiles
+utils/CMakeFiles
 .idea
-CMakeCache.txt
+
 *.iml
+*.cbp
+*.cmake
+Makefile
+
+dgem
+unittests
+CMakeCache.txt
+utils/CMakeCache.txt
+utils/imdiff
+utils/immean
+utils/imsum
+utils/utiltests
 
 docs_src/tex/*.aux
 docs_src/tex/*.log
