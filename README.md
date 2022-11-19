@@ -16,6 +16,10 @@ The method was described in [Shulman (2018)](#shulman2018).
   - [Observers](#observers)
   - [Density Slice](#density-slice)
   - [Effective Height](#effective-height)
+- [Utils](#utils)
+  - [imdiff](#imdiff)
+  - [imsum](#imsum)
+  - [immean](#immean)
 - [Used third-party libraries](#used-third-party-libraries)
 - [References](#references)
 
@@ -28,15 +32,8 @@ Cmake configuration can be used to build the program and for IDEs.
 
 PLOT3.plt is a gnuplot script for plotting the resulting images.
 
-A utility for result images comparison is `imdiff`.
-It is in a directory `utils`.
-It can be compiled both with makefile and Cmake.
-Compiled `imdiff` utility requires two filenames as command arguments.
-It produces three files: `dif.dat` with the image pixel difference, 
-`dif_abs.dat` with the absolute pixel difference,
-and `dif_rel.dat` with the relative pixel difference.
-In the output statistics the main value is `refsum`.
-It is the difference norm for the images.
+In `utils` folder there are utilities to compare images, add them and obtain a mean image.
+Utilities are described in section [Utils](#utils).
 
 ## DGEM configuration
 The first program argument is a configuration file.
@@ -402,6 +399,48 @@ The effective height parameters are:
 - dRadius &mdash; the step along _x_ and _y_ axes
 - dHeight &mdash; the step for integration along the _z_ axis
 - printCoordinates &mdash; boolean flag. If it is _true_ each output line contains three values: _x_, _y_ and _z_. Otherwise, only the _z_ values are displayed in the table form.
+
+## Utils
+
+There are three utilities: `imdiff`, `immean`, and `imsum`.
+They can be compiled both with makefile `makeutils` and Cmake.
+
+### imdiff
+
+Computes image difference statistics and produces three files: 
+`dif.dat` with the image pixel difference,
+`dif_abs.dat` with the absolute pixel difference,
+and `dif_rel.dat` with the relative pixel difference.
+In the output statistics the main value is `refsum`.
+It is the difference norm for the images.
+```
+Usage: ./imdiff [OPTION] FILE1 FILE2
+Compare image files FILE1 and FILE2, compute difference norm, and create difference files.
+Options:
+-h, --help      display this help and exit.
+-c, --compute   just compute difference norm and do not create files.
+```
+### imsum
+
+Computes the sum of images.
+May be used to combine image files for different scatterings.
+```
+Usage: ./imsum [OPTION] FILES -o SUMFILE
+Compute sum of images from FILES and store the resulting image into SUMFILE.
+Options:
+-h, --help  display this help and exit.
+```
+
+### immean
+
+Computes the mean of images.
+May be used to combine results of different Monte Carlo simulations with equal photon numbers.
+```
+Usage: ./immean [OPTION] FILES -o MEANFILE
+Computes mean of images from FILES and stores the resulting image into MEANFILE.
+Options:
+-h, --help	display this help and exit.
+```
 
 ## Used third-party libraries
 

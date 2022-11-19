@@ -1,0 +1,11 @@
+utils: imdiff imsum immean
+        
+
+imdiff: makeutils imdiff.cpp Image.hpp
+		g++ -std=c++14 imdiff.cpp -O3 -o ./imdiff -Wall
+
+imsum: makeutils imsum.cpp Image.hpp
+		g++ -std=c++14 imsum.cpp -O3 -o ./imsum -Wall
+
+immean: makeutils immean.cpp Image.hpp
+		g++ -std=c++14 immean.cpp -O3 -o ./immean -Wall

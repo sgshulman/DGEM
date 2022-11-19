@@ -1,2 +1,0 @@
-differ: makediffer *.cpp
-		g++ -std=c++14 imdiff.cpp -Ofast -o ../imdiff -Wall

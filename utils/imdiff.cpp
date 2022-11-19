@@ -92,7 +92,7 @@ int main( int argc, char *argv[] )
     if (argc > 1 && (std::string(argv[1]) == "-h" || std::string(argv[1]) == "--help"))
     {
         std::cout << "Usage: " << argv[0] << " [OPTION] FILE1 FILE2\n"
-            << "Compare image files FILE1 and FILE2, compute difference norm, and creates difference files.\n"
+            << "Compare image files FILE1 and FILE2, compute difference norm, and create difference files.\n"
             << "Options:\n"
             << "\t-h, --help\tdisplay this help and exit.\n"
             << "\t-c, --compute\tjust compute difference norm and do not create files.\n";

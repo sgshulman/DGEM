@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     if (argc > 1 && (std::string(argv[1]) == "-h" || std::string(argv[1]) == "--help"))
     {
         std::cout << "Usage: " << argv[0] << " [OPTION] FILES -o SUMFILE\n"
-            << "Computes sum of images from FILES and stores the resulting image into SUMFILE.\n"
+            << "Compute sum of images from FILES and store the resulting image into SUMFILE.\n"
             << "Options:\n"
             << "\t-h, --help\tdisplay this help and exit.\n";
 
