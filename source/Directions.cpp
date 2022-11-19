@@ -294,14 +294,17 @@ namespace
 // directions
 Directions::Directions(std::uint32_t const NumOfDirectionsLevels, bool const useHEALPixGrid)
 {
-    if (useHEALPixGrid)
+    if (NumOfDirectionsLevels > 0)
     {
-        isolatitudeGrid3(4, NumOfDirectionsLevels);
-    } else {
-        IcosahedronMesh mesh(NumOfDirectionsLevels);
-        points_ = mesh.points();
-        w_ = mesh.weights();
-        directionsNumber_ = mesh.directionsNumber();
+        if (useHEALPixGrid)
+        {
+            isolatitudeGrid3(4, NumOfDirectionsLevels);
+        } else {
+            IcosahedronMesh mesh(NumOfDirectionsLevels);
+            points_ = mesh.points();
+            w_ = mesh.weights();
+            directionsNumber_ = mesh.directionsNumber();
+        }
     }
 }
 
@@ -309,25 +312,28 @@ Directions::Directions(std::uint32_t const NumOfDirectionsLevels, bool const use
 // HEALPix like equal-area isolatitude tessellations of the sphere with N_theta = 3
 Directions::Directions(std::uint32_t const Ntheta, std::uint32_t const Nphi, std::uint32_t const NumOfDirectionsLevels, bool const ringScheme)
 {
-    DATA_ASSERT(Ntheta >= 2 && Ntheta <= 3, "Ntheta can be 2 or 3");
-    DATA_ASSERT(Nphi % 2 == 0, "Nphi must be even");
+    if (NumOfDirectionsLevels > 0)
+    {
+        DATA_ASSERT(Ntheta >= 2 && Ntheta <= 3, "Ntheta can be 2 or 3");
+        DATA_ASSERT(Nphi % 2 == 0, "Nphi must be even");
 
-    if (Ntheta == 3)
-    {
-        if (ringScheme)
+        if (Ntheta == 3)
         {
-            isolatitudeGrid3(Nphi, NumOfDirectionsLevels);
-        } else { // Nested Scheme
-            isolatitudeGrid3Nested(Nphi, NumOfDirectionsLevels);
+            if (ringScheme)
+            {
+                isolatitudeGrid3(Nphi, NumOfDirectionsLevels);
+            } else { // Nested Scheme
+                isolatitudeGrid3Nested(Nphi, NumOfDirectionsLevels);
+            }
         }
-    }
-    else
-    {
-        if (ringScheme)
+        else
         {
-            isolatitudeGrid2(Nphi, NumOfDirectionsLevels);
-        } else { // Nested Scheme
-            isolatitudeGrid2Nested(Nphi, NumOfDirectionsLevels);
+            if (ringScheme)
+            {
+                isolatitudeGrid2(Nphi, NumOfDirectionsLevels);
+            } else { // Nested Scheme
+                isolatitudeGrid2Nested(Nphi, NumOfDirectionsLevels);
+            }
         }
     }
 }

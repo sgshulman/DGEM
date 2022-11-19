@@ -37,6 +37,12 @@ namespace
 
 TEST_CASE("Icosahedron Integration", "[sphere integration]")
 {
+    SECTION("Icosahedron 0")
+    {
+        Directions d(0, false);
+        REQUIRE(d.number() == 0);
+    }
+
     SECTION("Icosahedron 1")
     {
         Directions d(1, false);
@@ -170,6 +176,12 @@ TEST_CASE("Icosahedron Integration", "[sphere integration]")
 
 TEST_CASE("HEALPix Integration", "[sphere integration]")
 {
+    SECTION("HEALPix 0")
+    {
+        Directions d(0, true);
+        REQUIRE(d.number() == 0);
+    }
+
     SECTION("HEALPix 2")
     {
         Directions d(2, true);
@@ -328,6 +340,18 @@ TEST_CASE("HEALPix Integration", "[sphere integration]")
 
 TEST_CASE("Isolatitude 3-6 Integration", "[sphere integration]")
 {
+    SECTION("Isolatitude 3-6-0 ring")
+    {
+        Directions d(3, 6, 0, true);
+        REQUIRE(d.number() == 0);
+    }
+
+    SECTION("Isolatitude 3-6-0 nested")
+    {
+        Directions d(3, 6, 0, false);
+        REQUIRE(d.number() == 0);
+    }
+
     SECTION("Sphere 2")
     {
         Directions d(3, 6, 2, true);
