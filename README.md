@@ -299,6 +299,7 @@ The first line of the __elementsFile__ is the number of nodes. All other lines c
 Is a list of sources with 4 parameters:
 - x, y, z &mdash; source coordinates
 - l &mdash; source luminosity
+- r &mdash; optional star radius in AU. The default value is 0. When r > 0 the star is modelled as a sphere source, otherwise as a point source.
 
 ```yaml
 "stars": [
@@ -306,7 +307,8 @@ Is a list of sources with 4 parameters:
       "x": 0.0,
       "y": 0.0,
       "z": 0.0,
-      "l": 1.0
+      "l": 1.0,
+      "r": 0.0047
     }
   ]
 ```
