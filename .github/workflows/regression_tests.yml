@@ -10,13 +10,13 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: cmake
-        run: cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_UNIT_TESTS=FALSE -G "CodeBlocks - Unix Makefiles" -DCMAKE_C_COMPILER=clang-12 -DCMAKE_CXX_COMPILER=clang++-12 -S ./source
+        run: cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_UNIT_TESTS=FALSE -G "CodeBlocks - Unix Makefiles" -DCMAKE_C_COMPILER=clang-14 -DCMAKE_CXX_COMPILER=clang++-14 -S ./source
 
       - name: build
         run: cmake --build ./
 
       - name: cmake-utils
-        run: cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_UNIT_TESTS=FALSE -G "CodeBlocks - Unix Makefiles" -DCMAKE_C_COMPILER=clang-12 -DCMAKE_CXX_COMPILER=clang++-12 -S ./utils -B ./utils
+        run: cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_UNIT_TESTS=FALSE -G "CodeBlocks - Unix Makefiles" -DCMAKE_C_COMPILER=clang-14 -DCMAKE_CXX_COMPILER=clang++-14 -S ./utils -B ./utils
 
       - name: build-utils
         run: cmake --build ./utils
