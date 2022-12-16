@@ -154,6 +154,12 @@ int run(int argc, char *argv[])
                     break;
                 }
 
+                double tau1 = grid->findOpticalDepth(ph0);
+                if (tau1 < model.taumin())
+                {
+                    continue;
+                }
+
                 Vector3d spos = ph0.pos();
 
                 // skip empty inner regions
@@ -171,7 +177,7 @@ int run(int argc, char *argv[])
                     ph0.weight() *= std::exp(-tau);
 
                     // Photons scattering
-                    if (tau > model.taumin() * nScatteringsRev)
+                    if (tau > model.taumin() * nScatteringsRev * nScatteringsRev)
                     {
                         // Find scattering location of tau
                         double const tauScattering = -log(0.5 + 0.5 * exp(-tau));
