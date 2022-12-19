@@ -34,7 +34,7 @@ namespace
         }
         return index;
     }
-}
+} // namespace
 
 constexpr Sobol::table_t Sobol::P_TABLE[];
 constexpr Sobol::table_t Sobol::MI_TABLE[];

@@ -24,7 +24,7 @@ namespace
         double const u = ran->Get();
         return { 2.0 * PI * u, std::acos(2 * v - 1.0) };
     }
-}
+} // namespace
 
 
 Photon Sources::emitRandomPhoton(IGridCRef grid, IRandomGenerator* ran)

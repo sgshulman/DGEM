@@ -83,7 +83,7 @@ namespace
             }
         }
     }
-}
+} // namespace
 
 TEST_CASE("Tetrahedral Grid", "[grid]")
 {

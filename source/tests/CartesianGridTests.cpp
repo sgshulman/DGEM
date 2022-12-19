@@ -33,7 +33,7 @@ namespace
     {
         return {position, grid.cellId(position), Direction3d(dir), 1., 0};
     }
-}
+} // namespace
 
 TEST_CASE("Cartezian Grid", "[grid]")
 {

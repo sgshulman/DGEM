@@ -20,7 +20,7 @@ namespace
         private:
             double const rho_;
     };
-}
+} // namespace
 
 TEST_CASE("Matter Array", "[matter]")
 {

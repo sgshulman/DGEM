@@ -33,7 +33,7 @@ namespace
     {
         return (direction1 - direction2).norm();
     }
-}
+} // namespace
 
 TEST_CASE("Icosahedron Integration", "[sphere integration]")
 {

@@ -111,7 +111,7 @@ namespace
              << "\tp= " << std::sqrt(qsum*qsum + usum*usum)/fsum
              << "\tphi= " << 90 * std::atan2(usum, qsum)/PI;
     }
-}
+} // namespace
 
 
 Observer::Observer(

@@ -107,7 +107,7 @@ namespace
 
         return parseTotalLuminosity(log);
     }
-}
+} // namespace
 
 
 TEST_CASE("Sphere source. Random", "[sources]")

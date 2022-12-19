@@ -31,7 +31,7 @@ namespace
 
         return (e * d > 0.0) ? dist / e : std::numeric_limits<double>::max();
     }
-}
+} // namespace
 
 class alignas(32) TetrahedralGrid::Node
 {

@@ -799,7 +799,7 @@ namespace
         opticalDepth /= directions.number();
         std::cout << "MeanOpticalDepth: " << opticalDepth << std::endl;
     }
-}
+} // namespace
 
 #ifdef ENABLE_UNIT_TESTS
 #include "tests/ModelTests.inl"

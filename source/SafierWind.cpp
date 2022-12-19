@@ -101,7 +101,7 @@ namespace
         double const dxi = dXidChi(model, h);
         return model->b_0 * (1. - h0*model->dxi0) / (xi*psi*(xi-chi*dxi));
     }
-}
+} // namespace
 
 
 SafierWind::SafierWind(

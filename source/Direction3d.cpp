@@ -11,7 +11,7 @@ namespace
 
         return 0.;
     }
-}
+} // namespace
 
 
 Direction3d Direction3d::rotate(Direction3d const& other) const

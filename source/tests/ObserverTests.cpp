@@ -41,7 +41,7 @@ namespace
             f[scattering] = d;
         }
     }
-}
+} // namespace
 
 
 TEST_CASE("Observer. bin", "[observer]")

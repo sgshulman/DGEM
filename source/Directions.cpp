@@ -288,7 +288,7 @@ namespace
 
         return {x, y};
     }
-}
+} // namespace
 
 
 // directions

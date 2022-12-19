@@ -27,7 +27,7 @@ namespace
 
         return newDots;
     }
-}
+} // namespace
 
 
 FractalCloud::FractalCloud(
