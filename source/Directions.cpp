@@ -277,14 +277,14 @@ namespace
 
     std::pair<std::int64_t, std::int64_t> unpackNestedId(std::uint64_t squareId0)
     {
-        std::uint64_t const squareId1 = (squareId0 & 0x9999999999999999) | ((squareId0 & 0x4444444444444444) >> 1) | ((squareId0 & 0x2222222222222222) << 1);
-        std::uint64_t const squareId2 = (squareId1 & 0xC3C3C3C3C3C3C3C3) | ((squareId1 & 0x3030303030303030) >> 2) | ((squareId1 & 0x0C0C0C0C0C0C0C0C) << 2);
-        std::uint64_t const squareId3 = (squareId2 & 0xF00FF00FF00FF00F) | ((squareId2 & 0x0F000F000F000F00) >> 4) | ((squareId2 & 0x00F000F000F000F0) << 4);
-        std::uint64_t const squareId4 = (squareId3 & 0xFF0000FFFF0000FF) | ((squareId3 & 0x00FF000000FF0000) >> 8) | ((squareId3 & 0x0000FF000000FF00) << 8);
-        std::uint64_t const squareId5 = (squareId4 & 0xFFFF00000000FFFF) | ((squareId4 & 0x0000FFFF00000000) >>16) | ((squareId4 & 0x00000000FFFF0000) <<16);
+        std::uint64_t const squareId1 = (squareId0 & 0x9999999999999999U) | ((squareId0 & 0x4444444444444444U) >> 1U) | ((squareId0 & 0x2222222222222222U) << 1U);
+        std::uint64_t const squareId2 = (squareId1 & 0xC3C3C3C3C3C3C3C3U) | ((squareId1 & 0x3030303030303030U) >> 2U) | ((squareId1 & 0x0C0C0C0C0C0C0C0CU) << 2U);
+        std::uint64_t const squareId3 = (squareId2 & 0xF00FF00FF00FF00FU) | ((squareId2 & 0x0F000F000F000F00U) >> 4U) | ((squareId2 & 0x00F000F000F000F0U) << 4U);
+        std::uint64_t const squareId4 = (squareId3 & 0xFF0000FFFF0000FFU) | ((squareId3 & 0x00FF000000FF0000U) >> 8U) | ((squareId3 & 0x0000FF000000FF00U) << 8U);
+        std::uint64_t const squareId5 = (squareId4 & 0xFFFF00000000FFFFU) | ((squareId4 & 0x0000FFFF00000000U) >>16U) | ((squareId4 & 0x00000000FFFF0000U) <<16U);
 
-        std::int64_t const x = (squareId5 & 0x00000000FFFFFFFF);
-        std::int64_t const y = (squareId5 & 0xFFFFFFFF00000000) >> 32;
+        std::int64_t const x = (squareId5 & 0x00000000FFFFFFFFU);
+        std::int64_t const y = (squareId5 & 0xFFFFFFFF00000000U) >> 32U;
 
         return {x, y};
     }

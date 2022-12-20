@@ -14,7 +14,7 @@ namespace
        while (i)
        {
           ++index;
-          i >>= 1;
+          i >>= 1U;
        }
        return --index;
     }
@@ -26,9 +26,9 @@ namespace
         if (i > 0)
         {
             std::uint64_t value = i-1;
-            while (value & 1)
+            while (value & 1U)
             {
-                value >>= 1;
+                value >>= 1U;
                 ++index;
             }
         }
@@ -135,9 +135,9 @@ void Sobol::initMiTable()
             m(i, dim) = m(i - degree, dim);
             for (unsigned int shift = degree; shift > 0; --shift)
             {
-                unsigned int const a_i = polyCopy & 1;
+                unsigned int const a_i = polyCopy & 1U;
                 m(i, dim) ^= (a_i * m(i - shift, dim)) << shift;
-                polyCopy >>= 1;
+                polyCopy >>= 1U;
             }
         }
     }
