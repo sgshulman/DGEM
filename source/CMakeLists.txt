@@ -60,6 +60,11 @@ set(SOURCES
         WhiteDust.hpp
         third-party/nlohmann/json.hpp)
 
+if (DEFINED CLANG_TIDY_VERSION)
+    message("CLANG_TIDY ENABLED: ${CLANG_TIDY_VERSION}")
+    set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_VERSION};-warnings-as-errors=*;-checks=llvm-namespace-comment,google-runtime-int")
+endif()
+
 add_executable(dgem points.cpp ${SOURCES})
 
 set_target_properties(dgem PROPERTIES

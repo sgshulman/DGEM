@@ -1,0 +1,25 @@
+name: clang-tidy
+
+on: [ push ]
+
+jobs:
+  build:
+    name: ${{ matrix.compiler_name }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        compiler_name: [build_clang14]
+        include:
+          - compiler_name: build_clang14
+            c_compiler: clang-14
+            cxx_compiler: clang++-14
+            clang-tidy: clang-tidy-14
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: cmake
+        run: cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_UNIT_TESTS=TRUE  -G "CodeBlocks - Unix Makefiles" -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }} -DCLANG_TIDY_VERSION=${{ matrix.clang-tidy }} -S ./source
+
+      - name: build
+        run: cmake --build ./
