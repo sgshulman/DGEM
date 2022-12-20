@@ -113,7 +113,6 @@ SafierWind::SafierWind(
         double const rMax,
         IDiskHumpCPtr hump)
     : model_{ getModel(model) }
-    , rho0_{ rho0(model_, mOut, mStar, h0, rMax / rMin) }
     , h0_{ h0 }
     , hump_{ std::move(hump) }
 {
@@ -127,6 +126,11 @@ SafierWind::SafierWind(
     DATA_ASSERT(rMin > 0., "rMin (inner radius of the wind formation region) must be positive.");
     DATA_ASSERT(rMax > 0., "rMax (outer radius of the wind formation region) must be positive.");
     DATA_ASSERT(rMax > rMin, "rMax (outer radius) must be greater than rMin (inner radius of the wind formation region).");
+
+    if (model_)
+    {
+        rho0_ = rho0(model_, mOut, mStar, h0, rMax / rMin);
+    }
 }
 
 
