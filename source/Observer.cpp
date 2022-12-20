@@ -4,16 +4,16 @@ namespace
 {
     void formatAngle(char *str, int const length, double const angleDeg)
     {
-        long const angleMilliDeg = std::lround(degrees(angleDeg) * 1000);
-        long const degrees = angleMilliDeg / 1000 % 360;
-        long const milliDegrees = angleMilliDeg % 1000;
+        std::int64_t const angleMilliDeg = std::lround(degrees(angleDeg) * 1000);
+        int const degrees = static_cast<int>(angleMilliDeg / 1000 % 360);
+        int const milliDegrees = static_cast<int>(angleMilliDeg % 1000);
 
         if (milliDegrees == 0)
         {
-            snprintf(str, length, "%2.2li", degrees);
+            snprintf(str, length, "%2.2i", degrees);
         } else
         {
-            snprintf(str, length, "%2.2li-%3.3li", degrees, milliDegrees);
+            snprintf(str, length, "%2.2i-%3.3i", degrees, milliDegrees);
         }
     }
 

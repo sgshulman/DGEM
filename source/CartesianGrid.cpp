@@ -22,7 +22,7 @@ CartesianGrid::CartesianGrid(
     : nx_{ nx }
     , ny_{ ny }
     , nz_{ nz }
-    , maxCellId_{ (static_cast<std::uint64_t>(nx_) | (static_cast<std::uint64_t>(ny_) << 20u) | (static_cast<std::uint64_t>(nz_) << 40u)) }
+    , maxCellId_{ (static_cast<std::uint64_t>(nx_) | (static_cast<std::uint64_t>(ny_) << 20U) | (static_cast<std::uint64_t>(nz_) << 40U)) }
     , xmax_{ xmax }
     , ymax_{ ymax }
     , zmax_{ zmax }
@@ -90,9 +90,9 @@ double CartesianGrid::findOpticalDepth(Photon ph) const
     std::int64_t const dCellY = ph.dir().y() > 0.0 ? 0x000000000100000 : ph.dir().y() < 0.0 ? -0x000000000100000 : 0;
     std::int64_t const dCellZ = ph.dir().z() > 0.0 ? 0x000010000000000 : ph.dir().z() < 0.0 ? -0x000010000000000 : 0;
 
-    auto x = static_cast<std::uint32_t>( ph.cellId() & 0x0000000000FFFFu);
-    auto y = static_cast<std::uint32_t>((ph.cellId() & 0x00000FFFF00000u) >> 20u);
-    auto z = static_cast<std::uint32_t>((ph.cellId() & 0xFFFF0000000000u) >> 40u);
+    auto x = static_cast<std::uint32_t>( ph.cellId() & 0x0000000000FFFFU);
+    auto y = static_cast<std::uint32_t>((ph.cellId() & 0x00000FFFF00000U) >> 20U);
+    auto z = static_cast<std::uint32_t>((ph.cellId() & 0xFFFF0000000000U) >> 40U);
 
     Vector3d border(
         (x + phDirPos.x()) * xCellSize_ - xmax_,
@@ -118,12 +118,12 @@ double CartesianGrid::findOpticalDepth(Photon ph) const
         } else if (dy < dz) {
             dcell = dy;
             newCellId += dCellY;
-            y = static_cast<std::uint32_t>((newCellId & 0x00000FFFF00000u) >> 20u);
+            y = static_cast<std::uint32_t>((newCellId & 0x00000FFFF00000U) >> 20U);
             border.y() = (y + phDirPos.y()) * yCellSize_ - ymax_;
         } else {
             dcell = dz;
             newCellId += dCellZ;
-            z = static_cast<std::uint32_t>((newCellId & 0xFFFF0000000000u) >> 40u);
+            z = static_cast<std::uint32_t>((newCellId & 0xFFFF0000000000U) >> 40U);
             border.z() = (z + phDirPos.z()) * zCellSize_ - zmax_;
         }
 
@@ -150,9 +150,9 @@ double CartesianGrid::movePhotonAtDistance(Photon &ph, double distance) const
     std::int64_t const dCellY = ph.dir().y() > 0.0 ? 0x000000000100000 : ph.dir().y() < 0.0 ? -0x000000000100000 : 0;
     std::int64_t const dCellZ = ph.dir().z() > 0.0 ? 0x000010000000000 : ph.dir().z() < 0.0 ? -0x000010000000000 : 0;
 
-    auto x = static_cast<std::uint32_t>( ph.cellId() & 0x0000000000FFFFu);
-    auto y = static_cast<std::uint32_t>((ph.cellId() & 0x00000FFFF00000u) >> 20u);
-    auto z = static_cast<std::uint32_t>((ph.cellId() & 0xFFFF0000000000u) >> 40u);
+    auto x = static_cast<std::uint32_t>( ph.cellId() & 0x0000000000FFFFU);
+    auto y = static_cast<std::uint32_t>((ph.cellId() & 0x00000FFFF00000U) >> 20U);
+    auto z = static_cast<std::uint32_t>((ph.cellId() & 0xFFFF0000000000U) >> 40U);
 
     Vector3d border(
         (x + phDirPos.x()) * xCellSize_ - xmax_,
@@ -178,12 +178,12 @@ double CartesianGrid::movePhotonAtDistance(Photon &ph, double distance) const
         } else if (dy < dz) {
              dcell = dy;
              newCellId += dCellY;
-             y = static_cast<std::uint32_t>((newCellId & 0x00000FFFF00000u) >> 20u);
+             y = static_cast<std::uint32_t>((newCellId & 0x00000FFFF00000U) >> 20U);
              border.y() = (y + phDirPos.y()) * yCellSize_ - ymax_;
         } else {
              dcell = dz;
              newCellId += dCellZ;
-             z = static_cast<std::uint32_t>((newCellId & 0xFFFF0000000000u) >> 40u);
+             z = static_cast<std::uint32_t>((newCellId & 0xFFFF0000000000U) >> 40U);
              border.z() = (z + phDirPos.z()) * zCellSize_ - zmax_;
         }
 
@@ -219,9 +219,9 @@ bool CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold) co
     std::int64_t const dCellY = ph.dir().y() > 0.0 ? 0x000000000100000 : ph.dir().y() < 0.0 ? -0x000000000100000 : 0;
     std::int64_t const dCellZ = ph.dir().z() > 0.0 ? 0x000010000000000 : ph.dir().z() < 0.0 ? -0x000010000000000 : 0;
 
-    auto x = static_cast<std::uint32_t>( ph.cellId() & 0x0000000000FFFFu);
-    auto y = static_cast<std::uint32_t>((ph.cellId() & 0x00000FFFF00000u) >> 20u);
-    auto z = static_cast<std::uint32_t>((ph.cellId() & 0xFFFF0000000000u) >> 40u);
+    auto x = static_cast<std::uint32_t>( ph.cellId() & 0x0000000000FFFFU);
+    auto y = static_cast<std::uint32_t>((ph.cellId() & 0x00000FFFF00000U) >> 20U);
+    auto z = static_cast<std::uint32_t>((ph.cellId() & 0xFFFF0000000000U) >> 40U);
 
     Vector3d border(
         (x + phDirPos.x()) * xCellSize_ - xmax_,
@@ -247,12 +247,12 @@ bool CartesianGrid::movePhotonAtDepth(Photon & ph, double tau, double tauold) co
         } else if (dy < dz) {
              dcell = dy;
              newCellId += dCellY;
-             y = static_cast<std::uint32_t>((newCellId & 0x00000FFFF00000u) >> 20u);
+             y = static_cast<std::uint32_t>((newCellId & 0x00000FFFF00000U) >> 20U);
              border.y() = (y + phDirPos.y()) * yCellSize_ - ymax_;
         } else {
              dcell = dz;
              newCellId += dCellZ;
-             z = static_cast<std::uint32_t>((newCellId & 0xFFFF0000000000u) >> 40u);
+             z = static_cast<std::uint32_t>((newCellId & 0xFFFF0000000000U) >> 40U);
              border.z() = (z + phDirPos.z()) * zCellSize_ - zmax_;
         }
 
@@ -381,7 +381,7 @@ std::uint64_t CartesianGrid::cellId(const Vector3d& position) const
     std::uint64_t const yCell = (y >= 0 ? 0x10000 : 0xFFFF) + static_cast<std::int32_t>(y);
     std::uint64_t const zCell = (z >= 0 ? 0x10000 : 0xFFFF) + static_cast<std::int32_t>(z);
 
-    return (xCell | (yCell << 20u) | (zCell << 40u));
+    return (xCell | (yCell << 20U) | (zCell << 40U));
 }
 
 
@@ -393,7 +393,7 @@ bool CartesianGrid::inside(const Photon& ph) const
 
 bool CartesianGrid::inside_inner(std::uint64_t const cellId) const
 {
-    return ((cellId ^ (cellId - maxCellId_)) & 0x100001000010000u) == 0x100001000010000u;
+    return ((cellId ^ (cellId - maxCellId_)) & 0x100001000010000U) == 0x100001000010000U;
 }
 
 

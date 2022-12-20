@@ -9,9 +9,9 @@ jobs:
 
     strategy:
       matrix:
-        compiler_name: [build_clang14]
+        compiler_name: [clang-tidy-14]
         include:
-          - compiler_name: build_clang14
+          - compiler_name: clang-tidy-14
             c_compiler: clang-14
             cxx_compiler: clang++-14
             clang-tidy: clang-tidy-14
