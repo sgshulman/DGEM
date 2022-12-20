@@ -38,13 +38,13 @@ CartesianGrid::CartesianGrid(
     rhokappa_ = new double[nx_ * ny_ * nz_];
     minrho_ = 1e+38;
 
-    for (std::uint64_t cntx=0; cntx!=nx_; ++cntx)
+    for (std::uint32_t cntx=0; cntx!=nx_; ++cntx)
     {
         double const x = (cntx*2.0+1) * xmax_/nx_ - xmax_;
-        for (std::uint64_t cnty=0; cnty!=ny_; ++cnty)
+        for (std::uint32_t cnty=0; cnty!=ny_; ++cnty)
         {
             double const y=(cnty*2.0+1) * ymax_/ny_ - ymax_;
-            for (std::uint64_t cntz=0; cntz!=nz_; ++cntz)
+            for (std::uint32_t cntz=0; cntz!=nz_; ++cntz)
             {
                 double const z=(cntz*2.0+1) * zmax_/nz_ - zmax_;
                 std::uint64_t const idx = cntx+cnty*nx+cntz*ny*nx;
@@ -347,13 +347,13 @@ double CartesianGrid::computeMatterMass() const
 {
     double density = 0.0;
 
-    for (std::uint64_t cntx=0; cntx!=nx_; ++cntx)
+    for (std::uint32_t cntx=0; cntx!=nx_; ++cntx)
     {
         double const x = (cntx*2.0+1) * xmax_/nx_ - xmax_;
-        for (std::uint64_t cnty=0; cnty!=ny_; ++cnty)
+        for (std::uint32_t cnty=0; cnty!=ny_; ++cnty)
         {
             double const y=(cnty*2.0+1) * ymax_/ny_ - ymax_;
-            for (std::uint64_t cntz=0; cntz!=nz_; ++cntz)
+            for (std::uint32_t cntz=0; cntz!=nz_; ++cntz)
             {
                 double const z=(cntz*2.0+1) * zmax_/nz_ - zmax_;
                 density += matter_->density({x, y, z});

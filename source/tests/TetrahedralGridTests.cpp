@@ -37,20 +37,20 @@ namespace
         return {position, grid.cellId(position), Direction3d(dir), 1., 0};
     }
 
-    void createGrid(std::stringstream* nodes, std::stringstream* elements, std::size_t const n, double const r)
+    void createGrid(std::stringstream* nodes, std::stringstream* elements, std::uint32_t const n, double const r)
     {
         *nodes << (n+1)*(n+1)*(n+1) << std::endl;
 
         std::size_t nodeId{ 1 };
         double const dr = 2 * r / n;
 
-        for (std::size_t i = 0; i != n+1; ++i)
+        for (std::uint32_t i = 0; i != n+1; ++i)
         {
             double const x = -r + dr * i;
-            for (std::size_t j = 0; j != n+1; ++j)
+            for (std::uint32_t j = 0; j != n+1; ++j)
             {
                 double const y = -r + dr * j;
-                for (std::size_t k = 0; k != n+1; ++k)
+                for (std::uint32_t k = 0; k != n+1; ++k)
                 {
                     double const z = -r + dr * k;
                     *nodes << nodeId << "\t" << x << "\t" << y << "\t" << z << "\n";

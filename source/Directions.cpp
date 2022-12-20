@@ -155,7 +155,7 @@ namespace
 
                 for (std::uint64_t cnt=0; cnt<directionsNumber_; ++cnt)
                 {
-                    weights[cnt] = triangles_[cnt].square() * directionsNumber_ / 4. / PI;
+                    weights[cnt] = triangles_[cnt].square() * static_cast<double>(directionsNumber_) / 4. / PI;
                 }
 
                 return weights;
@@ -283,8 +283,8 @@ namespace
         std::uint64_t const squareId4 = (squareId3 & 0xFF0000FFFF0000FFU) | ((squareId3 & 0x00FF000000FF0000U) >> 8U) | ((squareId3 & 0x0000FF000000FF00U) << 8U);
         std::uint64_t const squareId5 = (squareId4 & 0xFFFF00000000FFFFU) | ((squareId4 & 0x0000FFFF00000000U) >>16U) | ((squareId4 & 0x00000000FFFF0000U) <<16U);
 
-        std::int64_t const x = (squareId5 & 0x00000000FFFFFFFFU);
-        std::int64_t const y = (squareId5 & 0xFFFFFFFF00000000U) >> 32U;
+        std::int64_t const x = static_cast<int64_t>(squareId5 & 0x00000000FFFFFFFFU);
+        std::int64_t const y = static_cast<int64_t>((squareId5 & 0xFFFFFFFF00000000U) >> 32U);
 
         return {x, y};
     }
@@ -410,24 +410,24 @@ void Directions::isolatitudeGrid3Nested(std::uint32_t Nphi, std::uint32_t const 
         std::int64_t const v = xy.first + xy.second;
         std::int64_t const h = xy.first - xy.second;
 
-        std::int64_t const F1 = frow + 2;
-        std::int64_t const F2 = 2 * (f % Nphi) - (frow % 2) + 1;
+        std::int64_t const F1 = static_cast<std::int64_t>(frow) + 2;
+        std::int64_t const F2 = static_cast<std::int64_t>(2 * (f % Nphi) - (frow % 2) + 1);
 
         std::int64_t i = F1 * Nside - v - 1;
-        double z = 4.0 / 3.0 - 2.0 * i / (3.0 * Nside);
+        double z = 4.0 / 3.0 - 2.0 * static_cast<double>(i) / (3.0 * Nside);
         std::int64_t s = (i - Nside + 1) % 2;
         std::int64_t r = Nside;
 
         if (i < Nside) // North polar cap
         {
             r = i;
-            z = 1.0 - i * i / (3.0 * Nside * Nside);
+            z = 1.0 - static_cast<double>(i * i) / (3.0 * Nside * Nside);
             s = 1;
         }
         else if (i > 3 * Nside) // South polar cap
         {
             r = 4 * Nside - i;
-            z = -1.0 + r * r / (3.0 * Nside * Nside);
+            z = -1.0 + static_cast<double>(r * r) / (3.0 * Nside * Nside);
             s = 1;
         }
 
@@ -436,7 +436,7 @@ void Directions::isolatitudeGrid3Nested(std::uint32_t Nphi, std::uint32_t const 
         if (j > Nphi * Nside) j -= Nphi * Nside;
         if (j < 1) j += Nphi * Nside;
 
-        points_[id] = Vector3d((j - 0.5 * s) * 2 * PI / (Nphi * r), std::acos(z));
+        points_[id] = Vector3d((static_cast<double>(j) - 0.5 * static_cast<double>(s)) * 2 * PI / static_cast<double>(Nphi * r), std::acos(z));
     }
 
      w_ = new double[directionsNumber_]{};
@@ -516,24 +516,24 @@ void Directions::isolatitudeGrid2Nested(std::uint32_t Nphi, std::uint32_t const 
         std::int64_t const v = xy.first + xy.second;
         std::int64_t const h = xy.first - xy.second;
 
-        std::int64_t const F1 = frow + 2;
-        std::int64_t const F2 = 2 * (f % Nphi) - (frow % 2) + 1;
+        std::int64_t const F1 = static_cast<std::int64_t>(frow) + 2;
+        std::int64_t const F2 = static_cast<std::int64_t>(2 * (f % Nphi) - (frow % 2) + 1);
 
         std::int64_t i = F1 * Nside - v - 1;
-        double z = 3.0 / 2 - (1. * i) / Nside;
+        double z = 3.0 / 2 - static_cast<double>(i) / Nside;
         std::int64_t s = (i - Nside + 1) % 2;
         std::int64_t r = Nside;
 
         if (i < Nside) // North polar cap
         {
             r = i;
-            z = 1 - (r * r) / (2. * Nside * Nside);
+            z = 1 - static_cast<double>(r * r) / (2. * Nside * Nside);
             s = 1;
         }
         else if (i > 2 * Nside) // South polar cap
         {
             r = 3 * Nside - i;
-            z = -1.0 + r * r / (2.0 * Nside * Nside);
+            z = -1.0 + static_cast<double>(r * r) / (2.0 * Nside * Nside);
             s = 0;
         }
 
@@ -542,7 +542,7 @@ void Directions::isolatitudeGrid2Nested(std::uint32_t Nphi, std::uint32_t const 
         if (j > Nphi * Nside) j -= Nphi * Nside;
         if (j < 1) j += Nphi * Nside;
 
-        points_[id] = Vector3d((j - 0.5 * s) * 2 * PI / (Nphi * r), std::acos(z));
+        points_[id] = Vector3d((static_cast<double>(j) - 0.5 * static_cast<double>(s)) * 2 * PI / static_cast<double>(Nphi * r), std::acos(z));
     }
 
      w_ = new double[directionsNumber_]{};

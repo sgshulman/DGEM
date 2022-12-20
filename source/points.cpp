@@ -112,7 +112,7 @@ int run(int argc, char *argv[])
                 Vector3d spos = ph0.pos();
                 std::uint64_t sCellId = ph0.cellId();
 
-                for (std::uint64_t s = 0; s != model.NumOfPrimaryScatterings(); ++s)
+                for (std::uint32_t s = 0; s != model.NumOfPrimaryScatterings(); ++s)
                 {
                     Photon ph(spos, sCellId, ph0.dir(), ph0.weight() * w, 1);
                     // Force photon to scatter at optical depth tau before edge of grid
@@ -139,7 +139,7 @@ int run(int argc, char *argv[])
         }
         else
         {
-            double const sqrtPiN = std::sqrt(PI / sources->num_photons());
+            double const sqrtPiN = std::sqrt(PI / static_cast<double>(sources->num_photons()));
             double const base = 1. + 2. * sqrtPiN / (1 - sqrtPiN);
             // pessimistic estimation of scattering number, as we use it only for minimal optical depth estimation
             double const nScatteringsRev = std::log(base) / std::log(std::sqrt(3.) * grid->max());
@@ -248,17 +248,17 @@ int run(int argc, char *argv[])
 
     auto const endTime = std::chrono::high_resolution_clock::now();
     std::cout.precision(4);
-    std::cout << "Initialization time:\t" << std::chrono::duration_cast<std::chrono::milliseconds>(startTime - initTime).count() * 0.001 << "s\n"
-              << "Computation time:\t" << std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count() * 0.001 << "s" << std::endl;
+    std::cout << "Initialization time:\t" << static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(startTime - initTime).count()) * 0.001 << "s\n"
+              << "Computation time:\t" << static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count()) * 0.001 << "s" << std::endl;
 
     {
         std::ofstream timefile("time.txt");
         timefile.precision(4);
 
         timefile << "Initialization time:    "
-                 << std::chrono::duration_cast<std::chrono::milliseconds>(startTime - initTime).count() * 0.001 << "s\n"
+                 << static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(startTime - initTime).count()) * 0.001 << "s\n"
                  << "Computation time:       "
-                 << std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count() * 0.001 << "s"
+                 << static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count()) * 0.001 << "s"
                  << std::endl;
 
         timefile.close();

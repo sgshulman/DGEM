@@ -18,7 +18,7 @@ namespace
     double integrate(Directions const& directions, std::int32_t const l, std::int32_t const m)
     {
         double result{};
-        double const w = 4 * PI / directions.number();
+        double const w = 4 * PI / static_cast<double>(directions.number());
 
         for (std::uint64_t i=0; i!=directions.number(); ++i)
         {

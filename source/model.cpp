@@ -796,7 +796,7 @@ namespace
             opticalDepth += grid->findRealOpticalDepth(Vector3d{0, 0, 0}, directions.direction(i));
         }
 
-        opticalDepth /= directions.number();
+        opticalDepth /= static_cast<double>(directions.number());
         std::cout << "MeanOpticalDepth: " << opticalDepth << std::endl;
     }
 } // namespace

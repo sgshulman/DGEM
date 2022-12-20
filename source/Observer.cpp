@@ -29,7 +29,7 @@ namespace
     {
         for (std::uint64_t i=0; i!=3*nx*ny; ++i)
         {
-            f[i] /= numPhotons;
+            f[i] /= static_cast<double>(numPhotons);
         }
     }
 
@@ -244,8 +244,8 @@ void Observer::bin(Photon const& photon)
             photon,
             xl,
             yl,
-            photon.nscat() != 0 && std::abs(imagePosShifted.x() - xl * pixelSize_.x()) < eps,
-            photon.nscat() != 0 && std::abs(imagePosShifted.y() - yl * pixelSize_.y()) < eps,
+            photon.nscat() != 0 && std::abs(imagePosShifted.x() - static_cast<double>(xl) * pixelSize_.x()) < eps,
+            photon.nscat() != 0 && std::abs(imagePosShifted.y() - static_cast<double>(yl) * pixelSize_.y()) < eps,
             1.0);
     }
 }
@@ -341,8 +341,8 @@ inline void Observer::binLine(Photon const& photon, const Vector2d &pos1, const 
             photon,
             xl2,
             yl2,
-            std::abs(pos2.x() - pos1.x()) < eps && std::abs(pos2.x() - xl2 * pixelSize_.x()) < eps,
-            std::abs(pos2.y() - pos1.y()) < eps && std::abs(pos2.y() - yl2 * pixelSize_.y()) < eps,
+            std::abs(pos2.x() - pos1.x()) < eps && std::abs(pos2.x() - static_cast<double>(xl2) * pixelSize_.x()) < eps,
+            std::abs(pos2.y() - pos1.y()) < eps && std::abs(pos2.y() - static_cast<double>(yl2) * pixelSize_.y()) < eps,
             weight);
 
         return;
@@ -385,7 +385,7 @@ inline void Observer::binLine(Photon const& photon, const Vector2d &pos1, const 
                 borderX,
                 borderY,
                 false,
-                dy < eps && std::fabs(y - borderY * pixelSize_.y()) < eps,
+                dy < eps && std::fabs(y - static_cast<double>(borderY) * pixelSize_.y()) < eps,
                 weight * w / totalW);
 
             borderX += xDir;
@@ -402,7 +402,7 @@ inline void Observer::binLine(Photon const& photon, const Vector2d &pos1, const 
                 photon,
                 borderX,
                 borderY,
-                dx < eps && std::fabs(x - borderX * pixelSize_.x()) < eps,
+                dx < eps && std::fabs(x - static_cast<double>(borderX) * pixelSize_.x()) < eps,
                 false,
                 weight * w / totalW);
 

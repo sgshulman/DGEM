@@ -87,7 +87,7 @@ void Photon::Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std:
             double tauold = 0.0, tau = 0.0;
 
             // Loop over scattering dots
-            for (std::uint64_t s=0; s!=m.NumOfSecondaryScatterings(); ++s)
+            for (std::uint32_t s=0; s!=m.NumOfSecondaryScatterings(); ++s)
             {
                 Photon ph(spos, sCellId, ph0.dir(), ph0.weight()*w, nscat_+1, ph0.fi(), ph0.fq(), ph0.fu(), ph0.fv() );
                 // Force photon to scatter at optical depth tau before edge of grid

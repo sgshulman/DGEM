@@ -54,7 +54,7 @@ Photon Sources::emitRandomPhoton(IGridCRef grid, IRandomGenerator* ran)
             : currentSource_ - pointSources_.size() < sphereSources_.size()
             ? sphereSources_[currentSource_ - pointSources_.size()].luminosity() : 0;
 
-        photonsNumber_ = (std::uint64_t) (parameters_.num_photons_ * nextLuminosity / totlum_);
+        photonsNumber_ = (std::uint64_t) (static_cast<double>(parameters_.num_photons_) * nextLuminosity / totlum_);
     }
 
     if (sourceId < pointSources_.size())
@@ -151,7 +151,7 @@ Photon Sources::emitDgemPhoton(IGridCRef grid)
             pointPosition_,
             pointCellId_,
             sphereDir_.direction(sphPhotonId),
-            sphereDir_.w(sphPhotonId) * sphereSources_[sphereSourceId].luminosity() / totlum_ * cosTheta * cosTheta / cosineSum * localD,
+            sphereDir_.w(sphPhotonId) * sphereSources_[sphereSourceId].luminosity() / totlum_ * cosTheta * cosTheta / cosineSum * static_cast<double>(localD),
             1};
     }
 
@@ -159,7 +159,7 @@ Photon Sources::emitDgemPhoton(IGridCRef grid)
         pointPosition2_,
         pointCellId2_,
         sphereDir_.direction(sphPhotonId),
-        sphereDir_.w(sphPhotonId) * sphereSources_[sphereSourceId].luminosity() / totlum_ * cosTheta * cosTheta / cosineSum * localD,
+        sphereDir_.w(sphPhotonId) * sphereSources_[sphereSourceId].luminosity() / totlum_ * cosTheta * cosTheta / cosineSum * static_cast<double>(localD),
         1};
 }
 
@@ -170,7 +170,7 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
     // W=ph*exp(-tau1)/4pi
     for (std::uint64_t is=0; is!=pointSources_.size(); ++is)
     {
-        auto const nph = std::uint64_t(parameters_.num_photons_ * pointSources_[is].luminosity() / totlum_);
+        auto const nph = static_cast<double>(parameters_.num_photons_) * pointSources_[is].luminosity() / totlum_;
 
         for (std::uint64_t io=0; io!=observers->size(); ++io)
         {
@@ -197,7 +197,7 @@ void Sources::directPhotons(IGridCRef grid, std::vector<Observer>* observers)
     // weight photons by W=ph*exp(-tau1)/2pi/number_of_directions
     for (std::uint64_t is=0; is!=sphereSources_.size(); ++is)
     {
-        auto const nph = std::uint64_t(parameters_.num_photons_ * sphereSources_[is].luminosity() / totlum_);
+        auto const nph = static_cast<double>(parameters_.num_photons_) * sphereSources_[is].luminosity() / totlum_;
 
         for (std::uint64_t io = 0; io != observers->size(); ++io)
         {
