@@ -109,7 +109,10 @@ void Photon::Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std:
                         grid->peeloff(ph, observer, m.dust());
                     }
 
-                    if (ph.nscat() < m.nscat() ) ph.Scatt( m, dirs, grid, observers, ran);
+                    if (ph.nscat() < m.nscat())
+                    {
+                        ph.Scatt( m, dirs, grid, observers, ran);
+                    }
                 }
             }
         }
@@ -161,7 +164,11 @@ void Photon::Stokes(IDustCRef dust, Direction3d const &dir, double calpha, bool 
     if (fDir)
     {
         double ophi = dir.phi();
-        if (ophi > PI) ophi -= 2*PI;
+        if (ophi > PI)
+        {
+            ophi -= 2*PI;
+        }
+
         double cosi1 = (dir.cosTheta()-dir_.cosTheta()*cosTh)/(dir_.sinTheta()*sinTh);
         double sini1 = sin(dir_.phi()-ophi-PI)*dir.sinTheta()/sinTh;
         ri1 = atan2(sini1, cosi1)+PI;
@@ -181,7 +188,11 @@ void Photon::Stokes(IDustCRef dust, Direction3d const &dir, double calpha, bool 
         a12=p2*cos2i3;
         a13=p2*sin2i3;
 
-        if(cosTh == 1.0) return;
+        if(cosTh == 1.0)
+        {
+            return;
+        }
+
         if(cosTh ==-1.0)
         {
             fu_=-fu_;
@@ -208,9 +219,7 @@ void Photon::Stokes(IDustCRef dust, Direction3d const &dir, double calpha, bool 
         if (!fDir)
         {
              double cosdph=-cosi2*cosi3+sini2*sini3*cosTh;
-             if(cosdph > 1.0) cosdph=1.0;
-             if(cosdph <-1.0) cosdph=-1.0;
-
+             cosdph = clamp(cosdph, -1.0, 1.0);
              phi = normAngle(phip + acos(cosdph));
         }
         double sin2i2=2.0*sini2*cosi2;
@@ -240,7 +249,10 @@ void Photon::Stokes(IDustCRef dust, Direction3d const &dir, double calpha, bool 
         a12=p2*cos2i1;
         a13=-p2*sin2i1;
 
-        if(cosTh == 1.0) return;
+        if(cosTh == 1.0)
+        {
+            return;
+        }
         if(cosTh ==-1.0)
         {
             fu_=-fu_;
@@ -267,9 +279,7 @@ void Photon::Stokes(IDustCRef dust, Direction3d const &dir, double calpha, bool 
         if( !fDir )
         {
             double cosdph=-cosi1*cosi2+sini1*sini2*cosTh;
-            if( cosdph > 1.0 ) cosdph= 1.0;
-            if( cosdph <-1.0 ) cosdph=-1.0;
-
+            cosdph = clamp(cosdph, -1.0, 1.0);
             phi = normAngle(phip - acos(cosdph));
         }
         double sin2i2=2.0*sini2*cosi2;

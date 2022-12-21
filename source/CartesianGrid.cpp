@@ -50,7 +50,9 @@ CartesianGrid::CartesianGrid(
                 std::uint64_t const idx = cntx+cnty*nx+cntz*ny*nx;
                 rhokappa_[idx] = matter_->density({x, y, z}) * kappa * AU_Cm; // rho*kappa*R,
                 if (minrho_ > rhokappa_[idx] && rhokappa_[idx] > 0)
+                {
                     minrho_ = rhokappa_[idx];
+                }
             }
         }
     }

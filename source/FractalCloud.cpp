@@ -76,16 +76,34 @@ FractalCloud::FractalCloud(
     for (std::uint64_t i = 0; i != dotsN4; ++i)
     {
         double x = dots3[i].x();
-        while (x < -max_) x += l;
-        while (x >  max_) x -= l;
+        while (x < -max_)
+        {
+            x += l;
+        }
+        while (x > max_)
+        {
+            x -= l;
+        }
 
         double y = dots3[i].y();
-        while (y < -max_) y += l;
-        while (y >  max_) y -= l;
+        while (y < -max_)
+        {
+            y += l;
+        }
+        while (y > max_)
+        {
+            y -= l;
+        }
 
         double z = dots3[i].z();
-        while (z < -max_) z += l;
-        while (z >  max_) z -= l;
+        while (z < -max_)
+        {
+            z += l;
+        }
+        while (z > max_)
+        {
+            z -= l;
+        }
 
         auto const cntx = std::uint32_t((x + max_)/(2*max_)*n_);
         auto const cnty = std::uint32_t((y + max_)/(2*max_)*n_);

@@ -8,9 +8,7 @@ void WhiteDust::scatteringMatrixElements(
     // Calculate the elements of the phase matrix for a
     // simple representation of the mrn dust mixture using the algorithms
     // for the ultraviolet region due to Richard L. White Ap.J. 229, 954, 1979.
-    if(cosTheta >= 1.0) cosTheta = 1.0;
-    if(cosTheta <=-1.0) cosTheta =-1.0;
-
+    cosTheta = clamp(cosTheta, -1.0, 1.0);
     double const cos2Theta = cosTheta * cosTheta;
 
     p1 = (1. - hgg2_) / std::pow(1. + hgg2_ - 2. * hgg_ * cosTheta, 1.5);

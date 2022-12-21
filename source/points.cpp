@@ -132,7 +132,10 @@ int run(int argc, char *argv[])
                         grid->peeloff(ph, observer, model.dust());
                     }
 
-                    if (ph.nscat() < model.nscat()) ph.Scatt(model, sdir, grid, observers, ran);
+                    if (ph.nscat() < model.nscat())
+                    {
+                        ph.Scatt(model, sdir, grid, observers, ran);
+                    }
                     ran->Skip();
                 }
             }
@@ -209,7 +212,10 @@ int run(int argc, char *argv[])
                                 ;
                         }
 
-                        if (ph.nscat() < model.nscat()) ph.Scatt(model, sdir, grid, observers, ran);
+                        if (ph.nscat() < model.nscat())
+                        {
+                            ph.Scatt(model, sdir, grid, observers, ran);
+                        }
                     }
                     ran->Skip();
                     oldR = r;

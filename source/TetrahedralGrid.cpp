@@ -140,7 +140,10 @@ public:
         double const t4 = timeToPlane(dot1.pos(), dot2.pos(), dot3.pos(), ph, d1*d2*d3);
 
         std::pair<double, std::uint32_t> d = (t1 < t2) ? std::make_pair(t1, neighbor1) : std::make_pair(t2, neighbor2);
-        if (d.first > t3) d = std::make_pair(t3, neighbor3);
+        if (d.first > t3)
+        {
+            d = std::make_pair(t3, neighbor3);
+        }
         return (d.first < t4) ? d : std::make_pair(t4, neighbor4);
     }
 
@@ -519,7 +522,10 @@ double TetrahedralGrid::rhoInDot(const Vector3d& dot, const Tetrahedron& el) con
 // NEED TO BE REDONE
 double TetrahedralGrid::findOpticalDepth(Photon ph) const
 {
-    if (ph.cellId() >= elements_.size()) return 0.0;
+    if (ph.cellId() >= elements_.size())
+    {
+        return 0.0;
+    }
     double taurun=0.0;
 
     while (inside_inner(ph.cellId()))
@@ -548,7 +554,10 @@ double TetrahedralGrid::findOpticalDepth(Photon ph) const
 
 double TetrahedralGrid::movePhotonAtDistance(Photon &ph, double distance) const
 {
-    if (ph.cellId() >= elements_.size()) return 0.0;
+    if (ph.cellId() >= elements_.size())
+    {
+        return 0.0;
+    }
     double taurun=0.0, d=0.0;
 
     // integrate through grid
@@ -592,7 +601,10 @@ double TetrahedralGrid::movePhotonAtDistance(Photon &ph, double distance) const
 
 bool TetrahedralGrid::movePhotonAtDepth(Photon& ph, double tau, double tauold) const
 {
-    if (ph.cellId() >= elements_.size()) return 1;
+    if (ph.cellId() >= elements_.size())
+    {
+        return 1;
+    }
     double taurun=tauold, taucell, d=0.0;
     double const smax = maxDistance(ph);
 
@@ -640,8 +652,8 @@ bool TetrahedralGrid::movePhotonAtDepth(Photon& ph, double tau, double tauold) c
             ph.Move(dcell.first, dcell.second);
         }
     }
-    if((d>=(0.999*smax))) return 0;
-    return 1;
+
+    return d < 0.999*smax;
 }
 
 

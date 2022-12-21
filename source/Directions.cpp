@@ -433,8 +433,15 @@ void Directions::isolatitudeGrid3Nested(std::uint32_t Nphi, std::uint32_t const 
 
         std::int64_t j = (F2 * r + h + s) / 2;
 
-        if (j > Nphi * Nside) j -= Nphi * Nside;
-        if (j < 1) j += Nphi * Nside;
+        if (j > Nphi * Nside)
+        {
+            j -= Nphi * Nside;
+        }
+
+        if (j < 1)
+        {
+            j += Nphi * Nside;
+        }
 
         points_[id] = Vector3d((static_cast<double>(j) - 0.5 * static_cast<double>(s)) * 2 * PI / static_cast<double>(Nphi * r), std::acos(z));
     }
@@ -539,8 +546,15 @@ void Directions::isolatitudeGrid2Nested(std::uint32_t Nphi, std::uint32_t const 
 
         std::int64_t j = (F2 * r + h + s) / 2;
 
-        if (j > Nphi * Nside) j -= Nphi * Nside;
-        if (j < 1) j += Nphi * Nside;
+        if (j > Nphi * Nside)
+        {
+            j -= Nphi * Nside;
+        }
+
+        if (j < 1)
+        {
+            j += Nphi * Nside;
+        }
 
         points_[id] = Vector3d((static_cast<double>(j) - 0.5 * static_cast<double>(s)) * 2 * PI / static_cast<double>(Nphi * r), std::acos(z));
     }

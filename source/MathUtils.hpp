@@ -21,4 +21,17 @@ inline double normAngle(const double radians)
     return radians - 2. * PI * shift;
 }
 
+inline double clamp(double value, double lower, double high)
+{
+    if (value < lower)
+    {
+        return lower;
+    }
+    if (value > high)
+    {
+        return high;
+    }
+    return value;
+}
+
 #endif

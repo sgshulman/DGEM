@@ -79,21 +79,41 @@ double LEcuyer::Get()
         {
             k = iseed_ / IQ1;
             iseed_ = IA1 * (iseed_ - k * IQ1) - k * IR1;
-            if (iseed_ < 0) iseed_ = iseed_ + IM1;
-            if (j < NTAB) iv_[j] = iseed_;
+            if (iseed_ < 0)
+            {
+                iseed_ = iseed_ + IM1;
+            }
+            if (j < NTAB)
+            {
+                iv_[j] = iseed_;
+            }
         }
         iy_ = iv_[0];
     }
     k = iseed_ / IQ1;
     iseed_ = IA1 * (iseed_ - k * IQ1) - k * IR1;
-    if (iseed_ < 0) iseed_ = iseed_ + IM1;
+
+    if (iseed_ < 0)
+    {
+        iseed_ = iseed_ + IM1;
+    }
+
     k = idum2_ / IQ2;
     idum2_ = IA2 * (idum2_ - k * IQ2) - k * IR2;
-    if (idum2_ < 0) idum2_ = idum2_ + IM2;
+
+    if (idum2_ < 0)
+    {
+        idum2_ = idum2_ + IM2;
+    }
+
     j = iy_ / NDIV;
     iy_ = iv_[j] - idum2_;
     iv_[j] = iseed_;
-    if(iy_ < 1) iy_ = iy_ + IMM1;
+
+    if(iy_ < 1)
+    {
+        iy_ = iy_ + IMM1;
+    }
 
     return (AM * iy_ < RNMX) ? AM * iy_ : RNMX;
 }
