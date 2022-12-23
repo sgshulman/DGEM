@@ -603,8 +603,9 @@ bool TetrahedralGrid::movePhotonAtDepth(Photon& ph, double tau, double tauold) c
 {
     if (ph.cellId() >= elements_.size())
     {
-        return 1;
+        return false;
     }
+
     double taurun=tauold, taucell, d=0.0;
     double const smax = maxDistance(ph);
 

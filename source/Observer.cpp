@@ -235,8 +235,8 @@ void Observer::bin(Photon const& photon)
         Vector2d const imagePosShifted = imagePos + Vector2d{rImage_, rImage_};
         double const x = nx_ * imagePosShifted.x() * rImageRev_;
         double const y = ny_ * imagePosShifted.y() * rImageRev_;
-        auto const xl = static_cast<std::int64_t>(x) - (x < 0.0);
-        auto const yl = static_cast<std::int64_t>(y) - (y < 0.0);
+        auto const xl = static_cast<std::int64_t>(x) - static_cast<std::int64_t>(x < 0.0);
+        auto const yl = static_cast<std::int64_t>(y) - static_cast<std::int64_t>(y < 0.0);
 
         double const eps = std::numeric_limits<float>::epsilon();
 
@@ -325,13 +325,13 @@ inline void Observer::binLine(Photon const& photon, const Vector2d &pos1, const 
 {
     double const x1 = nx_ * pos1.x() * rImageRev_;
     double const y1 = ny_ * pos1.y() * rImageRev_;
-    auto const xl1 = static_cast<std::int64_t>(x1) - (x1 < 0.0);
-    auto const yl1 = static_cast<std::int64_t>(y1) - (y1 < 0.0);
+    auto const xl1 = static_cast<std::int64_t>(x1) - static_cast<std::int64_t>(x1 < 0.0);
+    auto const yl1 = static_cast<std::int64_t>(y1) - static_cast<std::int64_t>(y1 < 0.0);
 
     double const x2 = nx_ * pos2.x() * rImageRev_;
     double const y2 = ny_ * pos2.y() * rImageRev_;
-    auto const xl2 = static_cast<std::int64_t>(x2) - (x2 < 0.0);
-    auto const yl2 = static_cast<std::int64_t>(y2) - (y2 < 0.0);
+    auto const xl2 = static_cast<std::int64_t>(x2) - static_cast<std::int64_t>(x2 < 0.0);
+    auto const yl2 = static_cast<std::int64_t>(y2) - static_cast<std::int64_t>(y2 < 0.0);
 
     double const eps = std::numeric_limits<float>::epsilon();
 

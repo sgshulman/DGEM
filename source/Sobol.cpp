@@ -11,7 +11,7 @@ namespace
        assert(i > 0);
 
        unsigned int index = 0;
-       while (i)
+       while (i != 0U)
        {
           ++index;
           i >>= 1U;
@@ -26,7 +26,7 @@ namespace
         if (i > 0)
         {
             std::uint64_t value = i-1;
-            while (value & 1U)
+            while ((value & 1U) != 0U)
             {
                 value >>= 1U;
                 ++index;

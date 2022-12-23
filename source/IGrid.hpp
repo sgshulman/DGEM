@@ -16,7 +16,7 @@ class IGrid
         virtual double findRealOpticalDepth(Vector3d const& position, Vector3d const& direction) const = 0;
         virtual double findOpticalDepth(Photon ph) const = 0;
         virtual double movePhotonAtDistance(Photon& ph, double distance) const = 0;
-        // Returns in photon is inside grid
+        // Returns if photon is inside grid
         virtual bool movePhotonAtDepth(Photon& ph, double tau, double tauold) const = 0;
         virtual bool movePhotonAtRandomDepth(Photon& ph, IRandomGenerator *ran) const = 0;
 

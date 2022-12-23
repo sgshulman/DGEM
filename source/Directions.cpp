@@ -230,7 +230,7 @@ namespace
                 // search for ready midpoint
                 PointWithNeighbors *midpoint = triangles_[triangleId].readyMeadpoint(i, j);
 
-                if (!midpoint)
+                if (midpoint == nullptr)
                 {
                     nodes_[readyPoints_].setMiddle(triangles_[triangleId][i], triangles_[triangleId][j]);
                     midpoint = &(nodes_[readyPoints_]);

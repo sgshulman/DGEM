@@ -127,7 +127,7 @@ SafierWind::SafierWind(
     DATA_ASSERT(rMax > 0., "rMax (outer radius of the wind formation region) must be positive.");
     DATA_ASSERT(rMax > rMin, "rMax (outer radius) must be greater than rMin (inner radius of the wind formation region).");
 
-    if (model_)
+    if (model_ != nullptr)
     {
         rho0_ = rho0(model_, mOut, mStar, h0, rMax / rMin);
     }

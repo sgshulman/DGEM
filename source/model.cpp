@@ -899,7 +899,7 @@ IRandomGenerator* Model::createRandomGenerator() const
         {
             rand = new Sobol(3);
         } else {
-            rand = new Sobol(3 * (nscat_ - 1 + fMonteCarlo_) );
+            rand = new Sobol(3 * (nscat_ + static_cast<std::uint32_t>(fMonteCarlo_) - 1));
         }
     }
 

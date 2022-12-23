@@ -28,12 +28,12 @@ namespace
 
         bool movePhotonAtDepth(Photon& /*ph*/, double /*tau*/, double /*tauold*/) const override
         {
-            return 0;
+            return true;
         }
 
         bool movePhotonAtRandomDepth(Photon& /*ph*/, IRandomGenerator */*ran*/) const override
         {
-            return 0;
+            return true;
         }
 
         void peeloff(Photon /*ph*/, Observer& /*observer*/, IDustCRef /*dust*/) const override
