@@ -137,7 +137,7 @@ namespace
 
             Vector3d* points() const
             {
-                auto points = new Vector3d[ directionsNumber_ ];
+                auto *points = new Vector3d[ directionsNumber_ ];
 
                 for (std::uint64_t cnt=0; cnt<directionsNumber_; ++cnt)
                 {
@@ -149,7 +149,7 @@ namespace
 
             double* weights() const
             {
-                auto weights = new double[ directionsNumber_ ];
+                auto *weights = new double[ directionsNumber_ ];
 
                 for (std::uint64_t cnt=0; cnt<directionsNumber_; ++cnt)
                 {
@@ -242,7 +242,7 @@ namespace
 
             void splitMesh()
             {
-                auto newTriangles = new SphericalTriangle[directionsNumber_ * 4]{};
+                auto *newTriangles = new SphericalTriangle[directionsNumber_ * 4]{};
 
                 for(std::uint64_t cnt = 0; cnt < directionsNumber_; ++cnt)
                 {
