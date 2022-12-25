@@ -12,9 +12,7 @@ namespace
     class PointWithNeighbors
     {
         public:
-            PointWithNeighbors()
-                : pos_{}
-            {};
+            PointWithNeighbors() = default;
 
             void set(Vector3d const& position)
             {

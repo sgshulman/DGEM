@@ -62,7 +62,7 @@ set(SOURCES
 
 if (DEFINED CLANG_TIDY_VERSION)
     message("CLANG_TIDY ENABLED: ${CLANG_TIDY_VERSION}")
-    set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_VERSION};-warnings-as-errors=*;-checks=llvm-namespace-comment,google-runtime-int,readability-uppercase-literal-suffix,hicpp-signed-bitwise,hicpp-braces-around-statements,bugprone-narrowing-conversions,readability-implicit-bool-conversion")
+    set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_VERSION};-warnings-as-errors=*;-checks=llvm-namespace-comment,google-runtime-int,readability-uppercase-literal-suffix,hicpp-signed-bitwise,hicpp-braces-around-statements,bugprone-narrowing-conversions,readability-implicit-bool-conversion,readability-redundant-member-init")
 endif()
 
 add_executable(dgem points.cpp ${SOURCES})
