@@ -47,7 +47,7 @@ private:
     constexpr static std::uint32_t NUM_OF_RESULTS{ 5 };
 
     double* result_{ nullptr };
-    double* results_[NUM_OF_RESULTS];
+    double* results_[NUM_OF_RESULTS]{ nullptr };
     Direction3d direction_;
     std::uint32_t nx_, ny_;
     double rImage_, rImageRev_;
