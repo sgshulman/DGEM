@@ -135,6 +135,12 @@ namespace
                 delete[] triangles_;
             }
 
+            IcosahedronMesh(IcosahedronMesh const& other) = delete;
+            IcosahedronMesh(IcosahedronMesh&& other) = delete;
+
+            IcosahedronMesh& operator=(IcosahedronMesh const& other) = delete;
+            IcosahedronMesh& operator=(IcosahedronMesh&& other) = delete;
+
             Vector3d* points() const
             {
                 auto *points = new Vector3d[ directionsNumber_ ];

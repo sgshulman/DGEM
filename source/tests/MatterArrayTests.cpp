@@ -12,6 +12,11 @@ namespace
 
             ~MatterStub() override = default;
 
+            MatterStub(MatterStub const& other) = delete;
+            MatterStub(MatterStub&& other) = delete;
+            MatterStub& operator=(MatterStub const& other) = delete;
+            MatterStub& operator=(MatterStub&& other) = delete;
+
             double density(Vector3d const& /*position*/) const override
             {
                 return rho_;
