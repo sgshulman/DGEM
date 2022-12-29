@@ -23,6 +23,7 @@ CartesianGrid::CartesianGrid(
     , ny_{ ny }
     , nz_{ nz }
     , maxCellId_{ (static_cast<std::uint64_t>(nx_) | (static_cast<std::uint64_t>(ny_) << 20U) | (static_cast<std::uint64_t>(nz_) << 40U)) }
+    , rhokappa_{ new double[nx_ * ny_ * nz_] }
     , xmax_{ xmax }
     , ymax_{ ymax }
     , zmax_{ zmax }
@@ -32,12 +33,10 @@ CartesianGrid::CartesianGrid(
     , xCellSizeInv_{ 1. / xCellSize_ }
     , yCellSizeInv_{ 1. / yCellSize_ }
     , zCellSizeInv_{ 1. / zCellSize_ }
+    , minrho_{ 1e+38 }
     , kappa_{ kappa }
     , matter_{ std::move(matter) }
 {
-    rhokappa_ = new double[nx_ * ny_ * nz_];
-    minrho_ = 1e+38;
-
     for (std::uint32_t cntx=0; cntx!=nx_; ++cntx)
     {
         double const x = (cntx*2.0+1) * xmax_/nx_ - xmax_;

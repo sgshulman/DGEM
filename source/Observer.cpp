@@ -144,7 +144,8 @@ Observer::Observer(
 
 
 Observer::Observer(Observer && other) noexcept
-    : direction_{other.direction_}
+    : result_{ other.result_ }
+    , direction_{ other.direction_ }
     , nx_{ other.nx_ }
     , ny_{ other.ny_ }
     , rImage_{ other.rImage_ }
@@ -156,7 +157,6 @@ Observer::Observer(Observer && other) noexcept
     , sinp_{ other.sinp_ }
     , numberOfResults_{ other.numberOfResults_ }
 {
-    result_ = other.result_;
     other.result_ = nullptr;
 
     for (std::uint32_t i=0; i!=numberOfResults_; ++i)
