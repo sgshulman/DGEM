@@ -8,7 +8,7 @@
 
 // The dust with Mie theory scatterings.
 // P1, P2, P3, P4, I, I/I0, and Pol are tabulated for different scattering angles
-class MieDust: public IDust
+class MieDust final: public IDust
 {
 public:
     MieDust(double albedo, std::string const& tableFile);

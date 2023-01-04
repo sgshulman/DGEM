@@ -4,7 +4,7 @@
 #include "IMatter.hpp"
 #include "Predefines.hpp"
 
-class FlaredDisk : public IMatter
+class FlaredDisk final: public IMatter
 {
     public:
         FlaredDisk(

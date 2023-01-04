@@ -7,7 +7,7 @@
 #include <string>
 
 // Tetrahedral Grid
-class TetrahedralGrid : public IGrid
+class TetrahedralGrid final: public IGrid
 {
 public:
     TetrahedralGrid(

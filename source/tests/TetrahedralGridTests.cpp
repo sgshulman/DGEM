@@ -10,7 +10,7 @@
 namespace
 {
     // d = d0 + a * |x| + b * |y| + c * |y|
-    class PolynomialMatter : public IMatter
+    class PolynomialMatter final: public IMatter
     {
     public:
         PolynomialMatter(double d0, double a, double b, double c)

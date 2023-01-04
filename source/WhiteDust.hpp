@@ -5,7 +5,7 @@
 
 // The dust with Henyey and Greenstein (1941) phase function and
 // White (1979) approximation for polarization functions.
-class WhiteDust: public IDust
+class WhiteDust final: public IDust
 {
 public:
     WhiteDust(

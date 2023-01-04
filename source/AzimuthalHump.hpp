@@ -3,7 +3,7 @@
 
 #include "IDiskHump.hpp"
 
-class AzimuthalHump : public IDiskHump
+class AzimuthalHump final: public IDiskHump
 {
 public:
     AzimuthalHump(double h, double r, double sigma2, double sigma2azimuthalForward, double sigma2azimuthalBackward);

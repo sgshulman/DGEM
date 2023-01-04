@@ -8,7 +8,7 @@
 
 namespace
 {
-    class TestGrid : public IGrid
+    class TestGrid final: public IGrid
     {
         double findRealOpticalDepth(Vector3d const& /*position*/, Vector3d const& /*direction*/) const override
         {

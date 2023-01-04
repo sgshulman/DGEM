@@ -7,7 +7,7 @@
 #include <memory>
 
 // Cartesian grid
-class CartesianGrid : public IGrid
+class CartesianGrid final: public IGrid
 {
     public:
         CartesianGrid(double xmax, double ymax, double zmax, double kappa,

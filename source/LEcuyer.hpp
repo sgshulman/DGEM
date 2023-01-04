@@ -7,7 +7,7 @@
 
 // Random number generator
 // L’Ecuyer, P. 1988, Communications of the ACM, vol. 31, pp. 742,774.
-class LEcuyer : public IRandomGenerator
+class LEcuyer final: public IRandomGenerator
 {
 public:
     explicit LEcuyer(std::int32_t iseed);

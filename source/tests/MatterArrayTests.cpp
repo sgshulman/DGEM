@@ -3,7 +3,7 @@
 
 namespace
 {
-    class MatterStub : public IMatter
+    class MatterStub final: public IMatter
     {
         public:
             explicit MatterStub(double rho)

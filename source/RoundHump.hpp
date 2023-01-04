@@ -3,7 +3,7 @@
 
 #include "IDiskHump.hpp"
 
-class RoundHump : public IDiskHump
+class RoundHump final: public IDiskHump
 {
 public:
     RoundHump(double h, double r, double sigma2);

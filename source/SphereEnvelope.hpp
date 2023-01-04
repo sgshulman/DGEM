@@ -4,7 +4,7 @@
 #include "IMatter.hpp"
 #include "Predefines.hpp"
 
-class SphereEnvelope : public IMatter
+class SphereEnvelope final: public IMatter
 {
     public:
         SphereEnvelope(

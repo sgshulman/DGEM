@@ -7,7 +7,7 @@
 
 #include "IRandomGenerator.hpp"
 
-class Sobol : public IRandomGenerator
+class Sobol final: public IRandomGenerator
 {
 public:
     Sobol(unsigned dimension);

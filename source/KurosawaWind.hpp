@@ -3,7 +3,7 @@
 
 #include "IMatter.hpp"
 
-class KurosawaWind : public IMatter
+class KurosawaWind final: public IMatter
 {
 public:
     KurosawaWind(

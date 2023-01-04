@@ -6,7 +6,7 @@
 
 struct SafierWindModel;
 
-class SafierWind : public IMatter
+class SafierWind final: public IMatter
 {
 public:
     SafierWind(char model, double mOut, double mStar, double h0, double rMin, double rMax, IDiskHumpCPtr hump);

@@ -5,7 +5,7 @@
 #include "IMatter.hpp"
 #include "Predefines.hpp"
 
-class MatterArray : public IMatter
+class MatterArray final: public IMatter
 {
 public:
     using AccumulatorType = double (*)(double, double);
