@@ -287,8 +287,8 @@ namespace
         std::uint64_t const squareId4 = (squareId3 & 0xFF0000FFFF0000FFU) | ((squareId3 & 0x00FF000000FF0000U) >> 8U) | ((squareId3 & 0x0000FF000000FF00U) << 8U);
         std::uint64_t const squareId5 = (squareId4 & 0xFFFF00000000FFFFU) | ((squareId4 & 0x0000FFFF00000000U) >>16U) | ((squareId4 & 0x00000000FFFF0000U) <<16U);
 
-        std::int64_t const x = static_cast<int64_t>(squareId5 & 0x00000000FFFFFFFFU);
-        std::int64_t const y = static_cast<int64_t>((squareId5 & 0xFFFFFFFF00000000U) >> 32U);
+        auto const x = static_cast<int64_t>(squareId5 & 0x00000000FFFFFFFFU);
+        auto const y = static_cast<int64_t>((squareId5 & 0xFFFFFFFF00000000U) >> 32U);
 
         return {x, y};
     }
@@ -414,8 +414,8 @@ void Directions::isolatitudeGrid3Nested(std::uint32_t Nphi, std::uint32_t const 
         std::int64_t const v = xy.first + xy.second;
         std::int64_t const h = xy.first - xy.second;
 
-        std::int64_t const F1 = static_cast<std::int64_t>(frow) + 2;
-        std::int64_t const F2 = static_cast<std::int64_t>(2 * (f % Nphi) - (frow % 2) + 1);
+        auto const F1 = static_cast<std::int64_t>(frow) + 2;
+        auto const F2 = static_cast<std::int64_t>(2 * (f % Nphi) - (frow % 2) + 1);
 
         std::int64_t i = F1 * Nside - v - 1;
         double z = 4.0 / 3.0 - 2.0 * static_cast<double>(i) / (3.0 * Nside);
@@ -527,8 +527,8 @@ void Directions::isolatitudeGrid2Nested(std::uint32_t Nphi, std::uint32_t const 
         std::int64_t const v = xy.first + xy.second;
         std::int64_t const h = xy.first - xy.second;
 
-        std::int64_t const F1 = static_cast<std::int64_t>(frow) + 2;
-        std::int64_t const F2 = static_cast<std::int64_t>(2 * (f % Nphi) - (frow % 2) + 1);
+        auto const F1 = static_cast<std::int64_t>(frow) + 2;
+        auto const F2 = static_cast<std::int64_t>(2 * (f % Nphi) - (frow % 2) + 1);
 
         std::int64_t i = F1 * Nside - v - 1;
         double z = 3.0 / 2 - static_cast<double>(i) / Nside;
