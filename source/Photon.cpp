@@ -97,22 +97,22 @@ void Photon::Scatt( Model const &m, Directions const &dirs, IGridCRef grid, std:
                 if( grid->movePhotonAtDepth(ph, tau, tauold) )
                 {
                     break;
-                } else {
-                    spos = ph.pos();
-                    sCellId = ph.cellId();
+                }
 
-                    // Photon scattering
-                    ph.weight() *= m.dust()->albedo();
+                spos = ph.pos();
+                sCellId = ph.cellId();
 
-                    for (Observer& observer : observers)
-                    {
-                        grid->peeloff(ph, observer, m.dust());
-                    }
+                // Photon scattering
+                ph.weight() *= m.dust()->albedo();
 
-                    if (ph.nscat() < m.nscat())
-                    {
-                        ph.Scatt( m, dirs, grid, observers, ran);
-                    }
+                for (Observer& observer : observers)
+                {
+                    grid->peeloff(ph, observer, m.dust());
+                }
+
+                if (ph.nscat() < m.nscat())
+                {
+                    ph.Scatt( m, dirs, grid, observers, ran);
                 }
             }
         }

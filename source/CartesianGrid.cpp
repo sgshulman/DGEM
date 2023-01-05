@@ -194,11 +194,10 @@ double CartesianGrid::movePhotonAtDistance(Photon &ph, double distance) const
             taurun += d1 * rhocell;
             ph.Move(d1, ph.cellId());
             break;
-        } else {
-            d += dcell;
-            taurun += dcell * rhocell;
-            ph.Move(dcell, newCellId);
         }
+        d += dcell;
+        taurun += dcell * rhocell;
+        ph.Move(dcell, newCellId);
     }
 
     return taurun;

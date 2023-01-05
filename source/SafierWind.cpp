@@ -46,17 +46,29 @@ namespace
         if (key == 'B')
         {
             return &modelB;
-        } else if (key == 'C') {
+        }
+        if (key == 'C')
+        {
             return &modelC;
-        } else if (key == 'D') {
+        }
+        if (key == 'D')
+        {
             return &modelD;
-        } else if (key == 'I') {
+        }
+        if (key == 'I')
+        {
             return &modelI;
-        } else if (key == 'E') {
+        }
+        if (key == 'E')
+        {
             return &modelE;
-        } else if (key == 'F') {
+        }
+        if (key == 'F')
+        {
             return &modelF;
-        } else if (key == 'G') {
+        }
+        if (key == 'G')
+        {
             return &modelG;
         }
 

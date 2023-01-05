@@ -9,7 +9,9 @@ namespace
         if (m == 0)
         {
             return std::sqrt((2*l + 1)/(4*PI)) * std::assoc_legendre(l, m, std::cos(theta));
-        } else if (m > 0) {
+        }
+        if (m > 0)
+        {
             return std::sqrt(2) * std::sph_legendre(l, m, theta) * std::cos(m * phi);
         }
         return std::sqrt(2) * std::sph_legendre(l, -m, theta) * std::sin(-m * phi);

@@ -589,11 +589,10 @@ double TetrahedralGrid::movePhotonAtDistance(Photon &ph, double distance) const
 
             ph.Move( d1, ph.cellId() );
             break;
-        } else {
-            d += dcell.first;
-            taurun += dcell.first * (rho1 + rho2) * 0.5;
-            ph.Move( dcell.first, dcell.second );
         }
+        d += dcell.first;
+        taurun += dcell.first * (rho1 + rho2) * 0.5;
+        ph.Move( dcell.first, dcell.second );
     }
     return taurun;
 }

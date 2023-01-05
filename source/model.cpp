@@ -297,7 +297,9 @@ namespace
                 get_double(jsonHump, roundHump, "h"),
                 get_double(jsonHump, roundHump, "r"),
                 get_double(jsonHump, roundHump, "sigma2"));
-        } else if (json.contains("azimuthalHump")) {
+        }
+
+        if (json.contains("azimuthalHump")) {
             nlohmann::json const& jsonHump = json.at(azimuthalHump);
             checkParameters(jsonHump, azimuthalHump, {"h", "r", "sigma2", "sigma2azimuthal", "sigma2azimuthalBackward"});
 
@@ -445,11 +447,20 @@ namespace
         if (json.contains(sFlaredDisk))
         {
             return parseFlaredDisk(json.at(sFlaredDisk));
-        } else if (json.contains(sSphereEnvelope)) {
+        }
+
+        if (json.contains(sSphereEnvelope))
+        {
             return parseSphereEnvelope(json.at(sSphereEnvelope));
-        } else if (json.contains(sFractalCloud)) {
+        }
+
+        if (json.contains(sFractalCloud))
+        {
             return parseFractalCloud(json.at(sFractalCloud));
-        } else if (json.contains("max")) {
+        }
+
+        if (json.contains("max"))
+        {
             nlohmann::json const& jsonList = json.at("max");
 
             DATA_ASSERT(
@@ -467,7 +478,10 @@ namespace
             return std::make_shared<MatterArray const>(
                 std::move(matterArray),
                 MatterArray::max);
-        } else if (json.contains("sum")) {
+        }
+
+        if (json.contains("sum"))
+        {
             nlohmann::json const& jsonList = json.at("sum");
 
             DATA_ASSERT(
@@ -527,7 +541,10 @@ namespace
         if (json.contains("white"))
         {
             return parseWhiteDust(json.at("white"));
-        } else if (json.contains("mie")) {
+        }
+
+        if (json.contains("mie"))
+        {
             return parseMieDust(json.at("mie"));
         }
 
@@ -591,7 +608,10 @@ namespace
         if (json.contains("cartesian"))
         {
             return parseCartesianGrid(json.at("cartesian"), kappa, std::move(matter));
-        } else if (json.contains("tetrahedral")) {
+        }
+
+        if (json.contains("tetrahedral"))
+        {
             return parseTetrahedralGrid(json.at("tetrahedral"), kappa, std::move(matter));
         }
 
