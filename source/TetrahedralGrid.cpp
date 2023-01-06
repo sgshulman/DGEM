@@ -38,7 +38,6 @@ class alignas(32) TetrahedralGrid::Node
 public:
     explicit Node(Vector3d v)
         : pos_(v)
-        , rhokappa_(0.0)
     {}
 
     void setRhoKappa(double rhokappa)
@@ -73,7 +72,7 @@ public:
 
 private:
     Vector3d pos_;
-    double rhokappa_;
+    double rhokappa_{ 0.0 };
 };
 
 

@@ -116,10 +116,7 @@ namespace
     {
         public:
             explicit IcosahedronMesh(std::uint32_t directionsLevels)
-                : directionsNumber_{ 0 }
-                , readyPoints_{ 0 }
-                , nodes_{ new PointWithNeighbors[nodesNumber(directionsLevels)]{} }
-                , triangles_{ nullptr }
+                : nodes_{ new PointWithNeighbors[nodesNumber(directionsLevels)]{} }
             {
                 buildInitialMesh();
 
@@ -273,10 +270,10 @@ namespace
                 directionsNumber_ *= 4;
             }
 
-            std::uint64_t directionsNumber_;
-            std::uint64_t readyPoints_;
+            std::uint64_t directionsNumber_{ 0 };
+            std::uint64_t readyPoints_{ 0 };
             PointWithNeighbors *nodes_;
-            SphericalTriangle *triangles_;
+            SphericalTriangle *triangles_{ nullptr };
     };
 
     std::pair<std::int64_t, std::int64_t> unpackNestedId(std::uint64_t squareId0)
