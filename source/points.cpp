@@ -12,14 +12,14 @@
 #include "Sources.hpp"
 
 
-int run(int argc, char *argv[])
+int run(const std::string& parametersFileName)
 {
     auto const initTime = std::chrono::high_resolution_clock::now();
 
     std::vector<Observer> observers;
 
     // read the model parameters
-    Model& model = Model::instance(&observers, argc == 2 ? argv[1] : "parameters.json");
+    Model& model = Model::instance(&observers, parametersFileName);
     IGridCPtr grid = model.grid();
     SourcesPtr sources = model.sources();
     IRandomGenerator* ran{ model.createRandomGenerator() };
@@ -278,7 +278,28 @@ int main(int argc, char *argv[])
 {
     try
     {
-        return run(argc, argv);
+        if (argc > 2)
+        {
+            std::cerr << argv[0] << " may use only 1 argument, but " << argc-1 << " were provided.\n"
+                << "Usage:\n" << argv[0] << " [-v | --version | PARAMETERS_FILE]" << std::endl;
+        }
+        else if (argc == 2)
+        {
+            std::string parameter = argv[1];
+            if (parameter == "-v" || parameter == "--version")
+            {
+                std::cout << "Version 0.4\n"
+                    << "    Fix clang-tidy warnings" << std::endl;
+            }
+            else
+            {
+                return run(parameter);
+            }
+        }
+        else
+        {
+            return run("parameters.json");
+        }
     }
     catch (std::exception const& ex) {
         std::cerr << "Terminated after throwing an exception:\n" << ex.what() << std::endl;
