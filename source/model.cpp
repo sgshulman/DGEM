@@ -123,6 +123,17 @@ namespace
     }
 
 
+    std::int32_t extract_int32(const nlohmann::json& json, char const* const section, char const* const name)
+    {
+        if (!json.is_number_integer())
+        {
+            throw std::invalid_argument(std::string("Item ") + name + " from section " + section + " should be integer.");
+        }
+
+        return json.get<std::int32_t>();
+    }
+
+
     std::int32_t get_int32(const nlohmann::json& json, char const* const section, char const* const name)
     {
         if (!json.contains(name))
@@ -130,13 +141,13 @@ namespace
             throw std::invalid_argument(std::string("Section ") + section + " should contain integer item " + name + ".");
         }
 
-        auto const& item = json.at(name);
-        if (!item.is_number_integer())
-        {
-            throw std::invalid_argument(std::string("Item ") + name + " from section " + section + " should be integer.");
-        }
+        return extract_int32(json.at(name), section, name);
+    }
 
-        return item.get<std::int32_t>();
+
+    std::int32_t get_optional_int32(const nlohmann::json& json, char const* section, char const* name, std::int32_t defaultValue)
+    {
+        return json.contains(name) ? extract_int32(json.at(name), section, name) : defaultValue;
     }
 
 
