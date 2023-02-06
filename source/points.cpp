@@ -11,6 +11,68 @@
 #include "Directions.hpp"
 #include "Sources.hpp"
 
+namespace
+{
+
+void processMonteCarloPhotons(
+    Model const& model,
+    std::vector<Observer>& observers,
+    IGridCRef grid,
+    SourcesRef sources,
+    IRandomGenerator *ran)
+{
+    for (;;)
+    {
+        Photon ph{ sources->emitRandomPhoton(grid, ran) };
+
+        if (ph.termination())
+        {
+            return;
+        }
+
+        // Find optical depth, tau1, to edge of grid
+        double tau1 = grid->findOpticalDepth(ph);
+        if (tau1 < model.taumin())
+        {
+            ran->Skip();
+            continue;
+        }
+        double w = 1.0 - std::exp(-tau1);
+        ph.weight() = w;
+
+        // Force photon to scatter at optical depth tau before edge of grid
+        double tau = -std::log(1.0 - ran->Get() * w);
+        // Find scattering location of tau
+        grid->movePhotonAtDepth(ph, tau, 0.0);
+
+        // Photon scatters inside grid until leaves it or the number
+        // of scatterings exceeds a set value (nscatt)
+        bool insideGrid = true;
+        while (insideGrid)
+        {
+            ph.weight() *= model.dust()->albedo();
+            // Do peeling off and project weighted photons into image
+            for (Observer &observer : observers)
+            {
+                grid->peeloff(ph, observer, model.dust());
+            }
+
+            if (ph.nscat() >= model.nscat())
+            {
+                break;
+            }
+
+            // Scatter photon into new direction and update Stokes parameters
+            ph.Stokes(model.dust(), Direction3d(), 0.0, false, ran);
+            ph.nscat() += 1;
+
+            // Find next scattering location
+            insideGrid = grid->movePhotonAtRandomDepth(ph, ran);
+        }
+        ran->Skip();
+    }
+}
+
 
 int run(const std::string& parametersFileName)
 {
@@ -32,56 +94,7 @@ int run(const std::string& parametersFileName)
     // Scattered photon loop
     if (model.fMonteCarlo())
     {
-        for (;;)
-        {
-            Photon ph{ sources->emitRandomPhoton(grid, ran) };
-
-            if (ph.termination())
-            {
-                break;
-            }
-
-            // Find optical depth, tau1, to edge of grid
-            double tau1 = grid->findOpticalDepth(ph);
-            if (tau1 < model.taumin())
-            {
-                ran->Skip();
-                continue;
-            }
-            double w = 1.0 - std::exp(-tau1);
-            ph.weight() = w;
-
-            // Force photon to scatter at optical depth tau before edge of grid
-            double tau = -std::log(1.0 - ran->Get() * w);
-            // Find scattering location of tau
-            grid->movePhotonAtDepth(ph, tau, 0.0);
-
-            // Photon scatters inside grid until leaves it or the number
-            // of scatterings exceeds a set value (nscatt)
-            bool insideGrid = true;
-            while (insideGrid)
-            {
-                ph.weight() *= model.dust()->albedo();
-                // Do peeling off and project weighted photons into image
-                for (Observer &observer : observers)
-                {
-                    grid->peeloff(ph, observer, model.dust());
-                }
-
-                if (ph.nscat() >= model.nscat())
-                {
-                    break;
-                }
-
-                // Scatter photon into new direction and update Stokes parameters
-                ph.Stokes(model.dust(), Direction3d(), 0.0, false, ran);
-                ph.nscat() += 1;
-
-                // Find next scattering location
-                insideGrid = grid->movePhotonAtRandomDepth(ph, ran);
-            }
-            ran->Skip();
-        }
+        processMonteCarloPhotons(model, observers, grid, sources, ran);
     } else {
         // Set up directions grid
         Directions sdir( model.SecondaryDirectionsLevel(), model.useHEALPixGrid() );
@@ -272,7 +285,7 @@ int run(const std::string& parametersFileName)
 
     return 0;
 }
-
+} // namespace
 
 int main(int argc, char *argv[])
 {
