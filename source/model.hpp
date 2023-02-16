@@ -45,6 +45,7 @@ class Model
 		{	return nscat_;	}
 
 		IRandomGenerator* createRandomGenerator() const;
+        IRandomGenerator* createDgemRandomGenerator() const;
 
 		std::uint32_t SecondaryDirectionsLevel() const
 		{	return SecondaryDirectionsLevel_;	}
@@ -65,15 +66,9 @@ class Model
 		bool useHEALPixGrid_;
 		bool fSobolVectorPerScattering_{ false };
 		bool writeScatterings_;
+		DgemBinType dgemBinType_;
 		double taumin_;
         double defaultStarRadius_;
-
-		// Random generator parameters
-		RandomGeneratorType generatorType_;
-		DgemBinType dgemBinType_;
-		int32_t iseed_{ 0 };
-		std::string inputRandomFile_;
-        std::string outputRandomFile_;
 
         std::uint32_t nscat_;
 		std::uint32_t MonteCarloStart_;
@@ -84,6 +79,13 @@ class Model
 		IDustCPtr dust_;
         IGridPtr grid_;
         SourcesPtr sources_;
+
+		// Random generator parameters
+		RandomGeneratorType generatorType_;
+		int32_t iseed_{ 0 };
+		int32_t dgemStratificationSeed_{ 0 };
+		std::string inputRandomFile_;
+        std::string outputRandomFile_;
 
 		Model(std::vector<Observer> *observers, std::string const& parametersFile);
 		Model(Model const &);

@@ -856,7 +856,7 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
     checkParameters(
         methodJson,
         methodParameters,
-        {"fMonteCarlo", "nphotons", "PrimaryDirectionsLevel", "generatorType", "iseed", "SobolVectorPerScattering", "dgemBinType", "inputRandomFile",
+        {"fMonteCarlo", "nphotons", "PrimaryDirectionsLevel", "generatorType", "iseed", "dgemStratificationSeed", "SobolVectorPerScattering", "dgemBinType", "inputRandomFile",
          "outputRandomFile", "taumin", "nscat", "SecondaryDirectionsLevel", "NumOfPrimaryScatterings",
          "NumOfSecondaryScatterings", "MonteCarloStart", "fUseHEALPixGrid", "SphereDirectionsLevel", "SphereSurfaceDirectionsLevel", "defaultStarRadius", "fWriteScatterings"});
 
@@ -874,6 +874,8 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
     } else if (SOBOL == generatorType_) {
         fSobolVectorPerScattering_ = get_optional_bool(methodJson, methodParameters, "SobolVectorPerScattering", false);
     }
+
+    dgemStratificationSeed_ = get_optional_int32(methodJson, methodParameters, "dgemStratificationSeed", -1);
 
     dgemBinType_ = get_optional_enum(methodJson, methodParameters, "dgemBinType", {"Point", "Line", "HexLines"}, DgemBinType::LINE);
     inputRandomFile_ = get_optional_string(methodJson, methodParameters, "inputRandomFile", "");
@@ -943,4 +945,9 @@ IRandomGenerator* Model::createRandomGenerator() const
 
     rand->setOutputFile(outputRandomFile_);
     return rand;
+}
+
+IRandomGenerator* Model::createDgemRandomGenerator() const
+{
+    return new LEcuyer(dgemStratificationSeed_);
 }

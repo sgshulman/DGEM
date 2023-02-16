@@ -156,10 +156,11 @@ int run(const std::string& parametersFileName)
         else
         {
             double const sqrtPiN = std::sqrt(PI / static_cast<double>(sources->num_photons()));
-            double const base = 1. + 2. * sqrtPiN / (1 - sqrtPiN);
+            double const base = 2. * sqrtPiN / (1 - sqrtPiN);
             // pessimistic estimation of scattering number, as we use it only for minimal optical depth estimation
-            double const nScatteringsRev = std::log(base) / std::log(std::sqrt(3.) * grid->max());
+            double const nScatteringsRev = std::log(1 + base) / std::log(std::sqrt(3.) * grid->max());
             double const minWeight = 1. - std::exp(-model.taumin() * nScatteringsRev);
+            std::unique_ptr<IRandomGenerator> dgemRandom{ model.createDgemRandomGenerator() };
 
             for (;;)
             {
@@ -181,13 +182,15 @@ int run(const std::string& parametersFileName)
                 // skip empty inner regions
                 grid->movePhotonAtDepth(ph0, std::numeric_limits<double>::epsilon(), 0.0);
                 double oldR = std::max(model.defaultStarRadius(), (spos - ph0.pos()).norm());
+                double baseMultiplier = dgemRandom->Get();
 
                 while (grid->inside(ph0) && ph0.weight() > minWeight)
                 {
                     Photon ph{ ph0 };
 
                     // estimate tau
-                    double const r = oldR * base;
+                    double const r = oldR * (1. + base * baseMultiplier);
+                    baseMultiplier = 1.;
                     Vector3d oldpos = ph0.pos();
                     double const tau = grid->movePhotonAtDistance(ph0, r - oldR);
                     ph0.weight() *= std::exp(-tau);
