@@ -3,6 +3,13 @@
 
 #include <string>
 
+enum RandomGeneratorType
+{
+    LECUYER,
+    MERSENNE_TWISTER,
+    SOBOL
+};
+
 class IRandomGenerator
 {
 public:

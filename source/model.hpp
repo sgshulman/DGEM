@@ -6,12 +6,7 @@
 #include <vector>
 
 #include "Predefines.hpp"
-
-enum RandomGeneratorType
-{
-    LECUYER,
-    SOBOL
-};
+#include "IRandomGenerator.hpp"
 
 enum DgemBinType
 {

@@ -20,6 +20,7 @@
 #include "Sobol.hpp"
 #include "Sources.hpp"
 #include "SphereEnvelope.hpp"
+#include "StdRandomGenerator.hpp"
 #include "TetrahedralGrid.hpp"
 #include "Observer.hpp"
 #include "third-party/nlohmann/json.hpp"
@@ -867,12 +868,11 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
     sourceParameters.SphereSurfaceDirectionsLevel_ = get_optional_uint32(methodJson, methodParameters, "SphereSurfaceDirectionsLevel", 1);
     sourceParameters.useHEALPixGrid_ = get_optional_bool(methodJson, methodParameters, "fUseHEALPixGrid", false);
 
-    generatorType_ = get_optional_enum(methodJson, methodParameters, "generatorType", {"LEcuyer", "Sobol"}, RandomGeneratorType::LECUYER);
-    if (LECUYER == generatorType_)
-    {
-        iseed_ = get_int32(methodJson, methodParameters, "iseed");
-    } else if (SOBOL == generatorType_) {
+    generatorType_ = get_optional_enum(methodJson, methodParameters, "generatorType", {"LEcuyer", "MersenneTwister", "Sobol"}, RandomGeneratorType::LECUYER);
+    if (SOBOL == generatorType_) {
         fSobolVectorPerScattering_ = get_optional_bool(methodJson, methodParameters, "SobolVectorPerScattering", false);
+    } else {
+        iseed_ = get_int32(methodJson, methodParameters, "iseed");
     }
 
     dgemStratificationSeed_ = get_optional_int32(methodJson, methodParameters, "dgemStratificationSeed", -1);
@@ -934,6 +934,10 @@ IRandomGenerator* Model::createRandomGenerator() const
         } else {
             rand = new Sobol(3 * (nscat_ + static_cast<std::uint32_t>(fMonteCarlo_) - 1));
         }
+    }
+    else
+    {
+        rand = CreateStdRandomGenerator(generatorType_, iseed_);
     }
 
     assert(rand != nullptr);

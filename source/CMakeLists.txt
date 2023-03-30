@@ -51,6 +51,8 @@ set(SOURCES
         Sobol.hpp
         SphereEnvelope.cpp
         SphereEnvelope.hpp
+        StdRandomGenerator.cpp
+        StdRandomGenerator.hpp
         TetrahedralGrid.cpp
         TetrahedralGrid.hpp
         Units.hpp
@@ -91,6 +93,7 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
         tests/SobolTests.cpp
         tests/SourcesTests.cpp
         tests/SphereEnvelopeTests.cpp
+        tests/StdRandomGeneratorTests.cpp
         tests/TestUtils.hpp
         tests/TetrahedralGridTests.cpp
         tests/Vector3dTests.cpp
