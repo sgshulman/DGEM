@@ -3,25 +3,48 @@
 
 #include <sstream>
 
+namespace
+{
+    template<typename GeneratorType>
+    void TestGeneratorSaving()
+    {
+        StdRandomGenerator<GeneratorType> longRandom(1U);
+        StdRandomGenerator<GeneratorType> firstRandom(1U);
+
+        for (int i=0; i!=10; ++i)
+        {
+            (void)longRandom.Get();
+            (void)firstRandom.Get();
+        }
+
+        std::stringstream stream;
+        firstRandom.save(stream);
+
+        StdRandomGenerator<GeneratorType> secondRandom(1U);
+        secondRandom.load(stream);
+
+        for (int i=0; i!=10; ++i)
+        {
+            REQUIRE(Approx(longRandom.Get()) == secondRandom.Get());
+        }
+    }
+} // namespace
+
+
 TEST_CASE("StdRandomGenerator", "[StdRandomGenerator saving]")
 {
-    StdRandomGenerator<std::mt19937_64> longRandom(1U);
-    StdRandomGenerator<std::mt19937_64> firstRandom(1U);
-
-    for (int i=0; i!=10; ++i)
+    SECTION("MinimumStandard")
     {
-        (void)longRandom.Get();
-        (void)firstRandom.Get();
+        TestGeneratorSaving<std::minstd_rand>();
     }
 
-    std::stringstream stream;
-    firstRandom.save(stream);
-
-    StdRandomGenerator<std::mt19937_64> secondRandom(1U);
-    secondRandom.load(stream);
-
-    for (int i=0; i!=10; ++i)
+    SECTION("MersenneTwister")
     {
-        REQUIRE(Approx(longRandom.Get()) == secondRandom.Get());
+        TestGeneratorSaving<std::mt19937_64>();
+    }
+
+    SECTION("Ranlux48")
+    {
+        TestGeneratorSaving<std::ranlux48>();
     }
 }

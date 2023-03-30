@@ -5,8 +5,10 @@
 
 enum RandomGeneratorType
 {
-    LECUYER,
+    MINIMUM_STANDARD,
     MERSENNE_TWISTER,
+    RANLUX,
+    LECUYER,
     SOBOL
 };
 

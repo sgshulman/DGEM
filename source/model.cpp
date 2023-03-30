@@ -868,7 +868,13 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
     sourceParameters.SphereSurfaceDirectionsLevel_ = get_optional_uint32(methodJson, methodParameters, "SphereSurfaceDirectionsLevel", 1);
     sourceParameters.useHEALPixGrid_ = get_optional_bool(methodJson, methodParameters, "fUseHEALPixGrid", false);
 
-    generatorType_ = get_optional_enum(methodJson, methodParameters, "generatorType", {"LEcuyer", "MersenneTwister", "Sobol"}, RandomGeneratorType::LECUYER);
+    generatorType_ = get_optional_enum(
+        methodJson,
+        methodParameters,
+        "generatorType",
+        {"MinimumStandard", "MersenneTwister", "Ranlux48","LEcuyer", "Sobol"},
+        RandomGeneratorType::LECUYER);
+
     if (SOBOL == generatorType_) {
         fSobolVectorPerScattering_ = get_optional_bool(methodJson, methodParameters, "SobolVectorPerScattering", false);
     } else {
