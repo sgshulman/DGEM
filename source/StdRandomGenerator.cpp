@@ -7,11 +7,11 @@ IRandomGenerator* CreateStdRandomGenerator(RandomGeneratorType type, std::int32_
 {
     switch (type)
     {
-        case MINIMUM_STANDARD:
+        case RandomGeneratorType::MINIMUM_STANDARD:
             return new StdRandomGenerator<std::minstd_rand>(seed);
-        case MERSENNE_TWISTER:
+        case RandomGeneratorType::MERSENNE_TWISTER:
             return new StdRandomGenerator<std::mt19937_64>(seed);
-        case RANLUX:
+        case RandomGeneratorType::RANLUX:
             return new StdRandomGenerator<std::ranlux48>(seed);
         default:
             return nullptr;

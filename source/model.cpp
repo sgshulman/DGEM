@@ -875,7 +875,7 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
         {"MinimumStandard", "MersenneTwister", "Ranlux48","LEcuyer", "Sobol"},
         RandomGeneratorType::LECUYER);
 
-    if (SOBOL == generatorType_) {
+    if (RandomGeneratorType::SOBOL == generatorType_) {
         fSobolVectorPerScattering_ = get_optional_bool(methodJson, methodParameters, "SobolVectorPerScattering", false);
     } else {
         iseed_ = get_int32(methodJson, methodParameters, "iseed");

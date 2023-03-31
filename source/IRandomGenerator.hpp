@@ -3,7 +3,7 @@
 
 #include <string>
 
-enum RandomGeneratorType
+enum class RandomGeneratorType : std::uint8_t
 {
     MINIMUM_STANDARD,
     MERSENNE_TWISTER,
