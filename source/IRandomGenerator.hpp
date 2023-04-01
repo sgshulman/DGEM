@@ -9,6 +9,7 @@ enum class RandomGeneratorType : std::uint8_t
     MERSENNE_TWISTER,
     RANLUX,
     LECUYER,
+    HALTON,
     SOBOL
 };
 

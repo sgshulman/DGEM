@@ -18,6 +18,8 @@ set(SOURCES
         FlaredDisk.hpp
         FractalCloud.cpp
         FractalCloud.hpp
+        Halton.cpp
+        Halton.hpp
         IDiskHump.hpp
         IDust.hpp
         IGrid.hpp
@@ -82,6 +84,7 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
         tests/AzimuthalHumpTests.cpp
         tests/CartesianGridTests.cpp
         tests/Direction3dTests.cpp
+        tests/HaltonTests.cpp
         tests/LEcuyerTests.cpp
         tests/MathUtilsTests.cpp
         tests/MatterArrayTests.cpp
