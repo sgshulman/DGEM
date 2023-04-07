@@ -38,6 +38,8 @@ set(SOURCES
         MieDust.hpp
         model.cpp
         model.hpp
+        Niederreiter.cpp
+        Niederreiter.hpp
         Observer.cpp
         Observer.hpp
         Photon.cpp
@@ -91,6 +93,7 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
         tests/MatterTranslationTests.cpp
         tests/MieDustTests.cpp
         tests/ModelTests.inl
+        tests/NiederreiterTests.cpp
         tests/ObserverTests.cpp
         tests/RoundHumpTests.cpp
         tests/SobolTests.cpp
