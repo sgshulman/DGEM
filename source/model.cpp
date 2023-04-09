@@ -11,11 +11,12 @@
 #include "FractalCloud.hpp"
 #include "Halton.hpp"
 #include "KurosawaWind.hpp"
+#include "LEcuyer.hpp"
 #include "MathUtils.hpp"
 #include "MatterArray.hpp"
 #include "MatterTranslation.hpp"
 #include "MieDust.hpp"
-#include "LEcuyer.hpp"
+#include "Niederreiter.hpp"
 #include "RoundHump.hpp"
 #include "SafierWind.hpp"
 #include "Sobol.hpp"
@@ -873,10 +874,13 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
         methodJson,
         methodParameters,
         "generatorType",
-        {"MinimumStandard", "MersenneTwister", "Ranlux48", "LEcuyer", "Halton", "Sobol"},
+        {"MinimumStandard", "MersenneTwister", "Ranlux48", "LEcuyer", "Halton", "Sobol", "Niederreiter"},
         RandomGeneratorType::LECUYER);
 
-    if (RandomGeneratorType::SOBOL == generatorType_ || RandomGeneratorType::HALTON == generatorType_) {
+    if (RandomGeneratorType::SOBOL == generatorType_
+        || RandomGeneratorType::HALTON == generatorType_
+        || RandomGeneratorType::NIEDERREITER == generatorType_)
+    {
         fSobolVectorPerScattering_ = get_optional_bool(methodJson, methodParameters, "SobolVectorPerScattering", false);
     } else {
         iseed_ = get_int32(methodJson, methodParameters, "iseed");
@@ -933,6 +937,15 @@ IRandomGenerator* Model::createRandomGenerator() const
     {
         rand = new LEcuyer(iseed_);
     }
+    else if (RandomGeneratorType::HALTON == generatorType_)
+    {
+        if (fSobolVectorPerScattering_)
+        {
+            rand = new Halton(3);
+        } else {
+            rand = new Halton(3 * (nscat_ + static_cast<std::uint32_t>(fMonteCarlo_) - 1));
+        }
+    }
     else if (RandomGeneratorType::SOBOL == generatorType_)
     {
         if (fSobolVectorPerScattering_)
@@ -942,13 +955,13 @@ IRandomGenerator* Model::createRandomGenerator() const
             rand = new Sobol(3 * (nscat_ + static_cast<std::uint32_t>(fMonteCarlo_) - 1));
         }
     }
-    else if (RandomGeneratorType::HALTON == generatorType_)
+    else if (RandomGeneratorType::NIEDERREITER == generatorType_)
     {
         if (fSobolVectorPerScattering_)
         {
-            rand = new Halton(3);
+            rand = new Niederreiter(3);
         } else {
-            rand = new Halton(3 * (nscat_ + static_cast<std::uint32_t>(fMonteCarlo_) - 1));
+            rand = new Niederreiter(3 * (nscat_ + static_cast<std::uint32_t>(fMonteCarlo_) - 1));
         }
     }
     else

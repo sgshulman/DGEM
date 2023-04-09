@@ -10,7 +10,8 @@ enum class RandomGeneratorType : std::uint8_t
     RANLUX,
     LECUYER,
     HALTON,
-    SOBOL
+    SOBOL,
+    NIEDERREITER
 };
 
 class IRandomGenerator
