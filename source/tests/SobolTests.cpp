@@ -165,4 +165,11 @@ TEST_CASE("Sobol", "[Sobol]")
         REQUIRE(POINT_TABLE[9*NUM_DIMENSIONS + 4] == generator.Get());
         generator.Skip();
     }
+
+    SECTION("Configuration")
+    {
+        unsigned int const NUM_DIMENSIONS{ 6 };
+        Sobol generator(NUM_DIMENSIONS);
+        REQUIRE(generator.GetConfiguration() == "Sobol. dimension = 6");
+    };
 }

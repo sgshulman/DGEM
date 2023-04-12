@@ -16,6 +16,7 @@ public:
     void save() const override;
     void load(std::string const& filename) override;
     void setOutputFile(std::string const& filename) override;
+    std::string GetConfiguration() const override;
 
     void save(std::ostream& stream) const;
     void load(std::istream& stream);
@@ -26,6 +27,7 @@ private:
     StdGenerator generator_;
     std::uniform_real_distribution<double> distribution_;
     std::string outputFile_;
+    std::int32_t seed_;
 };
 
 #endif // STD_RANDOM_GENERATOR_HPP_

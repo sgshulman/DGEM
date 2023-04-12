@@ -105,6 +105,11 @@ void Niederreiter::setOutputFile(std::string const& filename)
     outputFile_ = filename;
 }
 
+std::string Niederreiter::GetConfiguration() const
+{
+    return std::string("Niederreiter. dimension = ") + std::to_string(dimension_);
+}
+
 void Niederreiter::save(std::ostream& stream) const
 {
     stream << pointId_ << "\n";

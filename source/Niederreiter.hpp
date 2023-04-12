@@ -18,6 +18,7 @@ public:
     void save() const override;
     void load(std::string const& filename) override;
     void setOutputFile(std::string const& filename) override;
+    std::string GetConfiguration() const override;
 
     void save(std::ostream& stream) const;
     void load(std::istream& stream);

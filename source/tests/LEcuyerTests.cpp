@@ -8,6 +8,8 @@ TEST_CASE("LEcuyer", "[LEcuyer saving]")
     LEcuyer longRandom(-1556);
     LEcuyer firstRandom(-1556);
 
+    REQUIRE(longRandom.GetConfiguration() == "LEcuyer. seed = -1556");
+
     for (int i=0; i!=10; ++i)
     {
         (void)longRandom.Get();

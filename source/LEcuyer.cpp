@@ -52,6 +52,11 @@ void LEcuyer::setOutputFile(std::string const& filename)
     outputFile_ = filename;
 }
 
+std::string LEcuyer::GetConfiguration() const
+{
+    return std::string("LEcuyer. seed = ") + std::to_string(iseed_);
+}
+
 double LEcuyer::Get()
 {
     std::int32_t const IM1{ 2147483563 };

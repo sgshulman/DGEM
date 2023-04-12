@@ -33,6 +33,7 @@ public:
     virtual void save() const = 0;
     virtual void load(std::string const& filename) = 0;
     virtual void setOutputFile(std::string const& filename) = 0;
+    virtual std::string GetConfiguration() const = 0;
 };
 
 #endif

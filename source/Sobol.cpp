@@ -89,6 +89,11 @@ void Sobol::setOutputFile(std::string const& filename)
     outputFile_ = filename;
 }
 
+std::string Sobol::GetConfiguration() const
+{
+    return std::string("Sobol. dimension = ") + std::to_string(dimension_);
+}
+
 void Sobol::save(std::ostream& stream) const
 {
     stream << pointId_ << "\n";

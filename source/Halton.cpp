@@ -61,6 +61,11 @@ void Halton::setOutputFile(std::string const& filename)
     outputFile_ = filename;
 }
 
+std::string Halton::GetConfiguration() const
+{
+    return std::string("Halton. dimension = ") + std::to_string(dimension_);
+}
+
 void Halton::save(std::ostream& stream) const
 {
     for (unsigned int dim = 0; dim != dimension_; ++dim)

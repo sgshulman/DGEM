@@ -165,4 +165,11 @@ TEST_CASE("Niederreiter", "[Niederreiter]")
         REQUIRE(POINT_TABLE[9*NUM_DIMENSIONS + 4] == generator.Get());
         generator.Skip();
     }
+
+    SECTION("Configuration")
+    {
+        unsigned int const NUM_DIMENSIONS{ 4 };
+        Niederreiter generator(NUM_DIMENSIONS);
+        REQUIRE(generator.GetConfiguration() == "Niederreiter. dimension = 4");
+    };
 }

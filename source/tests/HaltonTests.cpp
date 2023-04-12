@@ -170,4 +170,11 @@ TEST_CASE("Halton", "[Halton]")
         REQUIRE(POINT_TABLE[9*NUM_DIMENSIONS + 4] == generator.Get());
         generator.Skip();
     }
+
+    SECTION("Configuration")
+    {
+        unsigned int const NUM_DIMENSIONS{ 5 };
+        Halton generator(NUM_DIMENSIONS);
+        REQUIRE(generator.GetConfiguration() == "Halton. dimension = 5");
+    };
 }

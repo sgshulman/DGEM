@@ -24,6 +24,7 @@ template<typename StdGenerator>
 StdRandomGenerator<StdGenerator>::StdRandomGenerator(std::int32_t const seed)
     : generator_(static_cast<uint32_t>(seed))
     , distribution_(0.0, 1.0)
+    , seed_(seed)
 {}
 
 template<typename StdGenerator>
@@ -71,3 +72,21 @@ double StdRandomGenerator<StdGenerator>::Get()
 template class StdRandomGenerator<std::minstd_rand>;
 template class StdRandomGenerator<std::mt19937_64>;
 template class StdRandomGenerator<std::ranlux48>;
+
+template<>
+std::string StdRandomGenerator<std::minstd_rand>::GetConfiguration() const
+{
+    return std::string("MinimumStandard. seed = ") + std::to_string(seed_);
+}
+
+template<>
+std::string StdRandomGenerator<std::mt19937_64>::GetConfiguration() const
+{
+    return std::string("MersenneTwister. seed = ") + std::to_string(seed_);
+}
+
+template<>
+std::string StdRandomGenerator<std::ranlux48>::GetConfiguration() const
+{
+    return std::string("Ranlux48. seed = ") + std::to_string(seed_);
+}

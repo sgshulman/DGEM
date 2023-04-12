@@ -84,7 +84,9 @@ int run(const std::string& parametersFileName)
     Model& model = Model::instance(&observers, parametersFileName);
     IGridCPtr grid = model.grid();
     SourcesPtr sources = model.sources();
+
     IRandomGenerator* ran{ model.createRandomGenerator() };
+    std::cout << "Random generator type:\t" << ran->GetConfiguration() << std::endl;
 
     std::cout << "Matter mass:\t" << grid->computeMatterMass() << "\t Solar Masses" << std::endl;
     sources->writeObserversOpticalDepths(grid, &observers);
