@@ -14,6 +14,8 @@ set(SOURCES
         Directions.hpp
         Direction3d.cpp
         Direction3d.hpp
+        Faure.cpp
+        Faure.hpp
         FlaredDisk.cpp
         FlaredDisk.hpp
         FractalCloud.cpp
@@ -87,6 +89,7 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
         tests/CartesianGridTests.cpp
         tests/Direction3dTests.cpp
         tests/HaltonTests.cpp
+        tests/FaureTests.cpp
         tests/LEcuyerTests.cpp
         tests/MathUtilsTests.cpp
         tests/MatterArrayTests.cpp
@@ -124,8 +127,8 @@ if ( MSVC )
     set(CMAKE_CXX_FLAGS_DEBUG "/W4 /WX")
     set(CMAKE_CXX_FLAGS_RELEASE "/O2 /W4 /WX")
 else()
-    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -Wextra -Wpedantic")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -Wextra -Wpedantic")
+    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -Wextra -Wpedantic -fsanitize=address")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -Wextra -Wpedantic -fsanitize=address")
 endif()
 
 # MinGW has problems with the linker
