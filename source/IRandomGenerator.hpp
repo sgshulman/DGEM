@@ -10,6 +10,7 @@ enum class RandomGeneratorType : std::uint8_t
     RANLUX,
     LECUYER,
     HALTON,
+    FAURE,
     SOBOL,
     NIEDERREITER
 };

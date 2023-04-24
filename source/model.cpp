@@ -7,6 +7,7 @@
 #include "CartesianGrid.hpp"
 #include "DebugUtils.hpp"
 #include "WhiteDust.hpp"
+#include "Faure.hpp"
 #include "FlaredDisk.hpp"
 #include "FractalCloud.hpp"
 #include "Halton.hpp"
@@ -874,11 +875,12 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
         methodJson,
         methodParameters,
         "generatorType",
-        {"MinimumStandard", "MersenneTwister", "Ranlux48", "LEcuyer", "Halton", "Sobol", "Niederreiter"},
+        {"MinimumStandard", "MersenneTwister", "Ranlux48", "LEcuyer", "Halton", "Faure", "Sobol", "Niederreiter"},
         RandomGeneratorType::LECUYER);
 
-    if (RandomGeneratorType::SOBOL == generatorType_
-        || RandomGeneratorType::HALTON == generatorType_
+    if ( RandomGeneratorType::HALTON == generatorType_
+        || RandomGeneratorType::FAURE == generatorType_
+        || RandomGeneratorType::SOBOL == generatorType_
         || RandomGeneratorType::NIEDERREITER == generatorType_)
     {
         fSobolVectorPerScattering_ = get_optional_bool(methodJson, methodParameters, "SobolVectorPerScattering", false);
@@ -944,6 +946,15 @@ IRandomGenerator* Model::createRandomGenerator() const
             rand = new Halton(3);
         } else {
             rand = new Halton(3 * (nscat_ + static_cast<std::uint32_t>(fMonteCarlo_) - 1));
+        }
+    }
+    else if (RandomGeneratorType::FAURE == generatorType_)
+    {
+        if (fSobolVectorPerScattering_)
+        {
+            rand = new Faure(3);
+        } else {
+            rand = new Faure(3 * (nscat_ + static_cast<std::uint32_t>(fMonteCarlo_) - 1));
         }
     }
     else if (RandomGeneratorType::SOBOL == generatorType_)
