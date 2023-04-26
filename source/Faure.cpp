@@ -118,8 +118,8 @@ void Faure::initCTable()
 
     for (std::uint32_t n=0; n<=logqPoint_; ++n)
     {
-        c(n, 0) = 1.;
-        c(n, n) = 1.;
+        c(n, 0) = 1;
+        c(n, n) = 1;
         for (std::uint32_t k=1; k<n; ++k)
         {
             c(n, k) = (c(n-1, k-1) + c(n-1, k)) % qs_;
