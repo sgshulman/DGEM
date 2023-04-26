@@ -126,13 +126,12 @@ endif()
 if ( MSVC )
     set(CMAKE_CXX_FLAGS_DEBUG "/W4 /WX")
     set(CMAKE_CXX_FLAGS_RELEASE "/O2 /W4 /WX")
+elseif( MINGW )
+    # MinGW has problems with the linker
+    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -Wextra -Wpedantic -static-libstdc++ -Wa,-mbig-obj")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -Wextra -Wpedantic -static-libstdc++ -Wa,-mbig-obj")
 else()
     set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -Wextra -Wpedantic -fsanitize=address")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -Wextra -Wpedantic -fsanitize=address")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -Wextra -Wpedantic")
 endif()
 
-# MinGW has problems with the linker
-if ( MINGW )
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -static-libstdc++ -Wa,-mbig-obj")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -static-libstdc++ -Wa,-mbig-obj")
-endif()
