@@ -7,23 +7,18 @@
 #include "CartesianGrid.hpp"
 #include "DebugUtils.hpp"
 #include "WhiteDust.hpp"
-#include "Faure.hpp"
 #include "FlaredDisk.hpp"
 #include "FractalCloud.hpp"
-#include "Halton.hpp"
 #include "KurosawaWind.hpp"
 #include "LEcuyer.hpp"
 #include "MathUtils.hpp"
 #include "MatterArray.hpp"
 #include "MatterTranslation.hpp"
 #include "MieDust.hpp"
-#include "Niederreiter.hpp"
 #include "RoundHump.hpp"
 #include "SafierWind.hpp"
-#include "Sobol.hpp"
 #include "Sources.hpp"
 #include "SphereEnvelope.hpp"
-#include "StdRandomGenerator.hpp"
 #include "TetrahedralGrid.hpp"
 #include "Observer.hpp"
 #include "third-party/nlohmann/json.hpp"
@@ -934,51 +929,10 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
 
 IRandomGenerator* Model::createRandomGenerator() const
 {
-    IRandomGenerator* rand{ nullptr };
-    if (RandomGeneratorType::LECUYER == generatorType_)
-    {
-        rand = new LEcuyer(iseed_);
-    }
-    else if (RandomGeneratorType::HALTON == generatorType_)
-    {
-        if (fSobolVectorPerScattering_)
-        {
-            rand = new Halton(3);
-        } else {
-            rand = new Halton(3 * (nscat_ + static_cast<std::uint32_t>(fMonteCarlo_) - 1));
-        }
-    }
-    else if (RandomGeneratorType::FAURE == generatorType_)
-    {
-        if (fSobolVectorPerScattering_)
-        {
-            rand = new Faure(3);
-        } else {
-            rand = new Faure(3 * (nscat_ + static_cast<std::uint32_t>(fMonteCarlo_) - 1));
-        }
-    }
-    else if (RandomGeneratorType::SOBOL == generatorType_)
-    {
-        if (fSobolVectorPerScattering_)
-        {
-            rand = new Sobol(3);
-        } else {
-            rand = new Sobol(3 * (nscat_ + static_cast<std::uint32_t>(fMonteCarlo_) - 1));
-        }
-    }
-    else if (RandomGeneratorType::NIEDERREITER == generatorType_)
-    {
-        if (fSobolVectorPerScattering_)
-        {
-            rand = new Niederreiter(3);
-        } else {
-            rand = new Niederreiter(3 * (nscat_ + static_cast<std::uint32_t>(fMonteCarlo_) - 1));
-        }
-    }
-    else
-    {
-        rand = CreateStdRandomGenerator(generatorType_, iseed_);
-    }
+    std::uint32_t const dimension =
+        fSobolVectorPerScattering_ ? 3 : 3 * (nscat_ + static_cast<std::uint32_t>(fMonteCarlo_) - 1);
+
+    IRandomGenerator* rand{ IRandomGenerator::create(generatorType_, iseed_, dimension) };
 
     assert(rand != nullptr);
 

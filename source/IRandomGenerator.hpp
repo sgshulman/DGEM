@@ -18,6 +18,8 @@ enum class RandomGeneratorType : std::uint8_t
 class IRandomGenerator
 {
 public:
+    static IRandomGenerator* create(RandomGeneratorType type, std::int32_t seed, std::uint32_t dimension);
+
     IRandomGenerator() = default;
     virtual ~IRandomGenerator() =default;
 

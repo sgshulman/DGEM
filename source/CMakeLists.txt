@@ -26,6 +26,7 @@ set(SOURCES
         IDust.hpp
         IGrid.hpp
         IMatter.hpp
+        IRandomGenerator.cpp
         IRandomGenerator.hpp
         KurosawaWind.cpp
         KurosawaWind.hpp
