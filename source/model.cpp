@@ -10,7 +10,6 @@
 #include "FlaredDisk.hpp"
 #include "FractalCloud.hpp"
 #include "KurosawaWind.hpp"
-#include "LEcuyer.hpp"
 #include "MathUtils.hpp"
 #include "MatterArray.hpp"
 #include "MatterTranslation.hpp"
@@ -33,6 +32,8 @@ namespace
     char const sGrid[] = "grid";
     char const sStars[] = "stars";
     char const sObservers[] = "observers";
+    char const sMonteCarloGenerator[] = "MonteCarloGenerator";
+    char const sDgemStratificationGenerator[] = "DgemStratificationGenerator";
     char const sFlaredDisk[] = "flaredDisk";
     char const sSafierWind[] = "safierWind";
     char const sKurosawaWind[] = "kurosawaWind";
@@ -141,12 +142,6 @@ namespace
         }
 
         return extract_int32(json.at(name), section, name);
-    }
-
-
-    std::int32_t get_optional_int32(const nlohmann::json& json, char const* section, char const* name, std::int32_t defaultValue)
-    {
-        return json.contains(name) ? extract_int32(json.at(name), section, name) : defaultValue;
     }
 
 
@@ -728,6 +723,38 @@ namespace
         return std::make_shared<Sources>(sourceParameters, std::move(pointSources), std::move(sphereSources));
     }
 
+    RandomGeneratorDescription parseRandomGeneratorDescription(nlohmann::json const& json, const std::string& generatorName)
+    {
+        checkParameters(
+                json,
+                generatorName.c_str(),
+                {"type", "seed", "vectorPerScattering", "inputRandomFile", "outputRandomFile"});
+
+        RandomGeneratorDescription description;
+
+        description.type_ = get_optional_enum(
+            json,
+            generatorName.c_str(),
+            "type",
+            {"NONE", "MinimumStandard", "MersenneTwister", "Ranlux48", "LEcuyer", "Halton", "Faure", "Sobol", "Niederreiter"},
+            RandomGeneratorType::LECUYER);
+
+        if (RandomGeneratorType::HALTON == description.type_
+            || RandomGeneratorType::FAURE == description.type_
+            || RandomGeneratorType::SOBOL == description.type_
+            || RandomGeneratorType::NIEDERREITER == description.type_)
+        {
+            description.vectorPerScattering_ = get_optional_bool(json, generatorName.c_str(), "vectorPerScattering", false);
+        } else {
+            description.seed_ = get_int32(json, generatorName.c_str(), "seed");
+        }
+
+        description.inputRandomFile_ = get_optional_string(json, generatorName.c_str(), "inputRandomFile", "");
+        description.outputRandomFile_ = get_optional_string(json, generatorName.c_str(), "outputRandomFile", "");
+        return description;
+    }
+
+
     void densitySlice(nlohmann::json const& json, IMatterCPtr const& matter)
     {
         checkParameters(json, sDensitySlice, {"filename", "phi", "radiusMax", "heightMax"});
@@ -855,9 +882,10 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
     checkParameters(
         methodJson,
         methodParameters,
-        {"fMonteCarlo", "nphotons", "PrimaryDirectionsLevel", "generatorType", "iseed", "dgemStratificationSeed", "SobolVectorPerScattering", "dgemBinType", "inputRandomFile",
-         "outputRandomFile", "taumin", "nscat", "SecondaryDirectionsLevel", "NumOfPrimaryScatterings",
-         "NumOfSecondaryScatterings", "MonteCarloStart", "fUseHEALPixGrid", "SphereDirectionsLevel", "SphereSurfaceDirectionsLevel", "defaultStarRadius", "fWriteScatterings"});
+        {sMonteCarloGenerator, sDgemStratificationGenerator,
+         "fMonteCarlo", "nphotons", "PrimaryDirectionsLevel", "dgemBinType", "taumin", "nscat",
+         "SecondaryDirectionsLevel", "NumOfPrimaryScatterings", "NumOfSecondaryScatterings", "MonteCarloStart",
+         "fUseHEALPixGrid", "SphereDirectionsLevel", "SphereSurfaceDirectionsLevel", "defaultStarRadius", "fWriteScatterings"});
 
     sourceParameters.useMonteCarlo_ = get_bool(methodJson, methodParameters, "fMonteCarlo");
     sourceParameters.num_photons_ = get_uint64(methodJson, methodParameters, "nphotons");
@@ -866,29 +894,7 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
     sourceParameters.SphereSurfaceDirectionsLevel_ = get_optional_uint32(methodJson, methodParameters, "SphereSurfaceDirectionsLevel", 1);
     sourceParameters.useHEALPixGrid_ = get_optional_bool(methodJson, methodParameters, "fUseHEALPixGrid", false);
 
-    generatorType_ = get_optional_enum(
-        methodJson,
-        methodParameters,
-        "generatorType",
-        {"MinimumStandard", "MersenneTwister", "Ranlux48", "LEcuyer", "Halton", "Faure", "Sobol", "Niederreiter"},
-        RandomGeneratorType::LECUYER);
-
-    if ( RandomGeneratorType::HALTON == generatorType_
-        || RandomGeneratorType::FAURE == generatorType_
-        || RandomGeneratorType::SOBOL == generatorType_
-        || RandomGeneratorType::NIEDERREITER == generatorType_)
-    {
-        fSobolVectorPerScattering_ = get_optional_bool(methodJson, methodParameters, "SobolVectorPerScattering", false);
-    } else {
-        iseed_ = get_int32(methodJson, methodParameters, "iseed");
-    }
-
-    dgemStratificationSeed_ = get_optional_int32(methodJson, methodParameters, "dgemStratificationSeed", -1);
-
     dgemBinType_ = get_optional_enum(methodJson, methodParameters, "dgemBinType", {"Point", "Line", "HexLines"}, DgemBinType::LINE);
-    inputRandomFile_ = get_optional_string(methodJson, methodParameters, "inputRandomFile", "");
-    outputRandomFile_ = get_optional_string(methodJson, methodParameters, "outputRandomFile", "");
-
     fMonteCarlo_ = sourceParameters.useMonteCarlo_;
     writeScatterings_ = get_optional_bool(methodJson, methodParameters, "fWriteScatterings", true);
     taumin_ = get_double(methodJson, methodParameters, "taumin");
@@ -899,6 +905,15 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
     NumOfSecondaryScatterings_ = get_uint32(methodJson, methodParameters, "NumOfSecondaryScatterings");
     MonteCarloStart_ = get_uint32(methodJson, methodParameters, "MonteCarloStart");
     useHEALPixGrid_ = sourceParameters.useHEALPixGrid_;
+
+    monteCarloGeneratorDescription_ =
+        parseRandomGeneratorDescription(methodJson.at(sMonteCarloGenerator), sMonteCarloGenerator);
+
+    if (methodJson.contains(sDgemStratificationGenerator))
+    {
+        dgemStratificationGeneratorDescription_ =
+            parseRandomGeneratorDescription(methodJson.at(sDgemStratificationGenerator), sDgemStratificationGenerator);
+    }
 
     nlohmann::json const& dustJson = j.at(sDust);
     dust_ = parseDust(dustJson);
@@ -930,22 +945,39 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
 IRandomGenerator* Model::createRandomGenerator() const
 {
     std::uint32_t const dimension =
-        fSobolVectorPerScattering_ ? 3 : 3 * (nscat_ + static_cast<std::uint32_t>(fMonteCarlo_) - 1);
+        monteCarloGeneratorDescription_.vectorPerScattering_ ? 3 : 3 * (nscat_ + static_cast<std::uint32_t>(fMonteCarlo_) - 1);
 
-    IRandomGenerator* rand{ IRandomGenerator::create(generatorType_, iseed_, dimension) };
+    IRandomGenerator* rand{ IRandomGenerator::create(
+        monteCarloGeneratorDescription_.type_,
+        monteCarloGeneratorDescription_.seed_,
+        dimension) };
 
     assert(rand != nullptr);
 
-    if (!inputRandomFile_.empty())
+    if (!monteCarloGeneratorDescription_.inputRandomFile_.empty())
     {
-        rand->load(inputRandomFile_);
+        rand->load(monteCarloGeneratorDescription_.inputRandomFile_);
     }
 
-    rand->setOutputFile(outputRandomFile_);
+    rand->setOutputFile(monteCarloGeneratorDescription_.outputRandomFile_);
     return rand;
 }
 
 IRandomGenerator* Model::createDgemRandomGenerator() const
 {
-    return new LEcuyer(dgemStratificationSeed_);
+    IRandomGenerator* rand{ IRandomGenerator::create(
+            dgemStratificationGeneratorDescription_.type_,
+            dgemStratificationGeneratorDescription_.seed_,
+            1) };
+
+    if (rand != nullptr && !dgemStratificationGeneratorDescription_.inputRandomFile_.empty())
+    {
+        rand->load(dgemStratificationGeneratorDescription_.inputRandomFile_);
+    }
+
+    if (rand != nullptr)
+    {
+        rand->setOutputFile(dgemStratificationGeneratorDescription_.outputRandomFile_);
+    }
+    return rand;
 }

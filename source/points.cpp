@@ -184,7 +184,7 @@ int run(const std::string& parametersFileName)
                 // skip empty inner regions
                 grid->movePhotonAtDepth(ph0, std::numeric_limits<double>::epsilon(), 0.0);
                 double oldR = std::max(model.defaultStarRadius(), (spos - ph0.pos()).norm());
-                double baseMultiplier = dgemRandom->Get();
+                double baseMultiplier = dgemRandom ? dgemRandom->Get() : 1.;
 
                 while (grid->inside(ph0) && ph0.weight() > minWeight)
                 {

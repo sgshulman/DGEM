@@ -15,6 +15,15 @@ enum DgemBinType
     HEX_LINES
 };
 
+struct RandomGeneratorDescription
+{
+    std::int32_t seed_{0};
+    RandomGeneratorType type_{ RandomGeneratorType::NONE };
+    bool vectorPerScattering_{ true };
+    std::string inputRandomFile_;
+    std::string outputRandomFile_;
+};
+
 // model parameters
 class Model
 {
@@ -59,7 +68,6 @@ class Model
 	private:
 		bool fMonteCarlo_;
 		bool useHEALPixGrid_;
-		bool fSobolVectorPerScattering_{ false };
 		bool writeScatterings_;
 		DgemBinType dgemBinType_;
 		double taumin_;
@@ -76,11 +84,8 @@ class Model
         SourcesPtr sources_;
 
 		// Random generator parameters
-		RandomGeneratorType generatorType_;
-		int32_t iseed_{ 0 };
-		int32_t dgemStratificationSeed_{ 0 };
-		std::string inputRandomFile_;
-        std::string outputRandomFile_;
+		RandomGeneratorDescription monteCarloGeneratorDescription_;
+		RandomGeneratorDescription dgemStratificationGeneratorDescription_;
 
 		Model(std::vector<Observer> *observers, std::string const& parametersFile);
 		Model(Model const &);

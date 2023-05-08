@@ -5,6 +5,7 @@
 
 enum class RandomGeneratorType : std::uint8_t
 {
+    NONE,
     MINIMUM_STANDARD,
     MERSENNE_TWISTER,
     RANLUX,

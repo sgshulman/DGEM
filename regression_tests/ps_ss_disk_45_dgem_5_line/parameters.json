@@ -4,14 +4,19 @@
     "taumin": 0.01,
     "nscat": 1,
     "nphotons": 100000000,
-    "iseed": -1556,
     "fUseHEALPixGrid": false,
     "PrimaryDirectionsLevel": 5,
     "SecondaryDirectionsLevel": 1,
     "NumOfPrimaryScatterings": 0,
     "NumOfSecondaryScatterings": 1,
     "MonteCarloStart": 1,
-    "dgemBinType": "Line"
+    "dgemBinType": "Line",
+    "MonteCarloGenerator": {
+      "seed": -1556
+    },
+    "DgemStratificationGenerator": {
+      "seed": -1
+    }
   },
   "dust": {
     "kappa": 66.0,
