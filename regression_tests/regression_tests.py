@@ -41,14 +41,17 @@ def run_single_scattering_test(folder: str, observer_pos: str) -> int:
     os.chdir(folder)
     copyfile("../../dgem", "./dgem")
     os.chmod("./dgem", 0o775)
-    sp.run(["./dgem"])
+    completed_process : sp.CompletedProcess = sp.run(["./dgem"])
+    ok: bool = completed_process.returncode == 0
 
-    ok: bool = check_difference("fimage" + observer_pos + "_00_ref.dat", "fimage" + observer_pos + "_00.dat")
-    ok = check_difference("fimage" + observer_pos + "_01_ref.dat", "fimage" + observer_pos + "_01.dat") and ok
-    ok = check_difference("qimage" + observer_pos + "_00_ref.dat", "qimage" + observer_pos + "_00.dat") and ok
-    ok = check_difference("qimage" + observer_pos + "_00_ref.dat", "qimage" + observer_pos + "_01.dat") and ok
-    ok = check_difference("uimage" + observer_pos + "_00_ref.dat", "uimage" + observer_pos + "_00.dat") and ok
-    ok = check_difference("uimage" + observer_pos + "_00_ref.dat", "uimage" + observer_pos + "_01.dat") and ok
+    if ok:
+        ok = check_difference("fimage" + observer_pos + "_00_ref.dat", "fimage" + observer_pos + "_00.dat")
+        ok = check_difference("fimage" + observer_pos + "_01_ref.dat", "fimage" + observer_pos + "_01.dat") and ok
+        ok = check_difference("qimage" + observer_pos + "_00_ref.dat", "qimage" + observer_pos + "_00.dat") and ok
+        ok = check_difference("qimage" + observer_pos + "_00_ref.dat", "qimage" + observer_pos + "_01.dat") and ok
+        ok = check_difference("uimage" + observer_pos + "_00_ref.dat", "uimage" + observer_pos + "_00.dat") and ok
+        ok = check_difference("uimage" + observer_pos + "_00_ref.dat", "uimage" + observer_pos + "_01.dat") and ok
+
     os.chdir("../")
 
     if not ok:
@@ -66,21 +69,24 @@ def run_multiple_scattering_test(folder: str, observer_pos: str) -> int:
     os.chdir(folder)
     copyfile("../../dgem", "./dgem")
     os.chmod("./dgem", 0o775)
-    sp.run(["./dgem"])
+    completed_process : sp.CompletedProcess = sp.run(["./dgem"])
+    ok: bool = completed_process.returncode == 0
 
-    ok: bool = check_difference("fimage" + observer_pos + "_00_ref.dat", "fimage" + observer_pos + "_00.dat")
-    ok = check_difference("fimage" + observer_pos + "_01_ref.dat", "fimage" + observer_pos + "_01.dat") and ok
-    ok = check_difference("fimage" + observer_pos + "_02_ref.dat", "fimage" + observer_pos + "_02.dat") and ok
-    ok = check_difference("fimage" + observer_pos + "_03_ref.dat", "fimage" + observer_pos + "_03.dat") and ok
-    ok = check_difference("fimage" + observer_pos + "_04_ref.dat", "fimage" + observer_pos + "_04.dat") and ok
-    ok = check_difference("qimage" + observer_pos + "_01_ref.dat", "qimage" + observer_pos + "_01.dat") and ok
-    ok = check_difference("qimage" + observer_pos + "_02_ref.dat", "qimage" + observer_pos + "_02.dat") and ok
-    ok = check_difference("qimage" + observer_pos + "_03_ref.dat", "qimage" + observer_pos + "_03.dat") and ok
-    ok = check_difference("qimage" + observer_pos + "_04_ref.dat", "qimage" + observer_pos + "_04.dat") and ok
-    ok = check_difference("uimage" + observer_pos + "_01_ref.dat", "uimage" + observer_pos + "_01.dat") and ok
-    ok = check_difference("uimage" + observer_pos + "_02_ref.dat", "uimage" + observer_pos + "_02.dat") and ok
-    ok = check_difference("uimage" + observer_pos + "_03_ref.dat", "uimage" + observer_pos + "_03.dat") and ok
-    ok = check_difference("uimage" + observer_pos + "_04_ref.dat", "uimage" + observer_pos + "_04.dat") and ok
+    if ok:
+        ok: bool = check_difference("fimage" + observer_pos + "_00_ref.dat", "fimage" + observer_pos + "_00.dat")
+        ok = check_difference("fimage" + observer_pos + "_01_ref.dat", "fimage" + observer_pos + "_01.dat") and ok
+        ok = check_difference("fimage" + observer_pos + "_02_ref.dat", "fimage" + observer_pos + "_02.dat") and ok
+        ok = check_difference("fimage" + observer_pos + "_03_ref.dat", "fimage" + observer_pos + "_03.dat") and ok
+        ok = check_difference("fimage" + observer_pos + "_04_ref.dat", "fimage" + observer_pos + "_04.dat") and ok
+        ok = check_difference("qimage" + observer_pos + "_01_ref.dat", "qimage" + observer_pos + "_01.dat") and ok
+        ok = check_difference("qimage" + observer_pos + "_02_ref.dat", "qimage" + observer_pos + "_02.dat") and ok
+        ok = check_difference("qimage" + observer_pos + "_03_ref.dat", "qimage" + observer_pos + "_03.dat") and ok
+        ok = check_difference("qimage" + observer_pos + "_04_ref.dat", "qimage" + observer_pos + "_04.dat") and ok
+        ok = check_difference("uimage" + observer_pos + "_01_ref.dat", "uimage" + observer_pos + "_01.dat") and ok
+        ok = check_difference("uimage" + observer_pos + "_02_ref.dat", "uimage" + observer_pos + "_02.dat") and ok
+        ok = check_difference("uimage" + observer_pos + "_03_ref.dat", "uimage" + observer_pos + "_03.dat") and ok
+        ok = check_difference("uimage" + observer_pos + "_04_ref.dat", "uimage" + observer_pos + "_04.dat") and ok
+
     os.chdir("../")
 
     if not ok:
