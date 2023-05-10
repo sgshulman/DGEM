@@ -336,5 +336,5 @@ int main(int argc, char *argv[])
     catch (std::exception const& ex) {
         std::cerr << "Terminated after throwing an exception:\n" << ex.what() << std::endl;
     }
-    return 0;
+    return 1;
 }
