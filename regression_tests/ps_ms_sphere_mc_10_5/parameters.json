@@ -4,12 +4,6 @@
     "taumin": 0.01,
     "nscat": 4,
     "nphotons": 100000,
-    "fUseHEALPixGrid": false,
-    "PrimaryDirectionsLevel": 5,
-    "SecondaryDirectionsLevel": 1,
-    "NumOfPrimaryScatterings": 0,
-    "NumOfSecondaryScatterings": 1,
-    "MonteCarloStart": 1,
     "MonteCarloGenerator": {
       "seed": -1556
     }

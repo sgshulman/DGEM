@@ -4,12 +4,6 @@
     "taumin": 0.01,
     "nscat": 1,
     "nphotons": 100000,
-    "fUseHEALPixGrid": true,
-    "PrimaryDirectionsLevel": 1,
-    "SecondaryDirectionsLevel": 1,
-    "NumOfPrimaryScatterings": 0,
-    "NumOfSecondaryScatterings": 1,
-    "MonteCarloStart": 1,
     "dgemBinType": "HexLines",
     "MonteCarloGenerator": {
       "type": "Sobol",

@@ -66,18 +66,18 @@ class Model
         SourcesPtr sources()
         {   return sources_; }
 	private:
-		bool fMonteCarlo_;
-		bool useHEALPixGrid_;
-		bool writeScatterings_;
-		DgemBinType dgemBinType_;
-		double taumin_;
-        double defaultStarRadius_;
+		bool fMonteCarlo_{ true };
+		bool useHEALPixGrid_{ true };
+		bool writeScatterings_{ false };
+		DgemBinType dgemBinType_{ DgemBinType::LINE };
+		double taumin_{ 0.0 };
+        double defaultStarRadius_{ 0.0 };
 
-        std::uint32_t nscat_;
-		std::uint32_t MonteCarloStart_;
-		std::uint32_t SecondaryDirectionsLevel_;
-        std::uint32_t NumOfPrimaryScatterings_;
-		std::uint32_t NumOfSecondaryScatterings_;
+        std::uint32_t nscat_{ 1 };
+		std::uint32_t MonteCarloStart_{ 1 };
+		std::uint32_t SecondaryDirectionsLevel_{ 1 };
+        std::uint32_t NumOfPrimaryScatterings_{ 0 };
+		std::uint32_t NumOfSecondaryScatterings_{ 1 };
 
 		IDustCPtr dust_;
         IGridPtr grid_;

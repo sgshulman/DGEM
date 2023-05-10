@@ -88,12 +88,12 @@ private:
 
 struct SourceParameters
 {
-    std::uint64_t num_photons_;
-    std::uint32_t PrimaryDirectionsLevel_;
-    std::uint32_t SphereDirectionsLevel_;
-    std::uint32_t SphereSurfaceDirectionsLevel_;
-    bool useMonteCarlo_;
-    bool useHEALPixGrid_;
+    std::uint64_t num_photons_{ 1 };
+    std::uint32_t PrimaryDirectionsLevel_{ 1 };
+    std::uint32_t SphereDirectionsLevel_{ 1 };
+    std::uint32_t SphereSurfaceDirectionsLevel_{ 1 };
+    bool useMonteCarlo_{ true };
+    bool useHEALPixGrid_{ true };
 };
 
 // all sources of photons

@@ -905,22 +905,29 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
 
     sourceParameters.useMonteCarlo_ = get_bool(methodJson, methodParameters, "fMonteCarlo");
     sourceParameters.num_photons_ = get_uint64(methodJson, methodParameters, "nphotons");
-    sourceParameters.PrimaryDirectionsLevel_ = get_uint32(methodJson, methodParameters, "PrimaryDirectionsLevel");
-    sourceParameters.SphereDirectionsLevel_ = get_optional_uint32(methodJson, methodParameters, "SphereDirectionsLevel", 1);
     sourceParameters.SphereSurfaceDirectionsLevel_ = get_optional_uint32(methodJson, methodParameters, "SphereSurfaceDirectionsLevel", 1);
-    sourceParameters.useHEALPixGrid_ = get_optional_bool(methodJson, methodParameters, "fUseHEALPixGrid", false);
-
-    dgemBinType_ = get_optional_enum(methodJson, methodParameters, "dgemBinType", {"Point", "Line", "HexLines"}, DgemBinType::LINE);
     fMonteCarlo_ = sourceParameters.useMonteCarlo_;
+
+    if (!fMonteCarlo_)
+    {
+        sourceParameters.PrimaryDirectionsLevel_ = get_uint32(methodJson, methodParameters, "PrimaryDirectionsLevel");
+        sourceParameters.SphereDirectionsLevel_ = get_optional_uint32(methodJson, methodParameters, "SphereDirectionsLevel", 1);
+        sourceParameters.useHEALPixGrid_ = get_optional_bool(methodJson, methodParameters, "fUseHEALPixGrid", false);
+        useHEALPixGrid_ = sourceParameters.useHEALPixGrid_;
+
+        dgemBinType_ = get_optional_enum(methodJson, methodParameters, "dgemBinType", {"Point", "Line", "HexLines"}, DgemBinType::LINE);
+
+        SecondaryDirectionsLevel_ = get_uint32(methodJson, methodParameters, "SecondaryDirectionsLevel");
+        NumOfPrimaryScatterings_ = get_uint32(methodJson, methodParameters, "NumOfPrimaryScatterings");
+        NumOfSecondaryScatterings_ = get_uint32(methodJson, methodParameters, "NumOfSecondaryScatterings");
+        MonteCarloStart_ = get_uint32(methodJson, methodParameters, "MonteCarloStart");
+    }
+
+
     writeScatterings_ = get_optional_bool(methodJson, methodParameters, "fWriteScatterings", true);
     taumin_ = get_double(methodJson, methodParameters, "taumin");
     defaultStarRadius_ = get_optional_double(methodJson, methodParameters, "defaultStarRadius", 0.0047);
     nscat_ = get_uint32(methodJson, methodParameters, "nscat");
-    SecondaryDirectionsLevel_ = get_uint32(methodJson, methodParameters, "SecondaryDirectionsLevel");
-    NumOfPrimaryScatterings_ = get_uint32(methodJson, methodParameters, "NumOfPrimaryScatterings");
-    NumOfSecondaryScatterings_ = get_uint32(methodJson, methodParameters, "NumOfSecondaryScatterings");
-    MonteCarloStart_ = get_uint32(methodJson, methodParameters, "MonteCarloStart");
-    useHEALPixGrid_ = sourceParameters.useHEALPixGrid_;
 
     if (methodJson.contains(sMonteCarloGenerator))
     {
