@@ -86,7 +86,10 @@ int run(const std::string& parametersFileName)
     SourcesPtr sources = model.sources();
 
     IRandomGenerator* ran{ model.createRandomGenerator() };
-    std::cout << "Random generator type:\t" << ran->GetConfiguration() << std::endl;
+    if (ran != nullptr)
+    {
+        std::cout << "Random generator type:\t" << ran->GetConfiguration() << std::endl;
+    }
 
     std::cout << "Matter mass:\t" << grid->computeMatterMass() << "\t Solar Masses" << std::endl;
     sources->writeObserversOpticalDepths(grid, &observers);
@@ -151,7 +154,11 @@ int run(const std::string& parametersFileName)
                     {
                         ph.Scatt(model, sdir, grid, observers, ran);
                     }
-                    ran->Skip();
+
+                    if (ran != nullptr)
+                    {
+                        ran->Skip();
+                    }
                 }
             }
         }
@@ -235,7 +242,11 @@ int run(const std::string& parametersFileName)
                             ph.Scatt(model, sdir, grid, observers, ran);
                         }
                     }
-                    ran->Skip();
+
+                    if (ran != nullptr)
+                    {
+                        ran->Skip();
+                    }
                     oldR = r;
                 }
             }
@@ -267,8 +278,11 @@ int run(const std::string& parametersFileName)
     }
     observersResultFile.close();
 
-    ran->save();
-    delete ran;
+    if (ran != nullptr)
+    {
+        ran->save();
+        delete ran;
+    }
 
     auto const endTime = std::chrono::high_resolution_clock::now();
     std::cout.precision(4);

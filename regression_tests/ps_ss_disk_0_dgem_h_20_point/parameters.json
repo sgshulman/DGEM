@@ -11,9 +11,6 @@
     "NumOfSecondaryScatterings": 1,
     "MonteCarloStart": 1,
     "dgemBinType": "Point",
-    "MonteCarloGenerator": {
-      "seed": -1556
-    },
     "DgemStratificationGenerator": {
       "seed": -1
     }

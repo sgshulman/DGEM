@@ -856,6 +856,22 @@ namespace
         opticalDepth /= static_cast<double>(directions.number());
         std::cout << "MeanOpticalDepth: " << opticalDepth << std::endl;
     }
+
+    inline IRandomGenerator* createRndGenerator(const RandomGeneratorDescription& description, std::uint32_t const dimension)
+    {
+        IRandomGenerator* rand{ IRandomGenerator::create(description.type_, description.seed_, dimension) };
+
+        if (rand != nullptr && !description.inputRandomFile_.empty())
+        {
+            rand->load(description.inputRandomFile_);
+        }
+
+        if (rand != nullptr)
+        {
+            rand->setOutputFile(description.outputRandomFile_);
+        }
+        return rand;
+    }
 } // namespace
 
 #ifdef ENABLE_UNIT_TESTS
@@ -906,8 +922,15 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
     MonteCarloStart_ = get_uint32(methodJson, methodParameters, "MonteCarloStart");
     useHEALPixGrid_ = sourceParameters.useHEALPixGrid_;
 
-    monteCarloGeneratorDescription_ =
-        parseRandomGeneratorDescription(methodJson.at(sMonteCarloGenerator), sMonteCarloGenerator);
+    if (methodJson.contains(sMonteCarloGenerator))
+    {
+        monteCarloGeneratorDescription_ =
+            parseRandomGeneratorDescription(methodJson.at(sMonteCarloGenerator), sMonteCarloGenerator);
+    }
+    else if (nscat_ > MonteCarloStart_)
+    {
+        throw std::invalid_argument(std::string(sMonteCarloGenerator) + " is required when Monte Carlo method is used.");
+    }
 
     if (methodJson.contains(sDgemStratificationGenerator))
     {
@@ -947,37 +970,10 @@ IRandomGenerator* Model::createRandomGenerator() const
     std::uint32_t const dimension =
         monteCarloGeneratorDescription_.vectorPerScattering_ ? 3 : 3 * (nscat_ + static_cast<std::uint32_t>(fMonteCarlo_) - 1);
 
-    IRandomGenerator* rand{ IRandomGenerator::create(
-        monteCarloGeneratorDescription_.type_,
-        monteCarloGeneratorDescription_.seed_,
-        dimension) };
-
-    assert(rand != nullptr);
-
-    if (!monteCarloGeneratorDescription_.inputRandomFile_.empty())
-    {
-        rand->load(monteCarloGeneratorDescription_.inputRandomFile_);
-    }
-
-    rand->setOutputFile(monteCarloGeneratorDescription_.outputRandomFile_);
-    return rand;
+    return createRndGenerator(monteCarloGeneratorDescription_, dimension);
 }
 
 IRandomGenerator* Model::createDgemRandomGenerator() const
 {
-    IRandomGenerator* rand{ IRandomGenerator::create(
-            dgemStratificationGeneratorDescription_.type_,
-            dgemStratificationGeneratorDescription_.seed_,
-            1) };
-
-    if (rand != nullptr && !dgemStratificationGeneratorDescription_.inputRandomFile_.empty())
-    {
-        rand->load(dgemStratificationGeneratorDescription_.inputRandomFile_);
-    }
-
-    if (rand != nullptr)
-    {
-        rand->setOutputFile(dgemStratificationGeneratorDescription_.outputRandomFile_);
-    }
-    return rand;
+    return createRndGenerator(dgemStratificationGeneratorDescription_, 1);
 }

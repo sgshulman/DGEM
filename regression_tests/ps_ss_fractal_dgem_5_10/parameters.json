@@ -9,10 +9,7 @@
     "SecondaryDirectionsLevel": 1,
     "NumOfPrimaryScatterings": 10,
     "NumOfSecondaryScatterings": 1,
-    "MonteCarloStart": 1,
-    "MonteCarloGenerator": {
-      "seed": -1556
-    }
+    "MonteCarloStart": 1
   },
   "dust": {
     "kappa": 66.0,
