@@ -149,6 +149,9 @@ public:
     std::uint64_t num_photons() const
     {   return parameters_.num_photons_; }
 
+    bool hasSphereSources() const
+    {   return !sphereSources_.empty(); }
+
 private:
     SourceParameters parameters_;
     std::vector<PointSource> const pointSources_;

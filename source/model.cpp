@@ -974,8 +974,11 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
 
 IRandomGenerator* Model::createRandomGenerator() const
 {
-    std::uint32_t const dimension =
-        monteCarloGeneratorDescription_.vectorPerScattering_ ? 3 : 3 * (nscat_ + static_cast<std::uint32_t>(fMonteCarlo_) - 1);
+    std::uint32_t const sourceDimension = sources_->hasSphereSources() ? 2 : 0;
+
+    std::uint32_t const dimension = monteCarloGeneratorDescription_.vectorPerScattering_
+        ? (sourceDimension + 3)
+        : (sourceDimension + 3 * (nscat_ + static_cast<std::uint32_t>(fMonteCarlo_) - 1));
 
     return createRndGenerator(monteCarloGeneratorDescription_, dimension);
 }
