@@ -1,7 +1,8 @@
 #include <iostream>
 #include <vector>
-#include <stdexcept>
+#include <set>
 #include <sstream>
+#include <stdexcept>
 #include "model.hpp"
 #include "AzimuthalHump.hpp"
 #include "CartesianGrid.hpp"
@@ -41,6 +42,65 @@ namespace
     char const sTranslation[] = "translation";
     char const sSphereEnvelope[] = "sphereEnvelope";
     char const sFractalCloud[] = "fractalCloud";
+
+    class DuplicatesParserCallback
+    {
+    public:
+        DuplicatesParserCallback() = default;
+
+        bool operator()(int depth, nlohmann::json::parse_event_t event, nlohmann::json& parsed)
+        {
+            if (event == nlohmann::json::parse_event_t::key)
+            {
+                if (depth > lastDepth)
+                {
+                    sets_.emplace_back(std::set<std::string>());
+                }
+                else if (depth < lastDepth)
+                {
+                    sets_.pop_back();
+                }
+                lastDepth = depth;
+                std::string key = parsed.get<std::string>();
+
+                if (sets_.back().find(key) != sets_.back().end())
+                {
+                    std::stringstream errorString;
+                    errorString << "Configuration file contains duplicated key \"" << key << "\" in section \"";
+
+                    for (int i=0; i < depth-2; ++i)
+                    {
+                        errorString << stack_[i] << "::";
+                    }
+
+                    if (depth-2 >= 0)
+                    {
+                        errorString << stack_[depth-2];
+                    }
+
+                    errorString << "\"!";
+
+                    throw std::invalid_argument(errorString.str());
+                }
+
+                sets_.back().insert(key);
+
+                if (static_cast<int>(stack_.size()) >= depth)
+                {
+                    stack_[depth-1] = key;
+                }
+                else
+                {
+                    stack_.push_back(key);
+                }
+            }
+            return true;
+        }
+    private:
+        std::vector<std::set<std::string>> sets_;
+        std::vector<std::string> stack_;
+        int lastDepth = -1;
+    };
 
     void checkParameters(
         const nlohmann::json& json,
@@ -882,8 +942,8 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
 {
     std::ifstream configurationFile(parametersFile);
     DATA_ASSERT(configurationFile.is_open(), parametersFile + " should exist.");
-    nlohmann::json j;
-    configurationFile >> j;
+
+    nlohmann::json j = nlohmann::json::parse(configurationFile, DuplicatesParserCallback());
 
     char const methodParameters[] = "method parameters";
 

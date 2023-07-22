@@ -13,6 +13,23 @@ namespace
     }
 }
 
+TEST_CASE("Parse Random Generator Description", "[model]")
+{
+    nlohmann::json randomGeneratorJson = R"({
+        "type": "MinimumStandard",
+        "seed": 1556,
+        "inputRandomFile": "random1.txt",
+        "outputRandomFile": "random2.txt"
+        })"_json;
+
+    RandomGeneratorDescription description = parseRandomGeneratorDescription(randomGeneratorJson, "TestGenerator");
+
+    REQUIRE(RandomGeneratorType::MINIMUM_STANDARD == description.type_);
+    REQUIRE(1556 == description.seed_);
+    REQUIRE("random1.txt" == description.inputRandomFile_);
+    REQUIRE("random2.txt" == description.outputRandomFile_);
+}
+
 TEST_CASE("Parse Observers", "[model]")
 {
     std::vector<Observer> observers;
@@ -357,5 +374,84 @@ TEST_CASE("Parse Grid", "[model]")
         IMatterCPtr matter = std::make_shared<SphereEnvelope const>(500., 550., 2.4e-17, 100, 0, nullptr);
         const auto grid = parseGrid(gridJson, 100., matter);
         REQUIRE(grid);
+    }
+}
+
+TEST_CASE("Parse Duplicated Keys", "[model]")
+{
+    SECTION("Zero Level")
+    {
+        std::string json = R"({
+                "a": {
+                  "a1": 1,
+                  "a2": 2,
+                  "a3": 3
+                },
+                "b": {
+                  "b1": 1,
+                  "b2": 2
+                },
+                "b": {
+                  "b3" : 3
+                }})";
+
+        try {
+            nlohmann::json j = nlohmann::json::parse(json, DuplicatesParserCallback());
+        } catch (std::exception const& ex) {
+            REQUIRE(std::string("Configuration file contains duplicated key \"b\" in section \"\"!") == ex.what());
+        }
+    }
+
+    SECTION("First Level")
+    {
+        std::string json = R"({
+                "a": {
+                  "a1": 1,
+                  "a2": 2,
+                  "a3": 3
+                },
+                "b": {
+                  "b1": 1,
+                  "b2": 2,
+                  "b2": 3
+                },
+                "c": {
+                  "b3" : 3
+                }})";
+
+        try {
+            nlohmann::json j = nlohmann::json::parse(json, DuplicatesParserCallback());
+        } catch (std::exception const& ex) {
+            REQUIRE(std::string("Configuration file contains duplicated key \"b2\" in section \"b\"!") == ex.what());
+        }
+    }
+
+    SECTION("Second Level")
+    {
+        std::string json = R"({
+                "a": {
+                  "a1": 1,
+                  "a2": 2,
+                  "a3": 3
+                },
+                "b": {
+                  "b1": 1,
+                  "b2": {
+                     "d": 1,
+                     "e": 2,
+                     "f": 3,
+                     "e": 4
+                  },
+                  "b3": 3
+                },
+                "c": {
+                  "b3" : 3
+                }})";
+
+        try {
+            nlohmann::json j = nlohmann::json::parse(json, DuplicatesParserCallback());
+        } catch (std::exception const& ex) {
+            REQUIRE(std::string("Configuration file contains duplicated key \"e\" in section \"b::b2\"!") == ex.what());
+        }
     }
 }
