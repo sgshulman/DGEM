@@ -31,7 +31,7 @@ namespace
             return true;
         }
 
-        bool movePhotonAtRandomDepth(Photon& /*ph*/, IRandomGenerator */*ran*/) const override
+        bool movePhotonAtRandomDepth(Photon& /*ph*/, IRandomGenerator* /*ran*/) const override
         {
             return true;
         }
