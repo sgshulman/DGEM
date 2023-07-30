@@ -27,10 +27,11 @@ namespace
 } // namespace
 
 
-Photon Sources::emitRandomPhoton(IGridCRef grid, IRandomGenerator* ran)
+Photon Sources::emitRandomPhoton(IGridCRef grid, IRandomGenerator* ran, double* randomValue)
 {
     if (currentSource_ == pointSources_.size() + sphereSources_.size())
     {
+        *randomValue = 0.0;
         return {Vector3d{}, 0, Direction3d{}, 0.0, std::numeric_limits<std::uint32_t>::max()};
     }
 
@@ -59,10 +60,13 @@ Photon Sources::emitRandomPhoton(IGridCRef grid, IRandomGenerator* ran)
 
     if (sourceId < pointSources_.size())
     {
+        Direction3d const direction = randomDirection(ran);
+        *randomValue = ran->Get();
+
         return {
             pointSources_[sourceId].pos(),
             pointSources_[sourceId].cellId(),
-            randomDirection(ran),
+            direction,
             1.0,
             1};
     }
@@ -76,6 +80,7 @@ Photon Sources::emitRandomPhoton(IGridCRef grid, IRandomGenerator* ran)
     double const v = ran->Get();
     double const u = ran->Get();
     Direction3d localDirection{ 2.0 * PI * u, std::sqrt(v) };
+    *randomValue = ran->Get();
 
     return { position.first, position.second, localDirection.rotate(positionDirection), 1.0, 1};
 }

@@ -124,7 +124,8 @@ TEST_CASE("Sphere source. Random", "[sources]")
 
     for (int i=0; i!=10; ++i)
     {
-        Photon ph = sources.emitRandomPhoton(grid, &rand);
+        double randomValue;
+        Photon ph = sources.emitRandomPhoton(grid, &rand, &randomValue);
         REQUIRE(ph.pos() * ph.dir().vector() >= 0.);
     }
 }

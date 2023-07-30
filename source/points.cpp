@@ -23,7 +23,8 @@ void processMonteCarloPhotons(
 {
     for (;;)
     {
-        Photon ph{ sources->emitRandomPhoton(grid, ran) };
+        double randomValue{ 0.0 };
+        Photon ph{ sources->emitRandomPhoton(grid, ran, &randomValue) };
 
         if (ph.termination())
         {
@@ -41,7 +42,7 @@ void processMonteCarloPhotons(
         ph.weight() = w;
 
         // Force photon to scatter at optical depth tau before edge of grid
-        double tau = -std::log(1.0 - ran->Get() * w);
+        double tau = -std::log(1.0 - randomValue * w);
         // Find scattering location of tau
         grid->movePhotonAtDepth(ph, tau, 0.0);
 
