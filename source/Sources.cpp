@@ -73,6 +73,20 @@ Photon Sources::emitRandomPhoton(IGridCRef grid, IRandomGenerator* ran, double* 
 
     std::uint32_t const sphereSourceId = sourceId - static_cast<std::uint32_t>(pointSources_.size());
 
+    if (parameters_.inverseSphereSourceOrder)
+    {
+        Direction3d const propagationDirection{ randomDirection(ran) };
+        *randomValue = ran->Get();
+
+        double const v = ran->Get();
+        double const u = ran->Get();
+        Direction3d const localDirection{ 2.0 * PI * u, std::sqrt(v) };
+        Direction3d const positionDirection{ localDirection.rotate(propagationDirection) };
+        auto const position = starSurface(sphereSources_[sphereSourceId], positionDirection, grid);
+
+        return { position.first, position.second, propagationDirection, 1.0, 1 };
+    }
+
     // compute point location
     Direction3d const positionDirection{ randomDirection(ran) };
     auto const position = starSurface(sphereSources_[sphereSourceId], positionDirection, grid);
@@ -82,7 +96,7 @@ Photon Sources::emitRandomPhoton(IGridCRef grid, IRandomGenerator* ran, double* 
     Direction3d localDirection{ 2.0 * PI * u, std::sqrt(v) };
     *randomValue = ran->Get();
 
-    return { position.first, position.second, localDirection.rotate(positionDirection), 1.0, 1};
+    return { position.first, position.second, localDirection.rotate(positionDirection), 1.0, 1 };
 }
 
 

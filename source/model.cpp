@@ -959,11 +959,12 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
         methodJson,
         methodParameters,
         {sMonteCarloGenerator, sDgemStratificationGenerator,
-         "fMonteCarlo", "nphotons", "PrimaryDirectionsLevel", "dgemBinType", "taumin", "nscat",
+         "fMonteCarlo", "nphotons", "PrimaryDirectionsLevel", "dgemBinType", "taumin", "nscat", "inverseSphereSourceOrder",
          "SecondaryDirectionsLevel", "NumOfPrimaryScatterings", "NumOfSecondaryScatterings", "MonteCarloStart",
          "fUseHEALPixGrid", "SphereDirectionsLevel", "SphereSurfaceDirectionsLevel", "defaultStarRadius", "fWriteScatterings"});
 
     sourceParameters.useMonteCarlo_ = get_bool(methodJson, methodParameters, "fMonteCarlo");
+    sourceParameters.inverseSphereSourceOrder = get_optional_bool(methodJson, methodParameters, "inverseSphereSourceOrder", false);
     sourceParameters.num_photons_ = get_uint64(methodJson, methodParameters, "nphotons");
     sourceParameters.SphereSurfaceDirectionsLevel_ = get_optional_uint32(methodJson, methodParameters, "SphereSurfaceDirectionsLevel", 1);
     fMonteCarlo_ = sourceParameters.useMonteCarlo_;

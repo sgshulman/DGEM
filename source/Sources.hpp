@@ -94,6 +94,7 @@ struct SourceParameters
     std::uint32_t SphereSurfaceDirectionsLevel_{ 1 };
     bool useMonteCarlo_{ true };
     bool useHEALPixGrid_{ true };
+    bool inverseSphereSourceOrder{ false };
 };
 
 // all sources of photons

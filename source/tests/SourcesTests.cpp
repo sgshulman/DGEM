@@ -81,7 +81,7 @@ namespace
 
     double sourceLuminosity(std::uint64_t num_photons, double radius, std::uint32_t diskLevel)
     {
-        SourceParameters const sourceParameters{num_photons, 0, 0, diskLevel, true, false};
+        SourceParameters const sourceParameters{num_photons, 0, 0, diskLevel, true, false, false};
 
         std::vector<SphereSource> sphereSources;
         std::vector<PointSource> pointSources;
@@ -112,21 +112,44 @@ namespace
 
 TEST_CASE("Sphere source. Random", "[sources]")
 {
-    std::vector<PointSource> pointSources;
-    std::vector<SphereSource> sphereSources;
-    sphereSources.emplace_back(Vector3d{0.,0.,0.}, 0, 1., 1.);
-
-    SourceParameters const sourceParameters{10, 0, 0, 100, true, false};
-    Sources sources(sourceParameters, std::move(pointSources), std::move(sphereSources));
-
-    IGridCPtr grid = std::make_shared<TestGrid>();
-    LEcuyer rand(-1);
-
-    for (int i=0; i!=10; ++i)
+    SECTION("Direct order")
     {
-        double randomValue;
-        Photon ph = sources.emitRandomPhoton(grid, &rand, &randomValue);
-        REQUIRE(ph.pos() * ph.dir().vector() >= 0.);
+        std::vector<PointSource> pointSources;
+        std::vector<SphereSource> sphereSources;
+        sphereSources.emplace_back(Vector3d{0.,0.,0.}, 0, 1., 1.);
+
+        SourceParameters const sourceParameters{10, 0, 0, 100, true, false, false};
+        Sources sources(sourceParameters, std::move(pointSources), std::move(sphereSources));
+
+        IGridCPtr grid = std::make_shared<TestGrid>();
+        LEcuyer rand(-1);
+
+        for (int i=0; i!=10; ++i)
+        {
+            double randomValue;
+            Photon ph = sources.emitRandomPhoton(grid, &rand, &randomValue);
+            REQUIRE(ph.pos() * ph.dir().vector() >= 0.);
+        }
+    }
+
+    SECTION("Inverse order")
+    {
+        std::vector<PointSource> pointSources;
+        std::vector<SphereSource> sphereSources;
+        sphereSources.emplace_back(Vector3d{0.,0.,0.}, 0, 1., 1.);
+
+        SourceParameters const sourceParameters{10, 0, 0, 100, true, false, true};
+        Sources sources(sourceParameters, std::move(pointSources), std::move(sphereSources));
+
+        IGridCPtr grid = std::make_shared<TestGrid>();
+        LEcuyer rand(-1);
+
+        for (int i=0; i!=10; ++i)
+        {
+            double randomValue;
+            Photon ph = sources.emitRandomPhoton(grid, &rand, &randomValue);
+            REQUIRE(ph.pos() * ph.dir().vector() >= 0.);
+        }
     }
 }
 
@@ -150,7 +173,7 @@ TEST_CASE("Source Luminosity", "[sources]")
 
 TEST_CASE("Star disc", "[sources]")
 {
-    SourceParameters const sourceParameters{10, 0, 0, 128, true, false};
+    SourceParameters const sourceParameters{10, 0, 0, 128, true, false, false};
 
     std::vector<SphereSource> sphereSources;
     sphereSources.emplace_back(Vector3d{0.,0.,0.}, 0, 1., 1.);
@@ -189,7 +212,7 @@ TEST_CASE("Star disc", "[sources]")
 TEST_CASE("Sphere star is opaque for direct light", "[sources]")
 {
     std::uint64_t const numPhotons = 100;
-    SourceParameters const sourceParameters{numPhotons, 0, 0, 10, true, false};
+    SourceParameters const sourceParameters{numPhotons, 0, 0, 10, true, false, false};
 
     std::vector<SphereSource> sphereSources;
     std::vector<PointSource> pointSources;
@@ -237,7 +260,7 @@ TEST_CASE("Sphere star is opaque for direct light", "[sources]")
 
 TEST_CASE("intersectSphereSource", "[sources]")
 {
-    SourceParameters const sourceParameters{100, 0, 0, 10, true, false};
+    SourceParameters const sourceParameters{100, 0, 0, 10, true, false, false};
 
     std::vector<SphereSource> sphereSources;
     std::vector<PointSource> pointSources;
