@@ -205,23 +205,6 @@ namespace
     }
 
 
-    std::int64_t extract_uint64(const nlohmann::json& json, char const* const section, char const* const name)
-    {
-        if (!json.is_number_integer())
-        {
-            throw std::invalid_argument(std::string("Item ") + name + " from section " + section + " should be integer.");
-        }
-
-        return json.get<std::int64_t>();
-    }
-
-
-    std::int32_t get_optional_uint64(const nlohmann::json& json, char const* const section, char const* const name, std::int64_t defaultValue)
-    {
-        return json.contains(name) ? extract_uint64(json.at(name), section, name) : defaultValue;
-    }
-
-
     std::uint32_t extract_uint32(const nlohmann::json& json, char const* const section, char const* const name)
     {
         if (!json.is_number_unsigned() && !(json.is_number_integer() && json.get<int64_t>() >= 0))
@@ -250,6 +233,17 @@ namespace
     }
 
 
+    std::uint64_t extract_uint64(const nlohmann::json& json, char const* const section, char const* const name)
+    {
+        if (!json.is_number_integer())
+        {
+            throw std::invalid_argument(std::string("Item ") + name + " from section " + section + " should be integer.");
+        }
+
+        return json.get<std::uint64_t>();
+    }
+
+
     std::uint64_t get_uint64(const nlohmann::json& json, char const* const section, char const* const name)
     {
         if (!json.contains(name))
@@ -257,13 +251,13 @@ namespace
             throw std::invalid_argument(std::string("Section ") + section + " should contain unsigned integer item " + name + ".");
         }
 
-        auto const& item = json.at(name);
-        if (!item.is_number_unsigned() && !(item.is_number_integer() && item.get<int64_t>() >= 0))
-        {
-            throw std::invalid_argument(std::string("Item ") + name + " from section " + section + " should be unsigned integer.");
-        }
+        return extract_uint64(json.at(name), section, name);
+    }
 
-        return item.get<std::uint64_t>();
+
+    std::uint64_t get_optional_uint64(const nlohmann::json& json, char const* const section, char const* const name, std::uint64_t defaultValue)
+    {
+        return json.contains(name) ? extract_uint64(json.at(name), section, name) : defaultValue;
     }
 
 

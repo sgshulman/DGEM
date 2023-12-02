@@ -30,7 +30,7 @@ double Hammersley::Get()
         currentDimension_ = 0;
     }
     double const result = (currentDimension_ == 0)
-        ? (curPoint_ - 0.5) / numPoints_
+        ? (static_cast<double>(curPoint_) - 0.5) / static_cast<double>(numPoints_)
         : static_cast<double>(n_[currentDimension_-1]) / static_cast<double>(d_[currentDimension_-1]);
 
     ++currentDimension_;

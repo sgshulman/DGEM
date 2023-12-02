@@ -2,6 +2,7 @@
 #define I_RANDOM_GENERATOR_HPP_
 
 #include <string>
+#include <cstdint>
 
 enum class RandomGeneratorType : std::uint8_t
 {

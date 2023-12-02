@@ -1,6 +1,7 @@
 #ifndef UTILS_IMAGE_HPP_
 #define UTILS_IMAGE_HPP_
 
+#include <cstdint>
 #include <fstream>
 #include <iostream>
 #include <sstream>
