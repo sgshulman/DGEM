@@ -18,6 +18,7 @@ enum DgemBinType
 struct RandomGeneratorDescription
 {
     std::int32_t seed_{0};
+    std::uint64_t numberOfPoints_{0};
     RandomGeneratorType type_{ RandomGeneratorType::NONE };
     bool vectorPerScattering_{ true };
     std::string inputRandomFile_;

@@ -22,6 +22,8 @@ set(SOURCES
         FractalCloud.hpp
         Halton.cpp
         Halton.hpp
+        Hammersley.cpp
+        Hammersley.hpp
         IDiskHump.hpp
         IDust.hpp
         IGrid.hpp
@@ -89,8 +91,9 @@ if(DEFINED ENABLE_UNIT_TESTS AND ${ENABLE_UNIT_TESTS})
         tests/AzimuthalHumpTests.cpp
         tests/CartesianGridTests.cpp
         tests/Direction3dTests.cpp
-        tests/HaltonTests.cpp
         tests/FaureTests.cpp
+        tests/HaltonTests.cpp
+        tests/HammersleyTests.cpp
         tests/LEcuyerTests.cpp
         tests/MathUtilsTests.cpp
         tests/MatterArrayTests.cpp

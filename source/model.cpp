@@ -205,6 +205,23 @@ namespace
     }
 
 
+    std::int64_t extract_uint64(const nlohmann::json& json, char const* const section, char const* const name)
+    {
+        if (!json.is_number_integer())
+        {
+            throw std::invalid_argument(std::string("Item ") + name + " from section " + section + " should be integer.");
+        }
+
+        return json.get<std::int64_t>();
+    }
+
+
+    std::int32_t get_optional_uint64(const nlohmann::json& json, char const* const section, char const* const name, std::int64_t defaultValue)
+    {
+        return json.contains(name) ? extract_uint64(json.at(name), section, name) : defaultValue;
+    }
+
+
     std::uint32_t extract_uint32(const nlohmann::json& json, char const* const section, char const* const name)
     {
         if (!json.is_number_unsigned() && !(json.is_number_integer() && json.get<int64_t>() >= 0))
@@ -783,12 +800,15 @@ namespace
         return std::make_shared<Sources>(sourceParameters, std::move(pointSources), std::move(sphereSources));
     }
 
-    RandomGeneratorDescription parseRandomGeneratorDescription(nlohmann::json const& json, const std::string& generatorName)
+    RandomGeneratorDescription parseRandomGeneratorDescription(
+        nlohmann::json const& json,
+        const std::string& generatorName,
+        std::uint64_t numberOfPhotons)
     {
         checkParameters(
                 json,
                 generatorName.c_str(),
-                {"type", "seed", "vectorPerScattering", "inputRandomFile", "outputRandomFile"});
+                {"type", "seed", "vectorPerScattering", "inputRandomFile", "outputRandomFile", "numberOfPoints"});
 
         RandomGeneratorDescription description;
 
@@ -796,7 +816,7 @@ namespace
             json,
             generatorName.c_str(),
             "type",
-            {"NONE", "MinimumStandard", "MersenneTwister", "Ranlux48", "LEcuyer", "Halton", "Faure", "Sobol", "Niederreiter"},
+            {"NONE", "MinimumStandard", "MersenneTwister", "Ranlux48", "LEcuyer", "Halton", "Faure", "Sobol", "Niederreiter", "Hammersley"},
             RandomGeneratorType::LECUYER);
 
         if (RandomGeneratorType::HALTON == description.type_
@@ -805,6 +825,8 @@ namespace
             || RandomGeneratorType::NIEDERREITER == description.type_)
         {
             description.vectorPerScattering_ = get_optional_bool(json, generatorName.c_str(), "vectorPerScattering", false);
+        } else if (RandomGeneratorType::HAMMERSLEY == description.type_){
+            description.numberOfPoints_ = get_optional_uint64(json, generatorName.c_str(), "numberOfPoints", numberOfPhotons);
         } else {
             description.seed_ = get_int32(json, generatorName.c_str(), "seed");
         }
@@ -919,7 +941,7 @@ namespace
 
     inline IRandomGenerator* createRndGenerator(const RandomGeneratorDescription& description, std::uint32_t const dimension)
     {
-        IRandomGenerator* rand{ IRandomGenerator::create(description.type_, description.seed_, dimension) };
+        IRandomGenerator* rand{ IRandomGenerator::create(description.type_, description.seed_, dimension, description.numberOfPoints_) };
 
         if (rand != nullptr && !description.inputRandomFile_.empty())
         {
@@ -993,7 +1015,7 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
     if (methodJson.contains(sMonteCarloGenerator))
     {
         monteCarloGeneratorDescription_ =
-            parseRandomGeneratorDescription(methodJson.at(sMonteCarloGenerator), sMonteCarloGenerator);
+            parseRandomGeneratorDescription(methodJson.at(sMonteCarloGenerator), sMonteCarloGenerator, sourceParameters.num_photons_);
     }
     else if (nscat_ > MonteCarloStart_)
     {
@@ -1003,7 +1025,7 @@ Model::Model(std::vector<Observer>* observers, std::string const& parametersFile
     if (methodJson.contains(sDgemStratificationGenerator))
     {
         dgemStratificationGeneratorDescription_ =
-            parseRandomGeneratorDescription(methodJson.at(sDgemStratificationGenerator), sDgemStratificationGenerator);
+            parseRandomGeneratorDescription(methodJson.at(sDgemStratificationGenerator), sDgemStratificationGenerator, sourceParameters.PrimaryDirectionsLevel_);
     }
 
     nlohmann::json const& dustJson = j.at(sDust);

@@ -13,13 +13,14 @@ enum class RandomGeneratorType : std::uint8_t
     HALTON,
     FAURE,
     SOBOL,
-    NIEDERREITER
+    NIEDERREITER,
+    HAMMERSLEY
 };
 
 class IRandomGenerator
 {
 public:
-    static IRandomGenerator* create(RandomGeneratorType type, std::int32_t seed, std::uint32_t dimension);
+    static IRandomGenerator* create(RandomGeneratorType type, std::int32_t seed, std::uint32_t dimension, std::uint64_t numberOfPoints);
 
     IRandomGenerator() = default;
     virtual ~IRandomGenerator() =default;

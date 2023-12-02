@@ -1,12 +1,13 @@
 #include "IRandomGenerator.hpp"
 #include "Faure.hpp"
 #include "Halton.hpp"
+#include "Hammersley.hpp"
 #include "LEcuyer.hpp"
 #include "Niederreiter.hpp"
 #include "Sobol.hpp"
 #include "StdRandomGenerator.hpp"
 
-IRandomGenerator* IRandomGenerator::create(RandomGeneratorType type, std::int32_t seed, std::uint32_t dimension)
+IRandomGenerator* IRandomGenerator::create(RandomGeneratorType type, std::int32_t seed, std::uint32_t dimension, std::uint64_t numberOfPoints)
 {
     IRandomGenerator* rand{ nullptr };
 
@@ -29,6 +30,10 @@ IRandomGenerator* IRandomGenerator::create(RandomGeneratorType type, std::int32_
     else if (RandomGeneratorType::NIEDERREITER == type)
     {
         rand = new Niederreiter(dimension);
+    }
+    else if (RandomGeneratorType::HAMMERSLEY == type)
+    {
+        rand = new Hammersley(dimension, numberOfPoints);
     }
     else
     {

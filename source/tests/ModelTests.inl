@@ -22,7 +22,7 @@ TEST_CASE("Parse Random Generator Description", "[model]")
         "outputRandomFile": "random2.txt"
         })"_json;
 
-    RandomGeneratorDescription description = parseRandomGeneratorDescription(randomGeneratorJson, "TestGenerator");
+    RandomGeneratorDescription description = parseRandomGeneratorDescription(randomGeneratorJson, "TestGenerator", 10);
 
     REQUIRE(RandomGeneratorType::MINIMUM_STANDARD == description.type_);
     REQUIRE(1556 == description.seed_);
