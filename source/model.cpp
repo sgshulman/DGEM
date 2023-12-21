@@ -820,6 +820,7 @@ namespace
         {
             description.vectorPerScattering_ = get_optional_bool(json, generatorName.c_str(), "vectorPerScattering", false);
         } else if (RandomGeneratorType::HAMMERSLEY == description.type_){
+            description.vectorPerScattering_ = get_optional_bool(json, generatorName.c_str(), "vectorPerScattering", false);
             description.numberOfPoints_ = get_optional_uint64(json, generatorName.c_str(), "numberOfPoints", numberOfPhotons);
         } else {
             description.seed_ = get_int32(json, generatorName.c_str(), "seed");
