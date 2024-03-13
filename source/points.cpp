@@ -321,8 +321,8 @@ int main(int argc, char *argv[])
             std::string parameter = argv[1];
             if (parameter == "-v" || parameter == "--version")
             {
-                std::cout << "Version 0.4\n"
-                    << "    Fix clang-tidy warnings" << std::endl;
+                std::cout << "Version 0.5\n"
+                    << "    Implement Quasi Monte-Carlo method" << std::endl;
             }
             else
             {
