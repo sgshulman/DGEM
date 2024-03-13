@@ -38,7 +38,7 @@ Utilities are described in section [Utils](#utils).
 ## DGEM configuration
 The first program argument is a configuration file.
 If the argument is not provided, the program use parameters.json file.
-The configuration file has following sections:
+The configuration file has the following sections:
 
 ### Method Parameters
 
@@ -47,12 +47,12 @@ Common settings
 - fWriteScatterings &mdash; is True or False. The default value is True. Set False to avoid writing single and double scatterings to separate files.
 - taumin &mdash; is the minimum optical depth which gives scatterings
 - nscat &mdash; number of scatterings considered
+- SphereSurfaceDirectionsLevel &mdash; 2-4 HEALPix grid ([Gorski et. al. 2005](#gorski2005)) for direct photons emission points on the sphere star surface
 
 Monte Carlo parameters
 - nphotons &mdash; total number of photon packets for Monte Carlo method
-- iseed &mdash; initialization parameter for random number generator in Monte Carlo method
-- inputRandomFile &mdash; a file with the initial state of the random number generator. If it is provided, *iseed* option is ignored.
-- outputRandomFile &mdash; a file to store final state of the random number generator
+- MonteCarloGenerator &mdash; Monte Carlo random number generator description
+- inverseSphereSourceOrder &mdash; For sphere sources: determine the direction of photon propagation before the emission point.
 
 DGEM parameters
 - fUseHEALPixGrid &mdash; defines the sphere grid type. Set True to use HEALPix grid ([Gorski et. al. 2005](#gorski2005)).
@@ -67,6 +67,29 @@ DGEM parameters
                             method is used instead of DGEM (1 is recommended)
 - defaultStarRadius &mdash; a default star radius for point sourced used for the inner step computation in one-parameter DGEM method.
                             This parameter is optional. If it is not provided, the solar radius is used.
+- dgemBinType &mdash; experimental option for one-parameter DGEM implementation. Possible values are *Point*, *Line*, and *HexLines*.
+
+"MonteCarloGenerator" section has the following parameters:
+- type &mdash; random number generator type
+- seed &mdash; initialization parameter for pseudo random number generators
+- inputRandomFile &mdash; a file with the initial state of the random number generator. If it is provided, *iseed* option is ignored.
+- outputRandomFile &mdash; a file to store final state of the random number generator
+- numberOfPoints &mdash; a total number of points for [Hammersley (1960) set](#hammersley1960). The default value is *nphotons*.
+
+There ane nine supported generator types.
+Four pseudo-random number generators:
+- MinimumStandard &mdash; STL implementation following [Park (1993)](#park1993).
+- MersenneTwister &mdash; STL implementation following [Matsumoto and Nishimura (2000)](#matsumoto2000).
+- Ranlux48 &mdash; STL implementation following after [Lüscher (1994)](#luscher1994) and [James (1994)](#james1994).
+- LEcuyer &mdash; custom implementation based on [L'Ecuyer (1988)](#lecuyer1988). The default generator in our program.
+
+Four quasi-random number generators with our implementation:
+- Halton &mdash; described in  [Halton (1960)](#halton1960) and [Halton and Smith (1964)](#halton1964)
+- Faure &mdash; following [Faure (1981)](#faure1981)
+- Sobol &mdash; Suggested by [Sobol' (1967)](#sobol1967). The implementation uses [Bratley and Fox (1988)](#bratley1988) and [Joe and (2008)](#joe2008) results.
+- Niederreiter &mdash; [Niederreiter (1988)](#niederreiter1988) base 2 generator implemented after [Bratley, Fox, and Niederreiter(1992)](#bratley1992)
+
+And *Hammersley* &mdash; [Hammersley (1960) set](#hammersley1960).
 
 ### Dust
 
@@ -458,7 +481,9 @@ Options:
 1. <a name="fox1986"></a>Fox B.L., 1986. Algorithm 647: Implementation and Relative Efficiency of Quasirandom Sequence Generators. ACM Trans. Math. Softw. **12**, 362–376. doi:[10.1145/22721.356187](https://doi.org/10.1145/22721.356187)
 1. <a name="geuzaine2009"></a>Geuzaine C. and  Remacle J.-F., 2009. Gmsh: a three-dimensional finite element mesh generator with built-in pre- and post-processing facilities. International Journal for Numerical Methods in Engineering, **79**(11), 1309-1331. doi:[10.1002/nme.2579](https://doi.org/10.1002/nme.2579)
 1. <a name="gorski2005"></a>Gorski K.M., Hivon E., Banday A.J., Wandelt B.D., Hansen F.K., Reinecke M., and Bartelmann M., 2005. HEALPix: A Framework for High-Resolution Discretization and Fast Analysis of Data Distributed on the Sphere, Astrophys. J., **622**, 759–771. doi:[10.1086/427976](https://doi.org/10.1086/427976)
+1. <a name="halton1960"></a>Halton J., 1960. On the efficiency of certain quasi-random sequences of points in evaluating multi-dimensional integrals. Numerische Mathematik **2**, 84-90. doi:[10.1007/BF01386213](https://doi.org/10.1007/BF01386213)
 1. <a name="halton1964"></a>Halton J. and Smith G. B., 1964. Algorithm 247: Radical-inverse quasi-random point sequence. Commun. ACM **7**, 701–702. doi:[10.1145/355588.365104](https://doi.org/10.1145/355588.365104)
+1. <a name="hammersley1960"></a>Hammersley J., 1960. Monte Carlo methods for solving multivariable problems. Proceedings of the New York Academy of Science **86**, 844-874. doi:[10.1111/j.1749-6632.1960.tb42846.x](https://doi.org/10.1111/j.1749-6632.1960.tb42846.x)
 1. <a name="henyey1941"></a>Henyey L.G. and Greenstein J.L., 1941. Diffuse radiation in the Galaxy. Astrophys. J. **93**, 70–83. doi:[10.1086/144246](https://doi.org/10.1086/144246)
 1. <a name="james1994"></a>James F., 1994. RANLUX: A Fortran implementation of the high-quality pseudorandom number generator of Lüscher. Computer Physics Communications **79**, 111-114. doi:[10.1016/0010-4655(94)90233-X](https://doi.org/10.1016/0010-4655(94)90233-X)
 1. <a name="joe2008"></a>Joe S. and Kuo F.Y., 2008. Constructing Sobol Sequences with Better Two-Dimensional Projections. SIAM Journal on Scientific Computing **30**, 2635–2654. doi:[10.1137/070709359](https://doi.org/10.1137/070709359)
