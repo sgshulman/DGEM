@@ -4,8 +4,9 @@
 ![Unit Tests macOS](https://github.com/sgshulman/DGEM/workflows/Unit%20Tests%20macOS/badge.svg?branch=master&event=push)
 ![Unit Tests Windows](https://github.com/sgshulman/DGEM/workflows/Unit%20Tests%20Windows/badge.svg?branch=master&event=push)
 
-A simple three-dimensional dust continuum radiative transfer code demonstrating directions grid enumeration method advantages.
-The method was described in [Shulman (2018)](#shulman2018).
+A simple three-dimensional dust continuum radiative transfer code for different computation methods comparison.
+Monte Carlo, Quasi Monte-Carlo and Directions Grid Enumeration methods are available.
+The methods are described in [Shulman (2018)](#shulman2018) and new paper in preparation.
 
 - [DGEM Configuration](#dgem-configuration)
   - [Method Parameters](#method-parameters)
@@ -29,6 +30,7 @@ The physics and method detail will be presented in a paper which is in preparati
 
 The provided makefile allows compiling the program on Linux.
 Cmake configuration can be used to build the program and for IDEs.
+Commands for the program compilation for different platforms may be found in `.github/workflows` configuration files.
 
 PLOT3.plt is a gnuplot script for plotting the resulting images.
 
@@ -37,7 +39,9 @@ Utilities are described in section [Utils](#utils).
 
 ## DGEM configuration
 The first program argument is a configuration file.
-If the argument is not provided, the program use parameters.json file.
+If the argument is not provided, the program use `parameters.json` file.
+Example `parameters.json` is provided in the repository root.
+More examples are available in `regression_tests` folder.
 The configuration file has the following sections:
 
 ### Method Parameters
