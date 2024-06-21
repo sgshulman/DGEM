@@ -22,9 +22,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: xcode-select
-        run: sudo xcode-select -s "/Applications/Xcode_14.1.app"
-
       - name: cmake
         run: cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_UNIT_TESTS=TRUE -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }} -S ./source
 
