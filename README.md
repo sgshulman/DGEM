@@ -1,8 +1,8 @@
 # DGEM
 
-![Unit Tests Ubuntu](https://github.com/sgshulman/DGEM/workflows/Unit%20Tests%20Ubuntu/badge.svg?branch=master&event=push)
-![Unit Tests macOS](https://github.com/sgshulman/DGEM/workflows/Unit%20Tests%20macOS/badge.svg?branch=master&event=push)
-![Unit Tests Windows](https://github.com/sgshulman/DGEM/workflows/Unit%20Tests%20Windows/badge.svg?branch=master&event=push)
+![Unit Tests Ubuntu](https://github.com/sgshulman/DGEM/actions/workflows/ubuntu.yml/badge.svg?branch=master&event=push)
+![Unit Tests macOS](https://github.com/sgshulman/DGEM/actions/workflows/macos.yml/badge.svg?branch=master&event=push)
+![Unit Tests Windows](https://github.com/sgshulman/DGEM/actions/workflows/windows.yml/badge.svg?branch=master&event=push)
 
 A simple three-dimensional dust continuum radiative transfer code for different computation methods comparison.
 Monte Carlo, Quasi Monte-Carlo and Directions Grid Enumeration methods are available.
