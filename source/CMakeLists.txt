@@ -135,7 +135,13 @@ elseif( MINGW )
     set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -Wextra -Wpedantic -static-libstdc++ -Wa,-mbig-obj")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -Wextra -Wpedantic -static-libstdc++ -Wa,-mbig-obj")
 else()
-    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -Wextra -Wpedantic -fsanitize=address")
+    # gcc may not support ASAN on macOS
+    if (APPLE AND NOT(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang"))
+        set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -Wextra -Wpedantic")
+    else()
+        set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -Wall -Wextra -Wpedantic -fsanitize=address")
+    endif()
+
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -Wextra -Wpedantic")
 endif()
 
